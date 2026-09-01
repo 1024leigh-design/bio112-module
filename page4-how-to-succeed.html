@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Succeed | BIO 112</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600&display=swap');
+  :root { --teal: #00B4B4; --coral: #FF6B6B; --yellow: #FFD93D; --purple: #9B59B6; --green: #27AE60; --dark: #1a1a2e; --light-bg: #f0fafa; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Nunito Sans', sans-serif; background: var(--light-bg); color: var(--dark); min-height: 100vh; }
+
+  .hero { background: linear-gradient(135deg, #27AE60 0%, #1a7a42 50%, #00B4B4 100%); padding: 40px 20px 60px; text-align: center; }
+  .gcc-badge { display: inline-block; background: rgba(255,255,255,0.2); color: white; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.8em; letter-spacing: 2px; text-transform: uppercase; padding: 6px 16px; border-radius: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.3); }
+  .hero h1 { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 2.6em; color: white; margin-bottom: 8px; }
+  .hero .subtitle { color: rgba(255,255,255,0.9); font-size: 1em; font-weight: 600; }
+
+  .content { max-width: 860px; margin: -30px auto 40px; padding: 0 20px; position: relative; z-index: 2; }
+
+  .office-hours-hero { background: linear-gradient(135deg, #1a7a42, #27AE60); border-radius: 20px; padding: 32px 28px; color: white; margin-bottom: 22px; box-shadow: 0 8px 30px rgba(39,174,96,0.35); position: relative; overflow: hidden; }
+  .office-hours-hero::before { content: '🏆'; position: absolute; right: 24px; top: 50%; transform: translateY(-50%); font-size: 5em; opacity: 0.15; }
+  .number-badge { display: inline-block; background: rgba(255,255,255,0.25); border: 2px solid rgba(255,255,255,0.4); color: white; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 0.75em; padding: 3px 12px; border-radius: 12px; margin-bottom: 10px; }
+  .office-hours-hero h2 { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.8em; margin-bottom: 10px; }
+  .office-hours-hero p { font-size: 0.92em; line-height: 1.6; opacity: 0.95; max-width: 520px; }
+  .oh-time { margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .oh-pill { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); border-radius: 20px; padding: 7px 16px; font-size: 0.85em; font-weight: 700; }
+
+  .section-title { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.2em; color: var(--dark); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+  .section-title::after { content: ''; flex: 1; height: 3px; background: linear-gradient(to right, var(--coral), transparent); border-radius: 2px; }
+
+  .tips-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 22px; }
+  .tip-card { background: white; border-radius: 16px; padding: 22px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); transition: transform 0.2s; }
+  .tip-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+  .tip-icon { font-size: 1.6em; margin-bottom: 8px; }
+  .tip-card h3 { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1em; margin-bottom: 8px; color: var(--dark); }
+  .tip-card p { font-size: 0.82em; color: #555; line-height: 1.5; }
+
+  .dont-lose { background: white; border-radius: 20px; padding: 28px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); margin-bottom: 22px; }
+  .point-row { display: flex; gap: 14px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid #f5f5f5; font-size: 0.87em; line-height: 1.5; }
+  .point-row:last-child { border-bottom: none; }
+  .point-icon { font-size: 1.3em; flex-shrink: 0; margin-top: 1px; }
+
+  .exposure-card { background: linear-gradient(135deg, #fff8e1, #fff3cd); border-radius: 20px; padding: 28px; margin-bottom: 22px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+  .exp-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .exp-label { width: 170px; font-size: 0.82em; font-weight: 600; flex-shrink: 0; }
+  .exp-bar-bg { flex: 1; height: 12px; background: rgba(0,0,0,0.08); border-radius: 6px; overflow: hidden; }
+  .exp-bar { height: 100%; border-radius: 6px; transition: width 1s ease-out; }
+  .exp-note { width: 60px; font-size: 0.75em; color: #666; text-align: right; flex-shrink: 0; }
+
+  .checklist-card { background: white; border-radius: 20px; padding: 28px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); margin-bottom: 22px; }
+  .check-item { display: flex; gap: 12px; align-items: center; padding: 10px 8px; border-bottom: 1px solid #f5f5f5; cursor: pointer; border-radius: 8px; user-select: none; transition: background 0.15s; }
+  .check-item:hover { background: #f8fffe; }
+  .check-item.checked { text-decoration: line-through; color: #aaa; }
+  .check-box { width: 24px; height: 24px; border-radius: 6px; border: 2px solid #ccc; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.9em; transition: all 0.2s; }
+  .check-item.checked .check-box { background: var(--green); border-color: var(--green); color: white; }
+  .check-label { font-size: 0.87em; line-height: 1.4; }
+
+  /* Student quotes */
+  .quotes-card { background: white; border-radius: 20px; padding: 28px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); margin-bottom: 22px; }
+  .quote-item { border-left: 3px solid var(--teal); padding: 12px 16px; margin-bottom: 14px; background: #f8fffe; border-radius: 0 10px 10px 0; }
+  .quote-item:last-child { margin-bottom: 0; }
+  .quote-item p { font-size: 0.86em; line-height: 1.6; color: #444; font-style: italic; margin-bottom: 6px; }
+  .quote-item .attribution { font-size: 0.75em; color: #888; font-weight: 600; font-style: normal; }
+
+  @media (max-width: 600px) {
+    .tips-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 2em; }
+    .exp-label { width: 120px; font-size: 0.76em; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="gcc-badge">BIO 112 Microbiology &bull; Fall 2026</div>
+  <h1>How to Succeed</h1>
+  <p class="subtitle">From someone who has seen what actually works</p>
+</div>
+
+<div class="content">
+
+  <div class="office-hours-hero">
+    <div class="number-badge">TIP #1 -- THE BIG ONE</div>
+    <h2>Come to Office Hours</h2>
+    <p>I'm not exaggerating: my most successful students come to office hours regularly, not just before exams. I cannot help you if I don't know you. Students who show up, ask questions, and work through material with me in person consistently outperform students who go it alone. The room is open, the coffee is not provided, but the help is free.</p>
+    <div class="oh-time">
+      <div class="oh-pill">Mon 2:30 to 5:30 PM</div>
+      <div class="oh-pill">Wed 4:30 to 5:30 PM</div>
+      <div class="oh-pill">BV303</div>
+      <div class="oh-pill">Pronto DM during hours = instant reply</div>
+    </div>
+  </div>
+
+  <div class="tips-grid">
+
+    <div class="tip-card" style="border-top: 4px solid var(--teal);">
+      <div class="tip-icon">👥</div>
+      <h3>Make a Study Group</h3>
+      <p>Find classmates and meet up outside of class in person. Students who study together consistently do better. When you explain something to someone else, you actually learn it. Don't underestimate this one -- put your pride aside and connect with your classmates.</p>
+    </div>
+
+    <div class="tip-card" style="border-top: 4px solid var(--coral);">
+      <div class="tip-icon">🗣️</div>
+      <h3>Talk in Class</h3>
+      <p>Ask questions. Yell out answers. You don't need to raise your hand in my class -- just speak up. The faster we move through questions together, the sooner we get to lab. Participation helps you process what you're hearing in real time.</p>
+    </div>
+
+    <div class="tip-card" style="border-top: 4px solid var(--yellow);">
+      <div class="tip-icon">🃏</div>
+      <h3>Make Flashcards</h3>
+      <p>Be specific with your wording -- vague flashcards make vague answers. Review them once a day, even briefly. Daily exposure builds the memory trace more effectively than one big cramming session. Microbiology is dense vocab and this is your best friend for it.</p>
+    </div>
+
+    <div class="tip-card" style="border-top: 4px solid var(--purple);">
+      <div class="tip-icon">📺</div>
+      <h3>Watch YouTube Videos</h3>
+      <p>I post YouTube videos for every lecture set -- mostly Amoeba Sisters and Bozeman Science (ngl). Watch while commuting, while doing dishes, whenever. 10 minutes makes a real difference. Every new way you see the material helps it stick.</p>
+    </div>
+
+    <div class="tip-card" style="border-top: 4px solid var(--green);">
+      <div class="tip-icon">🤖</div>
+      <h3>Use MicrobeAI</h3>
+      <p>Ask it to quiz you, explain concepts different ways, or walk you through a pathway. Great for personalized review and studying on your own schedule.</p>
+    </div>
+
+    <div class="tip-card" style="border-top: 4px solid var(--teal);">
+      <div class="tip-icon">📚</div>
+      <h3>Read the Book</h3>
+      <p>Even reading the chapter summary and bolded terms before lecture makes a real difference. The textbook is also free on OpenStax -- no excuses. The more ways you are exposed to the material, the better it sticks.</p>
+    </div>
+
+    <div class="tip-card" style="border-top: 4px solid var(--coral);">
+      <div class="tip-icon">💬</div>
+      <h3>Check Canvas and Pronto Daily</h3>
+      <p>This is where everything lives -- assignments, announcements, due dates, the Daily Study Question. Set a notification. Make it a habit. Missing an announcement is not an excuse for a missed deadline.</p>
+    </div>
+
+    <div class="tip-card" style="border-top: 4px solid var(--purple);">
+      <div class="tip-icon">📢</div>
+      <h3>Read the Weekend Update</h3>
+      <p>Posted as a Canvas announcement Thursday or Friday. It covers everything for the coming week -- what is due, what to prepare, what to bring. This is your weekly GPS for the course. Do not skip it.</p>
+    </div>
+
+  </div>
+
+  <!-- Exposure meter -->
+  <div class="exposure-card">
+    <div class="section-title" style="--color: var(--yellow);">The More Ways You See It, the Better</div>
+    <p style="margin-bottom: 16px; font-size: 0.88em; color: #666;">Microbiology sticks through repetition across different formats. Each new way you engage with the material builds a stronger memory trace. Do all of them. Seriously.</p>
+    <div id="meter">
+      <div class="exp-row"><div class="exp-label">Lecture + slides</div><div class="exp-bar-bg"><div class="exp-bar" style="width:0%; background: var(--teal);" data-width="70%"></div></div><div class="exp-note">baseline</div></div>
+      <div class="exp-row"><div class="exp-label">Flashcards (daily)</div><div class="exp-bar-bg"><div class="exp-bar" style="width:0%; background: var(--purple);" data-width="80%"></div></div><div class="exp-note">+memory</div></div>
+      <div class="exp-row"><div class="exp-label">YouTube / video</div><div class="exp-bar-bg"><div class="exp-bar" style="width:0%; background: var(--coral);" data-width="75%"></div></div><div class="exp-note">+visual</div></div>
+      <div class="exp-row"><div class="exp-label">Drawing / rewriting</div><div class="exp-bar-bg"><div class="exp-bar" style="width:0%; background: #e67e22;" data-width="82%"></div></div><div class="exp-note">+kinetic</div></div>
+      <div class="exp-row"><div class="exp-label">Study group</div><div class="exp-bar-bg"><div class="exp-bar" style="width:0%; background: var(--green);" data-width="90%"></div></div><div class="exp-note">+teaching</div></div>
+      <div class="exp-row"><div class="exp-label">Office hours</div><div class="exp-bar-bg"><div class="exp-bar" style="width:0%; background: #c0392b;" data-width="95%"></div></div><div class="exp-note">+targeted</div></div>
+    </div>
+  </div>
+
+  <!-- Don't lose points -->
+  <div class="dont-lose">
+    <div class="section-title">Do Not Lose Easy Points</div>
+    <div class="point-row"><div class="point-icon">📓</div><div><strong>Turn in your pre/post labs.</strong> Last semester, multiple students were within a few points of a higher letter grade. These are points for work you already did in lab. Photograph your notebook and submit before 5:29 PM. Don't let this one slide.</div></div>
+    <div class="point-row"><div class="point-icon">📅</div><div><strong>Know your due dates.</strong> Check the syllabus, check Canvas, read the weekend update. No late work is accepted -- not even close-to-late.</div></div>
+    <div class="point-row"><div class="point-icon">📝</div><div><strong>Take quizzes seriously.</strong> Treat every quiz like a mini exam. They add up to 300 points between lecture and lab and revisiting that material early pays off when you hit exam week. Missing even one hurts.</div></div>
+    <div class="point-row"><div class="point-icon">⏰</div><div><strong>Show up on time.</strong> Quizzes start in the first 15 minutes of class. If you walk in late, you start from where we are -- no extra time. Three absences and you are dropped.</div></div>
+    <div class="point-row"><div class="point-icon">🤖</div><div><strong>Do not use AI on assignments.</strong> An em dash in your write-up means an automatic zero. A rough draft you wrote yourself will always be better than a zero.</div></div>
+  </div>
+
+  <!-- Student quotes -->
+  <div class="quotes-card">
+    <div class="section-title">From Former Students</div>
+    <p style="font-size:0.82em; color:#888; margin-bottom:16px;">Anonymous advice from students who have been exactly where you are.</p>
+
+    <div class="quote-item">
+      <p>"Don't try to write down everything word for word in lecture. If you have the slides in front of you to annotate with whatever gets emphasized, studying later is so much easier. This course is heavier than the first two units would have you believe. Unit 3 will hit you like a TRUCK if you don't stay on top of it."</p>
+      <div class="attribution">-- former student</div>
+    </div>
+
+    <div class="quote-item">
+      <p>"Study for the quizzes like they are exams. It pays off because when you get to exam time, you have already gone over the material again."</p>
+      <div class="attribution">-- former student</div>
+    </div>
+
+    <div class="quote-item">
+      <p>"Do not procrastinate and do not let the second half of the semester sneak up on you. It moves fast. Put your pride aside and actually bond with your classmates -- I am so glad I did."</p>
+      <div class="attribution">-- former student</div>
+    </div>
+
+    <div class="quote-item">
+      <p>"I had to draw everything to keep up. Good study habits matter a lot in this class -- everyone is different, so find what works for you. YouTube helps a LOT."</p>
+      <div class="attribution">-- former student</div>
+    </div>
+
+    <div class="quote-item">
+      <p>"Rewrite your notes. I started doing it toward the end of the semester and it really helped engrave the material. Also study every day, even for a few minutes."</p>
+      <div class="attribution">-- former student</div>
+    </div>
+
+    <div class="quote-item">
+      <p>"When sterilizing the inoculating loop or needle, heat some of the shaft near the wire too. Part of the shaft ends up inside the tube, so sterilizing it can help reduce contamination."</p>
+      <div class="attribution">-- former student</div>
+    </div>
+  </div>
+
+  <!-- Checklist -->
+  <div class="checklist-card">
+    <div class="section-title">Weekly Success Checklist</div>
+    <p style="font-size:0.82em; color:#888; margin-bottom: 14px;">Tap to check off. Reset each week.</p>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-label">Read the chapter and review slides before class</div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-label">Write and submit prelab protocol to Canvas before 5:29 PM on lab day</div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-label">Check Canvas and Pronto at least twice this week</div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-label">Read the Canvas Weekend Update (posted Thu/Fri)</div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-label">Did at least one Pronto Daily Study Question</div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-label">Reviewed notes soon after class while they were fresh</div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-label">Made or reviewed flashcards at least once today</div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-label">Watched a YouTube video or used MicrobeAI for review</div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-label">Studied or reviewed with at least one classmate</div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-label">Went to or sent a question during office hours</div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-label">Turned in all pre/post labs due this week</div></div>
+  </div>
+
+</div>
+
+<script>
+function toggleCheck(el) {
+  el.classList.toggle('checked');
+  el.querySelector('.check-box').textContent = el.classList.contains('checked') ? '✓' : '';
+}
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.exp-bar').forEach(bar => {
+      bar.style.width = bar.getAttribute('data-width');
+    });
+  }, 300);
+});
+</script>
+</body>
+</html>
