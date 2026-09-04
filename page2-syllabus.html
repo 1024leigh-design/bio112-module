@@ -17,10 +17,9 @@
 
   .content { max-width: 860px; margin: -30px auto 40px; padding: 0 20px; position: relative; z-index: 2; }
 
-  .card { background: white; border-radius: 20px; padding: 28px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); margin-bottom: 22px; }
-
-  .section-title { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.2em; color: var(--dark); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
-  .section-title::after { content: ''; flex: 1; height: 3px; background: linear-gradient(to right, var(--coral), transparent); border-radius: 2px; }
+  /* No food banner */
+  .no-food-banner { background: #c0392b; color: white; border-radius: 14px; padding: 14px 22px; margin-bottom: 22px; display: flex; align-items: center; gap: 14px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1em; box-shadow: 0 4px 16px rgba(192,57,43,0.3); }
+  .no-food-banner span { font-size: 1.6em; flex-shrink: 0; }
 
   /* Stats row */
   .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
@@ -31,7 +30,7 @@
 
   /* Tabs */
   .tab-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 0; }
-  .tab-btn { padding: 10px 16px; border: none; border-radius: 12px 12px 0 0; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.82em; cursor: pointer; background: #e8e8e8; color: #666; transition: all 0.2s; }
+  .tab-btn { padding: 10px 14px; border: none; border-radius: 12px 12px 0 0; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.8em; cursor: pointer; background: #e8e8e8; color: #666; transition: all 0.2s; }
   .tab-btn.active { background: white; color: var(--coral); }
   .tab-panel { display: none; background: white; border-radius: 0 16px 16px 16px; padding: 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); margin-bottom: 22px; }
   .tab-panel.active { display: block; }
@@ -45,6 +44,8 @@
   .grade-table tr:nth-child(even) td { background: #fafafa; }
   .grade-table tr:last-child td { border-bottom: none; }
   .grade-table .total-row td { font-family: 'Nunito', sans-serif; font-weight: 800; background: #fff8f8; color: var(--coral); border-top: 2px solid var(--coral); }
+  .grade-table .link-row td { cursor: pointer; }
+  .grade-table .link-row:hover td { background: #f5eeff; }
 
   .grade-scale { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
   .grade-pill { border-radius: 20px; padding: 8px 16px; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.85em; text-align: center; }
@@ -58,6 +59,7 @@
   .warn-box { background: #fff3cd; border-left: 4px solid var(--yellow); border-radius: 0 12px 12px 0; padding: 14px 18px; margin: 14px 0; font-size: 0.88em; line-height: 1.5; }
   .red-box { background: #fff0f0; border-left: 4px solid var(--coral); border-radius: 0 12px 12px 0; padding: 14px 18px; margin: 14px 0; font-size: 0.88em; line-height: 1.5; }
   .teal-box { background: #e8fafa; border-left: 4px solid var(--teal); border-radius: 0 12px 12px 0; padding: 14px 18px; margin: 14px 0; font-size: 0.88em; line-height: 1.5; }
+  .green-box { background: #d4edda; border-left: 4px solid #27AE60; border-radius: 0 12px 12px 0; padding: 14px 18px; margin: 14px 0; font-size: 0.88em; line-height: 1.5; }
 
   .materials-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .material-item { display: flex; gap: 10px; align-items: flex-start; background: #f8f8f8; border-radius: 10px; padding: 12px; font-size: 0.85em; }
@@ -69,10 +71,15 @@
   .clo-item:last-child { border-bottom: none; }
   .clo-num { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--purple); color: white; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.8em; display: flex; align-items: center; justify-content: center; }
 
-  /* Quiz timing callout */
   .quiz-timing { background: linear-gradient(135deg, #f5eeff, #ede4ff); border-radius: 14px; padding: 18px 20px; margin: 16px 0; }
   .quiz-timing h4 { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.95em; color: var(--purple); margin-bottom: 6px; }
   .quiz-timing p { font-size: 0.86em; line-height: 1.5; color: #444; }
+
+  /* Lab info box */
+  .lab-info { background: #f0fafa; border-radius: 12px; padding: 16px 18px; margin: 12px 0; border: 1px solid #b2e8e8; font-size: 0.86em; line-height: 1.6; }
+  .lab-info h4 { font-family: 'Nunito', sans-serif; font-weight: 800; color: var(--teal); margin-bottom: 6px; }
+
+  .section-label { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.9em; color: var(--dark); margin: 18px 0 8px; }
 
   a { color: var(--teal); font-weight: 600; }
 
@@ -80,7 +87,7 @@
     .stats-row { grid-template-columns: repeat(2, 1fr); }
     .hero h1 { font-size: 2em; }
     .materials-grid { grid-template-columns: 1fr; }
-    .tab-btn { font-size: 0.75em; padding: 8px 10px; }
+    .tab-btn { font-size: 0.72em; padding: 8px 9px; }
   }
 </style>
 </head>
@@ -89,10 +96,15 @@
 <div class="hero">
   <div class="gcc-badge">BIO 112 Microbiology &bull; Fall 2026</div>
   <h1>Syllabus Highlights</h1>
-  <p class="subtitle">The stuff you actually need to know -- from me, directly</p>
+  <p class="subtitle">The stuff you actually need to know, from me, directly</p>
 </div>
 
 <div class="content">
+
+  <div class="no-food-banner">
+    <span>🚫</span>
+    NO FOOD OR DRINK IN THE LAB. This includes Starbucks cups. Water bottles go in your backpack.
+  </div>
 
   <div class="stats-row">
     <div class="stat-box">
@@ -108,7 +120,7 @@
     <div class="stat-box">
       <div class="icon">💬</div>
       <div class="num">Pronto First</div>
-      <div class="label">Fastest way to reach me -- DM during office hours for instant reply</div>
+      <div class="label">Fastest way to reach me. DM during office hours for instant reply.</div>
     </div>
     <div class="stat-box">
       <div class="icon">🚨</div>
@@ -120,7 +132,8 @@
   <div class="tab-nav">
     <button class="tab-btn active" onclick="showTab('grading', this)">💯 Grading</button>
     <button class="tab-btn" onclick="showTab('policies', this)">📋 Policies</button>
-    <button class="tab-btn" onclick="showTab('clos', this)">🎯 Learning Outcomes</button>
+    <button class="tab-btn" onclick="showTab('lab', this)">🔬 Lab</button>
+    <button class="tab-btn" onclick="showTab('clos', this)">🎯 Course Learning Objectives</button>
     <button class="tab-btn" onclick="showTab('materials', this)">🎒 Materials</button>
     <button class="tab-btn" onclick="showTab('contact', this)">💬 Contact</button>
   </div>
@@ -128,22 +141,22 @@
   <!-- GRADING TAB -->
   <div id="tab-grading" class="tab-panel active">
     <p style="font-size:0.88em; color:#555; line-height:1.6; margin-bottom:16px;">
-      The majority of your grade comes from <strong>5 lecture exams</strong> (4 midterms + the final) and <strong>2 lab practicums</strong>. Together those are 700 of your 1202.5 points, so take them seriously from the start. Quizzes and pre/post labs add up fast too -- do not blow those off.
+      The majority of your grade comes from <strong>5 lecture exams</strong> (4 midterms + the final) and <strong>2 lab practicums</strong>. Together those are 700 of your 1202.5 points, so take them seriously from the start. Lecture quizzes and pre/post labs add up fast too. Do not blow those off.
     </p>
 
     <table class="grade-table">
-      <thead><tr><th>Component</th><th>Points</th></tr></thead>
+      <thead><tr><th>Component</th><th>Points</th><th>% of Grade</th></tr></thead>
       <tbody>
-        <tr><td>📖 Lecture Exams (4 midterms)</td><td>400</td></tr>
-        <tr><td>📝 Final Exam</td><td>100</td></tr>
-        <tr><td>📋 Assignments / Projects</td><td>40</td></tr>
-        <tr><td>🧪 Quizzes (lecture)</td><td>190</td></tr>
-        <tr><td>🔭 Unknown #1</td><td>30</td></tr>
-        <tr><td>🔬 Unknown #2</td><td>70</td></tr>
-        <tr><td>🧫 Lab Quizzes</td><td>110</td></tr>
-        <tr><td>📓 Pre/Post Lab Questions</td><td>62.5</td></tr>
-        <tr><td>🏆 Lab Practicums (2)</td><td>200</td></tr>
-        <tr class="total-row"><td>TOTAL</td><td>1202.5</td></tr>
+        <tr><td>📖 Lecture Exams (4 midterms)</td><td>400</td><td>33.3%</td></tr>
+        <tr><td>📝 Final Exam</td><td>100</td><td>8.3%</td></tr>
+        <tr><td>📋 Assignments</td><td>40</td><td>3.3%</td></tr>
+        <tr><td>📝 Lecture Quizzes</td><td>190</td><td>15.8%</td></tr>
+        <tr class="link-row" onclick="showTab('lab', document.querySelector('.tab-btn:nth-child(3)'))"><td>🔭 Unknown #1 <span style="font-size:0.8em; color:var(--teal);">- see Lab tab</span></td><td>30</td><td>2.5%</td></tr>
+        <tr class="link-row" onclick="showTab('lab', document.querySelector('.tab-btn:nth-child(3)'))"><td>🔬 Unknown #2 <span style="font-size:0.8em; color:var(--teal);">- see Lab tab</span></td><td>70</td><td>5.8%</td></tr>
+        <tr><td>🧫 Lab Quizzes</td><td>110</td><td>9.2%</td></tr>
+        <tr><td>📓 Pre/Post Lab Questions</td><td>62.5</td><td>5.2%</td></tr>
+        <tr class="link-row" onclick="showTab('lab', document.querySelector('.tab-btn:nth-child(3)'))"><td>🏆 Lab Practicums (2) <span style="font-size:0.8em; color:var(--teal);">- see Lab tab</span></td><td>200</td><td>16.6%</td></tr>
+        <tr class="total-row"><td>TOTAL</td><td>1202.5</td><td>100%</td></tr>
       </tbody>
     </table>
 
@@ -156,13 +169,15 @@
     </div>
 
     <div class="quiz-timing" style="margin-top:20px;">
-      <h4>⏱ About Quizzes</h4>
-      <p>Quizzes happen in the <strong>first 15 minutes of class.</strong> If you walk in late, you do not get extra time -- you start from wherever we are. All lecture quizzes start at the beginning of lecture, and all lab quizzes start at the beginning of lab. This is not negotiable, so please be on time.</p>
+      <h4>About Lecture Quizzes</h4>
+      <p>Lecture quizzes happen in the <strong>first 15 minutes of class.</strong> If you walk in late, you do not get extra time. You start from wherever we are. All lab quizzes start at the beginning of lab. This is not negotiable, so please be on time.</p>
     </div>
 
     <div class="warn-box">
       ⚠️ <strong>Don't lose easy points.</strong> Last semester, students missed a letter grade by just a few points. Pre/post labs are points for work you already did in lab. Turn them in.
     </div>
+
+    <p style="font-size:0.78em; color:#aaa; margin-top:12px; font-style:italic;">Note: grading breakdown is subject to change. The syllabus is always the official source.</p>
   </div>
 
   <!-- POLICIES TAB -->
@@ -170,42 +185,70 @@
     <ul class="policy-list">
       <li>
         <div class="pill-icon" style="background:#fff0f0;">🚫</div>
-        <div><strong>No late work, ever.</strong> No makeup exams, quizzes, homework, or classwork -- period. Emergency makeups require documentation AND you must contact me by 8am that day and receive confirmation. No late Unknown Reports will be accepted under any circumstances.</div>
+        <div>
+          <strong>No late work without documentation.</strong> Emergencies happen, but they require documentation AND you must contact me by 8am that day and receive confirmation from me. No late Unknown Reports will be accepted under any circumstances, regardless of documentation. If you are struggling or feeling behind, please come talk to me before it becomes an emergency.
+        </div>
       </li>
       <li>
-        <div class="pill-icon" style="background:#e8fafa;">📱</div>
-        <div><strong>Electronics in lecture: fine.</strong> Use them for learning purposes. In lab, however, electronics are not permitted -- we are working with live organisms and your phone is a contamination risk. Want to record lectures? Just ask first, I'll almost certainly say yes.</div>
+        <div class="pill-icon" style="background:#e8fafa;">💻</div>
+        <div><strong>Laptops and tablets are allowed during lecture.</strong> In lab, however, no electronics are permitted. We are working with live organisms and your phone is a contamination risk. Want to record lectures? Just ask first, I'll almost certainly say yes.</div>
       </li>
       <li>
         <div class="pill-icon" style="background:#fff0f0;">🚬</div>
-        <div><strong>Absolutely no vaping in the lab.</strong> This is non-negotiable.</div>
+        <div><strong>Absolutely no vaping in the lab.</strong> Non-negotiable.</div>
       </li>
       <li>
         <div class="pill-icon" style="background:#fffbe8;">🤖</div>
         <div>
-          <strong>AI-generated work = automatic zero.</strong> I'm using two specific red flags as my detection system: (1) use of an <strong>em dash (--)</strong> in any written work, and (2) personalized AI phrases like "I'd love to help you identify your organism." <strong>Never use the em dash.</strong> Not in assignments, not in lab reports, not anywhere. Since AI checkers can't be proven reliable, these are my system. Don't use AI to draft emails to me either.
+          <strong>AI-generated work = automatic zero.</strong> I'm using two specific red flags as my detection system: (1) use of an <strong>em dash</strong> in any written work, and (2) personalized AI phrases like "I'd love to help you identify your organism." <strong>Never use the em dash.</strong> Not in assignments, not in lab reports, not anywhere. Since AI checkers can't be proven reliable, these are my system. Don't use AI to draft emails to me either.
         </div>
       </li>
       <li>
         <div class="pill-icon" style="background:#fff0f0;">🎒</div>
-        <div><strong>Attendance matters.</strong> Miss more than 3 classes and you will be dropped. If you were absent when an assignment was given, you cannot make it up.</div>
-      </li>
-      <li>
-        <div class="pill-icon" style="background:#f5eeff;">👗</div>
-        <div><strong>Lab dress code.</strong> Closed-toe shoes, long pants, lab coat (below the knees, long sleeves, buttons). No shorts, skirts, sandals, or open-toe shoes. No watches. Hair up if it's long.</div>
+        <div><strong>Attendance matters.</strong> Miss more than 3 classes and you will be dropped. If you were absent when an assignment was given, you cannot make it up. Returning late from the dinner break is also not acceptable and counts as a tardy.</div>
       </li>
       <li>
         <div class="pill-icon" style="background:#e8fafa;">🍔</div>
-        <div><strong>Zero food or drink in class.</strong> Not on the bench, not at your feet. Water bottles go in your backpack.</div>
+        <div><strong>Zero food or drink in class.</strong> This includes Starbucks cups anywhere in the room. Water bottles go in your backpack, not on the bench, not at your feet.</div>
       </li>
       <li>
         <div class="pill-icon" style="background:#fff0f0;">🎓</div>
-        <div><strong>Academic Honesty.</strong> Any device visible during an exam = automatic zero. Bags go to the front cubbies. Only a writing utensil on your desk (normal calculator allowed for practicums). <a href="https://www.glendale.edu/students/student-policies/academic-honesty-policy" target="_blank">GCC Academic Honesty Policy</a></div>
+        <div><strong>Academic Honesty.</strong> Any device visible during an exam = automatic zero. Bags go to the front cubbies. Only a writing utensil on your desk (normal calculator allowed for practicums). Watches must be taken off during exams. Pencil cases are not allowed on desks. <a href="https://www.glendale.edu/students/student-policies/academic-honesty-policy" target="_blank">GCC Academic Honesty Policy</a></div>
       </li>
     </ul>
 
     <div class="red-box">
-      🔬 If you have a disability and need accommodations, please reach out early -- retroactive accommodations cannot be granted. <a href="https://www.glendale.edu/students/student-services/disabled-student-programs-services" target="_blank">GCC Disabled Student Programs and Services</a>
+      If you have a disability and need accommodations, please reach out early. Retroactive accommodations cannot be granted. <a href="https://www.glendale.edu/students/student-services/disabled-student-programs-services" target="_blank">GCC Disabled Student Programs and Services</a>
+    </div>
+  </div>
+
+  <!-- LAB TAB -->
+  <div id="tab-lab" class="tab-panel">
+
+    <div class="lab-info">
+      <h4>🔭 Unknown Reports (Unknown #1 and #2)</h4>
+      <p>During the semester you will receive two unknown bacterial cultures and will be responsible for identifying them using the lab techniques we cover in class. Unknown #1 is worth 30 points and Unknown #2 is worth 70 points. You will use differential staining, biochemical tests, and your knowledge of bacterial characteristics to narrow down and identify your organism. These are individual reports, written in your own words, and submitted on Canvas by the due date listed in the syllabus. </p>
+    </div>
+
+    <div class="lab-info" style="margin-top:14px;">
+      <h4>🏆 Lab Practicums (Practicum 1 and 2)</h4>
+      <p>There are two lab practicums worth 100 points each (200 points total). A practicum is a hands-on practical exam in lab, where you will be asked to identify and work through experimental concepts, such as how to perform experiments, interpret results, avoid false results, etc. I will provide a study guide. Practicum 1 is held in Week 10 and Practicum 2 is in Week 15. </p>
+    </div>
+
+    <div class="lab-info" style="margin-top:14px;">
+      <h4>👗 Lab Dress Code</h4>
+      <p>Required every lab day, no exceptions:</p>
+      <ul style="margin-top:8px; padding-left:18px; line-height:2;">
+        <li>Closed-toe shoes (tennis shoes fine, sandals are not)</li>
+        <li>Long pants, no shorts, skirts, or dresses</li>
+        <li>Lab coat, long sleeves, below the knee, must button closed. Any color is fine.</li>
+        <li>No watches in lab</li>
+        <li>Long hair must be secured in a ponytail or bun</li>
+      </ul>
+    </div>
+
+    <div class="warn-box" style="margin-top:14px;">
+      ⚠️ I will give one warning for dress code or safety violations. After that, points are deducted from pre/post labs. Repeated violations in a single lab session may result in being asked to leave with a zero for that day.
     </div>
   </div>
 
@@ -238,10 +281,15 @@
 
   <!-- MATERIALS TAB -->
   <div id="tab-materials" class="tab-panel">
+
+    <p class="section-label">Required</p>
     <div class="materials-grid">
       <div class="material-item">
         <span class="mi">📗</span>
-        <div><strong>Tortora Microbiology, 13th ed.</strong><br>Or free: <a href="https://openstax.org/details/books/microbiology" target="_blank">openstax.org/books/microbiology</a></div>
+        <div>
+          <strong>Textbook</strong><br>
+          <a href="https://www.pearson.com/en-us/subject-catalog/p/microbiology-an-introduction/P200000006947" target="_blank">Tortora, Microbiology: An Introduction, 13th ed.</a> Not required, but highly recommended. I also highly recommend the free OpenStax alternative: <a href="https://openstax.org/details/books/microbiology" target="_blank">OpenStax Microbiology</a>.
+        </div>
       </div>
       <div class="material-item">
         <span class="mi">📓</span>
@@ -249,7 +297,7 @@
       </div>
       <div class="material-item">
         <span class="mi">🥼</span>
-        <div><strong>Lab Coat</strong><br>Below knees, long sleeves, buttons. Not disposable. Must button closed.</div>
+        <div><strong>Lab Coat</strong><br>Below knees, long sleeves, must button closed. Not disposable. Any color is fine.</div>
       </div>
       <div class="material-item">
         <span class="mi">📄</span>
@@ -257,13 +305,22 @@
       </div>
       <div class="material-item">
         <span class="mi">💰</span>
-        <div><strong>Lab Fee</strong><br>Covers lab materials and supplies.</div>
-      </div>
-      <div class="material-item">
-        <span class="mi">🖍️</span>
-        <div><strong>Colored Pencils</strong><br>Recommended, not required. We have some in lab but many students prefer their own.</div>
+        <div><strong>Lab Fee</strong><br>Covers lab materials and supplies for the semester.</div>
       </div>
     </div>
+
+    <p class="section-label" style="margin-top:20px;">Recommended</p>
+    <div class="materials-grid">
+      <div class="material-item" style="background:#f0fffe;">
+        <span class="mi">🖍️</span>
+        <div><strong>Colored Pencils</strong><br>You'll be drawing organisms and recording results in lab. We have some in lab but many students prefer their own.</div>
+      </div>
+      <div class="material-item" style="background:#f0fffe;">
+        <span class="mi">🃏</span>
+        <div><strong>Flashcards</strong><br>This course is vocabulary-heavy. Flashcards are one of the best tools for keeping up with terminology across all units.</div>
+      </div>
+    </div>
+
     <div class="teal-box" style="margin-top:14px;">
       📷 The microscopes are brand new with internal cameras. Bring a flash drive if you want to save your photos.
     </div>
@@ -274,19 +331,19 @@
     <ul class="policy-list">
       <li>
         <div class="pill-icon" style="background:#e8fafa;">💬</div>
-        <div><strong>Pronto DM = fastest response.</strong> Message me during office hours for an immediate reply. There's also a group chat -- post questions there so everyone benefits. Look for the "Daily Study Question" chat too, posted 3 to 5 times a week.</div>
+        <div><strong>Pronto DM = fastest response.</strong> <a href="https://app.pronto.io" target="_blank">Join Pronto here.</a> Message me during office hours for an immediate reply. There's also a group chat, so post questions there so everyone benefits. Look for the "Daily Study Question" chat too, posted 3 to 5 times a week.</div>
       </li>
       <li>
         <div class="pill-icon" style="background:#f5eeff;">📧</div>
-        <div><strong>Email: hhoustman@glendale.edu.</strong> Response within 24 to 72 hours. Don't email assignments. Don't use ChatGPT to write your email. You don't need to be formal.</div>
+        <div><strong>Email: hhoustman@glendale.edu.</strong> Response within 24 to 72 hours. Don't email assignments. Don't use ChatGPT to write your email. I want to hear your voice, not a bot's. :) You don't need to be formal.</div>
       </li>
       <li>
         <div class="pill-icon" style="background:#fffbe8;">🕐</div>
-        <div><strong>Office Hours:</strong> Monday 2:30 to 5:30 PM and Wednesday 4:30 to 5:30 PM in BV303. Also by appointment. Come. Seriously. My most successful students show up here regularly.</div>
+        <div><strong>Office Hours:</strong> Monday 2:30 to 5:30 PM and Wednesday 4:30 to 5:30 PM in BV303. Also by appointment. Students are welcome to use my whiteboard for studying and making diagrams. Come. Seriously. My most successful students show up here regularly.</div>
       </li>
       <li>
         <div class="pill-icon" style="background:#e8fafa;">📅</div>
-        <div><strong>Weekend Updates</strong> are posted as Canvas announcements on Thursday or Friday. They cover everything coming the next week and what's due for points. Check them.</div>
+        <div><strong>Weekend Updates</strong> are posted as Canvas announcements on Thursday or Friday. They cover everything coming the next week and what's due for points. Check them every week.</div>
       </li>
     </ul>
   </div>
@@ -298,8 +355,26 @@ function showTab(name, btn) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
-  btn.classList.add('active');
+  if (btn) btn.classList.add('active');
+  else document.querySelector('[onclick*="' + name + '"]').classList.add('active');
 }
 </script>
+
+<script>
+  function sendHeight() {
+    var h = document.documentElement.scrollHeight || document.body.scrollHeight;
+    window.parent.postMessage({ iframeHeight: h }, '*');
+  }
+  window.addEventListener('load', sendHeight);
+  window.addEventListener('resize', sendHeight);
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.tab-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() { setTimeout(sendHeight, 100); });
+    });
+    setTimeout(sendHeight, 500);
+    setTimeout(sendHeight, 1500);
+  });
+</script>
+
 </body>
 </html>
