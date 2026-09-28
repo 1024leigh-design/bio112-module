@@ -6,90 +6,163 @@
 <title>Course Calendar | BIO 112</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600&display=swap');
-  :root { --teal: #00B4B4; --coral: #FF6B6B; --yellow: #FFD93D; --purple: #9B59B6; --green: #27AE60; --dark: #1a1a2e; --light-bg: #f0fafa; }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Nunito Sans', sans-serif; background: var(--light-bg); color: var(--dark); min-height: 100vh; }
+  :root {
+    --teal:#00B4B4; --coral:#FF6B6B; --yellow:#FFD93D; --purple:#9B59B6;
+    --dark:#1a1a2e; --light-bg:#f0fafa;
+    --u1:#00B4B4; --u2:#9B59B6; --u3:#E67E22; --u4:#E74C3C; --u5:#2874A6;
+    --u1f:#a8e6e6; --u2f:#d5b8f0; --u3f:#f5c98a; --u4f:#f5a9a2; --u5f:#a9d0e8;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Nunito Sans',sans-serif; background:var(--light-bg); color:var(--dark); }
+  .hero { background:linear-gradient(135deg,#9B59B6 0%,#6C3483 50%,#00B4B4 100%); padding:36px 20px 52px; text-align:center; }
+  .gcc-badge { display:inline-block; background:rgba(255,255,255,0.2); color:white; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.78em; letter-spacing:2px; text-transform:uppercase; padding:5px 14px; border-radius:20px; margin-bottom:14px; border:1px solid rgba(255,255,255,0.3); }
+  .hero h1 { font-family:'Nunito',sans-serif; font-weight:900; font-size:clamp(1.8em,4vw,2.6em); color:white; margin-bottom:6px; }
+  .hero .subtitle { color:rgba(255,255,255,0.9); font-size:0.95em; font-weight:600; }
+  .content { max-width:920px; margin:-26px auto 40px; padding:0 16px; position:relative; z-index:2; }
+  .card { background:white; border-radius:18px; padding:24px; box-shadow:0 8px 30px rgba(0,0,0,0.08); margin-bottom:20px; }
+  .section-title { font-family:'Nunito',sans-serif; font-weight:800; font-size:1.15em; color:var(--dark); margin-bottom:14px; display:flex; align-items:center; gap:10px; }
+  .section-title::after { content:''; flex:1; height:3px; background:linear-gradient(to right,var(--purple),transparent); border-radius:2px; }
+  a { color:var(--teal); font-weight:600; }
 
-  .hero { background: linear-gradient(135deg, #9B59B6 0%, #6C3483 50%, #00B4B4 100%); padding: 40px 20px 60px; text-align: center; }
-  .gcc-badge { display: inline-block; background: rgba(255,255,255,0.2); color: white; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.8em; letter-spacing: 2px; text-transform: uppercase; padding: 6px 16px; border-radius: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.3); }
-  .hero h1 { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 2.6em; color: white; margin-bottom: 8px; }
-  .hero .subtitle { color: rgba(255,255,255,0.9); font-size: 1em; font-weight: 600; }
+  /* ── WEEKLY UPDATE + QUICK ANSWERS (merged) ── */
+  .update-card { background:#fafafa; border:1px solid #e8e8e8; border-radius:18px; padding:24px; margin-bottom:20px; box-shadow:0 4px 16px rgba(0,0,0,0.06); }
+  .update-header-center { text-align:center; margin-bottom:16px; }
+  .update-header-center h2 { font-family:'Nunito',sans-serif; font-weight:900; font-size:1.2em; color:var(--dark); margin-bottom:8px; }
+  .freshness-badge { display:inline-flex; align-items:center; gap:6px; font-size:0.76em; color:#666; font-weight:700; background:white; border:1px solid #e0e0e0; border-radius:20px; padding:4px 14px; }
+  .freshness-badge::before { content:''; width:7px; height:7px; border-radius:50%; background:#27AE60; display:inline-block; }
+  .update-days { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .update-day { border-radius:12px; padding:16px; border:1px solid #e8e8e8; background:white; }
+  .ud-date { font-family:'Nunito',sans-serif; font-weight:800; font-size:0.95em; color:var(--dark); margin-bottom:2px; }
+  .ud-wk { font-size:0.72em; color:#aaa; margin-bottom:10px; text-transform:uppercase; letter-spacing:1px; }
+  .ud-row { display:flex; gap:8px; align-items:flex-start; font-size:0.82em; margin-bottom:6px; line-height:1.4; color:#444; }
+  .ud-icon { flex-shrink:0; }
+  .ud-chips { display:flex; flex-wrap:wrap; gap:4px; margin-top:4px; }
+  .ud-chip { padding:2px 9px; border-radius:6px; font-size:0.76em; font-weight:700; }
+  .chip-exam { background:#fde8e8; color:#c0392b; border:1px solid #f5c6c6; }
+  .chip-quiz { background:#fef9e7; color:#7d6608; border:1px solid #f9e79f; }
+  .chip-due  { background:#eaf4fb; color:#1a5276; border:1px solid #aed6f1; }
+  .chip-unknown { background:#eafaf1; color:#117864; border:1px solid #a3e4c9; }
+  .chip-none { background:#f0f0f0; color:#aaa; border:1px solid #e0e0e0; }
 
-  .content { max-width: 900px; margin: -30px auto 40px; padding: 0 20px; position: relative; z-index: 2; }
-  .card { background: white; border-radius: 20px; padding: 28px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); margin-bottom: 22px; }
+  .update-divider { height:1px; background:#e5e5e5; margin:20px 0; }
+  .faq-columns { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .faq-col { background:white; border-radius:12px; padding:14px 16px; border-top:4px solid #ccc; border:1px solid #eee; border-top-width:4px; }
+  .faq-col-title { font-family:'Nunito',sans-serif; font-weight:800; font-size:0.85em; color:var(--dark); margin-bottom:10px; }
+  .faq-item { padding:8px 0; border-top:1px solid #f0f0f0; }
+  .faq-item:first-of-type { border-top:none; padding-top:0; }
+  .faq-q { font-size:0.7em; color:#999; font-weight:700; text-transform:uppercase; letter-spacing:0.3px; margin-bottom:4px; }
+  .faq-a { font-family:'Nunito',sans-serif; font-weight:800; font-size:0.85em; color:var(--dark); line-height:1.3; margin-bottom:2px; }
+  .faq-a.faq-none { color:#bbb; font-weight:700; font-style:italic; }
+  .faq-date { font-size:0.75em; color:#999; font-weight:700; }
 
-  .section-title { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.2em; color: var(--dark); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
-  .section-title::after { content: ''; flex: 1; height: 3px; background: linear-gradient(to right, var(--purple), transparent); border-radius: 2px; }
+  /* ── CALENDAR HOVER TOOLTIP ── */
+  .cal-tooltip { display:none; position:fixed; z-index:100; background:#1a1a2e; color:white; border-radius:10px; padding:12px 16px; font-size:0.8em; line-height:1.55; max-width:260px; pointer-events:none; box-shadow:0 8px 24px rgba(0,0,0,0.3); }
+  .cal-tooltip strong { display:block; font-family:'Nunito',sans-serif; font-weight:800; margin-bottom:2px; }
+  .cal-tooltip .ct-weeks { opacity:0.65; font-size:0.9em; margin-bottom:6px; display:block; }
 
-  /* Rhythm */
-  .rhythm-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 22px; }
-  .rhythm-box { background: white; border-radius: 14px; padding: 18px 14px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-  .rhythm-box .r-icon { font-size: 1.6em; margin-bottom: 8px; }
-  .rhythm-box h4 { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.88em; color: var(--purple); margin-bottom: 6px; }
-  .rhythm-box p { font-size: 0.8em; color: #555; line-height: 1.5; }
+  .unit-legend { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+  .ul-item { display:flex; align-items:center; gap:6px; font-size:0.78em; font-weight:600; color:#444; }
+  .ul-dot { width:12px; height:12px; border-radius:3px; flex-shrink:0; }
 
-  /* Difficulty arc */
-  .arc-card { background: white; border-radius: 20px; padding: 28px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); margin-bottom: 22px; }
-  .arc-row { display: flex; gap: 8px; align-items: flex-end; margin: 16px 0 8px; }
-  .arc-seg { flex: 1; border-radius: 8px 8px 0 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 8px; cursor: pointer; transition: opacity 0.2s; position: relative; }
-  .arc-seg:hover { opacity: 0.85; }
-  .arc-seg .seg-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.65em; color: white; text-align: center; padding: 0 2px; line-height: 1.3; }
-  .arc-tooltip { display: none; position: absolute; bottom: 105%; left: 50%; transform: translateX(-50%); background: var(--dark); color: white; font-size: 0.72em; padding: 8px 12px; border-radius: 8px; white-space: nowrap; z-index: 10; width: 200px; white-space: normal; text-align: center; }
-  .arc-seg:hover .arc-tooltip { display: block; }
-  .arc-labels { display: flex; gap: 8px; font-size: 0.68em; color: #888; }
-  .arc-labels span { flex: 1; text-align: center; font-weight: 600; }
+  /* ── MONTHLY CALENDAR GRID ── */
+  .cal-grids { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .month-grid { border-radius:12px; overflow:hidden; border:1px solid #e8e8e8; }
+  .month-header { padding:8px 12px; font-family:'Nunito',sans-serif; font-weight:800; font-size:0.82em; background:#f5f5f5; color:var(--dark); }
+  .month-days { display:grid; grid-template-columns:repeat(7,1fr); }
+  .day-head { padding:4px 2px; text-align:center; font-size:0.58em; font-weight:700; color:#aaa; background:#fafafa; }
+  .day-cell { aspect-ratio:1; display:flex; align-items:center; justify-content:center; font-size:0.63em; font-weight:700; }
+  .day-cell.empty { background:white; }
+  .day-cell.u1 { background:var(--u1); color:white; }
+  .day-cell.u2 { background:var(--u2); color:white; }
+  .day-cell.u3 { background:var(--u3); color:white; }
+  .day-cell.u4 { background:var(--u4); color:white; }
+  .day-cell.u5 { background:var(--u5); color:white; }
+  .day-cell.blank-after { background:white; color:#e8e8e8; }
+  .day-cell.u1f { background:var(--u1f); color:#006060; }
+  .day-cell.u2f { background:var(--u2f); color:#5a2e8a; }
+  .day-cell.u3f { background:var(--u3f); color:#7a4410; }
+  .day-cell.u4f { background:var(--u4f); color:#8a1a10; }
+  .day-cell.u5f { background:var(--u5f); color:#3a1a6a; }
+  .day-cell.closed-day { background:#efefef; color:#bbb; }
+  .day-cell.finals-day { background:#2c3e6e; color:white; }
+  .day-cell.pre-sem { background:#f9f9f9; color:#ccc; }
+  .day-cell.exam-ring { outline:2px solid #e2b900; outline-offset:-2px; }
+  .day-cell.hoverable { cursor:help; }
 
-  .hard-warning { background: linear-gradient(135deg, #fff0f0, #fff8e1); border-left: 4px solid var(--coral); border-radius: 0 14px 14px 0; padding: 16px 20px; margin: 16px 0; font-size: 0.86em; line-height: 1.6; }
+  /* ── DAY PLANNER ── */
+  .pf-row { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; align-items:center; }
+  .pf-label { font-size:0.8em; font-weight:700; color:#888; margin-right:2px; }
+  .pf-chip { display:flex; align-items:center; gap:5px; font-size:0.8em; font-weight:700; cursor:pointer; padding:5px 12px; border-radius:20px; border:2px solid #ddd; background:white; color:#666; transition:all 0.2s; user-select:none; }
+  .pf-chip.active { border-color:var(--purple); background:#f5eeff; color:var(--purple); }
+  .date-range { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:14px; justify-content:flex-end; }
+  .date-range label { font-size:0.8em; font-weight:700; color:#888; }
+  .date-range input { padding:5px 10px; border:2px solid #ddd; border-radius:8px; font-size:0.8em; font-family:'Nunito Sans',sans-serif; color:var(--dark); }
+  .date-range button { padding:5px 14px; background:var(--purple); color:white; border:none; border-radius:8px; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.8em; cursor:pointer; }
+  .date-range .reset-btn { background:#aaa; }
+  .week-planner-row { display:grid; grid-template-columns:58px 1fr; gap:10px; margin-bottom:12px; align-items:stretch; }
+  .wk-num { font-family:'Nunito',sans-serif; font-weight:900; font-size:0.72em; color:white; border-radius:8px; padding:8px 3px; text-align:center; line-height:1.35; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .wk-num .wk-big { font-size:1.3em; line-height:1; margin-top:1px; }
+  .week-days-wrap { display:flex; background:white; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.07); overflow:hidden; }
+  .week-days-wrap.single { display:block; }
+  .day-divider { width:1px; background:#eee; flex-shrink:0; margin:12px 0; }
+  .day-card { flex:1; background:white; padding:14px; cursor:pointer; border-left:4px solid #ddd; transition:background 0.15s; min-width:0; }
+  .day-card:hover { background:#fafbff; }
+  .day-card.closed-card { border-left-color:#ccc; background:#f9f9f9; cursor:default; }
+  .day-card.closed-card:hover { background:#f9f9f9; }
+  .dc-date { font-family:'Nunito',sans-serif; font-weight:800; font-size:0.88em; margin-bottom:2px; }
+  .dc-ch { font-size:0.74em; color:#999; font-weight:700; margin-bottom:6px; }
+  .dc-topic { font-size:0.78em; color:#666; margin-bottom:6px; line-height:1.35; }
+  .dc-chips { display:flex; flex-wrap:wrap; gap:3px; }
+  .dc-expand { display:none; margin-top:10px; padding-top:10px; border-top:1px solid #f0f0f0; }
+  .dc-expand.open { display:block; }
+  .exp-row { display:flex; gap:8px; margin-bottom:6px; font-size:0.79em; line-height:1.45; color:#444; }
+  .exp-icon { flex-shrink:0; }
+  .badge { display:inline-block; padding:2px 8px; border-radius:6px; font-size:0.78em; font-weight:700; }
+  .b-exam { background:#fde8e8; color:#c0392b; }
+  .b-prac { background:#ede0f5; color:#6c3483; }
+  .b-quiz { background:#fef9e7; color:#7d6608; }
+  .b-due  { background:#eaf4fb; color:#1a5276; }
+  .b-unknown { background:#eafaf1; color:#117864; }
+  .b-none { background:#f0f0f0; color:#aaa; }
+  .d-hidden { display:none !important; }
 
-  /* How to find */
-  .how-to-find { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .htf-item { background: #f8f0ff; border-radius: 12px; padding: 14px; font-size: 0.83em; }
-  .htf-item h4 { font-family: 'Nunito', sans-serif; font-weight: 700; color: var(--purple); margin-bottom: 6px; font-size: 0.95em; }
-  .htf-item p { color: #555; line-height: 1.4; }
+  /* ── FULL SCHEDULE ── */
+  .sched-tabs { display:flex; gap:6px; flex-wrap:wrap; }
+  .sched-tab { padding:9px 14px; border:none; border-radius:10px 10px 0 0; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.8em; cursor:pointer; background:#e8e8e8; color:#666; transition:all 0.2s; }
+  .sched-tab.active { background:white; color:var(--purple); }
+  .sched-panel { display:none; background:white; border-radius:0 14px 14px 14px; padding:20px; box-shadow:0 6px 24px rgba(0,0,0,0.08); margin-bottom:20px; }
+  .sched-panel.active { display:block; }
+  .sched-rows { display:flex; flex-direction:column; gap:8px; }
+  .week-divider { display:flex; justify-content:space-between; align-items:center; background:#f6f6f6; border-left:4px solid #ccc; border-radius:8px; padding:8px 14px; margin:18px 0 8px; }
+  .week-divider:first-child { margin-top:0; }
+  .wd-week { font-family:'Nunito',sans-serif; font-weight:800; font-size:0.84em; color:var(--dark); }
+  .wd-dates { font-size:0.76em; color:#999; font-weight:700; }
+  .sched-row { display:grid; gap:10px; border-radius:10px; padding:12px 16px; border-left:4px solid #ddd; font-size:0.84em; align-items:center; }
+  .lec-row { grid-template-columns:70px 1fr auto; background:#fafafa; }
+  .lab-row { grid-template-columns:70px 1fr; background:#f0fafa; border-left-color:var(--teal); }
+  .combo-row { grid-template-columns:70px 1fr; background:#fafafa; }
+  .combo-lab-block { margin-top:6px; padding-top:6px; border-top:1px dashed #e0e0e0; font-size:0.9em; color:#444; }
+  .eq-row  { grid-template-columns:auto 1fr; }
+  .eq-badge { width:34px; height:34px; border-radius:10px; color:white; font-family:'Nunito',sans-serif; font-weight:900; font-size:0.85em; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .closed-srow { background:#f5f5f5; color:#aaa; border-left-color:#ddd !important; }
+  .sr-date { line-height:1.25; }
+  .sr-day { font-family:'Nunito',sans-serif; font-weight:900; font-size:0.95em; color:var(--dark); display:block; }
+  .sr-datenum { font-size:0.74em; color:#aaa; font-weight:700; display:block; }
+  .sr-topic { line-height:1.4; }
+  .sr-ch { font-size:0.82em; color:#888; }
+  .sr-badges { display:flex; flex-wrap:wrap; gap:4px; }
 
-  /* Filter */
-  .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
-  .filter-btn { padding: 6px 14px; border: 2px solid #ddd; border-radius: 20px; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.78em; cursor: pointer; background: white; color: #666; transition: all 0.2s; }
-  .filter-btn.active { border-color: var(--purple); color: var(--purple); background: #f5eeff; }
-
-  /* Calendar table */
-  .cal-table { width: 100%; border-collapse: collapse; font-size: 0.82em; }
-  .cal-table th { background: var(--purple); color: white; padding: 10px 12px; text-align: left; font-family: 'Nunito', sans-serif; font-weight: 700; }
-  .cal-table th:first-child { border-radius: 10px 0 0 0; }
-  .cal-table th:last-child { border-radius: 0 10px 0 0; }
-  .cal-table td { padding: 9px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: top; line-height: 1.4; }
-  .cal-table tr:hover td { background: #f8f0ff; }
-  .cal-table .week-row td { background: #f0e6ff; font-family: 'Nunito', sans-serif; font-weight: 800; color: var(--purple); font-size: 0.9em; padding: 6px 12px; }
-  .cal-table .closed-row td { background: #f5f5f5; color: #999; font-style: italic; }
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 8px; font-size: 0.8em; font-weight: 700; margin: 1px; white-space: nowrap; }
-  .b-exam { background: #ffd6d6; color: #c0392b; }
-  .b-quiz { background: #d6eaff; color: #1a5276; }
-  .b-assign { background: #d6f5e8; color: #1e8449; }
-  .b-lab { background: #fff0d6; color: #b7770d; }
-  .b-prac { background: #f5d6ff; color: #6c3483; }
-  .b-due { background: #ffe8d6; color: #ca6f1e; }
-  .b-closed { background: #e8e8e8; color: #666; }
-  tr.hide { display: none; }
-
-  /* Week prep accordion */
-  .prep-section { margin-bottom: 22px; }
-  .prep-accordion { border-radius: 14px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.08); margin-bottom: 8px; }
-  .prep-header { background: white; padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.88em; border-left: 4px solid var(--purple); transition: background 0.15s; user-select: none; }
-  .prep-header:hover { background: #f8f0ff; }
-  .prep-header .week-label { color: var(--purple); }
-  .prep-header .week-dates { font-size: 0.8em; color: #888; font-weight: 600; }
-  .prep-header .arrow { transition: transform 0.2s; color: var(--purple); }
-  .prep-header.open .arrow { transform: rotate(180deg); }
-  .prep-body { display: none; background: white; padding: 16px 18px 18px; border-left: 4px solid #e0d0ff; }
-  .prep-body.open { display: block; }
-  .prep-row { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; font-size: 0.83em; border-bottom: 1px solid #f5f5f5; line-height: 1.4; }
-  .prep-row:last-child { border-bottom: none; }
-  .prep-icon { font-size: 1.1em; flex-shrink: 0; width: 22px; }
-
-  @media (max-width: 600px) {
-    .rhythm-grid { grid-template-columns: 1fr; }
-    .how-to-find { grid-template-columns: 1fr; }
-    .hero h1 { font-size: 2em; }
+  @media(max-width:600px){
+    .update-days,.cal-grids{grid-template-columns:1fr;}
+    .faq-columns{grid-template-columns:1fr;}
+    .week-planner-row{grid-template-columns:46px 1fr;}
+    .week-days-wrap{flex-direction:column;}
+    .day-divider{width:auto; height:1px; margin:0 12px;}
+    .lec-row{grid-template-columns:56px 1fr;}
+    .lec-row .sr-badges{grid-column:1/-1;}
+    .combo-row{grid-template-columns:56px 1fr;}
+    .lab-row{grid-template-columns:56px 1fr;}
+    .date-range{justify-content:flex-start;}
   }
 </style>
 <style id="modnav-css">
@@ -117,386 +190,625 @@
 </style>
 </head>
 <body>
-
 <div class="hero">
   <div class="gcc-badge">BIO 112 Microbiology &bull; Fall 2026</div>
   <h1>Course Calendar</h1>
-  <p class="subtitle">The full semester at a glance</p>
+  <p class="subtitle">What's coming, what's due, and how to stay ahead</p>
 </div>
-
 <div class="content">
 
-  <!-- Weekly Rhythm -->
-  <div class="card">
-    <div class="section-title">The Weekly Rhythm</div>
-    <div class="rhythm-grid">
-      <div class="rhythm-box" style="border-top: 4px solid var(--teal);">
-        <div class="r-icon">📖</div>
-        <h4>Part 1: Before You Come to Class</h4>
-        <p>Read the assigned chapter. Review the lecture slides posted on Canvas the week before. Write your lab prelab protocol in your lab notebook and submit the photo to Canvas before 5:29 PM on the day of lab.</p>
-      </div>
-      <div class="rhythm-box" style="border-top: 4px solid var(--purple);">
-        <div class="r-icon">📝</div>
-        <h4>Part 2: Submit Prelabs and Post Labs</h4>
-        <p>Prelabs are due before lab starts. Post labs are due the following week -- check the calendar for exact due dates. Do not wait until the night before. These are points for work you already did.</p>
-      </div>
-      <div class="rhythm-box" style="border-top: 4px solid var(--coral);">
-        <div class="r-icon">🧠</div>
-        <h4>Part 3: Prepare for Quizzes and Exams</h4>
-        <p>Quizzes happen in the first 15 minutes of lecture. Most class days follow lecture then lab, with a dinner break around 7 PM. Review your notes, do flashcards, and check the weekend update (posted on Canvas as an announcement Thursday or Friday) for what is coming next.</p>
-      </div>
-    </div>
+<!-- THIS WEEK'S UPDATE + QUICK ANSWERS (merged) -->
+<div class="update-card" id="weeklyUpdate">
+  <div class="update-header-center">
+    <h2>This Week's Update</h2>
+    <span class="freshness-badge" id="updateSub"></span>
   </div>
-
-  <!-- Difficulty Arc (5 units) -->
-  <div class="arc-card">
-    <div class="section-title">How Difficulty Builds</div>
-    <p style="font-size:0.85em; color:#666; margin-bottom:16px;">Microbiology content is cumulative -- each unit assumes you know the last one. Hover each bar to see what it covers. And no, the final is NOT cumulative.</p>
-
-    <div class="arc-labels">
-      <span>Unit 1</span><span>Unit 2</span><span>Unit 3 ⚠️</span><span>Unit 4 ⚠️⚠️</span><span>Final (not cumulative)</span>
-    </div>
-    <div class="arc-row">
-      <div class="arc-seg" style="background: #00B4B4; height: 70px;">
-        <div class="arc-tooltip">Foundations of Microbiology (Ch 1-4): history, microscopy, cell structure. Vocab and concepts. Manageable -- but don't get fooled.</div>
-        <div class="seg-label">Exam 1<br>Foundations</div>
-      </div>
-      <div class="arc-seg" style="background: #9B59B6; height: 110px;">
-        <div class="arc-tooltip">Microbial Metabolism (Ch 5, 8, 9): metabolism, genomics, recombinant DNA. More abstract. Builds on cell bio from Unit 1.</div>
-        <div class="seg-label">Exam 2<br>Metabolism</div>
-      </div>
-      <div class="arc-seg" style="background: #FF9F43; height: 155px;">
-        <div class="arc-tooltip">Biotechnology and Microbe Growth and Death (Ch 6, 7, 9, 10): growth, control of microbes, classification, ID. Gets dense fast. Do not fall behind here.</div>
-        <div class="seg-label">Exam 3<br>Biotech + Growth</div>
-      </div>
-      <div class="arc-seg" style="background: #FF6B6B; height: 195px;">
-        <div class="arc-tooltip">Bacteria and Viruses (Ch 11, 13, 14): specific bacteria, viruses, disease mechanisms. Huge memorization load. Start early. This is where most students struggle.</div>
-        <div class="seg-label">Exam 4<br>Bacteria + Viruses</div>
-      </div>
-      <div class="arc-seg" style="background: #6C3483; height: 160px;">
-        <div class="arc-tooltip">Microbial Control and the Immune System (Ch 15-17, 20): innate and adaptive immunity, drug therapy, vaccines. NOT cumulative -- covers only this unit.</div>
-        <div class="seg-label">Final<br>Control + Immunity</div>
-      </div>
-    </div>
-
-    <div class="hard-warning">
-      🔥 <strong>Units 3 and 4 are the hardest.</strong> The memorization load spikes and the material gets very specific. Plan extra study time for these. Multiple students have described Unit 3 as hitting them "like a truck" after the first two felt manageable.<br><br>
-      📌 <strong>The final exam is NOT cumulative.</strong> It covers only Ch 15-17 and 20. I get asked this a lot.
-    </div>
-  </div>
-
-  <!-- How to find things -->
-  <div class="card">
-    <div class="section-title">How to Find What Is Due</div>
-    <div class="how-to-find">
-      <div class="htf-item">
-        <h4>📅 This Calendar</h4>
-        <p>Your master reference. All exam dates, quiz dates, and lab deliverables listed by week. Use the filter buttons to see just what you need.</p>
-      </div>
-      <div class="htf-item">
-        <h4>🖥️ Canvas</h4>
-        <p>Assignments live here. Pre/post lab uploads, homework, announcements. Check it at minimum twice a week.</p>
-      </div>
-      <div class="htf-item">
-        <h4>📢 Weekend Update (Canvas Announcement)</h4>
-        <p>Posted Thursday or Friday as a Canvas announcement. Everything coming up the next week -- what's due, what to prepare. Read these every week without fail.</p>
-      </div>
-      <div class="htf-item">
-        <h4>📓 Lab Notebook</h4>
-        <p>Prelabs must be written and photographed to Canvas before 5:29 PM on the day of lab. Post labs are due the following week per the schedule.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Per-week prep guide -->
-  <div class="prep-section card">
-    <div class="section-title">How to Prepare Each Week</div>
-    <p style="font-size:0.84em; color:#666; margin-bottom:16px;">Tap any week to see exactly what chapters to read, what's due, and what to prepare for.</p>
-
-    <div class="prep-accordion">
-      <div class="prep-header" onclick="togglePrep(this)"><span class="week-label">Week 1 (Aug 31 - Sep 2)</span><span class="week-dates">Microscopy</span><span class="arrow">▼</span></div>
-      <div class="prep-body">
-        <div class="prep-row"><div class="prep-icon">📖</div><div><strong>Read:</strong> Chapter 1 (History of Microbiology), Chapter 3 (Microscopy + Staining)</div></div>
-        <div class="prep-row"><div class="prep-icon">🔬</div><div><strong>Lab:</strong> Labs 1 and 2 -- Microscopy, Microscopic Measurement</div></div>
-        <div class="prep-row"><div class="prep-icon">📝</div><div><strong>Prelab:</strong> Write and submit lab protocol before 5:29 PM each lab day</div></div>
-        <div class="prep-row"><div class="prep-icon">📬</div><div><strong>Due this week:</strong> Nothing graded yet -- get organized and set up Canvas and Pronto now</div></div>
-      </div>
-    </div>
-
-    <div class="prep-accordion">
-      <div class="prep-header" onclick="togglePrep(this)"><span class="week-label">Week 2 (Sep 7 - Sep 9)</span><span class="week-dates">Labor Day + Chemical Principles</span><span class="arrow">▼</span></div>
-      <div class="prep-body">
-        <div class="prep-row"><div class="prep-icon">🏖️</div><div><strong>Sep 7:</strong> No class -- Labor Day</div></div>
-        <div class="prep-row"><div class="prep-icon">📖</div><div><strong>Read:</strong> Chapter 2 (Chemical Principles)</div></div>
-        <div class="prep-row"><div class="prep-icon">🔬</div><div><strong>Lab:</strong> Labs 3 and 4 -- Protozoa, Algae, Bacteria</div></div>
-        <div class="prep-row"><div class="prep-icon">🧪</div><div><strong>Quiz 1 on Sep 9:</strong> Covers Ch 1 and Ch 3 -- prepare for the first 15 min of lecture</div></div>
-        <div class="prep-row"><div class="prep-icon">📬</div><div><strong>Due Sep 9 midnight:</strong> Online Syllabus Quiz (Canvas)</div></div>
-      </div>
-    </div>
-
-    <div class="prep-accordion">
-      <div class="prep-header" onclick="togglePrep(this)"><span class="week-label">Week 3 (Sep 14 - Sep 16)</span><span class="week-dates">Cell Anatomy + Staining</span><span class="arrow">▼</span></div>
-      <div class="prep-body">
-        <div class="prep-row"><div class="prep-icon">📖</div><div><strong>Read:</strong> Chapter 4 (Prokaryote/Eukaryote Anatomy)</div></div>
-        <div class="prep-row"><div class="prep-icon">🔬</div><div><strong>Lab Sep 14:</strong> Lab 5 -- Negative Staining</div></div>
-        <div class="prep-row"><div class="prep-icon">🔬</div><div><strong>Lab Sep 16:</strong> Labs 6 and 7 -- Smear Prep, Simple Stain</div></div>
-        <div class="prep-row"><div class="prep-icon">📬</div><div><strong>Due Sep 14:</strong> Lab Safety Quiz (online), Post Labs 1 to 4</div></div>
-        <div class="prep-row"><div class="prep-icon">📝</div><div><strong>Prelab:</strong> Write and submit protocol before 5:29 PM each lab day</div></div>
-      </div>
-    </div>
-
-    <div class="prep-accordion">
-      <div class="prep-header" onclick="togglePrep(this)"><span class="week-label">Week 4 (Sep 21 - Sep 23)</span><span class="week-dates">EXAM 1 + Gram Stain + Unknown #1</span><span class="arrow">▼</span></div>
-      <div class="prep-body">
-        <div class="prep-row"><div class="prep-icon">🧪</div><div><strong>EXAM 1 on Sep 21:</strong> Covers Ch 1 to 4 -- study Ch 1, 2, 3, and 4</div></div>
-        <div class="prep-row"><div class="prep-icon">🔬</div><div><strong>Lab Sep 21:</strong> Labs 9 and 13 -- Gram Stain</div></div>
-        <div class="prep-row"><div class="prep-icon">🔬</div><div><strong>Lab Sep 23:</strong> Lab 9 -- Receive Unknown #1, Gram Stain</div></div>
-        <div class="prep-row"><div class="prep-icon">🧪</div><div><strong>Quiz 2 on Sep 23:</strong> Covers Ch 2 and Ch 4</div></div>
-        <div class="prep-row"><div class="prep-icon">📬</div><div><strong>Due Sep 21:</strong> Assignment 1, Post Labs 5 to 7</div></div>
-        <div class="prep-row"><div class="prep-icon">📬</div><div><strong>Due Sep 23:</strong> Assignment 2</div></div>
-      </div>
-    </div>
-
-    <div class="prep-accordion">
-      <div class="prep-header" onclick="togglePrep(this)"><span class="week-label">Week 5 (Sep 28 - Sep 30)</span><span class="week-dates">Microbial Metabolism</span><span class="arrow">▼</span></div>
-      <div class="prep-body">
-        <div class="prep-row"><div class="prep-icon">📖</div><div><strong>Read:</strong> Chapter 5 (Microbial Metabolism) -- both days</div></div>
-        <div class="prep-row"><div class="prep-icon">🔬</div><div><strong>Lab Sep 28:</strong> Lab 10 -- Spore Staining</div></div>
-        <div class="prep-row"><div class="prep-icon">🔬</div><div><strong>Lab Sep 30:</strong> Lab 11 -- Acid Fast Stain</div></div>
-        <div class="prep-row"><div class="prep-icon">🧪</div><div><strong>Quiz 3 on Sep 30:</strong> Covers Ch 8</div></div>
-      </div>
-    </div>
-
-    <div class="prep-accordion">
-      <div class="prep-header" onclick="togglePrep(this)"><span class="week-label">Week 6 (Oct 5 - Oct 7)</span><span class="week-dates">Recombinant DNA + Biotechnology</span><span class="arrow">▼</span></div>
-      <div class="prep-body">
-        <div class="prep-row"><div class="prep-icon">📖</div><div><strong>Read:</strong> Chapter 9 (Recombinant DNA and Biotechnology) -- both days</div></div>
-        <div class="prep-row"><div class="prep-icon">🔬</div><div><strong>Lab Oct 5:</strong> Lab 12 -- Motility</div></div>
-        <div class="prep-row"><div class="prep-icon">🔬</div><div><strong>Lab Oct 7:</strong> Lab 15 -- Transformation Experiment</div></div>
-        <div class="prep-row"><div class="prep-icon">🧪</div><div><strong>Quiz 4 on Oct 7:</strong> Covers Ch 5</div></div>
-        <div class="prep-row"><div class="prep-icon">📬</div><div><strong>Due Oct 5:</strong> Staining Quiz, Post Labs 9 to 11</div></div>
-      </div>
-    </div>
-
-    <div class="prep-accordion">
-      <div class="prep-header" onclick="togglePrep(this)"><span class="week-label">Week 7 (Oct 12 - Oct 14)</span><span class="week-dates">EXAM 2 + Unknown #1 Due</span><span class="arrow">▼</span></div>
-      <div class="prep-body">
-        <div class="prep-row"><div class="prep-icon">🧪</div><div><strong>EXAM 2 on Oct 12:</strong> Covers Ch 5, 8, and part of 9</div></div>
-        <div class="prep-row"><div class="prep-icon">🔬</div><div><strong>Lab Oct 12:</strong> Lab 15 -- Transformation Evaluation + Additional Unknowns</div></div>
-        <div class="prep-row"><div class="prep-icon">🔬</div><div><strong>Lab Oct 14:</strong> Standard Plate Count Experiment</div></div>
-        <div class="prep-row"><div class="prep-icon">📬</div><div><strong>Due Oct 12:</strong> Assignment 2</div></div>
-        <div class="prep-row"><div class="prep-icon">📬</div><div><strong>Due Oct 14:</strong> Unknown #1 Report, Post Labs 12 and 15</div></div>
-      </div>
-    </div>
-
-    <div class="prep-accordion">
-      <div class="prep-header" onclick="togglePrep(this)"><span class="week-label">Week 8 (Oct 19 - Oct 21)</span><span class="week-dates">Classification + Growth</span><span class="arrow">▼</span></div>
-      <div class="prep-body">
-        <div class="prep-row"><div class="prep-icon">📖</div><div><strong>Read:</strong> Chapter 10 (Classification), Chapter 6 and 7 (Microbial Growth + Control)</div></div>
-        <div class="prep-row"><div class="prep-icon">🔬</div><div><strong>Lab Oct 19:</strong> Lab 14 -- Plate Count Eval, Pure Culture</div></div>
-        <div class="prep-row"><div class="prep-icon">🔬</div><div><strong>Lab Oct 21:</strong> Lab 14 -- Pure Culture Subculture</div></div>
-        <div class="prep-row"><div class="prep-icon">🧪</div><div><strong>Quiz 5 on Oct 19:</strong> Covers Ch 9</div></div>
-      </div>
-    </div>
-
-    <div class="prep-accordion">
-      <div class="prep-header" onclick="togglePrep(this)"><span class="week-label">Week 9 (Oct 26 - Oct 28)</span><span class="week-dates">EXAM 3 -- Unit 3 Hardest So Far</span><span class="arrow">▼</span></div>
-      <div class="prep-body">
-        <div class="prep-row"><div class="prep-icon">📖</div><div><strong>Read:</strong> Chapter 7 (Control of Microbial Growth)</div></div>
-        <div class="prep-row"><div class="prep-icon">🧪</div><div><strong>Quiz 6 on Oct 26:</strong> Covers Ch 6 and 10</div></div>
-        <div class="prep-row"><div class="prep-icon">🧪</div><div><strong>EXAM 3 on Oct 28:</strong> Covers Ch 6, 7, 9, and 10 -- start studying early, this is a hard one</div></div>
-        <div class="prep-row"><div class="prep-icon">🔬</div><div><strong>Lab Oct 26:</strong> Lab 21 -- Receive Unknown #2, Gram Stain, Subculture</div></div>
-        <div class="prep-row"><div class="prep-icon">🔬</div><div><strong>Lab Oct 28:</strong> Labs 16 and 22 -- Cultural Characteristics, Oxygen Requirements, Gelatin</div></div>
-        <div class="prep-row"><div class="prep-icon">📬</div><div><strong>Due Oct 28:</strong> Assignment 3</div></div>
-      </div>
-    </div>
-
-    <div class="prep-accordion">
-      <div class="prep-header" onclick="togglePrep(this)"><span class="week-label">Week 10 (Nov 2 - Nov 4)</span><span class="week-dates">Bacteria + LAB PRACTICUM 1</span><span class="arrow">▼</span></div>
-      <div class="prep-body">
-        <div class="prep-row"><div class="prep-icon">📖</div><div><strong>Read:</strong> Chapter 11 (Bacteria parts 1 and 2)</div></div>
-        <div class="prep-row"><div class="prep-icon">🏆</div><div><strong>LAB PRACTICUM 1 on Nov 4</strong> -- review and prepare all lab techniques covered so far</div></div>
-        <div class="prep-row"><div class="prep-icon">🧪</div><div><strong>Quiz 7 on Nov 4:</strong> Covers Ch 7 and part 1 of Ch 11</div></div>
-        <div class="prep-row"><div class="prep-icon">📬</div><div><strong>Due Nov 2:</strong> Transformation Quiz</div></div>
-        <div class="prep-row"><div class="prep-icon">📬</div><div><strong>Due Nov 4:</strong> Post Labs 16, 21, 22</div></div>
-      </div>
-    </div>
-
-    <div class="prep-accordion">
-      <div class="prep-header" onclick="togglePrep(this)"><span class="week-label">Week 11 (Nov 9 - Nov 11)</span><span class="week-dates">Bacteria + Viruses + Veterans Day</span><span class="arrow">▼</span></div>
-      <div class="prep-body">
-        <div class="prep-row"><div class="prep-icon">📖</div><div><strong>Read:</strong> Chapter 11 (Bacteria pt 3), Chapter 13 (Viruses part 1)</div></div>
-        <div class="prep-row"><div class="prep-icon">🔬</div><div><strong>Lab Nov 9:</strong> Unknown Testing Analysis and Repeats</div></div>
-        <div class="prep-row"><div class="prep-icon">🏖️</div><div><strong>Nov 11:</strong> No class -- Veterans Day</div></div>
-      </div>
-    </div>
-
-    <div class="prep-accordion">
-      <div class="prep-header" onclick="togglePrep(this)"><span class="week-label">Week 12 (Nov 16 - Nov 18)</span><span class="week-dates">Viruses + Disease</span><span class="arrow">▼</span></div>
-      <div class="prep-body">
-        <div class="prep-row"><div class="prep-icon">📖</div><div><strong>Read:</strong> Chapter 13 (Viruses pt 2), Chapter 14 (Disease and Epidemiology)</div></div>
-        <div class="prep-row"><div class="prep-icon">🔬</div><div><strong>Lab:</strong> Labs 23, 24, 25 -- Bio-oxidations, Hydrolysis, EMB, MSA, MacConkey</div></div>
-        <div class="prep-row"><div class="prep-icon">🧪</div><div><strong>Quiz 8 on Nov 18:</strong> Covers Ch 11 and 13</div></div>
-        <div class="prep-row"><div class="prep-icon">📬</div><div><strong>Due Nov 18:</strong> Culture and Morphology Quiz</div></div>
-      </div>
-    </div>
-
-    <div class="prep-accordion">
-      <div class="prep-header" onclick="togglePrep(this)"><span class="week-label">Week 13 (Nov 23 - Nov 25)</span><span class="week-dates">Pathogenicity + Thanksgiving</span><span class="arrow">▼</span></div>
-      <div class="prep-body">
-        <div class="prep-row"><div class="prep-icon">📖</div><div><strong>Read:</strong> Chapter 15 (Pathogenicity) -- review Ch 11, 13, 14 for Exam 4</div></div>
-        <div class="prep-row"><div class="prep-icon">🔬</div><div><strong>Lab Nov 23:</strong> More evaluations, repeats, practicum review, antiseptic prep</div></div>
-        <div class="prep-row"><div class="prep-icon">🏖️</div><div><strong>Nov 25:</strong> No class -- Thanksgiving</div></div>
-        <div class="prep-row"><div class="prep-icon">⚠️</div><div>Exam 4 is next week. Use this time to study.</div></div>
-      </div>
-    </div>
-
-    <div class="prep-accordion">
-      <div class="prep-header" onclick="togglePrep(this)"><span class="week-label">Week 14 (Nov 30 - Dec 2)</span><span class="week-dates">EXAM 4 -- Hardest of the Semester</span><span class="arrow">▼</span></div>
-      <div class="prep-body">
-        <div class="prep-row"><div class="prep-icon">🧪</div><div><strong>EXAM 4 on Nov 30:</strong> Covers Ch 11, 13, 14 -- also recommended to read Ch 21 to 26 for context</div></div>
-        <div class="prep-row"><div class="prep-icon">📖</div><div><strong>Read:</strong> Chapter 16 and 17 (Innate + Adaptive Immunity)</div></div>
-        <div class="prep-row"><div class="prep-icon">🔬</div><div><strong>Lab:</strong> Labs 18 and 19 -- Antiseptics, Alcohol, Antimicrobics</div></div>
-        <div class="prep-row"><div class="prep-icon">📬</div><div><strong>Due Nov 30:</strong> Assignment 4, Post Labs 23, 24, 25</div></div>
-        <div class="prep-row"><div class="prep-icon">📬</div><div><strong>Due Dec 2:</strong> Bio-oxidations Quiz</div></div>
-      </div>
-    </div>
-
-    <div class="prep-accordion">
-      <div class="prep-header" onclick="togglePrep(this)"><span class="week-label">Week 15 (Dec 7 - Dec 9)</span><span class="week-dates">Immunity + LAB PRACTICUM 2 + Unknown #2</span><span class="arrow">▼</span></div>
-      <div class="prep-body">
-        <div class="prep-row"><div class="prep-icon">📖</div><div><strong>Read:</strong> Chapter 17 (Adaptive Immunity), Chapter 20 (Drug Therapy + Vaccines)</div></div>
-        <div class="prep-row"><div class="prep-icon">🏆</div><div><strong>LAB PRACTICUM 2 on Dec 9</strong> -- review all unknown testing procedures</div></div>
-        <div class="prep-row"><div class="prep-icon">🧪</div><div><strong>Quiz 9 on Dec 7:</strong> Covers Ch 14 and 15</div></div>
-        <div class="prep-row"><div class="prep-icon">📬</div><div><strong>Due Dec 7:</strong> Unknown #2 Report</div></div>
-        <div class="prep-row"><div class="prep-icon">📬</div><div><strong>Due Dec 9:</strong> Post Labs 18 and 19</div></div>
-      </div>
-    </div>
-
-    <div class="prep-accordion">
-      <div class="prep-header" onclick="togglePrep(this)"><span class="week-label">Finals Week (Dec 12 - 18)</span><span class="week-dates">FINAL EXAM -- NOT Cumulative</span><span class="arrow">▼</span></div>
-      <div class="prep-body">
-        <div class="prep-row"><div class="prep-icon">📖</div><div><strong>Study:</strong> Ch 15, 16, 17, and 20 ONLY -- the final covers only this unit</div></div>
-        <div class="prep-row"><div class="prep-icon">📌</div><div><strong>The final is NOT cumulative.</strong> You will not be tested on material from Exams 1 to 4.</div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Full calendar table -->
-  <div class="card">
-    <div class="section-title">Full Lecture + Lab Schedule</div>
-    <div class="filter-row">
-      <button class="filter-btn active" onclick="filterCal('all', this)">All</button>
-      <button class="filter-btn" onclick="filterCal('exam', this)">🧪 Exams</button>
-      <button class="filter-btn" onclick="filterCal('quiz', this)">📝 Quizzes</button>
-      <button class="filter-btn" onclick="filterCal('due', this)">📬 Due Dates</button>
-      <button class="filter-btn" onclick="filterCal('lab', this)">🔬 Lab</button>
-    </div>
-    <div style="overflow-x:auto;">
-    <table class="cal-table">
-      <thead><tr><th>Week</th><th>Date</th><th>Lecture Topic</th><th>Lab</th><th>Due / Notes</th></tr></thead>
-      <tbody>
-        <tr class="week-row"><td colspan="5">WEEK 1 -- Aug 31 to Sep 2</td></tr>
-        <tr data-tags="lab"><td>1</td><td>Aug 31 (Mon)</td><td>Brief History of Microbiology (Ch 1)</td><td>Lab 1: Microscopy</td><td></td></tr>
-        <tr data-tags="lab"><td>1</td><td>Sep 2 (Wed)</td><td>Microscopy and Staining (Ch 3)</td><td>Labs 1 and 2: Microscopy, Measurement</td><td></td></tr>
-
-        <tr class="week-row"><td colspan="5">WEEK 2 -- Sep 7 to Sep 9</td></tr>
-        <tr class="closed-row" data-tags="closed"><td>2</td><td>Sep 7 (Mon)</td><td colspan="3"><span class="badge b-closed">CAMPUS CLOSED -- Labor Day</span></td></tr>
-        <tr data-tags="quiz due lab"><td>2</td><td>Sep 9 (Wed)</td><td>Chemical Principles (Ch 2)</td><td>Labs 3 and 4: Protozoa, Algae, Bacteria</td><td><span class="badge b-quiz">Quiz 1 (Ch 1+3)</span> <span class="badge b-due">Syllabus Quiz due midnight</span></td></tr>
-
-        <tr class="week-row"><td colspan="5">WEEK 3 -- Sep 14 to Sep 16</td></tr>
-        <tr data-tags="lab due"><td>3</td><td>Sep 14 (Mon)</td><td>Chemical Principles + Prokaryote/Eukaryote Anatomy (Ch 4)</td><td>Lab 5: Negative Staining</td><td><span class="badge b-due">Lab Safety Quiz</span> <span class="badge b-lab">Post labs 1 to 4</span></td></tr>
-        <tr data-tags="lab"><td>3</td><td>Sep 16 (Wed)</td><td>Prokaryote/Eukaryote Anatomy cont. (Ch 4)</td><td>Labs 6 and 7: Smear Prep, Simple Stain</td><td></td></tr>
-
-        <tr class="week-row"><td colspan="5">WEEK 4 -- Sep 21 to Sep 23</td></tr>
-        <tr data-tags="exam due lab"><td>4</td><td>Sep 21 (Mon)</td><td><span class="badge b-exam">EXAM 1 (Ch 1 to 4)</span></td><td>Labs 9 and 13: Gram Stain</td><td><span class="badge b-due">Assignment 1</span> <span class="badge b-lab">Post labs 5 to 7</span></td></tr>
-        <tr data-tags="quiz due lab"><td>4</td><td>Sep 23 (Wed)</td><td>Microbial Genomics (Ch 8)</td><td>Lab 9: Receive Unknown #1, Gram Stain</td><td><span class="badge b-quiz">Quiz 2 (Ch 2+4)</span> <span class="badge b-due">Assignment 2</span></td></tr>
-
-        <tr class="week-row"><td colspan="5">WEEK 5 -- Sep 28 to Sep 30</td></tr>
-        <tr data-tags="lab"><td>5</td><td>Sep 28 (Mon)</td><td>Microbial Metabolism (Ch 5)</td><td>Lab 10: Spore Staining</td><td></td></tr>
-        <tr data-tags="quiz lab"><td>5</td><td>Sep 30 (Wed)</td><td>Microbial Metabolism cont. (Ch 5)</td><td>Lab 11: Acid Fast Stain</td><td><span class="badge b-quiz">Quiz 3 (Ch 8)</span></td></tr>
-
-        <tr class="week-row"><td colspan="5">WEEK 6 -- Oct 5 to Oct 7</td></tr>
-        <tr data-tags="due lab"><td>6</td><td>Oct 5 (Mon)</td><td>Recombinant DNA and Biotechnology (Ch 9)</td><td>Lab 12: Motility</td><td><span class="badge b-lab">Staining Quiz</span> <span class="badge b-lab">Post labs 9 to 11</span></td></tr>
-        <tr data-tags="quiz lab"><td>6</td><td>Oct 7 (Wed)</td><td>Recombinant DNA cont. (Ch 9)</td><td>Lab 15: Transformation Experiment</td><td><span class="badge b-quiz">Quiz 4 (Ch 5)</span></td></tr>
-
-        <tr class="week-row"><td colspan="5">WEEK 7 -- Oct 12 to Oct 14</td></tr>
-        <tr data-tags="exam due lab"><td>7</td><td>Oct 12 (Mon)</td><td><span class="badge b-exam">EXAM 2 (Ch 5, 8, part of 9)</span></td><td>Lab 15: Transformation Eval + Unknowns</td><td><span class="badge b-due">Assignment 2 Due</span></td></tr>
-        <tr data-tags="due lab"><td>7</td><td>Oct 14 (Wed)</td><td>Recombinant DNA cont. (Ch 9)</td><td>Standard Plate Count Experiment</td><td><span class="badge b-due">Unknown #1 Due</span> <span class="badge b-lab">Post labs 12, 15</span></td></tr>
-
-        <tr class="week-row"><td colspan="5">WEEK 8 -- Oct 19 to Oct 21</td></tr>
-        <tr data-tags="quiz lab"><td>8</td><td>Oct 19 (Mon)</td><td>Classification and Identification (Ch 10)</td><td>Lab 14: Plate Count Eval, Pure Culture</td><td><span class="badge b-quiz">Quiz 5 (Ch 9)</span></td></tr>
-        <tr data-tags="lab"><td>8</td><td>Oct 21 (Wed)</td><td>Microbial Growth + Control (Ch 6/7)</td><td>Lab 14: Pure Culture Subculture</td><td></td></tr>
-
-        <tr class="week-row"><td colspan="5">WEEK 9 -- Oct 26 to Oct 28</td></tr>
-        <tr data-tags="quiz lab"><td>9</td><td>Oct 26 (Mon)</td><td>Control of Microbial Growth (Ch 7)</td><td>Lab 21: Receive Unknown #2, Gram Stain, Subculture</td><td><span class="badge b-quiz">Quiz 6 (Ch 6, 10)</span></td></tr>
-        <tr data-tags="exam due lab"><td>9</td><td>Oct 28 (Wed)</td><td><span class="badge b-exam">EXAM 3 (Ch 6, 7, 9 to 10) -- Unit 3, expect difficulty</span></td><td>Labs 16, 22: Cultural Characteristics, Oxygen, Gelatin</td><td><span class="badge b-due">Assignment 3</span></td></tr>
-
-        <tr class="week-row"><td colspan="5">WEEK 10 -- Nov 2 to Nov 4</td></tr>
-        <tr data-tags="lab"><td>10</td><td>Nov 2 (Mon)</td><td>Bacteria Part 1 (Ch 11)</td><td>Labs 16, 22: Finish unknowns, practicum review</td><td><span class="badge b-lab">Transformation Quiz</span></td></tr>
-        <tr data-tags="prac due lab"><td>10</td><td>Nov 4 (Wed)</td><td>Bacteria Part 2 (Ch 11)</td><td><span class="badge b-prac">LAB PRACTICUM 1</span></td><td><span class="badge b-quiz">Quiz 7 (Ch 7 + Ch 11 pt 1)</span> <span class="badge b-lab">Post labs 16, 21, 22</span></td></tr>
-
-        <tr class="week-row"><td colspan="5">WEEK 11 -- Nov 9 to Nov 11</td></tr>
-        <tr data-tags="lab"><td>11</td><td>Nov 9 (Mon)</td><td>Bacteria pt 3 / Viruses Part 1 (Ch 13)</td><td>Unknown Testing Analysis and Repeats</td><td></td></tr>
-        <tr class="closed-row" data-tags="closed"><td>11</td><td>Nov 11 (Wed)</td><td colspan="3"><span class="badge b-closed">CAMPUS CLOSED -- Veterans Day</span></td></tr>
-
-        <tr class="week-row"><td colspan="5">WEEK 12 -- Nov 16 to Nov 18</td></tr>
-        <tr data-tags="lab"><td>12</td><td>Nov 16 (Mon)</td><td>Viruses Part 2 (Ch 13)</td><td>Labs 23, 24, 25: Bio-oxidations, Hydrolysis, EMB, MSA, MacConkey</td><td></td></tr>
-        <tr data-tags="quiz lab"><td>12</td><td>Nov 18 (Wed)</td><td>Disease and Epidemiology (Ch 14)</td><td>Labs 23 to 25: Evaluations</td><td><span class="badge b-quiz">Quiz 8 (Ch 11 + 13)</span> <span class="badge b-lab">Culture and Morphology Quiz</span></td></tr>
-
-        <tr class="week-row"><td colspan="5">WEEK 13 -- Nov 23 to Nov 25</td></tr>
-        <tr data-tags="lab"><td>13</td><td>Nov 23 (Mon)</td><td>Pathogenicity (Ch 15) + Review Ch 11, 13, 14</td><td>More evaluations, repeats, practicum prep, antiseptic prep</td><td></td></tr>
-        <tr class="closed-row" data-tags="closed"><td>13</td><td>Nov 25 (Wed)</td><td colspan="3"><span class="badge b-closed">CAMPUS CLOSED -- Thanksgiving</span></td></tr>
-
-        <tr class="week-row"><td colspan="5">WEEK 14 -- Nov 30 to Dec 2</td></tr>
-        <tr data-tags="exam due lab"><td>14</td><td>Nov 30 (Mon)</td><td><span class="badge b-exam">EXAM 4 (Ch 11, 13, 14) -- HARDEST of semester</span></td><td>Labs 18, 19: Antiseptics, Alcohol, Antimicrobics</td><td><span class="badge b-due">Assignment 4</span> <span class="badge b-lab">Post labs 23, 24, 25</span></td></tr>
-        <tr data-tags="lab"><td>14</td><td>Dec 2 (Wed)</td><td>Innate and Adaptive Immunity (Ch 16/17)</td><td>Labs 18, 19: Evaluations</td><td><span class="badge b-lab">Bio-oxidations Quiz</span></td></tr>
-
-        <tr class="week-row"><td colspan="5">WEEK 15 -- Dec 7 to Dec 9</td></tr>
-        <tr data-tags="quiz due lab"><td>15</td><td>Dec 7 (Mon)</td><td>Adaptive Immunity (Ch 17)</td><td>Review for Lab Practicum 2</td><td><span class="badge b-quiz">Quiz 9 (Ch 14 to 15)</span> <span class="badge b-due">Unknown #2 Due</span></td></tr>
-        <tr data-tags="prac due lab"><td>15</td><td>Dec 9 (Wed)</td><td>Adaptive Immunity + Drug Therapy (Ch 17/20)</td><td><span class="badge b-prac">LAB PRACTICUM 2</span></td><td><span class="badge b-lab">Post labs 18, 19</span></td></tr>
-
-        <tr class="week-row"><td colspan="5">FINALS WEEK -- Dec 12 to 18</td></tr>
-        <tr data-tags="exam"><td>--</td><td>Dec 12 to 18</td><td colspan="2"><span class="badge b-exam">FINAL EXAM (Ch 15, 16, 17, 20) -- NOT CUMULATIVE</span></td><td></td></tr>
-      </tbody>
-    </table>
-    </div>
-    <p style="font-size:0.75em; color:#999; margin-top:12px;">Recommended: also read Ch 21 to 26 for additional Exam 4 context.</p>
-  </div>
-
+  <div class="update-days" id="updateDays"></div>
+  <div class="update-divider"></div>
+  <div class="faq-columns" id="faqColumns"></div>
 </div>
 
+<!-- MONTHLY CALENDAR (now also carries unit info via hover) -->
+<div class="card">
+  <div class="section-title">Semester at a Glance</div>
+  <p style="font-size:0.83em;color:#666;margin-bottom:12px;text-align:center;">Shaded = class day. Faded = that unit's week but no class that day. Gold outline = exam or practicum. Hover any colored day to see what that unit covers.</p>
+  <div class="cal-grids" id="calGrids"></div>
+  <div class="unit-legend" style="margin-top:14px;justify-content:center;">
+    <div class="ul-item"><div class="ul-dot" style="background:var(--u1)"></div>Unit 1</div>
+    <div class="ul-item"><div class="ul-dot" style="background:var(--u2)"></div>Unit 2</div>
+    <div class="ul-item"><div class="ul-dot" style="background:var(--u3)"></div>Unit 3</div>
+    <div class="ul-item"><div class="ul-dot" style="background:var(--u4)"></div>Unit 4</div>
+    <div class="ul-item"><div class="ul-dot" style="background:var(--u5)"></div>Unit 5 / Final</div>
+    <div class="ul-item"><div class="ul-dot" style="background:#2c3e6e"></div>Finals Week</div>
+    <div class="ul-item"><div class="ul-dot" style="outline:2px solid #e2b900;outline-offset:-2px;background:var(--u2)"></div>Exam / Practicum</div>
+  </div>
+</div>
+<div class="cal-tooltip" id="calTooltip"></div>
+
+<!-- DAY PLANNER -->
+<div class="card">
+  <div class="section-title">Plans and Due Dates</div>
+  <p style="font-size:0.83em;color:#666;margin-bottom:12px;">Filter by type or pick a date range to see exactly what's due, when. Click any day to see the full lab and chapter details.</p>
+  <div class="pf-row">
+    <span class="pf-label">Show:</span>
+    <div class="pf-chip active" data-f="all" onclick="pfToggle(this)">All</div>
+    <div class="pf-chip" data-f="exam" onclick="pfToggle(this)">Exams</div>
+    <div class="pf-chip" data-f="practicum" onclick="pfToggle(this)">Practicums</div>
+    <div class="pf-chip" data-f="quiz" onclick="pfToggle(this)">Quizzes</div>
+    <div class="pf-chip" data-f="assignment" onclick="pfToggle(this)">Assignments</div>
+    <div class="pf-chip" data-f="unknown" onclick="pfToggle(this)">Unknowns</div>
+    <div class="pf-chip" data-f="postlab" onclick="pfToggle(this)">Post Labs</div>
+  </div>
+  <div class="date-range">
+    <label>From:</label><input type="date" id="dfrom" value="2026-08-31">
+    <label>To:</label><input type="date" id="dto" value="2026-12-18">
+    <button onclick="applyDR()">Filter</button>
+    <button class="reset-btn" onclick="resetDR()">Reset</button>
+  </div>
+  <div id="plannerRows"></div>
+</div>
+
+<!-- FULL SCHEDULE -->
+<div class="card">
+  <div class="section-title">Full Schedule</div>
+  <div class="sched-tabs">
+    <button class="sched-tab active" onclick="showST('lecture',this)">📖 Lecture</button>
+    <button class="sched-tab" onclick="showST('lab',this)">🔬 Lab</button>
+    <button class="sched-tab" onclick="showST('combined',this)">📚 Lecture + Lab</button>
+    <button class="sched-tab" onclick="showST('exams',this)">🧪 Exams and Practicums</button>
+    <button class="sched-tab" onclick="showST('quizzes',this)">📝 Quizzes</button>
+  </div>
+  <div id="sched-lecture" class="sched-panel active"><div class="sched-rows" id="rows-lecture"></div></div>
+  <div id="sched-lab"     class="sched-panel"><div class="sched-rows" id="rows-lab"></div></div>
+  <div id="sched-combined" class="sched-panel"><div class="sched-rows" id="rows-combined"></div></div>
+  <div id="sched-exams"   class="sched-panel"><div class="sched-rows" id="rows-exams"></div></div>
+  <div id="sched-quizzes" class="sched-panel"><div class="sched-rows" id="rows-quizzes"></div></div>
+</div>
+
+</div>
 <script>
-function togglePrep(header) {
-  const body = header.nextElementSibling;
-  const isOpen = body.classList.contains('open');
-  body.classList.toggle('open', !isOpen);
-  header.classList.toggle('open', !isOpen);
+// ─── DATA ───────────────────────────────────────────────
+const U = {
+  u1:{name:'Unit 1: Foundations of Microbiology',color:'#00B4B4',weeks:'Weeks 1 to 4',desc:'This is just the beginning. We start with the basics and history of microbiology, then discuss the microscopes we use to study it. The last two chapters cover the chemical basis of microbiology, and the cell biology of prokaryotes and eukaryotes.'},
+  u2:{name:'Unit 2: Microbial Metabolism',color:'#9B59B6',weeks:'Weeks 4 to 7',desc:'Unit 2 is all about microbial metabolism: both catabolism (breaking down molecules to form ATP energy) and anabolism (building up molecules like new DNA, RNA, and proteins). We talk about all things DNA replication, transcription, translation, fermentation, metabolism, and the beginnings of recombinant DNA technology.'},
+  u3:{name:'Unit 3: Practical Applications of Microbes',color:'#E67E22',weeks:'Weeks 8 to 9',desc:'This unit covers how we interact with microbes: their growth, their death, and their many uses. We start by learning how we use microbes in technology, then how we talk about them, how they grow, and how we can control their growth.'},
+  u4:{name:'Unit 4: Bacteria and Viruses',color:'#E74C3C',weeks:'Weeks 10 to 14',desc:'This unit gets specific! We cover individual bacteria and viruses, how they cause disease, and how disease spreads through a population. It carries the heaviest memorization load of the semester, so start studying early and use flashcards.'},
+  u5:{name:'Unit 5: Immunity (Final Unit)',color:'#2874A6',weeks:'Weeks 14 to 15',desc:'Innate and adaptive immunity, drug therapy, vaccines. The final exam is NOT cumulative, it covers only this unit. This is your body\'s side of the story after weeks of learning about the microbes attacking it.'},
+};
+
+const SCH = [
+  {wk:1, date:'2026-08-31',unit:'u1',lec:'Brief History of Microbiology',ch:'Chapter 1',lab:'Lab 1: Microscopy',labDesc:'Introduction to the compound light microscope. Learn the parts, how to focus at each magnification, and how to calculate total magnification. No prelab required for Lab 1.',due:[],types:[]},
+  {wk:1, date:'2026-09-02',unit:'u1',lec:'Use of the Microscope, Staining',ch:'Chapter 3',lab:'Labs 1 and 2: Microscopy, Microscopic Measurement',labDesc:'Continue microscopy and learn to use the ocular micrometer to measure organisms. Prelab required starting with Lab 2.',due:[],types:[]},
+  {wk:2, date:'2026-09-07',unit:'u1',lec:'CAMPUS CLOSED',ch:'',lab:'',labDesc:'',due:['No class - Labor Day'],types:['closed']},
+  {wk:2, date:'2026-09-09',unit:'u1',lec:'Chemical Principles',ch:'Chapter 2',lab:'Labs 3 and 4: Protozoa, Algae, Parasites, Bacteria',labDesc:'Observe living and prepared specimens of protozoa, algae, microscopic invertebrates, parasites, and helminths. Compare morphology across organism types.',due:['Syllabus Quiz (midnight, online)','Lecture Quiz 1 (Ch 1 and 3)'],types:['assignment','quiz']},
+  {wk:3, date:'2026-09-14',unit:'u1',lec:'Chemical Principles, Prokaryote and Eukaryote Anatomy',ch:'Chapter 4',lab:'Lab 5: Negative Staining',labDesc:'Prepare and observe negatively stained bacterial smears using a dark background to reveal cell shape and size without heat-fixing.',due:['Lab Safety Quiz (online)','Post Labs 1 to 4'],types:['quiz','postlab']},
+  {wk:3, date:'2026-09-16',unit:'u1',lec:'Prokaryote and Eukaryote Anatomy, Microbial Genomics',ch:'Chapters 4 and 8',lab:'Labs 6 and 7: Smear Preparation, Simple Stain',labDesc:'Learn to prepare a bacterial smear and perform a simple stain using crystal violet or methylene blue. Foundation for all differential staining.',due:[],types:[]},
+  {wk:4, date:'2026-09-21',unit:'u1',lec:'EXAM 1',ch:'Chapters 1 to 4',lab:'Labs 9 and 13: Gram Stain',labDesc:'Perform the Gram stain. Distinguish Gram-positive (purple) from Gram-negative (pink/red) bacteria based on cell wall structure.',due:['EXAM 1','Assignment 1 Due','Post Labs 5 to 7'],types:['exam','assignment','postlab']},
+  {wk:4, date:'2026-09-23',unit:'u2',lec:'Microbial Genomics',ch:'Chapter 8',lab:'Lab 9: Receive Unknown #1, Gram Stain',labDesc:'Receive your first unknown bacterial culture. Begin identification by performing a Gram stain to determine cell morphology and Gram reaction.',due:['Lecture Quiz 2 (Ch 2 and 4)','Assignment 2'],types:['quiz','assignment']},
+  {wk:5, date:'2026-09-28',unit:'u2',lec:'Microbial Metabolism',ch:'Chapter 5',lab:'Lab 10: Spore Staining (Schaeffer-Fulton)',labDesc:'Use the Schaeffer-Fulton endospore stain to detect bacterial endospores. Positive result: green spore within a red vegetative cell.',due:[],types:[]},
+  {wk:5, date:'2026-09-30',unit:'u2',lec:'Microbial Metabolism',ch:'Chapter 5',lab:'Lab 11: Acid Fast Stain (Kinyoun Method)',labDesc:'Detect mycobacteria using the Kinyoun acid-fast stain. Acid-fast organisms retain carbolfuchsin and appear red against a blue background.',due:['Lecture Quiz 3 (Ch 8)'],types:['quiz']},
+  {wk:6, date:'2026-10-05',unit:'u2',lec:'Recombinant DNA and Biotechnology',ch:'Chapter 9',lab:'Lab 12: Motility',labDesc:'Determine bacterial motility via wet mount and semi-solid motility agar. Motility is a key characteristic in identifying unknown bacteria.',due:['Lab Staining Quiz','Post Labs 9 to 11'],types:['quiz','postlab']},
+  {wk:6, date:'2026-10-07',unit:'u2',lec:'Recombinant DNA and Biotechnology',ch:'Chapter 9',lab:'Lab 15: Transformation Experiment',labDesc:'Perform bacterial transformation using E. coli and a plasmid containing antibiotic resistance genes. Demonstrates how bacteria take up foreign DNA.',due:['Lecture Quiz 4 (Ch 5)'],types:['quiz']},
+  {wk:7, date:'2026-10-12',unit:'u2',lec:'EXAM 2',ch:'Chapters 5, 8, Part 1 of Ch 9',lab:'Lab 15: Transformation Evaluation, Additional Unknowns',labDesc:'Evaluate transformation results. Colonies growing on ampicillin plates indicate successful transformation. Continue unknown testing.',due:['EXAM 2','Assignment 2 Due'],types:['exam','assignment']},
+  {wk:7, date:'2026-10-14',unit:'u2',lec:'Recombinant DNA and Biotechnology',ch:'Chapter 9',lab:'Standard Plate Count Experiment',labDesc:'Estimate the number of viable bacteria in a sample using serial dilution and colony counting. Widely used in food safety and clinical microbiology.',due:['Unknown 1 Due','Post Labs 12 and 15'],types:['unknown','postlab']},
+  {wk:8, date:'2026-10-19',unit:'u3',lec:'Classification and Identification',ch:'Chapter 10',lab:'Lab 14: Standard Plate Count Evaluation, Pure Culture Techniques',labDesc:'Evaluate plate count results and calculate CFU/mL. Learn streak plate and pour plate methods to isolate individual bacterial colonies.',due:['Lecture Quiz 5 (Ch 9)'],types:['quiz']},
+  {wk:8, date:'2026-10-21',unit:'u3',lec:'Microbial Growth, Control of Microbial Growth',ch:'Chapters 6 and 7',lab:'Lab 14: Pure Culture Techniques (Subculture)',labDesc:'Subculture isolated colonies to confirm purity. Critical aseptic technique skill for upcoming unknown identification work.',due:[],types:[]},
+  {wk:9, date:'2026-10-26',unit:'u3',lec:'Control of Microbial Growth',ch:'Chapter 7',lab:'Lab 21: Receive Unknown #2, Gram Stain, Subculture',labDesc:'Receive Unknown #2. Perform Gram stain and set up slant cultures at three different temperatures to test growth temperature requirements.',due:['Lecture Quiz 6 (Ch 6 and 10)'],types:['quiz']},
+  {wk:9, date:'2026-10-28',unit:'u3',lec:'EXAM 3',ch:'Chapters 6, 7, 9 to 10',lab:'Labs 16 and 22: Cultural Characteristics, Oxygen Requirements, Gelatin',labDesc:'Test oxygen requirements using an anaerobic jar, gelatin hydrolysis, and cultural characteristics. Record colony morphology and growth patterns.',due:['EXAM 3','Assignment 3 Due'],types:['exam','assignment']},
+  {wk:10,date:'2026-11-02',unit:'u4',lec:'Bacteria, Part 1',ch:'Chapter 11',lab:'Labs 16 and 22: Finish or Repeat Unknown Tests, Review for Practicum',labDesc:'Complete outstanding unknown tests and repeat any inconclusive results. Begin reviewing staining, aseptic procedures, and biochemical tests for Practicum 1.',due:['Lab Transformation Quiz'],types:['quiz']},
+  {wk:10,date:'2026-11-04',unit:'u4',lec:'Bacteria, Part 2',ch:'Chapter 11',lab:'LAB PRACTICUM 1',labDesc:'Hands-on practical exam covering all lab techniques from the first half of the semester: microscopy, staining, aseptic transfer, and reagent knowledge. Review your notebook and all techniques thoroughly.',due:['LAB PRACTICUM 1','Lecture Quiz 7 (Ch 7 and Part 1 of Ch 11)','Post Labs 16, 21, 22'],types:['practicum','quiz','postlab']},
+  {wk:11,date:'2026-11-09',unit:'u4',lec:'Bacteria Part 3, Viruses Part 1',ch:'Chapters 11 and 13',lab:'Unknown Testing Analysis and Repeats',labDesc:'Analyze results from Unknown #2 testing and repeat any tests that need clarification. Narrow down identification using all results so far.',due:[],types:[]},
+  {wk:11,date:'2026-11-11',unit:'u4',lec:'CAMPUS CLOSED',ch:'',lab:'',labDesc:'',due:['No class - Veterans Day'],types:['closed']},
+  {wk:12,date:'2026-11-16',unit:'u4',lec:'Viruses, Part 2',ch:'Chapter 13',lab:'Labs 23, 24, 25: Bio-oxidations, Hydrolysis, EMB, MSA, MacConkey',labDesc:'Run bio-oxidation tests (catalase, oxidase, indole), hydrolysis tests (starch, casein, lipid), and set up selective/differential media: EMB, MSA, and MacConkey plates.',due:[],types:[]},
+  {wk:12,date:'2026-11-18',unit:'u4',lec:'Principles of Disease and Epidemiology',ch:'Chapter 14',lab:'Labs 23, 24, 25: Evaluations',labDesc:'Read and record results from bio-oxidation, hydrolysis, and selective/differential plates. Compare expected vs. observed outcomes to narrow unknown identification.',due:['Lecture Quiz 8 (Ch 11 and 13)','Lab Culture and Morphology Quiz'],types:['quiz','quiz']},
+  {wk:13,date:'2026-11-23',unit:'u4',lec:'Microbial Mechanisms of Pathogenicity, Review Ch 11, 13, 14',ch:'Chapter 15',lab:'More Evaluations, Repeats, Practicum Review, Antiseptic Prep',labDesc:'Continue evaluating biochemical test results, repeat as needed, and begin review for Lab Practicum 2. Set up antiseptic sensitivity experiment.',due:[],types:[]},
+  {wk:13,date:'2026-11-25',unit:'u4',lec:'CAMPUS CLOSED',ch:'',lab:'',labDesc:'',due:['No class - Thanksgiving'],types:['closed']},
+  {wk:14,date:'2026-11-30',unit:'u4',lec:'EXAM 4',ch:'Chapters 11, 13, 14',lab:'Labs 18 and 19: Antiseptic Sensitivity, Alcohol, Antimicrobic Sensitivity',labDesc:'Set up Kirby-Bauer disk diffusion assay to test antimicrobial agent sensitivity. Apply disks to seeded agar plates and incubate for zone of inhibition measurement.',due:['EXAM 4','Assignment 4 Due','Post Labs 23, 24, 25'],types:['exam','assignment','postlab']},
+  {wk:14,date:'2026-12-02',unit:'u5',lec:'Innate and Adaptive Immunity',ch:'Chapters 16 and 17',lab:'Labs 18 and 19: Antiseptic Evaluation',labDesc:'Measure zones of inhibition from antiseptic and antibiotic sensitivity plates. Compare effectiveness of different agents and apply MIC concepts.',due:['Lab Bio-oxidations Quiz'],types:['quiz']},
+  {wk:15,date:'2026-12-07',unit:'u5',lec:'Adaptive Immunity',ch:'Chapter 17',lab:'Review for Lab Practicum 2',labDesc:'Open review session for Lab Practicum 2. Review all biochemical tests, selective media, and unknown identification procedures from the second half of the semester.',due:['Lecture Quiz 9 (Ch 14 and 15)','Unknown 2 Due'],types:['quiz','unknown']},
+  {wk:15,date:'2026-12-09',unit:'u5',lec:'Adaptive Immunity, Drug Therapy and Vaccines',ch:'Chapters 17 and 20',lab:'LAB PRACTICUM 2',labDesc:'Hands-on practical exam covering all lab techniques from the second half: biochemical testing, selective and differential media, and unknown identification logic.',due:['LAB PRACTICUM 2','Post Labs 18 and 19'],types:['practicum','postlab']},
+  {wk:'F', date:'2026-12-14',unit:'u5',lec:'FINAL EXAM (NOT Cumulative)',ch:'Chapters 15, 16, 17, 20',lab:'',labDesc:'',due:['FINAL EXAM'],types:['exam']},
+];
+
+// date -> schedule entry
+const dateMap = {};
+SCH.forEach(d=>{ dateMap[d.date]=d; });
+
+// ─── WEEKLY UPDATE ────────────────────────────────────
+function renderUpdate(){
+  const today=new Date(); today.setHours(0,0,0,0);
+  const next=SCH.filter(d=>{const dt=new Date(d.date+'T00:00:00');return dt>=today&&!d.types.includes('closed');}).slice(0,2);
+  document.getElementById('updateSub').textContent='Live as of '+today.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  const con=document.getElementById('updateDays');
+  if(!next.length){con.innerHTML='<div style="color:#aaa;font-size:0.9em;text-align:center;">The semester has ended. Great work!</div>';return;}
+  con.innerHTML=next.map(d=>{
+    const dt=new Date(d.date+'T00:00:00');
+    const ds=dt.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+    const uColor=U[d.unit]?.color||'#ccc';
+    const chips=d.due.length?d.due.map((item,i)=>{
+      const t=d.types[i]||'';
+      const cls=t==='exam'?'chip-exam':t==='practicum'?'chip-exam':t==='quiz'?'chip-quiz':t==='unknown'?'chip-unknown':'chip-due';
+      return `<span class="ud-chip ${cls}">${item}</span>`;
+    }).join(''):`<span class="ud-chip chip-none">Class as usual, nothing due</span>`;
+    return `<div class="update-day" style="border-top:3px solid ${uColor}">
+      <div class="ud-date">${ds}</div>
+      <div class="ud-wk">Week ${d.wk}</div>
+      <div class="ud-row"><span class="ud-icon">📖</span><span>${d.lec}${d.ch?' &mdash; '+d.ch:''}</span></div>
+      ${d.lab?`<div class="ud-row"><span class="ud-icon">🔬</span><span>${d.lab}</span></div>`:''}
+      <div class="ud-chips">${chips}</div>
+    </div>`;
+  }).join('');
 }
 
-function filterCal(tag, btn) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const rows = document.querySelectorAll('table.cal-table tbody tr:not(.week-row)');
-  rows.forEach(row => {
-    if (tag === 'all') { row.classList.remove('hide'); }
-    else {
-      const tags = row.getAttribute('data-tags') || '';
-      row.classList.toggle('hide', !tags.includes(tag));
+// ─── MONTHLY CALENDAR GRIDS ───────────────────────────
+function renderCalGrids(){
+  // Determine which unit each calendar week belongs to by looking at class days in that week
+  // Build a week->unit map based on the schedule
+  const wkUnit={};
+  SCH.forEach(d=>{
+    if(d.unit!=='closed'&&d.wk!=='F'){
+      if(!wkUnit[d.wk]) wkUnit[d.wk]=d.unit;
     }
   });
-  if (tag !== 'all') {
-    document.querySelectorAll('table.cal-table tbody tr.week-row').forEach(wr => {
-      let sib = wr.nextElementSibling;
-      let hasVisible = false;
-      while (sib && !sib.classList.contains('week-row')) {
-        if (!sib.classList.contains('hide')) hasVisible = true;
-        sib = sib.nextElementSibling;
+
+  // Build date->info map for all class days
+  const classInfo={};
+  SCH.forEach(d=>{
+    classInfo[d.date]={unit:d.unit,isExam:d.types.includes('exam')||d.types.includes('practicum')};
+  });
+
+  const months=[
+    {y:2026,m:7,name:'August'},
+    {y:2026,m:8,name:'September'},
+    {y:2026,m:9,name:'October'},
+    {y:2026,m:10,name:'November'},
+    {y:2026,m:11,name:'December'},
+  ];
+
+  // For "faded" days: determine the active unit for any given date
+  // based on what the nearest class day unit is
+  function getUnitForDate(dt){
+    const d=new Date(dt); d.setHours(0,0,0,0);
+    // find closest class day on or before
+    let best=null;
+    SCH.forEach(s=>{
+      const sd=new Date(s.date+'T00:00:00');
+      if(sd<=d && s.unit!=='closed' && s.wk!=='F'){
+        if(!best||sd>new Date(best.date+'T00:00:00')) best=s;
       }
-      wr.classList.toggle('hide', !hasVisible);
     });
+    // also check if there's a class day after that's closer
+    let bestAfter=null;
+    SCH.forEach(s=>{
+      const sd=new Date(s.date+'T00:00:00');
+      if(sd>d && s.unit!=='closed' && s.wk!=='F'){
+        if(!bestAfter||sd<new Date(bestAfter.date+'T00:00:00')) bestAfter=s;
+      }
+    });
+    return best?best.unit:(bestAfter?bestAfter.unit:null);
   }
+
+  const semStart=new Date(2026,7,31);
+  const semEnd=new Date(2026,11,18);
+
+  document.getElementById('calGrids').innerHTML=months.map(mo=>{
+    const first=new Date(mo.y,mo.m,1);
+    const last=new Date(mo.y,mo.m+1,0);
+    const startDow=first.getDay();
+    const heads=['Su','Mo','Tu','We','Th','Fr','Sa'].map(h=>`<div class="day-head">${h}</div>`).join('');
+    let cells='';
+    for(let i=0;i<startDow;i++) cells+=`<div class="day-cell empty"></div>`;
+    for(let d=1;d<=last.getDate();d++){
+      const dt=new Date(mo.y,mo.m,d);
+      const ds=`${mo.y}-${String(mo.m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const info=classInfo[ds];
+      let cls='day-cell';
+      let extra='';
+      let unitKey=null;
+      if(dt<semStart){cls+=' pre-sem';}
+      else if(dt>=new Date(2026,11,12)&&dt<=new Date(2026,11,18)){cls+=' finals-day';}
+      else if(dt>semEnd){cls+=' blank-after';}
+      else if(info){
+        cls+=' '+info.unit;
+        unitKey=info.unit;
+        if(info.isExam) extra=' exam-ring';
+      } else {
+        // faded: determine unit (bounded to within the semester)
+        const u=getUnitForDate(dt);
+        if(u&&u!=='closed'){ cls+=' '+u+'f'; unitKey=u; }
+        else cls+=' pre-sem';
+      }
+      const hoverAttrs=unitKey?` class="${cls}${extra} hoverable" onmouseenter="showCalTooltip(event,'${unitKey}')" onmousemove="positionTooltip(event)" onmouseleave="hideCalTooltip()"`:` class="${cls}${extra}"`;
+      cells+=`<div${hoverAttrs}>${d}</div>`;
+    }
+    return `<div class="month-grid"><div class="month-header">${mo.name}</div><div class="month-days">${heads}${cells}</div></div>`;
+  }).join('');
 }
+
+function showCalTooltip(e,unitKey){
+  const u=U[unitKey];
+  if(!u) return;
+  const tip=document.getElementById('calTooltip');
+  tip.innerHTML=`<strong>${u.name}</strong><span class="ct-weeks">${u.weeks}</span>${u.desc}`;
+  tip.style.display='block';
+  positionTooltip(e);
+}
+
+function positionTooltip(e){
+  const tip=document.getElementById('calTooltip');
+  let x=e.clientX+16, y=e.clientY+16;
+  const maxW=window.innerWidth||1000;
+  if(x+260>maxW) x=e.clientX-276;
+  tip.style.left=x+'px';
+  tip.style.top=y+'px';
+}
+
+function hideCalTooltip(){
+  document.getElementById('calTooltip').style.display='none';
+}
+
+// ─── DAY PLANNER ──────────────────────────────────────
+let activeFilters=new Set(['all']);
+
+function pfToggle(el){
+  const f=el.getAttribute('data-f');
+  if(f==='all'){
+    activeFilters=new Set(['all']);
+    document.querySelectorAll('.pf-chip').forEach(c=>c.classList.remove('active'));
+    el.classList.add('active');
+  } else {
+    activeFilters.delete('all');
+    document.querySelector('.pf-chip[data-f="all"]').classList.remove('active');
+    if(el.classList.contains('active')){
+      el.classList.remove('active');
+      activeFilters.delete(f);
+      if(activeFilters.size===0){
+        activeFilters.add('all');
+        document.querySelector('.pf-chip[data-f="all"]').classList.add('active');
+      }
+    } else {
+      el.classList.add('active');
+      activeFilters.add(f);
+    }
+  }
+  applyPlannerViz();
+}
+
+function applyPlannerViz(){
+  const from=document.getElementById('dfrom').value;
+  const to=document.getElementById('dto').value;
+  document.querySelectorAll('.week-planner-row').forEach(row=>{
+    let anyVis=false;
+    row.querySelectorAll('.day-card').forEach(card=>{
+      const date=card.dataset.date;
+      const types=(card.dataset.types||'').split(',').filter(Boolean);
+      const inRange=(!from||date>=from)&&(!to||date<=to);
+      const matchFilter=activeFilters.has('all')||types.some(t=>activeFilters.has(t));
+      if(inRange&&matchFilter){card.classList.remove('d-hidden');anyVis=true;}
+      else card.classList.add('d-hidden');
+    });
+    row.style.display=anyVis?'':'none';
+  });
+}
+
+function applyDR(){applyPlannerViz();}
+function resetDR(){
+  document.getElementById('dfrom').value='2026-08-31';
+  document.getElementById('dto').value='2026-12-18';
+  activeFilters=new Set(['all']);
+  document.querySelectorAll('.pf-chip').forEach(c=>c.classList.remove('active'));
+  document.querySelector('.pf-chip[data-f="all"]').classList.add('active');
+  applyPlannerViz();
+}
+
+function toggleExpand(date){
+  const el=document.getElementById('exp-'+date);
+  if(el) el.classList.toggle('open');
+  setTimeout(sendHeight,100);
+}
+
+function badgeClass(t){
+  if(t==='exam') return 'b-exam';
+  if(t==='practicum') return 'b-prac';
+  if(t==='quiz') return 'b-quiz';
+  if(t==='unknown') return 'b-unknown';
+  return 'b-due';
+}
+
+function renderPlanner(){
+  const weeks=[...new Set(SCH.map(d=>d.wk))];
+  let html='';
+  weeks.forEach(w=>{
+    const wDays=SCH.filter(d=>d.wk===w);
+    const u=wDays.find(d=>d.unit&&d.unit!=='closed');
+    const uColor=u?U[u.unit]?.color||'#999':'#999';
+    const wkLabel=(w==='F')?'Final':'Week';
+    const isSingle=wDays.length<2;
+    html+=`<div class="week-planner-row" data-week="${w}">
+      <div class="wk-num" style="background:${uColor}">${wkLabel}<span class="wk-big">${w==='F'?'':w}</span></div>
+      <div class="week-days-wrap${isSingle?' single':''}">
+        ${wDays.slice(0,2).map((d,i)=>(i===1?'<div class="day-divider"></div>':'')+renderDayCard(d)).join('')}
+      </div>
+    </div>`;
+  });
+  document.getElementById('plannerRows').innerHTML=html;
+}
+
+function renderDayCard(d){
+  const dt=new Date(d.date+'T00:00:00');
+  const ds=dt.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  const typeStr=d.types.join(',');
+  const uColor=U[d.unit]?.color||'#ccc';
+  if(d.types.includes('closed')){
+    return `<div class="day-card closed-card" data-date="${d.date}" data-types="closed">
+      <div class="dc-date" style="color:#aaa;">${ds}</div>
+      <div class="dc-topic" style="color:#bbb;">${d.lec}</div>
+    </div>`;
+  }
+  const chips=d.due.length?d.due.map((item,i)=>{
+    const cls=badgeClass(d.types[i]||'');
+    return `<span class="badge ${cls}">${item}</span>`;
+  }).join(''):`<span class="badge b-none">Class as usual, nothing due</span>`;
+
+  return `<div class="day-card" data-date="${d.date}" data-types="${typeStr}" style="border-left-color:${uColor}" onclick="toggleExpand('${d.date}')">
+    <div class="dc-date">${ds}</div>
+    ${d.ch?`<div class="dc-ch">${d.ch}</div>`:''}
+    <div class="dc-topic">${d.lec}</div>
+    <div class="dc-chips">${chips}</div>
+    <div class="dc-expand" id="exp-${d.date}">
+      ${d.lab?`<div class="exp-row"><span class="exp-icon">🔬</span><span><strong>Lab:</strong> ${d.lab}</span></div>`:''}
+      ${d.lab&&d.date!=='2026-08-31'?`<div class="exp-row"><span class="exp-icon">📝</span><span>Prelab due 5:29 PM before lab</span></div>`:''}
+      ${d.due.length?`<div class="exp-row"><span class="exp-icon">📬</span><span><strong>Due:</strong> ${d.due.join(', ')}</span></div>`:''}
+    </div>
+  </div>`;
+}
+
+// ─── FULL SCHEDULE TABS ───────────────────────────────
+function showST(name,btn){
+  document.querySelectorAll('.sched-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sched-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sched-'+name).classList.add('active');
+  btn.classList.add('active');
+  setTimeout(sendHeight,100);
+}
+
+// ─── WEEK GROUPING HELPERS ─────────────────────────────
+function weekLabel(wk){ return wk==='F' ? 'Finals Week' : 'Week '+wk; }
+
+function weekDateRange(days){
+  const d1=new Date(days[0].date+'T00:00:00');
+  const d2=new Date(days[days.length-1].date+'T00:00:00');
+  const f=d1.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  const l=d2.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  return f===l ? f : f+' to '+l;
+}
+
+function groupByWeek(arr){
+  const map=new Map();
+  arr.forEach(d=>{
+    if(!map.has(d.wk)) map.set(d.wk,[]);
+    map.get(d.wk).push(d);
+  });
+  return [...map.entries()];
+}
+
+function dividerHTML(wk,days){
+  const u=days.find(d=>d.unit&&d.unit!=='closed');
+  const color=u?(U[u.unit]?.color||'#999'):'#999';
+  return `<div class="week-divider" style="border-left-color:${color}"><span class="wd-week">${weekLabel(wk)}</span><span class="wd-dates">${weekDateRange(days)}</span></div>`;
+}
+
+function dateBlock(dt){
+  const dayName=dt.toLocaleDateString('en-US',{weekday:'short'});
+  const dateNum=dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  return `<div class="sr-date"><span class="sr-day">${dayName}</span><span class="sr-datenum">${dateNum}</span></div>`;
+}
+
+function tint(hex,alpha){
+  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function renderLecture(){
+  const groups=groupByWeek(SCH);
+  let html='';
+  groups.forEach(([wk,days])=>{
+    html+=dividerHTML(wk,days);
+    days.forEach(d=>{
+      const dt=new Date(d.date+'T00:00:00');
+      if(d.types.includes('closed')){
+        html+=`<div class="sched-row lec-row closed-srow">${dateBlock(dt)}<div class="sr-topic">${d.lec}</div><div></div></div>`;
+        return;
+      }
+      const uColor=U[d.unit]?.color||'#ccc';
+      const badges=d.due.map((item,i)=>{
+        const cls=badgeClass(d.types[i]||'');
+        return `<span class="badge ${cls}">${item}</span>`;
+      }).join('');
+      html+=`<div class="sched-row lec-row" style="border-left-color:${uColor};background:${tint(uColor,0.06)}">
+        ${dateBlock(dt)}
+        <div><div class="sr-topic"><strong>${d.lec}</strong></div><div class="sr-ch">${d.ch}</div></div>
+        <div class="sr-badges">${badges}</div>
+      </div>`;
+    });
+  });
+  document.getElementById('rows-lecture').innerHTML=html;
+}
+
+function renderLab(){
+  const labDays=SCH.filter(d=>d.lab&&!d.types.includes('closed'));
+  const groups=groupByWeek(labDays);
+  let html='';
+  groups.forEach(([wk,days])=>{
+    html+=dividerHTML(wk,days);
+    days.forEach(d=>{
+      const dt=new Date(d.date+'T00:00:00');
+      const uColor=U[d.unit]?.color||'#ccc';
+      html+=`<div class="sched-row lab-row" style="border-left-color:${uColor};background:${tint(uColor,0.06)}">
+        ${dateBlock(dt)}
+        <div><div style="font-weight:700;margin-bottom:4px;">${d.lab}</div>
+        <div class="sr-ch">${d.labDesc}</div>
+        ${d.date!=='2026-08-31'?'<div class="sr-ch" style="margin-top:4px;color:#999;text-align:right;">📝 Prelab due 5:29 PM before lab</div>':''}
+        </div>
+      </div>`;
+    });
+  });
+  document.getElementById('rows-lab').innerHTML=html;
+}
+
+function renderCombined(){
+  const groups=groupByWeek(SCH);
+  let html='';
+  groups.forEach(([wk,days])=>{
+    html+=dividerHTML(wk,days);
+    days.forEach(d=>{
+      const dt=new Date(d.date+'T00:00:00');
+      if(d.types.includes('closed')){
+        html+=`<div class="sched-row combo-row closed-srow">${dateBlock(dt)}<div class="sr-topic">${d.lec}</div></div>`;
+        return;
+      }
+      const uColor=U[d.unit]?.color||'#ccc';
+      const badges=d.due.map((item,i)=>{
+        const cls=badgeClass(d.types[i]||'');
+        return `<span class="badge ${cls}">${item}</span>`;
+      }).join(' ');
+      html+=`<div class="sched-row combo-row" style="border-left-color:${uColor};background:${tint(uColor,0.06)}">
+        ${dateBlock(dt)}
+        <div>
+          <div class="sr-topic"><strong>📖 ${d.lec}</strong> <span class="sr-ch">&bull; ${d.ch}</span></div>
+          ${d.lab?`<div class="combo-lab-block">🔬 <strong>${d.lab}</strong></div>`:''}
+          ${badges?`<div class="sr-badges" style="margin-top:6px;">${badges}</div>`:''}
+        </div>
+      </div>`;
+    });
+  });
+  document.getElementById('rows-combined').innerHTML=html;
+}
+
+// ─── QUICK ANSWERS / FAQ ────────────────────────────────
+function renderFAQ(){
+  const today=new Date(); today.setHours(0,0,0,0);
+
+  function findNext(test){
+    for(const d of SCH){
+      const dt=new Date(d.date+'T00:00:00');
+      if(dt<today) continue;
+      for(let i=0;i<d.due.length;i++){
+        if(test(d.due[i],d.types[i])) return {date:d.date,item:d.due[i]};
+      }
+    }
+    return null;
+  }
+
+  function fmt(found){
+    if(!found) return `<div class="faq-a faq-none">None remaining</div>`;
+    const dt=new Date(found.date+'T00:00:00');
+    const ds=dt.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+    return `<div class="faq-a">${found.item}</div><div class="faq-date">${ds}</div>`;
+  }
+
+  const lecQuiz=findNext((i,t)=>t==='quiz'&&i.startsWith('Lecture Quiz'));
+  const lecExam=findNext((i,t)=>t==='exam');
+  const labQuiz=findNext((i,t)=>t==='quiz'&&!i.startsWith('Lecture Quiz'));
+  const prac=findNext((i,t)=>t==='practicum');
+  const postlab=findNext((i,t)=>t==='postlab');
+  const assign=findNext((i,t)=>t==='assignment'||t==='unknown');
+
+  const cols=[
+    {title:'📖 Lecture',color:'#9B59B6',items:[
+      {q:'Next quiz',ans:fmt(lecQuiz)},
+      {q:'Next exam',ans:fmt(lecExam)},
+    ]},
+    {title:'🔬 Lab',color:'#00B4B4',items:[
+      {q:'Next quiz',ans:fmt(labQuiz)},
+      {q:'Next practicum',ans:fmt(prac)},
+    ]},
+    {title:'📋 Post Labs and Assignments',color:'#E67E22',items:[
+      {q:'Next post lab set',ans:fmt(postlab)},
+      {q:'Next assignment due',ans:fmt(assign)},
+    ]},
+  ];
+
+  document.getElementById('faqColumns').innerHTML=cols.map(c=>`
+    <div class="faq-col" style="border-top-color:${c.color}">
+      <div class="faq-col-title">${c.title}</div>
+      ${c.items.map(it=>`<div class="faq-item"><div class="faq-q">${it.q}</div>${it.ans}</div>`).join('')}
+    </div>
+  `).join('');
+}
+
+function renderExams(){
+  let pracCount=0, examCount=0;
+  document.getElementById('rows-exams').innerHTML=SCH.filter(d=>d.types.includes('exam')||d.types.includes('practicum')).map(d=>{
+    const dt=new Date(d.date+'T00:00:00');
+    const ds=dt.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+    const isPrac=d.types.includes('practicum')&&!d.types.includes('exam');
+    const color=U[d.unit]?.color||'#888';
+    let label=d.lec;
+    let subline=ds+' &bull; '+d.ch;
+    let badgeText;
+    if(isPrac){
+      pracCount++;
+      label='Practicum '+pracCount;
+      subline=ds;
+      badgeText='P'+pracCount;
+    } else {
+      examCount++;
+      badgeText=(d.wk==='F')?'F':'E'+examCount;
+    }
+    return `<div class="sched-row eq-row" style="border-left-color:${color};background:${tint(color,0.08)}">
+      <div class="eq-badge" style="background:${color}">${badgeText}</div>
+      <div>
+        <div style="font-family:Nunito,sans-serif;font-weight:800;color:${color};font-size:0.95em;">${label}</div>
+        <div class="sr-ch" style="margin-top:3px;">${subline}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderQuizzes(){
+  document.getElementById('rows-quizzes').innerHTML=SCH.filter(d=>d.types.includes('quiz')).map(d=>{
+    const dt=new Date(d.date+'T00:00:00');
+    const ds=dt.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+    const quizItems=d.due.filter((_,i)=>d.types[i]==='quiz');
+    return `<div class="sched-row eq-row" style="border-left-color:#e2b900;background:#fefaed">
+      <div style="font-size:1.3em;padding-right:4px;">📝</div>
+      <div>
+        ${quizItems.map(q=>`<div style="font-weight:700;font-size:0.9em;margin-bottom:2px;">${q}</div>`).join('')}
+        <div class="sr-ch" style="margin-top:3px;">${ds} &bull; ${d.lec}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── INIT ─────────────────────────────────────────────
+renderUpdate();
+renderFAQ();
+renderCalGrids();
+renderPlanner();
+renderLecture();
+renderLab();
+renderCombined();
+renderExams();
+renderQuizzes();
+
+// Default the planner's "from" date to today so old items don't show by default
+(function(){
+  const todayISO=new Date().toISOString().split('T')[0];
+  const dfromEl=document.getElementById('dfrom');
+  if(dfromEl && todayISO > dfromEl.value){
+    dfromEl.value=todayISO;
+    applyPlannerViz();
+  }
+})();
+
+function sendHeight(){
+  var h=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight);
+  window.parent.postMessage({iframeHeight:h},'*');
+}
+window.addEventListener('load',sendHeight);
+window.addEventListener('resize',sendHeight);
+[400,900,1800].forEach(t=>setTimeout(sendHeight,t));
 </script>
 <!-- module-nav -->
 <nav class="modnav" id="modnav" aria-label="Module pages">

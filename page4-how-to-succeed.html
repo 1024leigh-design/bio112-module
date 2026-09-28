@@ -258,6 +258,24 @@ window.addEventListener('load', () => {
   }, 300);
 });
 </script>
+
+<script>
+  // Tell parent iframe to resize to fit content
+  function sendHeight() {
+    var h = document.documentElement.scrollHeight || document.body.scrollHeight;
+    window.parent.postMessage({ iframeHeight: h }, '*');
+  }
+  window.addEventListener('load', sendHeight);
+  window.addEventListener('resize', sendHeight);
+  // Also fire after images load
+  document.addEventListener('DOMContentLoaded', function() {
+    var imgs = document.querySelectorAll('img');
+    imgs.forEach(function(img) { img.addEventListener('load', sendHeight); });
+    setTimeout(sendHeight, 500);
+    setTimeout(sendHeight, 1500);
+  });
+</script>
+
 <!-- module-nav -->
 <nav class="modnav" id="modnav" aria-label="Module pages">
   <div class="modnav-card">
