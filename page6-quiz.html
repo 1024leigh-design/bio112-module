@@ -188,6 +188,29 @@
     h1 { font-size: 1.6em; }
   }
 </style>
+<style id="modnav-css">
+  .modnav { max-width: 860px; margin: 10px auto 36px; padding: 0 16px; font-family: 'Nunito', 'Nunito Sans', sans-serif; clear: both; }
+  .modnav-card { background: white; border-radius: 18px; padding: 18px 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.10); }
+  .modnav-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .modnav-label { font-weight: 800; font-size: 0.8em; letter-spacing: 1.5px; text-transform: uppercase; color: #007a7a; }
+  .modnav-count { font-weight: 700; font-size: 0.85em; color: #777; }
+  .modnav-bar { height: 6px; border-radius: 3px; background: #e6f4f4; margin-bottom: 14px; overflow: hidden; }
+  .modnav-bar span { display: block; height: 100%; background: linear-gradient(to right, #00B4B4, #9B59B6); border-radius: 3px; }
+  .modnav-pages { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .modnav-pages a { display: inline-flex; align-items: center; gap: 5px; padding: 6px 11px; border-radius: 20px; border: 2px solid #cfeeee; background: #f4fbfb; color: #1a1a2e; font-weight: 700; font-size: 0.8em; text-decoration: none; transition: transform .15s, border-color .15s; }
+  .modnav-pages a:hover { transform: translateY(-2px); border-color: #00B4B4; }
+  .modnav-pages a .n { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: #00B4B4; color: white; font-size: 0.78em; }
+  .modnav-pages a.here { background: linear-gradient(135deg, #00B4B4, #9B59B6); border-color: transparent; color: white; }
+  .modnav-pages a.here .n { background: white; color: #007a7a; }
+  .modnav-btns { display: flex; justify-content: space-between; gap: 12px; }
+  .modnav-btn { flex: 1; display: flex; flex-direction: column; padding: 12px 18px; border-radius: 14px; text-decoration: none; font-weight: 800; transition: transform .15s, box-shadow .15s; }
+  .modnav-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.15); }
+  .modnav-btn small { font-weight: 700; font-size: 0.75em; opacity: .85; letter-spacing: 1px; text-transform: uppercase; }
+  .modnav-btn.prev { background: #f0fafa; color: #007a7a; border: 2px solid #cfeeee; text-align: left; }
+  .modnav-btn.next { background: linear-gradient(135deg, #00B4B4, #9B59B6); color: white; text-align: right; }
+  .modnav-btn.ghost { visibility: hidden; }
+  @media (max-width: 560px) { .modnav-btns { flex-direction: column-reverse; } .modnav-btn.ghost { display: none; } }
+</style>
 </head>
 <body>
 
@@ -261,5 +284,15 @@ function toggleDone(el) {
   el.querySelector('.check-box').textContent = el.classList.contains('done') ? '✓' : '';
 }
 </script>
+<!-- module-nav -->
+<nav class="modnav" id="modnav" aria-label="Module pages">
+  <div class="modnav-card">
+    <div class="modnav-top"><span class="modnav-label">Getting Started module</span><span class="modnav-count">Page 6 of 6</span></div>
+    <div class="modnav-bar"><span style="width:100%"></span></div>
+    <div class="modnav-pages"><a href="page1-meet-dr-h.html"><span class="n">1</span>Meet Dr. H</a><a href="page2-syllabus.html"><span class="n">2</span>Syllabus</a><a href="page3-calendar.html"><span class="n">3</span>Calendar</a><a href="page4-how-to-succeed.html"><span class="n">4</span>How to Succeed</a><a href="page5-lab-safety.html"><span class="n">5</span>Lab Safety</a><a href="page6-quiz.html" class="here" aria-current="page"><span class="n">6</span>Safety Quiz</a></div>
+    <div class="modnav-btns"><a class="modnav-btn prev" href="page5-lab-safety.html"><small>← Back</small>Lab Safety</a><a class="modnav-btn next" href="page1-meet-dr-h.html"><small>You finished the module! ↺</small>Back to the start</a></div>
+  </div>
+</nav>
+<!-- /module-nav -->
 </body>
 </html>
