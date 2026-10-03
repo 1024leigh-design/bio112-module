@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mystery Microbe</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --coral:#FF6B6B; --teal:#4ECDC4; --yellow:#FFE66D; --purple:#C3B1E1;
+  --bg:#F8F9FF; --dark:#2D2D2D; --gray:#e0e0e0;
+  --coral-dark:#e55555; --teal-dark:#38b5ad; --yellow-dark:#e6cf50; --purple-dark:#a898cc;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh}
+#app{max-width:960px;margin:0 auto;padding:12px 16px}
+header{text-align:center;padding:16px 0 8px}
+header h1{font-size:2rem;font-weight:900;color:var(--coral)}
+header p{font-size:.95rem;color:#666;margin-top:4px}
+#hud{display:flex;justify-content:space-between;align-items:center;
+  background:#fff;border-radius:16px;padding:12px 20px;margin:12px 0;
+  box-shadow:0 2px 12px rgba(0,0,0,.08);flex-wrap:wrap;gap:8px}
+.hud-block{text-align:center}
+.hud-label{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#999}
+.hud-val{font-size:2rem;font-weight:900;line-height:1}
+.hud-val.score{color:var(--coral)}
+.hud-val.total{color:var(--teal)}
+.hud-val.count{color:var(--purple)}
+#phase-badge{font-size:.8rem;font-weight:700;background:var(--yellow);
+  padding:4px 12px;border-radius:20px;white-space:nowrap}
+#feedback-box{min-height:40px;text-align:center;font-size:1.05rem;font-weight:700;
+  padding:8px;border-radius:12px;transition:all .3s}
+#feedback-box.positive{background:#d4edda;color:#155724}
+#feedback-box.negative{background:#fff3cd;color:#856404}
+#feedback-box.error{background:#f8d7da;color:#721c24}
+#feedback-box.neutral{background:transparent;color:#666}
+#guess-area{display:flex;gap:8px;margin:12px 0;align-items:center;flex-wrap:wrap}
+#guess-input{flex:1;min-width:200px;padding:12px 16px;border:2px solid var(--purple);
+  border-radius:12px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:600;
+  background:#fff;color:var(--dark)}
+#guess-input:focus{outline:none;border-color:var(--coral);box-shadow:0 0 0 3px rgba(255,107,107,.2)}
+#guess-btn{padding:12px 24px;background:var(--coral);color:#fff;border:none;
+  border-radius:12px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;
+  cursor:pointer;transition:background .2s,transform .1s;white-space:nowrap}
+#guess-btn:hover{background:var(--coral-dark)}
+#guess-btn:active{transform:scale(.97)}
+#end-btn{padding:12px 24px;background:#fff;color:#999;border:2px solid #e0e0e0;
+  border-radius:12px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:700;
+  cursor:pointer;transition:all .2s;white-space:nowrap}
+#end-btn:hover{border-color:var(--coral);color:var(--coral)}
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 10px;justify-content:center}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:.78rem;font-weight:700}
+.legend-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+#test-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0}
+@media(max-width:640px){#test-grid{grid-template-columns:repeat(2,1fr)}}
+.test-btn{padding:8px 10px;border:2px solid transparent;border-radius:12px;
+  font-family:'Nunito',sans-serif;font-size:.82rem;font-weight:700;
+  cursor:pointer;transition:all .2s;text-align:left;min-height:56px;
+  display:flex;flex-direction:column;gap:2px;line-height:1.2}
+.test-btn .btn-name{font-weight:800}
+.test-btn .btn-result{font-size:.75rem;font-weight:600;opacity:.9}
+.test-btn.cat-M{background:var(--teal);color:#1a5e5b}
+.test-btn.cat-P{background:var(--purple);color:#3d2d6b}
+.test-btn.cat-B{background:var(--yellow);color:#5a4800}
+.test-btn.cat-C{background:var(--coral);color:#6b1010}
+.test-btn.cat-N{background:var(--gray);color:#777;opacity:.7;cursor:default}
+.test-btn.cat-M.revealed{border-color:#1a8f88;background:#3ab8b1}
+.test-btn.cat-P.revealed{border-color:#7a60b8;background:#b09ad6}
+.test-btn.cat-B.revealed{border-color:#c8a800;background:#f5da50}
+.test-btn.cat-C.revealed{border-color:#c44040;background:#f05050}
+.test-btn.cat-N.revealed{border-color:#bbb;background:#d4d4d4;opacity:.85}
+.test-btn:hover:not(.cat-N){filter:brightness(1.05);transform:translateY(-1px)}
+.test-btn:active:not(.cat-N){transform:scale(.98)}
+.test-btn.revealed:hover{transform:none;filter:none}
+.pts-badge{position:absolute;top:4px;right:6px;font-size:.7rem;font-weight:900;
+  background:rgba(0,0,0,.15);border-radius:6px;padding:1px 5px}
+.test-btn{position:relative}
+#modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
+  z-index:100;align-items:center;justify-content:center;padding:16px}
+#modal-overlay.active{display:flex}
+#modal{background:#fff;border-radius:20px;padding:28px;max-width:540px;width:100%;
+  max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.2)}
+#modal h2{font-size:1.6rem;font-weight:900;color:var(--coral);text-align:center;margin-bottom:8px}
+#modal .summary-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.stat-card{background:var(--bg);border-radius:12px;padding:14px;text-align:center}
+.stat-card .val{font-size:2rem;font-weight:900;color:var(--teal)}
+.stat-card .lbl{font-size:.8rem;font-weight:700;color:#888;text-transform:uppercase}
+#leaderboard-section{margin-top:16px}
+#leaderboard-section h3{font-size:1.1rem;font-weight:800;margin-bottom:10px;color:var(--dark)}
+#name-row{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}
+#player-name-input{flex:1;min-width:150px;padding:10px 14px;border:2px solid var(--purple);
+  border-radius:10px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:600}
+#player-name-input:focus{outline:none;border-color:var(--teal)}
+#save-btn{padding:10px 20px;background:var(--teal);color:#fff;border:none;
+  border-radius:10px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:800;cursor:pointer}
+#save-btn:hover{background:var(--teal-dark)}
+#save-btn:disabled{background:#ccc;cursor:default}
+#lb-table{width:100%;border-collapse:collapse;font-size:.85rem}
+#lb-table th{text-align:left;padding:6px 8px;border-bottom:2px solid #eee;
+  font-size:.75rem;text-transform:uppercase;color:#999;font-weight:700}
+#lb-table td{padding:7px 8px;border-bottom:1px solid #f0f0f0}
+#lb-table tr:first-child td{font-weight:800}
+.lb-rank{font-weight:900;color:var(--coral);width:28px}
+#play-again-btn{display:block;width:100%;margin-top:16px;padding:14px;
+  background:var(--coral);color:#fff;border:none;border-radius:14px;
+  font-family:'Nunito',sans-serif;font-size:1.1rem;font-weight:900;cursor:pointer}
+#play-again-btn:hover{background:var(--coral-dark)}
+canvas#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:200}
+.na-label{font-size:.7rem;font-style:italic;opacity:.85}
+#skip-btn{padding:8px 16px;background:transparent;color:#aaa;border:1px solid #ddd;
+  border-radius:10px;font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:700;
+  cursor:pointer;margin-left:auto;display:block;margin-top:6px}
+#skip-btn:hover{color:var(--coral);border-color:var(--coral)}
+</style>
+</head>
+<body>
+<canvas id="confetti-canvas"></canvas>
+<div id="app">
+  <header>
+    <h1>🦠 Mystery Microbe</h1>
+    <p>Reveal clues, guess the organism, rack up points!</p>
+  </header>
+  <div id="hud">
+    <div class="hud-block">
+      <div class="hud-label">This Microbe</div>
+      <div class="hud-val score" id="cur-score">20</div>
+    </div>
+    <div class="hud-block">
+      <div class="hud-val count" id="microbe-count">Microbe #1</div>
+      <div id="phase-badge">Investigating 🔬</div>
+    </div>
+    <div class="hud-block">
+      <div class="hud-label">Total Score</div>
+      <div class="hud-val total" id="total-score">0</div>
+    </div>
+  </div>
+  <div id="feedback-box" class="neutral">Click a test to reveal a clue, then type your guess! 🧫</div>
+  <div id="guess-area">
+    <input id="guess-input" type="text" placeholder="Genus species (e.g. Escherichia coli)" autocomplete="off" autocorrect="off" spellcheck="false">
+    <button id="guess-btn">Guess! 🔬</button>
+    <button id="end-btn">End Session</button>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--teal)"></div>Morphology</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>Physiology</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--yellow)"></div>Biochemical</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--coral)"></div>Clinical</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--gray)"></div>N/A</div>
+  </div>
+  <div id="test-grid"></div>
+  <button id="skip-btn">Skip this microbe (−0 pts)</button>
+</div>
+
+<div id="modal-overlay">
+  <div id="modal">
+    <h2>Session Complete! 🎉</h2>
+    <div class="summary-stats">
+      <div class="stat-card"><div class="val" id="s-total">0</div><div class="lbl">Total Points</div></div>
+      <div class="stat-card"><div class="val" id="s-count">0</div><div class="lbl">Microbes Solved</div></div>
+      <div class="stat-card"><div class="val" id="s-avg">0</div><div class="lbl">Avg per Microbe</div></div>
+      <div class="stat-card"><div class="val" id="s-best">0</div><div class="lbl">Best Round</div></div>
+    </div>
+    <div id="leaderboard-section">
+      <h3>🏆 Leaderboard</h3>
+      <div id="name-row">
+        <input id="player-name-input" type="text" placeholder="Enter your name to save score" maxlength="30">
+        <button id="save-btn">Save Score</button>
+      </div>
+      <table id="lb-table">
+        <thead><tr>
+          <th>#</th><th>Name</th><th>Total</th><th>Microbes</th><th>Avg</th><th>Date</th>
+        </tr></thead>
+        <tbody id="lb-body"><tr><td colspan="6" style="text-align:center;color:#aaa;padding:16px">Loading leaderboard... 🔄</td></tr></tbody>
+      </table>
+    </div>
+    <button id="play-again-btn">Play Again! 🦠</button>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// ORGANISM DATA
+// Each test: [name, result, category('M'|'P'|'B'|'C'|'N'), pts]
+// pts: 0=N/A (no cost), 1=normal, 5=unique disease
+// ─────────────────────────────────────────────────────────────
+const ORGANISMS = [
+{name:"Staphylococcus aureus",tests:[
+["Gram stain","Gram-positive","M",1],
+["Cell shape","Coccus","M",1],
+["G+C content / Phylum","Low G+C — Firmicute (Bacillota)","M",1],
+["Oxygen requirement","Facultative anaerobe","P",1],
+["Spore forming?","Non-spore-forming","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Non-motile","P",1],
+["Catalase","Positive","B",1],
+["Coagulase","Positive — unique among clinically relevant staphylococci","B",1],
+["Oxidase","Negative","B",1],
+["Urease","Variable — not diagnostically useful here","B",1],
+["Lactose fermentation","N/A — not Enterobacteriaceae","N",0],
+["IMViC panel","N/A — not Enterobacteriaceae","N",0],
+["H2S production","Negative","B",1],
+["Grows on standard media?","Yes — grows on mannitol salt agar (MSA); ferments mannitol → yellow colonies","C",1],
+["Key virulence factor","TSST-1, Panton-Valentine leukocidin, hemolysin, exfoliatin, enterotoxin","C",1],
+["Disease(s) caused","Toxic shock syndrome, scalded skin syndrome, impetigo, osteomyelitis, folliculitis","C",1],
+["Cell arrangement","Grape-like clusters","M",1],
+["Salt tolerance","Grows in up to 10% NaCl — highly salt-tolerant","B",1],
+["MSA result","Yellow colonies on mannitol salt agar — ferments mannitol","B",1]
+]},
+{name:"Staphylococcus saprophyticus",tests:[
+["Gram stain","Gram-positive","M",1],
+["Cell shape","Coccus","M",1],
+["G+C content / Phylum","Low G+C — Firmicute (Bacillota)","M",1],
+["Oxygen requirement","Facultative anaerobe","P",1],
+["Spore forming?","Non-spore-forming","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Non-motile","P",1],
+["Catalase","Positive","B",1],
+["Coagulase","Negative — key differentiator from S. aureus","B",1],
+["Oxidase","Negative","B",1],
+["Urease","Positive — helps it survive in the urinary tract","B",1],
+["Lactose fermentation","N/A — not Enterobacteriaceae","N",0],
+["IMViC panel","N/A — not Enterobacteriaceae","N",0],
+["H2S production","N/A — not Enterobacteriaceae","N",0],
+["Grows on standard media?","Grows on MSA but does NOT ferment mannitol (stays pink/red — key difference from S. aureus)","C",1],
+["Key virulence factor","Urease production; adhesins for urinary tract attachment","C",1],
+["Disease(s) caused","UTI — 2nd most common cause, especially in young sexually active women","C",5],
+["Cell arrangement","Clusters","M",1],
+["Novobiocin resistance","Resistant to novobiocin — differentiates from S. epidermidis","B",1],
+["Normal flora site","Normal urogenital flora","C",1]
+]},
+{name:"Streptococcus pyogenes",tests:[
+["Gram stain","Gram-positive","M",1],
+["Cell shape","Coccus","M",1],
+["G+C content / Phylum","Low G+C — Firmicute (Bacillota)","M",1],
+["Oxygen requirement","Facultative anaerobe","P",1],
+["Spore forming?","Non-spore-forming","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Non-motile","P",1],
+["Catalase","Negative — key differentiator from Staphylococcus","B",1],
+["Coagulase","Negative","B",1],
+["Oxidase","Negative","B",1],
+["Urease","Negative","B",1],
+["Lactose fermentation","N/A — not Enterobacteriaceae","N",0],
+["IMViC panel","N/A — not Enterobacteriaceae","N",0],
+["H2S production","N/A — not Enterobacteriaceae","N",0],
+["Grows on standard media?","Requires enriched (blood) media for best growth","C",1],
+["Key virulence factor","Streptolysin, streptokinase, erythrogenic toxin","C",1],
+["Disease(s) caused","#1 cause of strep throat; also scarlet fever, rheumatic fever","C",1],
+["Cell arrangement","Grows in chains","M",1],
+["Quellung reaction","Negative — no capsule (differentiates from S. pneumoniae)","B",1],
+["Normal flora?","NOT normal flora — always considered pathogenic when isolated","C",1]
+]},
+{name:"Streptococcus pneumoniae",tests:[
+["Gram stain","Gram-positive","M",1],
+["Cell shape","Coccus","M",1],
+["G+C content / Phylum","Low G+C — Firmicute (Bacillota)","M",1],
+["Oxygen requirement","Facultative anaerobe","P",1],
+["Spore forming?","Non-spore-forming","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Non-motile","P",1],
+["Catalase","Negative","B",1],
+["Coagulase","Negative","B",1],
+["Oxidase","Negative","B",1],
+["Urease","Negative","B",1],
+["Lactose fermentation","N/A — not Enterobacteriaceae","N",0],
+["IMViC panel","N/A — not Enterobacteriaceae","N",0],
+["H2S production","N/A — not Enterobacteriaceae","N",0],
+["Grows on standard media?","Requires chocolate agar (blood-enriched) — fastidious","C",1],
+["Key virulence factor","Polysaccharide capsule — inhibits phagocytosis","C",1],
+["Disease(s) caused","Community-acquired pneumonia, bacterial meningitis, otitis media","C",1],
+["Cell arrangement","Diplococci — lancet-shaped pairs","M",1],
+["Quellung reaction","Positive — capsule swells with specific antibodies; diagnostic","B",1],
+["Optochin sensitivity","Sensitive to optochin — differentiates from other alpha-hemolytic strep","B",1]
+]},
+{name:"Clostridium tetani",tests:[
+["Gram stain","Gram-positive","M",1],
+["Cell shape","Rod (bacillus)","M",1],
+["G+C content / Phylum","Low G+C — Firmicute (Bacillota)","M",1],
+["Oxygen requirement","Obligate anaerobe","P",1],
+["Spore forming?","Spore-forming — terminal spores give a drumstick appearance","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Motile via peritrichous flagella","P",1],
+["Catalase","Negative","B",1],
+["Coagulase","N/A — staph-specific test","N",0],
+["Oxidase","Negative","B",1],
+["Urease","Negative","B",1],
+["Lactose fermentation","N/A — not Enterobacteriaceae","N",0],
+["IMViC panel","N/A — not Enterobacteriaceae","N",0],
+["H2S production","N/A — not Enterobacteriaceae","N",0],
+["Grows on standard media?","Grows on standard anaerobic media","C",1],
+["Key virulence factor","Tetanospasmin — blocks inhibitory neurotransmitters (glycine, GABA); causes SPASTIC paralysis (muscles lock up)","C",1],
+["Disease(s) caused","Tetanus (lockjaw)","C",5],
+["Spore location","Terminal spores — at the END of the cell, drumstick shape","M",1],
+["Environmental reservoir","Found in soil and on rusty metal objects","C",1],
+["Gelatin hydrolysis","Positive","B",1]
+]},
+{name:"Clostridium botulinum",tests:[
+["Gram stain","Gram-positive","M",1],
+["Cell shape","Rod (bacillus)","M",1],
+["G+C content / Phylum","Low G+C — Firmicute (Bacillota)","M",1],
+["Oxygen requirement","Obligate anaerobe","P",1],
+["Spore forming?","Spore-forming — subterminal spores","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Motile via peritrichous flagella","P",1],
+["Catalase","Negative","B",1],
+["Coagulase","N/A — staph-specific test","N",0],
+["Oxidase","Negative","B",1],
+["Urease","Negative","B",1],
+["Lactose fermentation","N/A — not Enterobacteriaceae","N",0],
+["IMViC panel","N/A — not Enterobacteriaceae","N",0],
+["H2S production","N/A — not Enterobacteriaceae","N",0],
+["Grows on standard media?","Grows on standard anaerobic media; slower growing than C. perfringens","C",1],
+["Key virulence factor","Botulinum neurotoxin — blocks acetylcholine release; causes FLACCID paralysis (muscles go limp — opposite of tetanus)","C",1],
+["Disease(s) caused","Botulism — foodborne, infant, wound","C",5],
+["Environmental reservoir","Found in soil, water, and improperly canned foods","C",1],
+["Infant exposure risk","Infant botulism linked to honey ingestion — spores colonize infant gut","C",1],
+["Lipase activity","Positive","B",1]
+]},
+{name:"Clostridioides difficile",tests:[
+["Gram stain","Gram-positive","M",1],
+["Cell shape","Rod (bacillus)","M",1],
+["G+C content / Phylum","Low G+C — Firmicute (Bacillota)","M",1],
+["Oxygen requirement","Obligate anaerobe","P",1],
+["Spore forming?","Spore-forming — spores highly resistant to cleaning agents and disinfectants","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Non-motile","P",1],
+["Catalase","Negative","B",1],
+["Coagulase","N/A — staph-specific test","N",0],
+["Oxidase","Negative","B",1],
+["Urease","Negative","B",1],
+["Lactose fermentation","N/A — not Enterobacteriaceae","N",0],
+["IMViC panel","N/A — not Enterobacteriaceae","N",0],
+["H2S production","N/A — not Enterobacteriaceae","N",0],
+["Grows on standard media?","Requires selective CCFA agar — NOT standard media","C",1],
+["Key virulence factor","Toxin A (enterotoxin) and Toxin B (cytotoxin) — damage intestinal lining","C",1],
+["Disease(s) caused","Antibiotic-associated colitis (C. diff colitis)","C",5],
+["Clinical context","Occurs almost exclusively after broad-spectrum antibiotic use disrupts normal gut flora","C",1],
+["Culture odor","Produces a distinctive \"horse manure\" odor in culture","C",1],
+["Treatment","Vancomycin (oral) or fecal microbiota transplant","C",1]
+]},
+{name:"Listeria monocytogenes",tests:[
+["Gram stain","Gram-positive","M",1],
+["Cell shape","Rod (bacillus)","M",1],
+["G+C content / Phylum","Low G+C — Firmicute (Bacillota)","M",1],
+["Oxygen requirement","Facultative anaerobe","P",1],
+["Spore forming?","Non-spore-forming","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Motile — tumbling motility at room temperature; non-motile at 37°C","P",1],
+["Catalase","Positive","B",1],
+["Coagulase","Negative","B",1],
+["Oxidase","Negative","B",1],
+["Urease","Negative","B",1],
+["Lactose fermentation","N/A — not Enterobacteriaceae","N",0],
+["IMViC panel","N/A — not Enterobacteriaceae","N",0],
+["H2S production","N/A — not Enterobacteriaceae","N",0],
+["Grows on standard media?","Yes — uniquely grows at refrigerator temperature (4°C)","C",1],
+["Key virulence factor","Listeriolysin O — allows escape from phagosomes; facultative intracellular pathogen","C",1],
+["Disease(s) caused","Listeriosis","C",5],
+["Temperature tolerance","Cold-tolerant — one of very few pathogens that grow at refrigerator temperatures","C",1],
+["High-risk populations","Especially dangerous in pregnancy, newborns, elderly, and immunocompromised","C",1],
+["Food association","Linked to unpasteurized dairy, deli meats, soft cheeses, smoked seafood","C",1]
+]},
+{name:"Bacillus subtilis",tests:[
+["Gram stain","Gram-positive","M",1],
+["Cell shape","Rod (bacillus)","M",1],
+["G+C content / Phylum","Low G+C — Firmicute (Bacillota)","M",1],
+["Oxygen requirement","Aerobic to facultatively anaerobic","P",1],
+["Spore forming?","Spore-forming — central/subterminal spores","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Motile via peritrichous flagella","P",1],
+["Catalase","Positive","B",1],
+["Coagulase","Negative","B",1],
+["Oxidase","Variable","B",1],
+["Urease","Negative","B",1],
+["Lactose fermentation","N/A — not Enterobacteriaceae","N",0],
+["IMViC panel","N/A — not Enterobacteriaceae","N",0],
+["H2S production","N/A — not Enterobacteriaceae","N",0],
+["Grows on standard media?","Yes — large flat spreading colonies on standard media","C",1],
+["Key virulence factor / use","Not a significant pathogen — used in probiotics and industrial applications","C",1],
+["Disease(s) caused","Rarely pathogenic — used as probiotic","C",1],
+["Voges-Proskauer (VP) test","Positive — produces acetoin","B",1],
+["Mannitol fermentation","Positive","B",1],
+["Starch hydrolysis","Positive — produces amylase","B",1]
+]},
+{name:"Bacillus cereus",tests:[
+["Gram stain","Gram-positive","M",1],
+["Cell shape","Rod (bacillus)","M",1],
+["G+C content / Phylum","Low G+C — Firmicute (Bacillota)","M",1],
+["Oxygen requirement","Aerobic to facultatively anaerobic","P",1],
+["Spore forming?","Spore-forming — spores survive cooking","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Motile via peritrichous flagella","P",1],
+["Catalase","Positive","B",1],
+["Coagulase","Negative","B",1],
+["Oxidase","Variable","B",1],
+["Urease","Variable","B",1],
+["Lactose fermentation","N/A — not Enterobacteriaceae","N",0],
+["IMViC panel","N/A — not Enterobacteriaceae","N",0],
+["H2S production","N/A — not Enterobacteriaceae","N",0],
+["Grows on standard media?","Yes — grows on standard media and MYP agar","C",1],
+["Key virulence factor","Two toxins: emetic toxin (vomiting) and enterotoxin (diarrhea) — both heat stable","C",1],
+["Disease(s) caused","Food poisoning — classically linked to reheated or stale rice","C",5],
+["Voges-Proskauer (VP) test","Positive","B",1],
+["Mannitol fermentation","Negative — key differentiator from B. subtilis","B",1],
+["Lecithinase","Positive — precipitate on egg yolk agar","B",1]
+]},
+{name:"Bacillus megaterium",tests:[
+["Gram stain","Gram-positive","M",1],
+["Cell shape","Rod (bacillus) — one of the largest known bacteria","M",1],
+["G+C content / Phylum","Low G+C — Firmicute (Bacillota)","M",1],
+["Oxygen requirement","Aerobic to facultatively anaerobic","P",1],
+["Spore forming?","Spore-forming — large central spores","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Motile via peritrichous flagella","P",1],
+["Catalase","Positive","B",1],
+["Coagulase","Negative","B",1],
+["Oxidase","Negative","B",1],
+["Urease","Negative","B",1],
+["Lactose fermentation","N/A — not Enterobacteriaceae","N",0],
+["IMViC panel","N/A — not Enterobacteriaceae","N",0],
+["H2S production","N/A — not Enterobacteriaceae","N",0],
+["Grows on standard media?","Yes — unusually large colonies on standard media","C",1],
+["Key virulence factor / use","Not a significant pathogen — used in industrial biotechnology and research","C",1],
+["Disease(s) caused","Rarely pathogenic — occasional opportunistic infections; model research organism","C",1],
+["Voges-Proskauer (VP) test","Negative — key differentiator from B. subtilis and B. cereus","B",1],
+["Mannitol fermentation","Negative — does not ferment mannitol","B",1],
+["Cell size","Unusually large — one of the largest known bacteria; visible under basic light microscopy","M",1]
+]},
+{name:"Mycobacterium tuberculosis",tests:[
+["Gram stain","Gram-positive (stains weakly due to waxy mycolic acid-rich cell wall)","M",1],
+["Cell shape","Rod (bacillus)","M",1],
+["G+C content / Phylum","High G+C — Actinobacteria","M",1],
+["Oxygen requirement","Obligate aerobe — thrives in oxygen-rich lung tissue","P",1],
+["Spore forming?","Non-spore-forming","P",1],
+["Acid-fast stain","Acid-fast POSITIVE — mycolic acid-rich cell wall retains carbol fuchsin (Ziehl-Neelsen stain)","P",1],
+["Motility","Non-motile","P",1],
+["Catalase","Positive (weakly)","B",1],
+["Coagulase","N/A — staph-specific test","N",0],
+["Oxidase","Negative","B",1],
+["Urease","Positive","B",1],
+["Lactose fermentation","N/A — not Enterobacteriaceae","N",0],
+["IMViC panel","N/A — not Enterobacteriaceae","N",0],
+["H2S production","N/A — not Enterobacteriaceae","N",0],
+["Grows on standard media?","No — requires Lowenstein-Jensen (egg-based) media; colonies take 3-8 weeks to appear","C",1],
+["Key virulence factor","Survives and replicates inside macrophages in the lung; forms granulomas; can stay latent for years","C",1],
+["Disease(s) caused","Tuberculosis (TB)","C",5],
+["Growth rate","Extremely slow-growing — one of the slowest known bacterial pathogens","C",1],
+["Niacin production","Positive — niacin test differentiates M. tuberculosis from other mycobacteria","B",1],
+["Transmission","Airborne — spread via respiratory aerosols; can remain latent in granulomas for years","C",1]
+]},
+{name:"Corynebacterium diphtheriae",tests:[
+["Gram stain","Gram-positive","M",1],
+["Cell shape","Rod (bacillus) — club-shaped, wider at one end","M",1],
+["G+C content / Phylum","High G+C — Actinobacteria","M",1],
+["Oxygen requirement","Aerobic","P",1],
+["Spore forming?","Non-spore-forming","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Non-motile","P",1],
+["Catalase","Positive","B",1],
+["Coagulase","N/A — staph-specific test","N",0],
+["Oxidase","Negative","B",1],
+["Urease","Negative","B",1],
+["Lactose fermentation","N/A — not Enterobacteriaceae","N",0],
+["IMViC panel","N/A — not Enterobacteriaceae","N",0],
+["H2S production","N/A — not Enterobacteriaceae","N",0],
+["Grows on standard media?","Requires Loeffler serum media or tellurite agar — NOT standard","C",1],
+["Key virulence factor","Diphtheria toxin encoded by bacteriophage — blocks protein synthesis by inactivating EF-2","C",1],
+["Disease(s) caused","Diphtheria (leathery tongue disease) — tough gray pseudomembrane in the throat","C",5],
+["Cell arrangement","Chinese letter / V / L / palisade arrangement","M",1],
+["Elek test","Positive — immunodiffusion test confirms toxin production","B",1],
+["Metachromatic granules","Positive — polyphosphate granules (Babes-Ernst granules) visible on staining","M",1]
+]},
+{name:"Neisseria gonorrhoeae",tests:[
+["Gram stain","Gram-negative","M",1],
+["Cell shape","Coccus","M",1],
+["G+C content / Phylum","N/A — G+C classification used for gram-positives","N",0],
+["Oxygen requirement","Aerobic","P",1],
+["Spore forming?","Non-spore-forming","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Non-motile","P",1],
+["Catalase","Positive","B",1],
+["Coagulase","N/A — staph-specific test","N",0],
+["Oxidase","Positive — key test for Neisseria","B",1],
+["Urease","Negative","B",1],
+["Lactose fermentation","Negative","B",1],
+["IMViC panel","N/A — not Enterobacteriaceae","N",0],
+["H2S production","Negative","B",1],
+["Grows on standard media?","No — fastidious; requires chocolate agar or Thayer-Martin agar","C",1],
+["Key virulence factor","Pili for mucosal attachment; IgA protease to evade immune response","C",1],
+["Disease(s) caused","Gonorrhea; conjunctival gonorrhea in newborns","C",1],
+["Cell arrangement","Diplococci — kidney-bean shaped pairs","M",1],
+["Glucose fermentation","Positive — ferments glucose but NOT maltose","B",1],
+["Maltose fermentation","Negative — does NOT ferment maltose (key difference from N. meningitidis)","B",1]
+]},
+{name:"Neisseria meningitidis",tests:[
+["Gram stain","Gram-negative","M",1],
+["Cell shape","Coccus","M",1],
+["G+C content / Phylum","N/A — G+C classification used for gram-positives","N",0],
+["Oxygen requirement","Aerobic","P",1],
+["Spore forming?","Non-spore-forming","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Non-motile","P",1],
+["Catalase","Positive","B",1],
+["Coagulase","N/A — staph-specific test","N",0],
+["Oxidase","Positive — key test for Neisseria","B",1],
+["Urease","Negative","B",1],
+["Lactose fermentation","Negative","B",1],
+["IMViC panel","N/A — not Enterobacteriaceae","N",0],
+["H2S production","Negative","B",1],
+["Grows on standard media?","No — requires chocolate agar; fastidious","C",1],
+["Key virulence factor","Polysaccharide capsule prevents phagocytosis; LPS endotoxin triggers septic shock","C",1],
+["Disease(s) caused","Meningococcal meningitis; septicemia with petechial rash","C",1],
+["Cell arrangement","Diplococci — kidney-bean shaped pairs (identical morphology to N. gonorrhoeae)","M",1],
+["Glucose fermentation","Positive — ferments both glucose AND maltose","B",1],
+["Maltose fermentation","Positive — ferments maltose (key difference from N. gonorrhoeae)","B",1]
+]},
+{name:"Bordetella pertussis",tests:[
+["Gram stain","Gram-negative","M",1],
+["Cell shape","Coccobacillus — very small rod, almost round","M",1],
+["G+C content / Phylum","N/A — G+C classification used for gram-positives","N",0],
+["Oxygen requirement","Obligate aerobe","P",1],
+["Spore forming?","Non-spore-forming","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Non-motile","P",1],
+["Catalase","Positive","B",1],
+["Coagulase","N/A — staph-specific test","N",0],
+["Oxidase","Positive","B",1],
+["Urease","Negative","B",1],
+["Lactose fermentation","Negative","B",1],
+["IMViC panel","N/A — not Enterobacteriaceae","N",0],
+["H2S production","Negative","B",1],
+["Grows on standard media?","No — requires Bordet-Gengou agar (potato-blood agar)","C",1],
+["Key virulence factor","Pertussis toxin — disrupts immune cell signaling; tracheal cytotoxin destroys ciliated cells","C",1],
+["Disease(s) caused","Whooping cough (pertussis) — paroxysmal coughing with inspiratory whoop","C",5],
+["Transmission","Highly contagious via respiratory droplets; most dangerous in infants under 6 months","C",1],
+["Vaccine","Prevented by DTaP vaccination","C",1],
+["Clinical presentation","\"100 day cough\" — coughing fits can last weeks to months","C",1]
+]},
+{name:"Pseudomonas aeruginosa",tests:[
+["Gram stain","Gram-negative","M",1],
+["Cell shape","Rod (bacillus)","M",1],
+["G+C content / Phylum","N/A — G+C classification used for gram-positives","N",0],
+["Oxygen requirement","Obligate aerobe","P",1],
+["Spore forming?","Non-spore-forming","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Motile via single polar flagellum","P",1],
+["Catalase","Positive","B",1],
+["Coagulase","N/A — staph-specific test","N",0],
+["Oxidase","Positive — NOT Enterobacteriaceae","B",1],
+["Urease","Positive","B",1],
+["Lactose fermentation","Negative — non-lactose fermenter","B",1],
+["IMViC panel","N/A — not Enterobacteriaceae","N",0],
+["H2S production","Negative","B",1],
+["Grows on standard media?","Yes — thrives in moist environments; grows on standard media","C",1],
+["Key virulence factor","Exotoxin A (blocks protein synthesis); pyocyanin pigment; alginate biofilm in CF patients","C",1],
+["Disease(s) caused","Contact lens eye infections, burn wound infections, chronic lung infections in cystic fibrosis","C",1],
+["Pigment production","Produces blue-green pigment (pyocyanin) — visually distinctive colonies","C",1],
+["Culture odor","Fruity, grape-like odor in culture","C",1],
+["Antibiotic resistance","Intrinsically resistant to many antibiotics — one of the most drug-resistant clinical pathogens","C",1]
+]},
+{name:"Escherichia coli",tests:[
+["Gram stain","Gram-negative","M",1],
+["Cell shape","Rod (bacillus)","M",1],
+["G+C content / Phylum","N/A — G+C classification used for gram-positives","N",0],
+["Oxygen requirement","Facultative anaerobe","P",1],
+["Spore forming?","Non-spore-forming","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Motile via peritrichous flagella","P",1],
+["Catalase","Positive","B",1],
+["Coagulase","N/A — staph-specific test","N",0],
+["Oxidase","Negative — member of Enterobacteriaceae","B",1],
+["Urease","Negative","B",1],
+["Lactose fermentation","Positive — pink/red colonies on MacConkey agar (coliform)","B",1],
+["IMViC panel","Indole (+), Methyl Red (+), VP (−), Citrate (−) — pattern: + + − −","B",1],
+["H2S production","Negative","B",1],
+["Grows on standard media?","Yes — pink colonies on MacConkey; metallic green sheen on EMB agar","C",1],
+["Key virulence factor","Shiga toxin (STEC strains); heat-labile/heat-stable enterotoxins (ETEC strains)","C",1],
+["Disease(s) caused","UTI (most common cause), traveler's diarrhea, neonatal meningitis","C",1],
+["Normal flora status","Normal flora of the large intestine — only pathogenic in wrong location or wrong strain","C",1],
+["Indole test","Positive — produces indole from tryptophan","B",1],
+["EMB agar","Metallic green sheen on eosin methylene blue (EMB) agar — classic identifying feature","C",1]
+]},
+{name:"Klebsiella pneumoniae",tests:[
+["Gram stain","Gram-negative","M",1],
+["Cell shape","Rod (bacillus)","M",1],
+["G+C content / Phylum","N/A — G+C classification used for gram-positives","N",0],
+["Oxygen requirement","Facultative anaerobe","P",1],
+["Spore forming?","Non-spore-forming","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Non-motile — key differentiator from E. coli","P",1],
+["Catalase","Positive","B",1],
+["Coagulase","N/A — staph-specific test","N",0],
+["Oxidase","Negative — member of Enterobacteriaceae","B",1],
+["Urease","Positive","B",1],
+["Lactose fermentation","Positive — pink colonies on MacConkey agar (coliform)","B",1],
+["IMViC panel","Indole (−), Methyl Red (−), VP (+), Citrate (+) — pattern: − − + +","B",1],
+["H2S production","Negative","B",1],
+["Grows on standard media?","Yes — mucoid colonies due to thick capsule; strings when touched with loop","C",1],
+["Key virulence factor","Large polysaccharide capsule — mucoid colonies; resists phagocytosis","C",1],
+["Disease(s) caused","Hospital-acquired aspiration pneumonia; UTIs in hospitalized patients","C",5],
+["Colony morphology","Mucoid, string-like colonies — capsule causes them to stretch when touched with a loop","C",1],
+["Gelatin hydrolysis","Positive","B",1],
+["Encapsulation","Heavily encapsulated — one of the most encapsulated Enterobacteriaceae","M",1]
+]},
+{name:"Salmonella typhi",tests:[
+["Gram stain","Gram-negative","M",1],
+["Cell shape","Rod (bacillus)","M",1],
+["G+C content / Phylum","N/A — G+C classification used for gram-positives","N",0],
+["Oxygen requirement","Facultative anaerobe","P",1],
+["Spore forming?","Non-spore-forming","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Motile via peritrichous flagella","P",1],
+["Catalase","Positive","B",1],
+["Coagulase","N/A — staph-specific test","N",0],
+["Oxidase","Negative — member of Enterobacteriaceae","B",1],
+["Urease","Negative","B",1],
+["Lactose fermentation","Negative — non-coliform; colorless on MacConkey","B",1],
+["IMViC panel","Indole (−), Methyl Red (+), VP (−), Citrate (+) — pattern: − + − +","B",1],
+["H2S production","Positive — produces H2S on Kligler's iron agar","B",1],
+["Grows on standard media?","Yes — colorless on MacConkey; black precipitate on Kligler's iron agar from H2S","C",1],
+["Key virulence factor","Survives inside macrophages — facultative intracellular pathogen; Vi capsular antigen","C",1],
+["Disease(s) caused","Typhoid fever — sustained high fever, rose spots, abdominal pain","C",5],
+["Reservoir","Humans are the ONLY reservoir — no animal host","C",1],
+["Transmission","Fecal-oral via contaminated food and water","C",1],
+["Glucose fermentation","Positive — ferments glucose with gas production","B",1]
+]},
+{name:"Shigella",acceptGenus:true,tests:[
+["Gram stain","Gram-negative","M",1],
+["Cell shape","Rod (bacillus)","M",1],
+["G+C content / Phylum","N/A — G+C classification used for gram-positives","N",0],
+["Oxygen requirement","Facultative anaerobe","P",1],
+["Spore forming?","Non-spore-forming","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Non-motile — key differentiator from Salmonella","P",1],
+["Catalase","Positive","B",1],
+["Coagulase","N/A — staph-specific test","N",0],
+["Oxidase","Negative — member of Enterobacteriaceae","B",1],
+["Urease","Negative","B",1],
+["Lactose fermentation","Negative — non-coliform; colorless on MacConkey","B",1],
+["IMViC panel","Indole (variable), Methyl Red (+), VP (−), Citrate (−) — pattern: v + − −","B",1],
+["H2S production","Negative — key differentiator from Salmonella","B",1],
+["Grows on standard media?","Yes — grows on MacConkey and Hektoen enteric agar","C",1],
+["Key virulence factor","Shiga toxin — damages intestinal epithelium; invades mucosal lining directly","C",1],
+["Disease(s) caused","Bacillary dysentery (shigellosis) — bloody diarrhea, fever, abdominal cramps","C",5],
+["Host range","Only infects humans — no animal reservoir (unlike Salmonella)","C",1],
+["Citrate utilization","Negative — cannot use citrate as sole carbon source (differentiates from Salmonella)","B",1],
+["Infectious dose","Extremely low — as few as 10-100 organisms needed to cause infection","C",1]
+]},
+{name:"Proteus mirabilis",tests:[
+["Gram stain","Gram-negative","M",1],
+["Cell shape","Rod (bacillus)","M",1],
+["G+C content / Phylum","N/A — G+C classification used for gram-positives","N",0],
+["Oxygen requirement","Facultative anaerobe","P",1],
+["Spore forming?","Non-spore-forming","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Highly motile — swarming motility across agar surface","P",1],
+["Catalase","Positive","B",1],
+["Coagulase","N/A — staph-specific test","N",0],
+["Oxidase","Negative — member of Enterobacteriaceae","B",1],
+["Urease","Strongly positive — rapid urease producer","B",1],
+["Lactose fermentation","Negative — non-coliform; colorless on MacConkey","B",1],
+["IMViC panel","Indole (−), Methyl Red (+), VP (−), Citrate (+) — pattern: − + − +","B",1],
+["H2S production","Positive","B",1],
+["Grows on standard media?","Yes — distinctive swarming growth; spreads in concentric rings across entire plate","C",1],
+["Key virulence factor","Urease raises urinary pH, promoting kidney stone formation; fimbriae for adhesion","C",1],
+["Disease(s) caused","UTIs (especially catheter-associated), wound infections","C",1],
+["Colony morphology","Swarming — spreads in concentric rings; distinctive musty odor","C",1],
+["Phenylalanine deaminase","Positive — key biochemical test for Proteus genus","B",1],
+["Indole test","Negative — P. mirabilis is indole negative (P. vulgaris is positive; key differentiator)","B",1]
+]},
+{name:"Serratia marcescens",tests:[
+["Gram stain","Gram-negative","M",1],
+["Cell shape","Rod (bacillus)","M",1],
+["G+C content / Phylum","N/A — G+C classification used for gram-positives","N",0],
+["Oxygen requirement","Facultative anaerobe","P",1],
+["Spore forming?","Non-spore-forming","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Motile via peritrichous flagella","P",1],
+["Catalase","Positive","B",1],
+["Coagulase","N/A — staph-specific test","N",0],
+["Oxidase","Negative — member of Enterobacteriaceae","B",1],
+["Urease","Positive","B",1],
+["Lactose fermentation","Negative (slow/late fermenter)","B",1],
+["IMViC panel","Indole (−), Methyl Red (−), VP (+), Citrate (+) — pattern: − − + +","B",1],
+["H2S production","Negative","B",1],
+["Grows on standard media?","Yes — found in water, soil, and hospital equipment","C",1],
+["Key virulence factor","Biofilm formation on medical devices; proteases and lipases","C",1],
+["Disease(s) caused","Nosocomial UTIs, pneumonia, wound infections, bacteremia","C",1],
+["Colony pigment at room temp","Produces distinctive red/pink pigment (prodigiosin) at room temperature","C",1],
+["Colony pigment at 37°C","Red pigment often absent at 37°C — appears white/cream in clinical samples","C",1],
+["Clinical context","Opportunistic pathogen — associated with catheters, IV lines, and hospital outbreaks","C",1]
+]},
+{name:"Vibrio cholerae",tests:[
+["Gram stain","Gram-negative","M",1],
+["Cell shape","Rod — curved, comma-shaped","M",1],
+["G+C content / Phylum","N/A — G+C classification used for gram-positives","N",0],
+["Oxygen requirement","Facultative anaerobe","P",1],
+["Spore forming?","Non-spore-forming","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Highly motile via single polar flagellum","P",1],
+["Catalase","Positive","B",1],
+["Coagulase","N/A — staph-specific test","N",0],
+["Oxidase","Positive — NOT Enterobacteriaceae","B",1],
+["Urease","Negative","B",1],
+["Lactose fermentation","Negative","B",1],
+["IMViC panel","N/A — not Enterobacteriaceae","N",0],
+["H2S production","Negative","B",1],
+["Grows on standard media?","Yes — prefers TCBS agar; grows in alkaline conditions (unusual)","C",1],
+["Key virulence factor","Cholera toxin — permanently activates adenylate cyclase; causes massive fluid secretion into gut","C",1],
+["Disease(s) caused","Cholera — rice water diarrhea with rapid life-threatening dehydration","C",5],
+["pH preference","Grows well in alkaline conditions (pH 8-9) — unusual among gut pathogens","C",1],
+["Transmission","Fecal-oral via contaminated water; common in areas with poor sanitation","C",1],
+["Sucrose fermentation","Positive — yellow colonies on TCBS agar","B",1]
+]},
+{name:"Helicobacter pylori",tests:[
+["Gram stain","Gram-negative","M",1],
+["Cell shape","Rod — curved/spiral shaped (NOT a true spirochete)","M",1],
+["G+C content / Phylum","N/A — G+C classification used for gram-positives","N",0],
+["Oxygen requirement","Microaerophilic — requires reduced oxygen (5% O₂)","P",1],
+["Spore forming?","Non-spore-forming","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Highly motile — multiple polar flagella","P",1],
+["Catalase","Positive","B",1],
+["Coagulase","N/A — staph-specific test","N",0],
+["Oxidase","Positive","B",1],
+["Urease","Strongly positive — converts urea to ammonia to neutralize stomach acid","B",1],
+["Lactose fermentation","Negative","B",1],
+["IMViC panel","N/A — not Enterobacteriaceae","N",0],
+["H2S production","Negative","B",1],
+["Grows on standard media?","No — requires enriched chocolate agar under microaerophilic conditions","C",1],
+["Key virulence factor","Urease neutralizes stomach acid; CagA protein damages gastric epithelium","C",1],
+["Disease(s) caused","Peptic (stomach) ulcers; associated with gastric cancer","C",5],
+["Habitat","One of the only bacteria that colonizes the acidic human stomach","C",1],
+["Urea breath test","Positive — patient drinks labeled urea; if present, labeled CO₂ is exhaled","C",1],
+["Treatment","Triple therapy — two antibiotics + proton pump inhibitor (PPI)","C",1]
+]},
+{name:"Treponema pallidum",tests:[
+["Gram stain","Gram-negative (too thin to stain reliably)","M",1],
+["Cell shape","Spiral/corkscrew — true spirochete","M",1],
+["G+C content / Phylum","N/A — G+C classification used for gram-positives","N",0],
+["Oxygen requirement","Microaerophilic","P",1],
+["Spore forming?","Non-spore-forming","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Highly motile — corkscrew motility via internal axial flagella","P",1],
+["Catalase","Negative","B",1],
+["Coagulase","N/A — staph-specific test","N",0],
+["Oxidase","Negative","B",1],
+["Urease","Negative","B",1],
+["Lactose fermentation","N/A — cannot be cultured in standard lab","N",0],
+["IMViC panel","N/A — cannot be cultured in standard lab","N",0],
+["H2S production","N/A — cannot be cultured in standard lab","N",0],
+["Grows on standard media?","Cannot be cultured in the lab at all — obligate human pathogen","C",1],
+["Key virulence factor","Outer membrane proteins for adhesion; evades immune system via low surface antigen expression","C",1],
+["Disease(s) caused","Syphilis — primary (painless chancre), secondary (rash on palms/soles), tertiary (organ damage)","C",5],
+["Visualization method","Darkfield microscopy — too thin for standard light microscopy","C",1],
+["Primary stage sign","Painless chancre (ulcer) at site of infection","C",1],
+["Secondary stage sign","Diffuse rash including palms and soles — unusual location distinguishes it","C",1]
+]},
+{name:"Borrelia burgdorferi",tests:[
+["Gram stain","Gram-negative (stains poorly — spirochete)","M",1],
+["Cell shape","Spiral/corkscrew — true spirochete","M",1],
+["G+C content / Phylum","N/A — G+C classification used for gram-positives","N",0],
+["Oxygen requirement","Microaerophilic","P",1],
+["Spore forming?","Non-spore-forming","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Highly motile — corkscrew motility via internal axial flagella","P",1],
+["Catalase","Negative","B",1],
+["Coagulase","N/A — staph-specific test","N",0],
+["Oxidase","Negative","B",1],
+["Urease","Negative","B",1],
+["Lactose fermentation","N/A — not Enterobacteriaceae","N",0],
+["IMViC panel","N/A — not Enterobacteriaceae","N",0],
+["H2S production","N/A — not Enterobacteriaceae","N",0],
+["Grows on standard media?","No — requires BSK (Barbour-Stoenner-Kelly) media; difficult to culture","C",1],
+["Key virulence factor","Outer surface proteins (Osp) for tick-to-host transmission; evades complement system","C",1],
+["Disease(s) caused","Lyme disease","C",5],
+["Transmission","Ixodes (deer) tick — must be attached 36-48 hours to transmit","C",1],
+["Early clinical sign","Bullseye rash (erythema migrans) at bite site — pathognomonic","C",1],
+["Late dissemination","Can spread to joints (Lyme arthritis), heart, and nervous system if untreated","C",1]
+]},
+{name:"Chlamydia trachomatis",tests:[
+["Gram stain","Gram-negative (cell wall lacks standard peptidoglycan — stains poorly)","M",1],
+["Cell shape","Coccoid — very small, round","M",1],
+["G+C content / Phylum","N/A — G+C classification used for gram-positives","N",0],
+["Oxygen requirement","Obligate intracellular — aerobic metabolism but cannot survive outside host cell","P",1],
+["Spore forming?","Non-spore-forming — but has analogous infectious form (Elementary Body)","P",1],
+["Acid-fast stain","Non-acid-fast","P",1],
+["Motility","Non-motile","P",1],
+["Catalase","N/A — cannot be tested; obligate intracellular","N",0],
+["Coagulase","N/A — staph-specific test","N",0],
+["Oxidase","N/A — cannot be tested; obligate intracellular","N",0],
+["Urease","N/A — cannot be tested; obligate intracellular","N",0],
+["Lactose fermentation","N/A — cannot be tested; obligate intracellular","N",0],
+["IMViC panel","N/A — cannot be tested; obligate intracellular","N",0],
+["H2S production","N/A — cannot be tested; obligate intracellular","N",0],
+["Grows on standard media?","Cannot be cultured on standard media — obligate intracellular; requires living host cells; diagnosed by PCR","C",1],
+["Key virulence factor","Two-stage life cycle: Elementary Body (EB) is infectious form; Reticulate Body (RB) is reproductive form inside host cell","C",1],
+["Disease(s) caused","Chlamydia (leading bacterial STI), trachoma (eye infection/blindness), pneumonia","C",5],
+["Diagnostic method","PCR or antigen detection — cannot use standard culture","C",1],
+["Elementary Body (EB)","Infectious but metabolically inactive — survives outside host; enters cell and converts to RB","C",1],
+["Reticulate Body (RB)","Metabolically active reproductive form — divides inside host cell; converts back to EB for release","C",1]
+]}
+];
+
+// ─────────────────────────────────────────────────────────────
+// GAME STATE
+// ─────────────────────────────────────────────────────────────
+const CAT_MAP = {M:'cat-M',P:'cat-P',B:'cat-B',C:'cat-C',N:'cat-N'};
+const CAT_LABELS = {M:'🔬 Morphology',P:'⚗️ Physiology',B:'🧪 Biochemical',C:'🏥 Clinical',N:'⬜ N/A'};
+
+let state = {
+  queue: [],
+  current: null,
+  currentIdx: 0,
+  revealed: [],
+  spentPts: 0,
+  roundScore: 20,
+  sessionScores: [],
+  total: 0,
+  done: false
+};
+
+function shuffle(arr) {
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+function startSession() {
+  state.queue = shuffle(ORGANISMS);
+  state.currentIdx = 0;
+  state.sessionScores = [];
+  state.total = 0;
+  state.done = false;
+  loadOrganism(0);
+  document.getElementById('total-score').textContent = '0';
+  setFeedback('Click a test to reveal a clue, then type your guess! 🧫','neutral');
+}
+
+function loadOrganism(idx) {
+  state.current = state.queue[idx];
+  state.currentIdx = idx;
+  state.revealed = new Array(20).fill(false);
+  state.spentPts = 0;
+  state.roundScore = 20;
+  renderHUD();
+  renderGrid();
+  document.getElementById('guess-input').value = '';
+  document.getElementById('guess-input').focus();
+}
+
+function renderHUD() {
+  document.getElementById('cur-score').textContent = state.roundScore;
+  document.getElementById('total-score').textContent = state.total;
+  document.getElementById('microbe-count').textContent = `Microbe #${state.currentIdx+1}`;
+  document.getElementById('phase-badge').textContent = 'Investigating 🔬';
+}
+
+function renderGrid() {
+  const grid = document.getElementById('test-grid');
+  grid.innerHTML = '';
+  const org = state.current;
+  org.tests.forEach((t, i) => {
+    const [name, result, cat, pts] = t;
+    const isNA = cat === 'N';
+    const btn = document.createElement('button');
+    btn.className = `test-btn ${CAT_MAP[cat]}`;
+    if (state.revealed[i]) btn.classList.add('revealed');
+
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'btn-name';
+    nameSpan.textContent = name;
+
+    if (state.revealed[i] || isNA) {
+      const resSpan = document.createElement('span');
+      resSpan.className = isNA ? 'na-label' : 'btn-result';
+      resSpan.textContent = result;
+      btn.appendChild(nameSpan);
+      btn.appendChild(resSpan);
+    } else {
+      btn.appendChild(nameSpan);
+      if (pts === 5) {
+        const badge = document.createElement('span');
+        badge.className = 'pts-badge';
+        badge.textContent = '−5pts';
+        btn.appendChild(badge);
+      }
+    }
+
+    if (!isNA && !state.revealed[i]) {
+      btn.addEventListener('click', () => revealTest(i));
+    }
+    grid.appendChild(btn);
+  });
+}
+
+function revealTest(i) {
+  if (state.revealed[i]) return;
+  const t = state.current.tests[i];
+  const pts = t[3];
+  state.revealed[i] = true;
+  if (pts > 0) {
+    state.spentPts += pts;
+    state.roundScore = Math.max(1, 20 - state.spentPts);
+  }
+  renderGrid();
+  renderHUD();
+}
+
+// ─────────────────────────────────────────────────────────────
+// GUESS LOGIC
+// ─────────────────────────────────────────────────────────────
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i||j));
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++)
+    dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
+  return dp[m][n];
+}
+
+function normalize(s){ return s.trim().toLowerCase().replace(/[.,;:!?]+$/,''); }
+
+function checkGuess() {
+  const raw = document.getElementById('guess-input').value;
+  if (!raw.trim()) return;
+  const guess = normalize(raw);
+  const correct = normalize(state.current.name);
+  const correctGenus = correct.split(' ')[0];
+  const guessGenus = guess.split(' ')[0];
+  const acceptGenus = state.current.acceptGenus;
+
+  // Exact match (or genus-only for Shigella)
+  if (guess === correct || (acceptGenus && guess === correctGenus)) {
+    handleCorrect();
+    return;
+  }
+
+  // Genus right, species wrong
+  if (guessGenus === correctGenus && guess !== correct) {
+    setFeedback("You've got the genus right — check your species! 🔬", 'negative');
+    return;
+  }
+
+  // Close spelling (Levenshtein ≤ 2)
+  if (levenshtein(guess, correct) <= 2) {
+    setFeedback("Almost there — check your spelling! ✏️", 'negative');
+    return;
+  }
+
+  // Close genus spelling
+  if (levenshtein(guessGenus, correctGenus) <= 2 && guessGenus !== correctGenus) {
+    setFeedback("Almost there — check your spelling! ✏️", 'negative');
+    return;
+  }
+
+  // Wrong
+  const wrongs = [
+    "Not quite — keep digging! 🔬",
+    "Hmm, that's not right — but you're learning! 💪",
+    "Nope! Try revealing more clues 🧫",
+    "Not this one — look for more clues! 🕵️",
+    "Wrong genus? Wrong species? Keep hunting! 🔍"
+  ];
+  setFeedback(wrongs[Math.floor(Math.random()*wrongs.length)], 'error');
+}
+
+function handleCorrect() {
+  const score = state.roundScore;
+  state.sessionScores.push(score);
+  state.total += score;
+  document.getElementById('total-score').textContent = state.total;
+  document.getElementById('phase-badge').textContent = 'Solved! ✅';
+  setFeedback(`YES! It's ${state.current.name}! You banked ${score} point${score===1?'':'s'}! 🎉`, 'positive');
+  triggerConfetti();
+  // Reveal all tests
+  state.revealed = new Array(20).fill(true);
+  renderGrid();
+
+  // Auto-advance after 2.5s
+  setTimeout(() => {
+    const next = state.currentIdx + 1;
+    if (next < state.queue.length) {
+      loadOrganism(next);
+      setFeedback('New mystery microbe loaded! Start revealing clues 🦠','neutral');
+    } else {
+      // All done
+      endSession();
+    }
+  }, 2500);
+}
+
+function skipOrganism() {
+  const next = state.currentIdx + 1;
+  setFeedback(`Skipped! That was ${state.current.name}. No points for this one.`, 'negative');
+  // Show answer briefly
+  state.revealed = new Array(20).fill(true);
+  renderGrid();
+  setTimeout(() => {
+    if (next < state.queue.length) {
+      loadOrganism(next);
+      setFeedback('New mystery microbe! 🦠','neutral');
+    } else {
+      endSession();
+    }
+  }, 2000);
+}
+
+function setFeedback(msg, type) {
+  const el = document.getElementById('feedback-box');
+  el.textContent = msg;
+  el.className = `${type}`;
+}
+
+// ─────────────────────────────────────────────────────────────
+// SESSION END / LEADERBOARD
+// ─────────────────────────────────────────────────────────────
+function endSession() {
+  if (state.done) return;
+  state.done = true;
+  const scores = state.sessionScores;
+  const total = state.total;
+  const count = scores.length;
+  const avg = count > 0 ? (total/count).toFixed(1) : 0;
+  const best = count > 0 ? Math.max(...scores) : 0;
+
+  document.getElementById('s-total').textContent = total;
+  document.getElementById('s-count').textContent = count;
+  document.getElementById('s-avg').textContent = avg;
+  document.getElementById('s-best').textContent = best;
+
+  document.getElementById('modal-overlay').classList.add('active');
+  loadLeaderboard();
+}
+
+// ─────────────────────────────────────────────────────────────
+// CONFETTI
+// ─────────────────────────────────────────────────────────────
+function triggerConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const ctx = canvas.getContext('2d');
+  const colors = ['#FF6B6B','#4ECDC4','#FFE66D','#C3B1E1','#ff9f43','#48dbfb'];
+  const pieces = Array.from({length:120},()=>({
+    x:Math.random()*canvas.width,
+    y:-10,
+    r:Math.random()*6+3,
+    c:colors[Math.floor(Math.random()*colors.length)],
+    vx:(Math.random()-.5)*4,
+    vy:Math.random()*3+2,
+    angle:Math.random()*360,
+    spin:(Math.random()-.5)*8
+  }));
+  let frame=0;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p=>{
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.angle*Math.PI/180);
+      ctx.fillStyle=p.c;ctx.fillRect(-p.r,-p.r/2,p.r*2,p.r);ctx.restore();
+      p.x+=p.vx;p.y+=p.vy;p.vy+=.05;p.angle+=p.spin;
+    });
+    frame++;
+    if(frame<120)requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  draw();
+}
+
+// ─────────────────────────────────────────────────────────────
+// DB / LEADERBOARD
+// ─────────────────────────────────────────────────────────────
+let dbRef = null;
+let userRef = null;
+
+async function initDB() {
+  try {
+    dbRef = await window.claude.use('db');
+    userRef = await window.claude.use('user');
+  } catch(e) {
+    dbRef = null; userRef = null;
+  }
+}
+
+async function saveScore(name) {
+  if (!dbRef || !userRef) {
+    showLBError('Leaderboard not available in this environment.');
+    return;
+  }
+  const scores = state.sessionScores;
+  const total = state.total;
+  const count = scores.length;
+  if (count === 0) { showLBError("Complete at least one microbe first!"); return; }
+  const avg = parseFloat((total/count).toFixed(2));
+  const uid = await userRef.id();
+  const docId = uid || ('anon_' + Date.now().toString(36));
+  try {
+    await dbRef.collection('leaderboard').doc(docId).set({
+      name: name.trim().substring(0,30),
+      totalPoints: total,
+      microbesCompleted: count,
+      avgPoints: avg,
+      date: new Date().toLocaleDateString(),
+      timestamp: Date.now()
+    });
+    document.getElementById('save-btn').disabled = true;
+    document.getElementById('save-btn').textContent = 'Saved! ✅';
+    loadLeaderboard();
+  } catch(e) {
+    showLBError('Could not save score. Try again!');
+  }
+}
+
+async function loadLeaderboard() {
+  const tbody = document.getElementById('lb-body');
+  if (!dbRef) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#aaa;padding:12px">Leaderboard requires claude.ai artifact viewer 🔬</td></tr>';
+    return;
+  }
+  try {
+    const snap = await dbRef.collection('leaderboard').orderBy('totalPoints','desc').limit(20).get();
+    if (snap.empty) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#aaa;padding:12px">No scores yet — be the first! 🏆</td></tr>';
+      return;
+    }
+    tbody.innerHTML = snap.docs.map((doc,i)=>{
+      const d = doc.data();
+      if(!d) return '';
+      return `<tr>
+        <td class="lb-rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</td>
+        <td>${escHtml(d.name||'Anonymous')}</td>
+        <td><strong>${d.totalPoints||0}</strong></td>
+        <td>${d.microbesCompleted||0}</td>
+        <td>${typeof d.avgPoints==='number'?d.avgPoints.toFixed(1):d.avgPoints||0}</td>
+        <td style="color:#aaa;font-size:.8rem">${d.date||''}</td>
+      </tr>`;
+    }).join('');
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#aaa;padding:12px">Could not load leaderboard 😢</td></tr>';
+  }
+}
+
+function showLBError(msg) {
+  const tbody = document.getElementById('lb-body');
+  tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#c44;padding:12px">${msg}</td></tr>`;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ─────────────────────────────────────────────────────────────
+// EVENT LISTENERS
+// ─────────────────────────────────────────────────────────────
+document.getElementById('guess-btn').addEventListener('click', checkGuess);
+document.getElementById('guess-input').addEventListener('keydown', e=>{
+  if(e.key==='Enter') checkGuess();
+});
+document.getElementById('end-btn').addEventListener('click', ()=>{
+  if(confirm('End session now? Your current microbe score won\'t be banked.')) endSession();
+});
+document.getElementById('skip-btn').addEventListener('click', skipOrganism);
+document.getElementById('play-again-btn').addEventListener('click', ()=>{
+  document.getElementById('modal-overlay').classList.remove('active');
+  startSession();
+});
+document.getElementById('save-btn').addEventListener('click', ()=>{
+  const n = document.getElementById('player-name-input').value.trim();
+  if(!n){document.getElementById('player-name-input').focus();return;}
+  saveScore(n);
+});
+
+// ─────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────
+initDB();
+startSession();
+</script>
+</body>
+</html>
