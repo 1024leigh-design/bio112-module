@@ -4,19 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Mystery Microbe</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
   --coral:#C96444; --coral-dark:#AE5038;
   --teal:#3AAEAA; --teal-dark:#2A918D;
   --amber:#C9993A; --amber-dark:#A87D28;
-  --purple:#7E6BAE; --purple-dark:#685796;
+  --olive:#7A8C3A; --olive-dark:#5A6E28;
+  --navy:#1E3A5F; --navy-dark:#162E4A;
   --bg:#F2EAE0; --dark:#2A1F18;
   --tan:#C9B49A; --panel:#FBF5EE; --border:#DDD0C0;
   --gray:#BCA898;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh}
 #app{max-width:960px;margin:0 auto;padding:12px 16px}
 header{text-align:center;padding:18px 0 6px}
 header h1{font-size:1.7rem;font-weight:800;color:var(--dark);letter-spacing:-.01em}
@@ -30,7 +31,7 @@ header p{font-size:.9rem;color:#8A7060;margin-top:4px;font-weight:600}
 .hud-val{font-size:1.9rem;font-weight:900;line-height:1}
 .hud-val.score{color:var(--coral)}
 .hud-val.total{color:var(--teal)}
-.hud-val.count{color:var(--purple)}
+.hud-val.count{color:var(--navy)}
 #phase-badge{font-size:.78rem;font-weight:700;background:var(--amber);color:#fff;
   padding:4px 12px;border-radius:20px;white-space:nowrap;letter-spacing:.02em}
 #feedback-box{min-height:40px;text-align:center;font-size:1rem;font-weight:700;
@@ -41,46 +42,77 @@ header p{font-size:.9rem;color:#8A7060;margin-top:4px;font-weight:600}
 #feedback-box.neutral{background:transparent;color:#8A7060;border:none}
 #guess-area{display:flex;gap:8px;margin:10px 0;align-items:center;flex-wrap:wrap}
 #guess-input{flex:1;min-width:200px;padding:11px 16px;border:2px solid var(--border);
-  border-radius:10px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:600;
+  border-radius:10px;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:600;
   background:var(--panel);color:var(--dark)}
 #guess-input:focus{outline:none;border-color:var(--coral);box-shadow:0 0 0 3px rgba(201,100,68,.15)}
 #guess-btn{padding:11px 22px;background:var(--coral);color:#fff;border:none;
-  border-radius:10px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:800;
+  border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:800;
   cursor:pointer;transition:background .2s,transform .1s;white-space:nowrap;letter-spacing:.01em}
 #guess-btn:hover{background:var(--coral-dark)}
 #guess-btn:active{transform:scale(.97)}
 #end-btn{padding:11px 18px;background:transparent;color:#A08878;border:1px solid var(--border);
-  border-radius:10px;font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:700;
+  border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:700;
   cursor:pointer;transition:all .2s;white-space:nowrap}
 #end-btn:hover{border-color:var(--coral);color:var(--coral)}
 .legend{display:flex;gap:10px;flex-wrap:wrap;margin:4px 0 10px;justify-content:center}
 .legend-item{display:flex;align-items:center;gap:5px;font-size:.75rem;font-weight:700;color:#8A7060}
 .legend-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+
+/* ── Test grid ── */
 #test-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:8px 0}
 @media(max-width:640px){#test-grid{grid-template-columns:repeat(2,1fr)}}
-.test-btn{padding:8px 10px;border:1.5px solid transparent;border-radius:10px;
-  font-family:'Nunito',sans-serif;font-size:.8rem;font-weight:700;
-  cursor:pointer;transition:all .18s;text-align:left;min-height:54px;
-  display:flex;flex-direction:column;gap:2px;line-height:1.25}
-.test-btn .btn-name{font-weight:800;font-size:.8rem}
-.test-btn .btn-result{font-size:.73rem;font-weight:600;opacity:.88}
-/* Unclicked: slightly muted/pastel; clicked: richer/saturated */
-.test-btn.cat-M{background:#9FDBD7;color:#0D4A47}
-.test-btn.cat-P{background:#BDB0D8;color:#281C50}
-.test-btn.cat-B{background:#E0C882;color:#3A2600}
-.test-btn.cat-C{background:#E8A898;color:#5A1A08}
-.test-btn.cat-N{background:#D8CAB8;color:#7A6858;opacity:.75;cursor:default}
-.test-btn.cat-M.revealed{border-color:#2A9088;background:var(--teal);color:#fff}
-.test-btn.cat-P.revealed{border-color:#5E4898;background:var(--purple);color:#fff}
-.test-btn.cat-B.revealed{border-color:#A07820;background:var(--amber);color:#fff}
-.test-btn.cat-C.revealed{border-color:#A04828;background:var(--coral);color:#fff}
-.test-btn.cat-N.revealed{border-color:#A09080;background:#C8B8A8;opacity:.9;color:#5A4A38}
-.test-btn:hover:not(.cat-N):not(.revealed){filter:brightness(1.06);transform:translateY(-1px)}
-.test-btn:active:not(.cat-N){transform:scale(.98)}
-.test-btn.revealed:hover{transform:none;filter:none}
+
+/* ── Card flip ── */
+.card-flip{perspective:800px;cursor:pointer}
+.card-flip.is-na{cursor:default}
+.card-flip.done{cursor:default}
+.card-flip-inner{
+  display:grid;
+  transition:transform .45s ease;
+  transform-style:preserve-3d;
+}
+.card-flip-inner.flipped{transform:rotateY(180deg)}
+.card-face{
+  grid-area:1/1;
+  min-height:74px;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  border-radius:10px;
+  padding:8px 10px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;
+  gap:3px;line-height:1.3;
+  border:1.5px solid transparent;
+  position:relative;
+}
+.card-back{transform:rotateY(180deg)}
+
+.btn-name{font-weight:800;font-size:.8rem}
+.btn-result{font-size:.73rem;font-weight:600;opacity:.88}
+.na-label{font-size:.7rem;font-style:italic;opacity:.85}
+
+/* Unclicked (front face) */
+.card-face.cat-M{background:#9FDBD7;color:#0D4A47}
+.card-face.cat-P{background:#C8D490;color:#1A2A08}
+.card-face.cat-B{background:#E0C882;color:#3A2600}
+.card-face.cat-C{background:#E8A898;color:#5A1A08}
+.card-face.cat-N{background:#D8CAB8;color:#7A6858;opacity:.75}
+/* Clicked (back face — revealed) */
+.card-back.cat-M{border-color:#2A9088;background:var(--teal);color:#fff;opacity:1}
+.card-back.cat-P{border-color:var(--olive-dark);background:var(--olive);color:#fff;opacity:1}
+.card-back.cat-B{border-color:#A07820;background:var(--amber);color:#fff;opacity:1}
+.card-back.cat-C{border-color:#A04828;background:var(--coral);color:#fff;opacity:1}
+.card-back.cat-N{border-color:#A09080;background:#C8B8A8;opacity:.9;color:#5A4A38}
+
+/* Hover only on unflipped, non-N/A cards */
+.card-flip:not(.is-na):not(.done):hover{filter:brightness(1.07);transform:translateY(-1px)}
+.card-flip.done:hover,.card-flip.is-na:hover{filter:none;transform:none}
+
 .pts-badge{position:absolute;top:4px;right:6px;font-size:.65rem;font-weight:900;
   background:rgba(0,0,0,.18);color:#fff;border-radius:5px;padding:1px 5px}
-.test-btn{position:relative}
+
+/* ── Modal ── */
 #modal-overlay{display:none;position:fixed;inset:0;background:rgba(42,31,24,.55);
   z-index:100;align-items:center;justify-content:center;padding:16px}
 #modal-overlay.active{display:flex}
@@ -96,11 +128,11 @@ header p{font-size:.9rem;color:#8A7060;margin-top:4px;font-weight:600}
 #leaderboard-section h3{font-size:1rem;font-weight:800;margin-bottom:10px;color:var(--dark)}
 #name-row{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}
 #player-name-input{flex:1;min-width:150px;padding:9px 14px;border:1.5px solid var(--border);
-  border-radius:8px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:600;
+  border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;
   background:#fff;color:var(--dark)}
 #player-name-input:focus{outline:none;border-color:var(--teal)}
 #save-btn{padding:9px 18px;background:var(--teal);color:#fff;border:none;
-  border-radius:8px;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:800;cursor:pointer}
+  border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:800;cursor:pointer}
 #save-btn:hover{background:var(--teal-dark)}
 #save-btn:disabled{background:#C0B0A0;cursor:default}
 #lb-table{width:100%;border-collapse:collapse;font-size:.83rem}
@@ -111,12 +143,11 @@ header p{font-size:.9rem;color:#8A7060;margin-top:4px;font-weight:600}
 .lb-rank{font-weight:900;color:var(--coral);width:28px}
 #play-again-btn{display:block;width:100%;margin-top:16px;padding:13px;
   background:var(--coral);color:#fff;border:none;border-radius:10px;
-  font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;letter-spacing:.01em}
+  font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;letter-spacing:.01em}
 #play-again-btn:hover{background:var(--coral-dark)}
 canvas#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:200}
-.na-label{font-size:.7rem;font-style:italic;opacity:.85}
 #skip-btn{padding:7px 14px;background:transparent;color:#B0A090;border:1px solid var(--border);
-  border-radius:8px;font-family:'Nunito',sans-serif;font-size:.8rem;font-weight:700;
+  border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:700;
   cursor:pointer;margin-left:auto;display:block;margin-top:5px}
 #skip-btn:hover{color:var(--coral);border-color:var(--tan)}
 </style>
@@ -150,8 +181,8 @@ canvas#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:200}
   </div>
   <div class="legend">
     <div class="legend-item"><div class="legend-dot" style="background:var(--teal)"></div>Morphology</div>
-    <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>Physiology</div>
-    <div class="legend-item"><div class="legend-dot" style="background:var(--yellow)"></div>Biochemical</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--olive)"></div>Physiology</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Biochemical</div>
     <div class="legend-item"><div class="legend-dot" style="background:var(--coral)"></div>Clinical</div>
     <div class="legend-item"><div class="legend-dot" style="background:var(--gray)"></div>N/A</div>
   </div>
@@ -223,17 +254,17 @@ const ORGANISMS = [
 ["Acid-fast stain","Non-acid-fast","P",1],
 ["Motility","Non-motile","P",1],
 ["Catalase","Positive","B",1],
-["Coagulase","Negative — key differentiator from S. aureus","B",1],
+["Coagulase","Negative","B",1],
 ["Oxidase","Negative","B",1],
 ["Urease","Positive — helps it survive in the urinary tract","B",1],
 ["Lactose fermentation","N/A — not Enterobacteriaceae","N",0],
 ["IMViC panel","N/A — not Enterobacteriaceae","N",0],
 ["H2S production","N/A — not Enterobacteriaceae","N",0],
-["Grows on standard media?","Grows on MSA but does NOT ferment mannitol (stays pink/red — key difference from S. aureus)","C",1],
+["Grows on standard media?","Grows on MSA but does NOT ferment mannitol (stays pink/red)","C",1],
 ["Key virulence factor","Urease production; adhesins for urinary tract attachment","C",1],
 ["Disease(s) caused","UTI — 2nd most common cause, especially in young sexually active women","C",5],
 ["Cell arrangement","Clusters","M",1],
-["Novobiocin resistance","Resistant to novobiocin — differentiates from S. epidermidis","B",1],
+["Novobiocin resistance","Resistant to novobiocin","B",1],
 ["Normal flora site","Normal urogenital flora","C",1]
 ]},
 {name:"Streptococcus pyogenes",tests:[
@@ -244,7 +275,7 @@ const ORGANISMS = [
 ["Spore forming?","Non-spore-forming","P",1],
 ["Acid-fast stain","Non-acid-fast","P",1],
 ["Motility","Non-motile","P",1],
-["Catalase","Negative — key differentiator from Staphylococcus","B",1],
+["Catalase","Negative","B",1],
 ["Coagulase","Negative","B",1],
 ["Oxidase","Negative","B",1],
 ["Urease","Negative","B",1],
@@ -255,7 +286,7 @@ const ORGANISMS = [
 ["Key virulence factor","Streptolysin, streptokinase, erythrogenic toxin","C",1],
 ["Disease(s) caused","#1 cause of strep throat; also scarlet fever, rheumatic fever","C",1],
 ["Cell arrangement","Grows in chains","M",1],
-["Quellung reaction","Negative — no capsule (differentiates from S. pneumoniae)","B",1],
+["Quellung reaction","Negative — no capsule","B",1],
 ["Normal flora?","NOT normal flora — always considered pathogenic when isolated","C",1]
 ]},
 {name:"Streptococcus pneumoniae",tests:[
@@ -317,8 +348,8 @@ const ORGANISMS = [
 ["Lactose fermentation","N/A — not Enterobacteriaceae","N",0],
 ["IMViC panel","N/A — not Enterobacteriaceae","N",0],
 ["H2S production","N/A — not Enterobacteriaceae","N",0],
-["Grows on standard media?","Grows on standard anaerobic media; slower growing than C. perfringens","C",1],
-["Key virulence factor","Botulinum neurotoxin — blocks acetylcholine release; causes FLACCID paralysis (muscles go limp — opposite of tetanus)","C",1],
+["Grows on standard media?","Grows on standard anaerobic media","C",1],
+["Key virulence factor","Botulinum neurotoxin — blocks acetylcholine release; causes FLACCID paralysis (muscles go limp)","C",1],
 ["Disease(s) caused","Botulism — foodborne, infant, wound","C",5],
 ["Environmental reservoir","Found in soil, water, and improperly canned foods","C",1],
 ["Infant exposure risk","Infant botulism linked to honey ingestion — spores colonize infant gut","C",1],
@@ -409,7 +440,7 @@ const ORGANISMS = [
 ["Key virulence factor","Two toxins: emetic toxin (vomiting) and enterotoxin (diarrhea) — both heat stable","C",1],
 ["Disease(s) caused","Food poisoning — classically linked to reheated or stale rice","C",5],
 ["Voges-Proskauer (VP) test","Positive","B",1],
-["Mannitol fermentation","Negative — key differentiator from B. subtilis","B",1],
+["Mannitol fermentation","Negative","B",1],
 ["Lecithinase","Positive — precipitate on egg yolk agar","B",1]
 ]},
 {name:"Bacillus megaterium",tests:[
@@ -430,17 +461,17 @@ const ORGANISMS = [
 ["Grows on standard media?","Yes — unusually large colonies on standard media","C",1],
 ["Key virulence factor / use","Not a significant pathogen — used in industrial biotechnology and research","C",1],
 ["Disease(s) caused","Rarely pathogenic — occasional opportunistic infections; model research organism","C",1],
-["Voges-Proskauer (VP) test","Negative — key differentiator from B. subtilis and B. cereus","B",1],
+["Voges-Proskauer (VP) test","Negative","B",1],
 ["Mannitol fermentation","Negative — does not ferment mannitol","B",1],
 ["Cell size","Unusually large — one of the largest known bacteria; visible under basic light microscopy","M",1]
 ]},
 {name:"Mycobacterium tuberculosis",tests:[
-["Gram stain","Gram-positive (stains weakly due to waxy mycolic acid-rich cell wall)","M",1],
+["Gram stain","Weakly Gram-positive (staining often faint)","M",1],
 ["Cell shape","Rod (bacillus)","M",1],
 ["G+C content / Phylum","High G+C — Actinobacteria","M",1],
 ["Oxygen requirement","Obligate aerobe — thrives in oxygen-rich lung tissue","P",1],
 ["Spore forming?","Non-spore-forming","P",1],
-["Acid-fast stain","Acid-fast POSITIVE — mycolic acid-rich cell wall retains carbol fuchsin (Ziehl-Neelsen stain)","P",1],
+["Acid-fast stain","Acid-fast POSITIVE — cell wall retains carbol fuchsin (Ziehl-Neelsen stain)","P",1],
 ["Motility","Non-motile","P",1],
 ["Catalase","Positive (weakly)","B",1],
 ["Coagulase","N/A — staph-specific test","N",0],
@@ -453,7 +484,7 @@ const ORGANISMS = [
 ["Key virulence factor","Survives and replicates inside macrophages in the lung; forms granulomas; can stay latent for years","C",1],
 ["Disease(s) caused","Tuberculosis (TB)","C",5],
 ["Growth rate","Extremely slow-growing — one of the slowest known bacterial pathogens","C",1],
-["Niacin production","Positive — niacin test differentiates M. tuberculosis from other mycobacteria","B",1],
+["Niacin production","Positive — niacin test used to differentiate from other mycobacteria","B",1],
 ["Transmission","Airborne — spread via respiratory aerosols; can remain latent in granulomas for years","C",1]
 ]},
 {name:"Corynebacterium diphtheriae",tests:[
@@ -497,8 +528,8 @@ const ORGANISMS = [
 ["Key virulence factor","Pili for mucosal attachment; IgA protease to evade immune response","C",1],
 ["Disease(s) caused","Gonorrhea; conjunctival gonorrhea in newborns","C",1],
 ["Cell arrangement","Diplococci — kidney-bean shaped pairs","M",1],
-["Glucose fermentation","Positive — ferments glucose but NOT maltose","B",1],
-["Maltose fermentation","Negative — does NOT ferment maltose (key difference from N. meningitidis)","B",1]
+["Glucose fermentation","Positive","B",1],
+["Maltose fermentation","Negative","B",1]
 ]},
 {name:"Neisseria meningitidis",tests:[
 ["Gram stain","Gram-negative","M",1],
@@ -518,9 +549,9 @@ const ORGANISMS = [
 ["Grows on standard media?","No — requires chocolate agar; fastidious","C",1],
 ["Key virulence factor","Polysaccharide capsule prevents phagocytosis; LPS endotoxin triggers septic shock","C",1],
 ["Disease(s) caused","Meningococcal meningitis; septicemia with petechial rash","C",1],
-["Cell arrangement","Diplococci — kidney-bean shaped pairs (identical morphology to N. gonorrhoeae)","M",1],
-["Glucose fermentation","Positive — ferments both glucose AND maltose","B",1],
-["Maltose fermentation","Positive — ferments maltose (key difference from N. gonorrhoeae)","B",1]
+["Cell arrangement","Diplococci — kidney-bean shaped pairs","M",1],
+["Glucose fermentation","Positive","B",1],
+["Maltose fermentation","Positive","B",1]
 ]},
 {name:"Bordetella pertussis",tests:[
 ["Gram stain","Gram-negative","M",1],
@@ -595,7 +626,7 @@ const ORGANISMS = [
 ["Oxygen requirement","Facultative anaerobe","P",1],
 ["Spore forming?","Non-spore-forming","P",1],
 ["Acid-fast stain","Non-acid-fast","P",1],
-["Motility","Non-motile — key differentiator from E. coli","P",1],
+["Motility","Non-motile","P",1],
 ["Catalase","Positive","B",1],
 ["Coagulase","N/A — staph-specific test","N",0],
 ["Oxidase","Negative — member of Enterobacteriaceae","B",1],
@@ -639,19 +670,19 @@ const ORGANISMS = [
 ["Oxygen requirement","Facultative anaerobe","P",1],
 ["Spore forming?","Non-spore-forming","P",1],
 ["Acid-fast stain","Non-acid-fast","P",1],
-["Motility","Non-motile — key differentiator from Salmonella","P",1],
+["Motility","Non-motile","P",1],
 ["Catalase","Positive","B",1],
 ["Coagulase","N/A — staph-specific test","N",0],
 ["Oxidase","Negative — member of Enterobacteriaceae","B",1],
 ["Urease","Negative","B",1],
 ["Lactose fermentation","Negative — non-coliform; colorless on MacConkey","B",1],
 ["IMViC panel","Indole (variable), Methyl Red (+), VP (−), Citrate (−) — pattern: v + − −","B",1],
-["H2S production","Negative — key differentiator from Salmonella","B",1],
+["H2S production","Negative","B",1],
 ["Grows on standard media?","Yes — grows on MacConkey and Hektoen enteric agar","C",1],
 ["Key virulence factor","Shiga toxin — damages intestinal epithelium; invades mucosal lining directly","C",1],
 ["Disease(s) caused","Bacillary dysentery (shigellosis) — bloody diarrhea, fever, abdominal cramps","C",5],
-["Host range","Only infects humans — no animal reservoir (unlike Salmonella)","C",1],
-["Citrate utilization","Negative — cannot use citrate as sole carbon source (differentiates from Salmonella)","B",1],
+["Host range","Only infects humans — no animal reservoir","C",1],
+["Citrate utilization","Negative — cannot use citrate as sole carbon source","B",1],
 ["Infectious dose","Extremely low — as few as 10-100 organisms needed to cause infection","C",1]
 ]},
 {name:"Proteus mirabilis",tests:[
@@ -674,7 +705,7 @@ const ORGANISMS = [
 ["Disease(s) caused","UTIs (especially catheter-associated), wound infections","C",1],
 ["Colony morphology","Swarming — spreads in concentric rings; distinctive musty odor","C",1],
 ["Phenylalanine deaminase","Positive — key biochemical test for Proteus genus","B",1],
-["Indole test","Negative — P. mirabilis is indole negative (P. vulgaris is positive; key differentiator)","B",1]
+["Indole test","Negative","B",1]
 ]},
 {name:"Serratia marcescens",tests:[
 ["Gram stain","Gram-negative","M",1],
@@ -722,7 +753,7 @@ const ORGANISMS = [
 ]},
 {name:"Helicobacter pylori",tests:[
 ["Gram stain","Gram-negative","M",1],
-["Cell shape","Rod — curved/spiral shaped (NOT a true spirochete)","M",1],
+["Cell shape","Rod — curved/spiral shaped","M",1],
 ["G+C content / Phylum","N/A — G+C classification used for gram-positives","N",0],
 ["Oxygen requirement","Microaerophilic — requires reduced oxygen (5% O₂)","P",1],
 ["Spore forming?","Non-spore-forming","P",1],
@@ -814,7 +845,6 @@ const ORGANISMS = [
 // GAME STATE
 // ─────────────────────────────────────────────────────────────
 const CAT_MAP = {M:'cat-M',P:'cat-P',B:'cat-B',C:'cat-C',N:'cat-N'};
-const CAT_LABELS = {M:'🔬 Morphology',P:'⚗️ Physiology',B:'🧪 Biochemical',C:'🏥 Clinical',N:'⬜ N/A'};
 
 let state = {
   queue: [],
@@ -864,6 +894,9 @@ function renderHUD() {
   document.getElementById('phase-badge').textContent = 'Investigating';
 }
 
+// ─────────────────────────────────────────────────────────────
+// CARD FLIP GRID
+// ─────────────────────────────────────────────────────────────
 function renderGrid() {
   const grid = document.getElementById('test-grid');
   grid.innerHTML = '';
@@ -871,34 +904,59 @@ function renderGrid() {
   org.tests.forEach((t, i) => {
     const [name, result, cat, pts] = t;
     const isNA = cat === 'N';
-    const btn = document.createElement('button');
-    btn.className = `test-btn ${CAT_MAP[cat]}`;
-    if (state.revealed[i]) btn.classList.add('revealed');
+    const isRevealed = state.revealed[i] || isNA;
 
-    const nameSpan = document.createElement('span');
-    nameSpan.className = 'btn-name';
-    nameSpan.textContent = name;
+    // Wrapper
+    const wrapper = document.createElement('div');
+    wrapper.className = 'card-flip';
+    wrapper.dataset.idx = i;
+    if (isNA) wrapper.classList.add('is-na');
+    if (isRevealed) wrapper.classList.add('done');
 
-    if (state.revealed[i] || isNA) {
-      const resSpan = document.createElement('span');
-      resSpan.className = isNA ? 'na-label' : 'btn-result';
-      resSpan.textContent = result;
-      btn.appendChild(nameSpan);
-      btn.appendChild(resSpan);
-    } else {
-      btn.appendChild(nameSpan);
-      if (pts === 5) {
-        const badge = document.createElement('span');
-        badge.className = 'pts-badge';
-        badge.textContent = '−5pts';
-        btn.appendChild(badge);
-      }
+    // Inner (flipping element)
+    const inner = document.createElement('div');
+    inner.className = 'card-flip-inner';
+    if (isRevealed) inner.classList.add('flipped');
+
+    // Front face (question side)
+    const front = document.createElement('div');
+    front.className = `card-face card-front ${CAT_MAP[cat]}`;
+
+    const nameSpanF = document.createElement('span');
+    nameSpanF.className = 'btn-name';
+    nameSpanF.textContent = name;
+    front.appendChild(nameSpanF);
+
+    if (pts === 5 && !isNA) {
+      const badge = document.createElement('span');
+      badge.className = 'pts-badge';
+      badge.textContent = '−5pts';
+      front.appendChild(badge);
     }
+
+    // Back face (answer side)
+    const back = document.createElement('div');
+    back.className = `card-face card-back ${CAT_MAP[cat]}`;
+
+    const nameSpanB = document.createElement('span');
+    nameSpanB.className = 'btn-name';
+    nameSpanB.textContent = name;
+    back.appendChild(nameSpanB);
+
+    const resSpan = document.createElement('span');
+    resSpan.className = isNA ? 'na-label' : 'btn-result';
+    resSpan.textContent = result;
+    back.appendChild(resSpan);
+
+    inner.appendChild(front);
+    inner.appendChild(back);
+    wrapper.appendChild(inner);
 
     if (!isNA && !state.revealed[i]) {
-      btn.addEventListener('click', () => revealTest(i));
+      wrapper.addEventListener('click', () => revealTest(i));
     }
-    grid.appendChild(btn);
+
+    grid.appendChild(wrapper);
   });
 }
 
@@ -911,7 +969,14 @@ function revealTest(i) {
     state.spentPts += pts;
     state.roundScore = Math.max(1, 20 - state.spentPts);
   }
-  renderGrid();
+  // Flip only this card (animated)
+  const grid = document.getElementById('test-grid');
+  const wrapper = grid.querySelector(`[data-idx="${i}"]`);
+  if (wrapper) {
+    const inner = wrapper.querySelector('.card-flip-inner');
+    if (inner) inner.classList.add('flipped');
+    wrapper.classList.add('done');
+  }
   renderHUD();
 }
 
@@ -937,31 +1002,26 @@ function checkGuess() {
   const guessGenus = guess.split(' ')[0];
   const acceptGenus = state.current.acceptGenus;
 
-  // Exact match (or genus-only for Shigella)
   if (guess === correct || (acceptGenus && guess === correctGenus)) {
     handleCorrect();
     return;
   }
 
-  // Genus right, species wrong
   if (guessGenus === correctGenus && guess !== correct) {
     setFeedback("You've got the genus right — check your species! 🔬", 'negative');
     return;
   }
 
-  // Close spelling (Levenshtein ≤ 2)
   if (levenshtein(guess, correct) <= 2) {
     setFeedback("Almost there — check your spelling! ✏️", 'negative');
     return;
   }
 
-  // Close genus spelling
   if (levenshtein(guessGenus, correctGenus) <= 2 && guessGenus !== correctGenus) {
     setFeedback("Almost there — check your spelling! ✏️", 'negative');
     return;
   }
 
-  // Wrong
   const wrongs = [
     "Not quite — keep digging! 🔬",
     "Hmm, that's not right — but you're learning! 💪",
@@ -980,18 +1040,16 @@ function handleCorrect() {
   document.getElementById('phase-badge').textContent = 'Solved ✓';
   setFeedback(`Correct! It's ${state.current.name}. You banked ${score} point${score===1?'':'s'}! 🎉`, 'positive');
   triggerConfetti();
-  // Reveal all tests
+  // Reveal all cards instantly (no animation)
   state.revealed = new Array(20).fill(true);
   renderGrid();
 
-  // Auto-advance after 2.5s
   setTimeout(() => {
     const next = state.currentIdx + 1;
     if (next < state.queue.length) {
       loadOrganism(next);
       setFeedback('New microbe loaded. Start revealing clues!','neutral');
     } else {
-      // All done
       endSession();
     }
   }, 2500);
@@ -1000,7 +1058,6 @@ function handleCorrect() {
 function skipOrganism() {
   const next = state.currentIdx + 1;
   setFeedback(`Skipped! That was ${state.current.name}. No points for this one.`, 'negative');
-  // Show answer briefly
   state.revealed = new Array(20).fill(true);
   renderGrid();
   setTimeout(() => {
@@ -1048,7 +1105,7 @@ function triggerConfetti() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   const ctx = canvas.getContext('2d');
-  const colors = ['#FF6B6B','#4ECDC4','#FFE66D','#C3B1E1','#ff9f43','#48dbfb'];
+  const colors = ['#C96444','#3AAEAA','#C9993A','#7A8C3A','#1E3A5F','#E8A898'];
   const pieces = Array.from({length:120},()=>({
     x:Math.random()*canvas.width,
     y:-10,
