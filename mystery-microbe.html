@@ -7,118 +7,126 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
-  --coral:#FF6B6B; --teal:#4ECDC4; --yellow:#FFE66D; --purple:#C3B1E1;
-  --bg:#F8F9FF; --dark:#2D2D2D; --gray:#e0e0e0;
-  --coral-dark:#e55555; --teal-dark:#38b5ad; --yellow-dark:#e6cf50; --purple-dark:#a898cc;
+  --coral:#C96444; --coral-dark:#AE5038;
+  --teal:#3AAEAA; --teal-dark:#2A918D;
+  --amber:#C9993A; --amber-dark:#A87D28;
+  --purple:#7E6BAE; --purple-dark:#685796;
+  --bg:#F2EAE0; --dark:#2A1F18;
+  --tan:#C9B49A; --panel:#FBF5EE; --border:#DDD0C0;
+  --gray:#BCA898;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh}
 #app{max-width:960px;margin:0 auto;padding:12px 16px}
-header{text-align:center;padding:16px 0 8px}
-header h1{font-size:2rem;font-weight:900;color:var(--coral)}
-header p{font-size:.95rem;color:#666;margin-top:4px}
+header{text-align:center;padding:18px 0 6px}
+header h1{font-size:1.7rem;font-weight:800;color:var(--dark);letter-spacing:-.01em}
+header h1 span{color:var(--coral)}
+header p{font-size:.9rem;color:#8A7060;margin-top:4px;font-weight:600}
 #hud{display:flex;justify-content:space-between;align-items:center;
-  background:#fff;border-radius:16px;padding:12px 20px;margin:12px 0;
-  box-shadow:0 2px 12px rgba(0,0,0,.08);flex-wrap:wrap;gap:8px}
+  background:var(--panel);border:1px solid var(--border);border-radius:14px;
+  padding:12px 20px;margin:12px 0;flex-wrap:wrap;gap:8px}
 .hud-block{text-align:center}
-.hud-label{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#999}
-.hud-val{font-size:2rem;font-weight:900;line-height:1}
+.hud-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#A08878}
+.hud-val{font-size:1.9rem;font-weight:900;line-height:1}
 .hud-val.score{color:var(--coral)}
 .hud-val.total{color:var(--teal)}
 .hud-val.count{color:var(--purple)}
-#phase-badge{font-size:.8rem;font-weight:700;background:var(--yellow);
-  padding:4px 12px;border-radius:20px;white-space:nowrap}
-#feedback-box{min-height:40px;text-align:center;font-size:1.05rem;font-weight:700;
-  padding:8px;border-radius:12px;transition:all .3s}
-#feedback-box.positive{background:#d4edda;color:#155724}
-#feedback-box.negative{background:#fff3cd;color:#856404}
-#feedback-box.error{background:#f8d7da;color:#721c24}
-#feedback-box.neutral{background:transparent;color:#666}
-#guess-area{display:flex;gap:8px;margin:12px 0;align-items:center;flex-wrap:wrap}
-#guess-input{flex:1;min-width:200px;padding:12px 16px;border:2px solid var(--purple);
-  border-radius:12px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:600;
-  background:#fff;color:var(--dark)}
-#guess-input:focus{outline:none;border-color:var(--coral);box-shadow:0 0 0 3px rgba(255,107,107,.2)}
-#guess-btn{padding:12px 24px;background:var(--coral);color:#fff;border:none;
-  border-radius:12px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;
-  cursor:pointer;transition:background .2s,transform .1s;white-space:nowrap}
+#phase-badge{font-size:.78rem;font-weight:700;background:var(--amber);color:#fff;
+  padding:4px 12px;border-radius:20px;white-space:nowrap;letter-spacing:.02em}
+#feedback-box{min-height:40px;text-align:center;font-size:1rem;font-weight:700;
+  padding:9px 12px;border-radius:10px;transition:all .3s}
+#feedback-box.positive{background:#E0F0DC;color:#2A5A18;border:1px solid #B8D8B0}
+#feedback-box.negative{background:#F5EAD8;color:#7A4818;border:1px solid #DCC8A0}
+#feedback-box.error{background:#F5DDD8;color:#7A2818;border:1px solid #D8B0A8}
+#feedback-box.neutral{background:transparent;color:#8A7060;border:none}
+#guess-area{display:flex;gap:8px;margin:10px 0;align-items:center;flex-wrap:wrap}
+#guess-input{flex:1;min-width:200px;padding:11px 16px;border:2px solid var(--border);
+  border-radius:10px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:600;
+  background:var(--panel);color:var(--dark)}
+#guess-input:focus{outline:none;border-color:var(--coral);box-shadow:0 0 0 3px rgba(201,100,68,.15)}
+#guess-btn{padding:11px 22px;background:var(--coral);color:#fff;border:none;
+  border-radius:10px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:800;
+  cursor:pointer;transition:background .2s,transform .1s;white-space:nowrap;letter-spacing:.01em}
 #guess-btn:hover{background:var(--coral-dark)}
 #guess-btn:active{transform:scale(.97)}
-#end-btn{padding:12px 24px;background:#fff;color:#999;border:2px solid #e0e0e0;
-  border-radius:12px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:700;
+#end-btn{padding:11px 18px;background:transparent;color:#A08878;border:1px solid var(--border);
+  border-radius:10px;font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:700;
   cursor:pointer;transition:all .2s;white-space:nowrap}
 #end-btn:hover{border-color:var(--coral);color:var(--coral)}
-.legend{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 10px;justify-content:center}
-.legend-item{display:flex;align-items:center;gap:5px;font-size:.78rem;font-weight:700}
-.legend-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
-#test-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0}
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin:4px 0 10px;justify-content:center}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:.75rem;font-weight:700;color:#8A7060}
+.legend-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+#test-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:8px 0}
 @media(max-width:640px){#test-grid{grid-template-columns:repeat(2,1fr)}}
-.test-btn{padding:8px 10px;border:2px solid transparent;border-radius:12px;
-  font-family:'Nunito',sans-serif;font-size:.82rem;font-weight:700;
-  cursor:pointer;transition:all .2s;text-align:left;min-height:56px;
-  display:flex;flex-direction:column;gap:2px;line-height:1.2}
-.test-btn .btn-name{font-weight:800}
-.test-btn .btn-result{font-size:.75rem;font-weight:600;opacity:.9}
-.test-btn.cat-M{background:var(--teal);color:#1a5e5b}
-.test-btn.cat-P{background:var(--purple);color:#3d2d6b}
-.test-btn.cat-B{background:var(--yellow);color:#5a4800}
-.test-btn.cat-C{background:var(--coral);color:#6b1010}
-.test-btn.cat-N{background:var(--gray);color:#777;opacity:.7;cursor:default}
-.test-btn.cat-M.revealed{border-color:#1a8f88;background:#3ab8b1}
-.test-btn.cat-P.revealed{border-color:#7a60b8;background:#b09ad6}
-.test-btn.cat-B.revealed{border-color:#c8a800;background:#f5da50}
-.test-btn.cat-C.revealed{border-color:#c44040;background:#f05050}
-.test-btn.cat-N.revealed{border-color:#bbb;background:#d4d4d4;opacity:.85}
-.test-btn:hover:not(.cat-N){filter:brightness(1.05);transform:translateY(-1px)}
+.test-btn{padding:8px 10px;border:1.5px solid transparent;border-radius:10px;
+  font-family:'Nunito',sans-serif;font-size:.8rem;font-weight:700;
+  cursor:pointer;transition:all .18s;text-align:left;min-height:54px;
+  display:flex;flex-direction:column;gap:2px;line-height:1.25}
+.test-btn .btn-name{font-weight:800;font-size:.8rem}
+.test-btn .btn-result{font-size:.73rem;font-weight:600;opacity:.88}
+/* Unclicked: slightly muted/pastel; clicked: richer/saturated */
+.test-btn.cat-M{background:#9FDBD7;color:#0D4A47}
+.test-btn.cat-P{background:#BDB0D8;color:#281C50}
+.test-btn.cat-B{background:#E0C882;color:#3A2600}
+.test-btn.cat-C{background:#E8A898;color:#5A1A08}
+.test-btn.cat-N{background:#D8CAB8;color:#7A6858;opacity:.75;cursor:default}
+.test-btn.cat-M.revealed{border-color:#2A9088;background:var(--teal);color:#fff}
+.test-btn.cat-P.revealed{border-color:#5E4898;background:var(--purple);color:#fff}
+.test-btn.cat-B.revealed{border-color:#A07820;background:var(--amber);color:#fff}
+.test-btn.cat-C.revealed{border-color:#A04828;background:var(--coral);color:#fff}
+.test-btn.cat-N.revealed{border-color:#A09080;background:#C8B8A8;opacity:.9;color:#5A4A38}
+.test-btn:hover:not(.cat-N):not(.revealed){filter:brightness(1.06);transform:translateY(-1px)}
 .test-btn:active:not(.cat-N){transform:scale(.98)}
 .test-btn.revealed:hover{transform:none;filter:none}
-.pts-badge{position:absolute;top:4px;right:6px;font-size:.7rem;font-weight:900;
-  background:rgba(0,0,0,.15);border-radius:6px;padding:1px 5px}
+.pts-badge{position:absolute;top:4px;right:6px;font-size:.65rem;font-weight:900;
+  background:rgba(0,0,0,.18);color:#fff;border-radius:5px;padding:1px 5px}
 .test-btn{position:relative}
-#modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
+#modal-overlay{display:none;position:fixed;inset:0;background:rgba(42,31,24,.55);
   z-index:100;align-items:center;justify-content:center;padding:16px}
 #modal-overlay.active{display:flex}
-#modal{background:#fff;border-radius:20px;padding:28px;max-width:540px;width:100%;
-  max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.2)}
-#modal h2{font-size:1.6rem;font-weight:900;color:var(--coral);text-align:center;margin-bottom:8px}
-#modal .summary-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
-.stat-card{background:var(--bg);border-radius:12px;padding:14px;text-align:center}
-.stat-card .val{font-size:2rem;font-weight:900;color:var(--teal)}
-.stat-card .lbl{font-size:.8rem;font-weight:700;color:#888;text-transform:uppercase}
+#modal{background:var(--panel);border:1px solid var(--border);border-radius:18px;
+  padding:28px;max-width:540px;width:100%;max-height:90vh;overflow-y:auto;
+  box-shadow:0 8px 40px rgba(42,31,24,.15)}
+#modal h2{font-size:1.5rem;font-weight:900;color:var(--dark);text-align:center;margin-bottom:8px}
+#modal .summary-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.stat-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+.stat-card .val{font-size:1.9rem;font-weight:900;color:var(--teal)}
+.stat-card .lbl{font-size:.75rem;font-weight:700;color:#A08878;text-transform:uppercase;letter-spacing:.05em}
 #leaderboard-section{margin-top:16px}
-#leaderboard-section h3{font-size:1.1rem;font-weight:800;margin-bottom:10px;color:var(--dark)}
+#leaderboard-section h3{font-size:1rem;font-weight:800;margin-bottom:10px;color:var(--dark)}
 #name-row{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}
-#player-name-input{flex:1;min-width:150px;padding:10px 14px;border:2px solid var(--purple);
-  border-radius:10px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:600}
+#player-name-input{flex:1;min-width:150px;padding:9px 14px;border:1.5px solid var(--border);
+  border-radius:8px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:600;
+  background:#fff;color:var(--dark)}
 #player-name-input:focus{outline:none;border-color:var(--teal)}
-#save-btn{padding:10px 20px;background:var(--teal);color:#fff;border:none;
-  border-radius:10px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:800;cursor:pointer}
+#save-btn{padding:9px 18px;background:var(--teal);color:#fff;border:none;
+  border-radius:8px;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:800;cursor:pointer}
 #save-btn:hover{background:var(--teal-dark)}
-#save-btn:disabled{background:#ccc;cursor:default}
-#lb-table{width:100%;border-collapse:collapse;font-size:.85rem}
-#lb-table th{text-align:left;padding:6px 8px;border-bottom:2px solid #eee;
-  font-size:.75rem;text-transform:uppercase;color:#999;font-weight:700}
-#lb-table td{padding:7px 8px;border-bottom:1px solid #f0f0f0}
+#save-btn:disabled{background:#C0B0A0;cursor:default}
+#lb-table{width:100%;border-collapse:collapse;font-size:.83rem}
+#lb-table th{text-align:left;padding:6px 8px;border-bottom:1.5px solid var(--border);
+  font-size:.72rem;text-transform:uppercase;color:#A08878;font-weight:700;letter-spacing:.04em}
+#lb-table td{padding:7px 8px;border-bottom:1px solid var(--border)}
 #lb-table tr:first-child td{font-weight:800}
 .lb-rank{font-weight:900;color:var(--coral);width:28px}
-#play-again-btn{display:block;width:100%;margin-top:16px;padding:14px;
-  background:var(--coral);color:#fff;border:none;border-radius:14px;
-  font-family:'Nunito',sans-serif;font-size:1.1rem;font-weight:900;cursor:pointer}
+#play-again-btn{display:block;width:100%;margin-top:16px;padding:13px;
+  background:var(--coral);color:#fff;border:none;border-radius:10px;
+  font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;letter-spacing:.01em}
 #play-again-btn:hover{background:var(--coral-dark)}
 canvas#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:200}
 .na-label{font-size:.7rem;font-style:italic;opacity:.85}
-#skip-btn{padding:8px 16px;background:transparent;color:#aaa;border:1px solid #ddd;
-  border-radius:10px;font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:700;
-  cursor:pointer;margin-left:auto;display:block;margin-top:6px}
-#skip-btn:hover{color:var(--coral);border-color:var(--coral)}
+#skip-btn{padding:7px 14px;background:transparent;color:#B0A090;border:1px solid var(--border);
+  border-radius:8px;font-family:'Nunito',sans-serif;font-size:.8rem;font-weight:700;
+  cursor:pointer;margin-left:auto;display:block;margin-top:5px}
+#skip-btn:hover{color:var(--coral);border-color:var(--tan)}
 </style>
 </head>
 <body>
 <canvas id="confetti-canvas"></canvas>
 <div id="app">
   <header>
-    <h1>🦠 Mystery Microbe</h1>
-    <p>Reveal clues, guess the organism, rack up points!</p>
+    <h1>Mystery <span>Microbe</span></h1>
+    <p>Reveal clues, identify the organism, rack up points.</p>
   </header>
   <div id="hud">
     <div class="hud-block">
@@ -127,14 +135,14 @@ canvas#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:200}
     </div>
     <div class="hud-block">
       <div class="hud-val count" id="microbe-count">Microbe #1</div>
-      <div id="phase-badge">Investigating 🔬</div>
+      <div id="phase-badge">Investigating</div>
     </div>
     <div class="hud-block">
       <div class="hud-label">Total Score</div>
       <div class="hud-val total" id="total-score">0</div>
     </div>
   </div>
-  <div id="feedback-box" class="neutral">Click a test to reveal a clue, then type your guess! 🧫</div>
+  <div id="feedback-box" class="neutral">Click any test button to reveal a clue, then type your guess below.</div>
   <div id="guess-area">
     <input id="guess-input" type="text" placeholder="Genus species (e.g. Escherichia coli)" autocomplete="off" autocorrect="off" spellcheck="false">
     <button id="guess-btn">Guess! 🔬</button>
@@ -834,7 +842,7 @@ function startSession() {
   state.done = false;
   loadOrganism(0);
   document.getElementById('total-score').textContent = '0';
-  setFeedback('Click a test to reveal a clue, then type your guess! 🧫','neutral');
+  setFeedback('Click any test button to reveal a clue, then type your guess below.','neutral');
 }
 
 function loadOrganism(idx) {
@@ -853,7 +861,7 @@ function renderHUD() {
   document.getElementById('cur-score').textContent = state.roundScore;
   document.getElementById('total-score').textContent = state.total;
   document.getElementById('microbe-count').textContent = `Microbe #${state.currentIdx+1}`;
-  document.getElementById('phase-badge').textContent = 'Investigating 🔬';
+  document.getElementById('phase-badge').textContent = 'Investigating';
 }
 
 function renderGrid() {
@@ -969,8 +977,8 @@ function handleCorrect() {
   state.sessionScores.push(score);
   state.total += score;
   document.getElementById('total-score').textContent = state.total;
-  document.getElementById('phase-badge').textContent = 'Solved! ✅';
-  setFeedback(`YES! It's ${state.current.name}! You banked ${score} point${score===1?'':'s'}! 🎉`, 'positive');
+  document.getElementById('phase-badge').textContent = 'Solved ✓';
+  setFeedback(`Correct! It's ${state.current.name}. You banked ${score} point${score===1?'':'s'}! 🎉`, 'positive');
   triggerConfetti();
   // Reveal all tests
   state.revealed = new Array(20).fill(true);
@@ -981,7 +989,7 @@ function handleCorrect() {
     const next = state.currentIdx + 1;
     if (next < state.queue.length) {
       loadOrganism(next);
-      setFeedback('New mystery microbe loaded! Start revealing clues 🦠','neutral');
+      setFeedback('New microbe loaded. Start revealing clues!','neutral');
     } else {
       // All done
       endSession();
@@ -998,7 +1006,7 @@ function skipOrganism() {
   setTimeout(() => {
     if (next < state.queue.length) {
       loadOrganism(next);
-      setFeedback('New mystery microbe! 🦠','neutral');
+      setFeedback('New microbe loaded. Start revealing clues!','neutral');
     } else {
       endSession();
     }
