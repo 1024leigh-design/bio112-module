@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Disease Typing Game</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --coral:#C96444; --coral-dark:#AE5038;
+  --teal:#3AAEAA; --teal-dark:#2A918D;
+  --amber:#C9993A; --amber-dark:#A87D28;
+  --purple:#7E6BAE; --purple-dark:#685796;
+  --bg:#F2EAE0; --dark:#2A1F18;
+  --panel:#FBF5EE; --border:#DDD0C0; --tan:#C9B49A;
+  --timer-safe:#3AAEAA; --timer-warn:#C9993A; --timer-danger:#C96444;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;display:flex;flex-direction:column}
+canvas#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:200}
+
+/* ── Screens ── */
+.screen{display:none;flex:1;align-items:center;justify-content:center;padding:20px}
+.screen.active{display:flex;flex-direction:column}
+
+/* ── Name entry ── */
+#name-screen{text-align:center}
+#name-screen h1{font-size:1.8rem;font-weight:800;color:var(--dark);margin-bottom:6px}
+#name-screen h1 span{color:var(--coral)}
+#name-screen p{color:#8A7060;font-size:.95rem;max-width:400px;margin:.5rem auto 1.5rem;font-weight:600;line-height:1.5}
+#name-card{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:28px;width:100%;max-width:420px}
+#name-card label{display:block;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#A08878;margin-bottom:6px}
+#player-name{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;
+  font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;background:#fff;color:var(--dark)}
+#player-name:focus{outline:none;border-color:var(--teal)}
+#start-btn{margin-top:14px;width:100%;padding:14px;background:var(--coral);color:#fff;border:none;
+  border-radius:10px;font-family:'Nunito',sans-serif;font-size:1.05rem;font-weight:800;cursor:pointer}
+#start-btn:hover{background:var(--coral-dark)}
+
+/* ── Game screen ── */
+#game-screen{max-width:700px;width:100%;margin:0 auto}
+#top-bar{display:flex;justify-content:space-between;align-items:center;
+  background:var(--panel);border:1px solid var(--border);border-radius:14px;
+  padding:10px 18px;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.top-block{text-align:center}
+.top-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#A08878}
+.top-val{font-size:1.6rem;font-weight:900;line-height:1.1}
+#q-counter{font-size:.8rem;font-weight:700;color:#A08878}
+#end-session-btn{padding:8px 14px;background:transparent;color:#B0A090;border:1px solid var(--border);
+  border-radius:8px;font-family:'Nunito',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer}
+#end-session-btn:hover{border-color:var(--coral);color:var(--coral)}
+
+/* ── Timer display ── */
+#timer-block{text-align:center;margin:8px 0 14px}
+#timer-ring{display:inline-flex;flex-direction:column;align-items:center;gap:2px}
+#timer-val{font-size:4.5rem;font-weight:900;line-height:1;transition:color .3s;color:var(--timer-safe)}
+#timer-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#A08878}
+#pts-live{font-size:1.1rem;font-weight:800;color:var(--amber);margin-top:2px}
+
+/* ── Disease card ── */
+#disease-card{background:var(--panel);border:1px solid var(--border);border-radius:16px;
+  padding:22px 24px;text-align:center;margin-bottom:14px}
+#disease-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#A08878;margin-bottom:6px}
+#disease-name{font-size:2rem;font-weight:900;color:var(--dark);line-height:1.2}
+
+/* ── Answer area ── */
+#answer-area{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+#answer-input{flex:1;min-width:200px;padding:12px 16px;border:2px solid var(--border);
+  border-radius:10px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;
+  background:var(--panel);color:var(--dark)}
+#answer-input:focus{outline:none;border-color:var(--coral);box-shadow:0 0 0 3px rgba(201,100,68,.15)}
+#answer-input:disabled{background:#EEE8E0;color:#B0A090}
+#submit-btn{padding:12px 22px;background:var(--coral);color:#fff;border:none;
+  border-radius:10px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:800;
+  cursor:pointer;white-space:nowrap;transition:background .2s}
+#submit-btn:hover{background:var(--coral-dark)}
+#submit-btn:disabled{background:#C0B0A0;cursor:default}
+
+/* ── Feedback ── */
+#feedback{min-height:36px;text-align:center;font-size:.95rem;font-weight:700;
+  padding:8px 12px;border-radius:10px;margin-bottom:8px;transition:all .25s}
+#feedback.positive{background:#E0F0DC;color:#2A5A18;border:1px solid #B8D8B0}
+#feedback.negative{background:#F5EAD8;color:#7A4818;border:1px solid #DCC8A0}
+#feedback.error{background:#F5DDD8;color:#7A2818;border:1px solid #D8B0A8}
+#feedback.neutral{background:transparent;color:#8A7060;border:none}
+
+/* ── Hints ── */
+#hint1{background:#FFF3E8;border:1.5px solid #E8C8A0;border-radius:12px;
+  padding:12px 16px;margin-bottom:8px;display:none;text-align:center}
+#hint1.visible{display:block;animation:slideIn .35s ease}
+#hint1-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#B07840;margin-bottom:4px}
+#hint1-val{font-size:1.1rem;font-weight:800;color:var(--amber-dark)}
+#hint1-penalty{font-size:.75rem;font-weight:700;color:var(--coral);margin-top:2px}
+
+#hint2{margin-bottom:8px;display:none}
+#hint2.visible{display:block;animation:slideIn .35s ease}
+#hint2-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#8A7060;text-align:center;margin-bottom:8px}
+#mc-buttons{display:flex;flex-direction:column;gap:7px}
+.mc-btn{padding:11px 16px;border:1.5px solid var(--border);border-radius:10px;
+  font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:700;
+  background:var(--panel);color:var(--dark);cursor:pointer;text-align:left;
+  transition:all .18s}
+.mc-btn:hover:not(:disabled){background:#EBE0D4;border-color:var(--tan)}
+.mc-btn.correct{background:#D4EDDA;border-color:#90C890;color:#155724}
+.mc-btn.wrong{background:#F5DDD8;border-color:#D8B0A8;color:#7A2818}
+.mc-btn:disabled{cursor:default}
+
+@keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── End screen ── */
+#end-screen{max-width:560px;width:100%;margin:0 auto}
+#end-screen h2{font-size:1.6rem;font-weight:900;color:var(--dark);text-align:center;margin-bottom:6px}
+#end-screen .subtitle{text-align:center;color:#8A7060;font-size:.9rem;font-weight:600;margin-bottom:16px}
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.s-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
+.s-card .sv{font-size:2rem;font-weight:900;color:var(--teal)}
+.s-card .sl{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#A08878;margin-top:2px}
+#lb-section h3{font-size:.95rem;font-weight:800;color:var(--dark);margin-bottom:8px}
+#save-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+#save-name{flex:1;min-width:140px;padding:9px 14px;border:1.5px solid var(--border);
+  border-radius:8px;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:600;background:#fff;color:var(--dark)}
+#save-name:focus{outline:none;border-color:var(--teal)}
+#save-btn{padding:9px 18px;background:var(--teal);color:#fff;border:none;
+  border-radius:8px;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:800;cursor:pointer}
+#save-btn:hover{background:var(--teal-dark)}
+#save-btn:disabled{background:#C0B0A0;cursor:default}
+#lb-table{width:100%;border-collapse:collapse;font-size:.82rem}
+#lb-table th{text-align:left;padding:5px 8px;border-bottom:1.5px solid var(--border);
+  font-size:.7rem;text-transform:uppercase;color:#A08878;font-weight:700;letter-spacing:.04em}
+#lb-table td{padding:6px 8px;border-bottom:1px solid var(--border)}
+.lb-rank{font-weight:900;color:var(--coral);width:28px}
+#play-again-btn{display:block;width:100%;margin-top:16px;padding:13px;
+  background:var(--coral);color:#fff;border:none;border-radius:10px;
+  font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;cursor:pointer}
+#play-again-btn:hover{background:var(--coral-dark)}
+#back-to-name-btn{display:block;width:100%;margin-top:8px;padding:10px;
+  background:transparent;color:#A08878;border:1px solid var(--border);border-radius:10px;
+  font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer}
+
+@media(max-width:500px){
+  #disease-name{font-size:1.5rem}
+  #timer-val{font-size:3rem}
+  .summary-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<canvas id="confetti-canvas"></canvas>
+
+<!-- ── Name entry ── -->
+<div id="name-screen" class="screen active">
+  <h1>Disease <span>Typing</span></h1>
+  <p>A disease appears — type the organism that causes it before the clock runs out. Hints unlock as time ticks down.</p>
+  <div id="name-card">
+    <label for="player-name">Your name</label>
+    <input id="player-name" type="text" placeholder="e.g. Alex" maxlength="30" autocomplete="off">
+    <button id="start-btn">Start Game</button>
+  </div>
+</div>
+
+<!-- ── Game ── -->
+<div id="game-screen" class="screen">
+  <div id="top-bar">
+    <div class="top-block">
+      <div class="top-label">Total Score</div>
+      <div class="top-val" id="total-display" style="color:var(--teal)">0</div>
+    </div>
+    <div class="top-block" style="text-align:center">
+      <div id="q-counter">Question 1 of 40</div>
+    </div>
+    <div class="top-block" style="text-align:right">
+      <button id="end-session-btn">End Session</button>
+    </div>
+  </div>
+
+  <div id="timer-block">
+    <div id="timer-ring">
+      <div id="timer-val">60</div>
+      <div id="timer-label">seconds remaining</div>
+      <div id="pts-live">100 pts</div>
+    </div>
+  </div>
+
+  <div id="disease-card">
+    <div id="disease-label">What organism causes...</div>
+    <div id="disease-name"></div>
+  </div>
+
+  <div id="answer-area">
+    <input id="answer-input" type="text" placeholder="Genus species (e.g. Escherichia coli)"
+      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <button id="submit-btn">Submit</button>
+  </div>
+
+  <div id="feedback" class="neutral">Type the genus and species of the organism that causes this disease.</div>
+
+  <div id="hint1">
+    <div id="hint1-label">Hint 1 — Gram stain &amp; shape (−10 pts)</div>
+    <div id="hint1-val"></div>
+  </div>
+
+  <div id="hint2">
+    <div id="hint2-label">Hint 2 — Multiple choice (−10 pts)</div>
+    <div id="mc-buttons">
+      <button class="mc-btn" id="mc-a"></button>
+      <button class="mc-btn" id="mc-b"></button>
+      <button class="mc-btn" id="mc-c"></button>
+    </div>
+  </div>
+</div>
+
+<!-- ── End screen ── -->
+<div id="end-screen" class="screen">
+  <h2>Session Complete! 🎉</h2>
+  <p class="subtitle" id="end-subtitle"></p>
+  <div class="summary-grid">
+    <div class="s-card"><div class="sv" id="es-total">0</div><div class="sl">Total Score</div></div>
+    <div class="s-card"><div class="sv" id="es-correct">0</div><div class="sl">Correct</div></div>
+    <div class="s-card"><div class="sv" id="es-avg">0</div><div class="sl">Avg per Question</div></div>
+    <div class="s-card"><div class="sv" id="es-best">0</div><div class="sl">Best Round</div></div>
+  </div>
+  <div id="lb-section">
+    <h3>Leaderboard</h3>
+    <div id="save-row">
+      <input id="save-name" type="text" placeholder="Your name" maxlength="30">
+      <button id="save-btn">Save Score</button>
+    </div>
+    <table id="lb-table">
+      <thead><tr>
+        <th>#</th><th>Name</th><th>Total</th><th>Correct</th><th>Avg</th><th>Date</th>
+      </tr></thead>
+      <tbody id="lb-body"><tr><td colspan="6" style="text-align:center;color:#aaa;padding:12px">Loading...</td></tr></tbody>
+    </table>
+  </div>
+  <button id="play-again-btn">Play Again</button>
+  <button id="back-to-name-btn">Change Name</button>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// DATA — 40 disease-to-organism pairs
+// [disease, answer, gram, shape, distractor1, distractor2]
+// ─────────────────────────────────────────────────────────────
+const PAIRS = [
+["Tetanus (lockjaw)","Clostridium tetani","Gram-positive","rod","Clostridium botulinum","Listeria monocytogenes"],
+["Botulism","Clostridium botulinum","Gram-positive","rod","Clostridium tetani","Clostridioides difficile"],
+["Gas gangrene","Clostridium perfringens","Gram-positive","rod","Clostridium botulinum","Bacillus cereus"],
+["Antibiotic-associated colitis","Clostridioides difficile","Gram-positive","rod","Clostridium tetani","Listeria monocytogenes"],
+["Strep throat","Streptococcus pyogenes","Gram-positive","coccus","Streptococcus pneumoniae","Staphylococcus aureus"],
+["Streptococcal pneumonia","Streptococcus pneumoniae","Gram-positive","coccus","Streptococcus pyogenes","Staphylococcus saprophyticus"],
+["Dental cavities","Streptococcus mutans","Gram-positive","coccus","Streptococcus pyogenes","Streptococcus pneumoniae"],
+["UTI (most common cause)","Escherichia coli","Gram-negative","rod","Klebsiella pneumoniae","Proteus mirabilis"],
+["UTI (2nd most common)","Staphylococcus saprophyticus","Gram-positive","coccus","Staphylococcus aureus","Streptococcus pyogenes"],
+["Toxic shock syndrome","Staphylococcus aureus","Gram-positive","coccus","Staphylococcus saprophyticus","Streptococcus pyogenes"],
+["Scalded skin syndrome","Staphylococcus aureus","Gram-positive","coccus","Staphylococcus saprophyticus","Streptococcus pneumoniae"],
+["Impetigo","Staphylococcus aureus","Gram-positive","coccus","Streptococcus pyogenes","Staphylococcus saprophyticus"],
+["Osteomyelitis","Staphylococcus aureus","Gram-positive","coccus","Streptococcus pneumoniae","Listeria monocytogenes"],
+["Listeriosis","Listeria monocytogenes","Gram-positive","rod","Clostridium tetani","Bacillus cereus"],
+["Anthrax","Bacillus anthracis","Gram-positive","rod","Bacillus cereus","Listeria monocytogenes"],
+["Food poisoning (stale rice)","Bacillus cereus","Gram-positive","rod","Bacillus anthracis","Clostridium perfringens"],
+["Diphtheria","Corynebacterium diphtheriae","Gram-positive","rod","Mycobacterium tuberculosis","Listeria monocytogenes"],
+["Lumpy jaw","Actinomyces israelii","Gram-positive","rod","Corynebacterium diphtheriae","Mycobacterium leprae"],
+["Tuberculosis","Mycobacterium tuberculosis","Gram-positive","rod","Mycobacterium leprae","Corynebacterium diphtheriae"],
+["Leprosy","Mycobacterium leprae","Gram-positive","rod","Mycobacterium tuberculosis","Corynebacterium diphtheriae"],
+["Whooping cough","Bordetella pertussis","Gram-negative","coccobacillus","Neisseria gonorrhoeae","Neisseria meningitidis"],
+["Gonorrhea","Neisseria gonorrhoeae","Gram-negative","coccus","Neisseria meningitidis","Bordetella pertussis"],
+["Conjunctival gonorrhea","Neisseria gonorrhoeae","Gram-negative","coccus","Neisseria meningitidis","Chlamydia trachomatis"],
+["Meningococcal meningitis","Neisseria meningitidis","Gram-negative","coccus","Neisseria gonorrhoeae","Bordetella pertussis"],
+["Contact lens eye infection","Pseudomonas aeruginosa","Gram-negative","rod","Klebsiella pneumoniae","Escherichia coli"],
+["Legionnaires' disease","Legionella pneumophila","Gram-negative","rod","Pseudomonas aeruginosa","Klebsiella pneumoniae"],
+["Traveler's diarrhea","Escherichia coli","Gram-negative","rod","Salmonella typhi","Shigella sonnei"],
+["Hospital-acquired pneumonia","Klebsiella pneumoniae","Gram-negative","rod","Pseudomonas aeruginosa","Escherichia coli"],
+["Typhoid fever","Salmonella typhi","Gram-negative","rod","Shigella sonnei","Escherichia coli"],
+["Shigellosis","Shigella sonnei","Gram-negative","rod","Salmonella typhi","Escherichia coli"],
+["Cholera","Vibrio cholerae","Gram-negative","rod (curved)","Helicobacter pylori","Campylobacter jejuni"],
+["Bacterial gastroenteritis (worldwide #1)","Campylobacter jejuni","Gram-negative","rod (curved)","Vibrio cholerae","Helicobacter pylori"],
+["Stomach ulcers","Helicobacter pylori","Gram-negative","rod (curved)","Vibrio cholerae","Campylobacter jejuni"],
+["Bubonic plague","Yersinia pestis","Gram-negative","rod","Salmonella typhi","Klebsiella pneumoniae"],
+["Rocky Mountain spotted fever","Rickettsia rickettsii","Gram-negative","rod","Bordetella pertussis","Legionella pneumophila"],
+["Lyme disease","Borrelia burgdorferi","Gram-negative","spiral (spirochete)","Treponema pallidum","Helicobacter pylori"],
+["Syphilis","Treponema pallidum","Gram-negative","spiral (spirochete)","Borrelia burgdorferi","Helicobacter pylori"],
+["Chlamydia (STI)","Chlamydia trachomatis","Gram-negative","coccoid","Neisseria gonorrhoeae","Neisseria meningitidis"],
+["Periodontal disease","Fusobacterium nucleatum","Gram-negative","rod","Bacteroides fragilis","Prevotella intermedia"],
+["Relapsing fever","Borrelia hermsii","Gram-negative","spiral (spirochete)","Borrelia burgdorferi","Treponema pallidum"]
+];
+
+// ─────────────────────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────────────────────
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function levenshtein(a,b){
+  const m=a.length,n=b.length;
+  const dp=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i||j));
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)
+    dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
+  return dp[m][n];
+}
+
+function norm(s){return s.trim().toLowerCase();}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+const WIN_MSGS=[
+  "YES! Nailed it! 🎉",
+  "That's RIGHT! You know your bugs! 🦠",
+  "Perfect spelling and everything! 💪",
+  "On the board! Keep it going! 🔬",
+  "You're a microbe-naming MACHINE! 🧫"
+];
+const WRONG_MSGS=[
+  "Not quite — keep thinking! ⏱️",
+  "Hmm, not that one! You've got time! 💭",
+  "Try again! Don't give up! 🔬"
+];
+
+// ─────────────────────────────────────────────────────────────
+// GAME STATE
+// ─────────────────────────────────────────────────────────────
+let session = {
+  playerName:'',
+  queue:[],
+  idx:0,
+  scores:[],
+  total:0
+};
+
+let round = {
+  pair:null,
+  startMs:0,
+  elapsed:0,
+  baseScore:100,
+  hint1Shown:false,
+  hint2Shown:false,
+  answered:false,
+  intervalId:null
+};
+
+// ─────────────────────────────────────────────────────────────
+// SCREEN MANAGEMENT
+// ─────────────────────────────────────────────────────────────
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ─────────────────────────────────────────────────────────────
+// SESSION START
+// ─────────────────────────────────────────────────────────────
+function startSession(){
+  session.queue = shuffle(PAIRS);
+  session.idx = 0;
+  session.scores = [];
+  session.total = 0;
+  document.getElementById('total-display').textContent = '0';
+  showScreen('game-screen');
+  loadQuestion(0);
+}
+
+// ─────────────────────────────────────────────────────────────
+// QUESTION
+// ─────────────────────────────────────────────────────────────
+function loadQuestion(idx){
+  if(round.intervalId) clearInterval(round.intervalId);
+
+  const pair = session.queue[idx];
+  round = {
+    pair, startMs:performance.now(), elapsed:0,
+    baseScore:100, hint1Shown:false, hint2Shown:false,
+    answered:false, intervalId:null
+  };
+
+  // Reset UI
+  document.getElementById('disease-name').textContent = pair[0];
+  document.getElementById('q-counter').textContent = `Question ${idx+1} of ${session.queue.length}`;
+  document.getElementById('answer-input').value='';
+  document.getElementById('answer-input').disabled=false;
+  document.getElementById('submit-btn').disabled=false;
+  setFeedback('Type the genus and species of the organism that causes this disease.','neutral');
+  document.getElementById('hint1').className='';
+  document.getElementById('hint2').className='';
+  setTimer(60,'safe');
+  document.getElementById('pts-live').textContent='100 pts';
+
+  // Disable MC buttons
+  ['mc-a','mc-b','mc-c'].forEach(id=>{
+    const b=document.getElementById(id);
+    b.disabled=false;b.className='mc-btn';
+  });
+
+  setTimeout(()=>document.getElementById('answer-input').focus(),80);
+
+  round.intervalId = setInterval(tick, 100);
+}
+
+function tick(){
+  const now = performance.now();
+  round.elapsed = (now - round.startMs) / 1000;
+  const remaining = Math.max(0, 60 - round.elapsed);
+  const elapsedInt = Math.floor(round.elapsed);
+
+  // Points: 100 - elapsed - penalties
+  let pts = 100 - elapsedInt;
+  if(round.hint1Shown) pts -= 10;
+  if(round.hint2Shown) pts -= 10;
+  pts = Math.max(0, pts);
+  document.getElementById('pts-live').textContent = `${pts} pts`;
+
+  // Timer display
+  const remInt = Math.ceil(remaining);
+  const timerEl = document.getElementById('timer-val');
+  timerEl.textContent = remInt;
+
+  // Color
+  let phase = 'safe';
+  if(round.hint1Shown && !round.hint2Shown) phase = 'warn';
+  if(round.hint2Shown) phase = 'danger';
+  setTimer(remInt, phase);
+
+  // Hint 1 at 20s elapsed
+  if(!round.hint1Shown && round.elapsed >= 20){
+    round.hint1Shown = true;
+    showHint1();
+  }
+  // Hint 2 at 30s elapsed
+  if(!round.hint2Shown && round.elapsed >= 30){
+    round.hint2Shown = true;
+    showHint2();
+  }
+  // Time up at 60s
+  if(round.elapsed >= 60 && !round.answered){
+    timeUp();
+  }
+}
+
+function setTimer(val, phase){
+  const el = document.getElementById('timer-val');
+  el.style.color = phase==='safe'?'var(--timer-safe)':phase==='warn'?'var(--timer-warn)':'var(--timer-danger)';
+}
+
+function showHint1(){
+  const [,, gram, shape] = round.pair;
+  document.getElementById('hint1-val').textContent = `${gram} ${shape}`;
+  document.getElementById('hint1').className = 'visible';
+}
+
+function showHint2(){
+  const [, answer,,, d1, d2] = round.pair;
+  const choices = shuffle([answer, d1, d2]);
+  ['mc-a','mc-b','mc-c'].forEach((id,i)=>{
+    const b=document.getElementById(id);
+    b.textContent=choices[i];
+    b.dataset.val=choices[i];
+    b.disabled=false;
+    b.className='mc-btn';
+  });
+  document.getElementById('hint2').className='visible';
+}
+
+function timeUp(){
+  clearInterval(round.intervalId);
+  round.answered = true;
+  document.getElementById('timer-val').textContent='0';
+  document.getElementById('pts-live').textContent='0 pts';
+  document.getElementById('answer-input').disabled=true;
+  document.getElementById('submit-btn').disabled=true;
+  ['mc-a','mc-b','mc-c'].forEach(id=>document.getElementById(id).disabled=true);
+  setFeedback(`Time's up! The answer was ${round.pair[1]}.`,'error');
+  session.scores.push(0);
+  // Don't add to total for 0 scores
+  setTimeout(advanceQuestion, 2200);
+}
+
+function advanceQuestion(){
+  if(round.intervalId) clearInterval(round.intervalId);
+  const next = session.idx + 1;
+  if(next < session.queue.length){
+    session.idx = next;
+    loadQuestion(next);
+  } else {
+    endSession();
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// ANSWER CHECKING
+// ─────────────────────────────────────────────────────────────
+function submitAnswer(raw){
+  if(round.answered) return;
+  if(!raw.trim()) return;
+
+  const guess = norm(raw);
+  const correct = norm(round.pair[1]);
+  const correctGenus = correct.split(' ')[0];
+  const guessGenus = guess.split(' ')[0];
+
+  // Correct
+  if(guess === correct){
+    handleCorrect();
+    return;
+  }
+  // Right genus, wrong species
+  if(guessGenus === correctGenus){
+    setFeedback("You've got the genus right — check your species! 🔬",'negative');
+    return;
+  }
+  // Close spelling (Levenshtein ≤ 2)
+  if(levenshtein(guess, correct) <= 2){
+    setFeedback("Almost there — check your spelling! ✏️",'negative');
+    return;
+  }
+  // Close genus
+  if(levenshtein(guessGenus, correctGenus) <= 2 && guessGenus !== correctGenus){
+    setFeedback("Almost there — check your spelling! ✏️",'negative');
+    return;
+  }
+  // Wrong
+  setFeedback(WRONG_MSGS[Math.floor(Math.random()*WRONG_MSGS.length)],'error');
+}
+
+function handleCorrect(){
+  clearInterval(round.intervalId);
+  round.answered = true;
+
+  const elapsedInt = Math.floor(round.elapsed);
+  let pts = 100 - elapsedInt;
+  if(round.hint1Shown) pts -= 10;
+  if(round.hint2Shown) pts -= 10;
+  pts = Math.max(21, pts); // never below 21 if answered (vs 0 for timeout)
+
+  session.scores.push(pts);
+  session.total += pts;
+  document.getElementById('total-display').textContent = session.total;
+  document.getElementById('pts-live').textContent = `+${pts} pts!`;
+
+  document.getElementById('answer-input').disabled=true;
+  document.getElementById('submit-btn').disabled=true;
+  ['mc-a','mc-b','mc-c'].forEach(id=>document.getElementById(id).disabled=true);
+
+  setFeedback(`${WIN_MSGS[Math.floor(Math.random()*WIN_MSGS.length)]} +${pts} pts`,'positive');
+  triggerConfetti();
+  setTimeout(advanceQuestion, 1800);
+}
+
+function mcClick(btn){
+  if(round.answered) return;
+  const val = btn.dataset.val;
+  const correct = round.pair[1];
+  if(norm(val) === norm(correct)){
+    btn.classList.add('correct');
+    handleCorrect();
+  } else {
+    btn.classList.add('wrong');
+    btn.disabled=true;
+    setFeedback(WRONG_MSGS[Math.floor(Math.random()*WRONG_MSGS.length)],'error');
+    document.getElementById('answer-input').focus();
+  }
+}
+
+function setFeedback(msg, type){
+  const el=document.getElementById('feedback');
+  el.textContent=msg;
+  el.className=type;
+}
+
+// ─────────────────────────────────────────────────────────────
+// SESSION END
+// ─────────────────────────────────────────────────────────────
+function endSession(){
+  if(round.intervalId) clearInterval(round.intervalId);
+  const scores = session.scores;
+  const total = session.total;
+  const count = scores.length;
+  const correct = scores.filter(s=>s>0).length;
+  const avg = count>0?(total/count).toFixed(1):0;
+  const best = count>0?Math.max(...scores):0;
+
+  document.getElementById('es-total').textContent=total;
+  document.getElementById('es-correct').textContent=correct;
+  document.getElementById('es-avg').textContent=avg;
+  document.getElementById('es-best').textContent=best;
+  document.getElementById('end-subtitle').textContent=`${session.playerName} answered ${count} question${count!==1?'s':''}.`;
+  document.getElementById('save-name').value=session.playerName||'';
+  document.getElementById('save-btn').disabled=false;
+  document.getElementById('save-btn').textContent='Save Score';
+
+  showScreen('end-screen');
+  loadLeaderboard();
+}
+
+// ─────────────────────────────────────────────────────────────
+// CONFETTI
+// ─────────────────────────────────────────────────────────────
+function triggerConfetti(){
+  const canvas=document.getElementById('confetti-canvas');
+  canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+  const ctx=canvas.getContext('2d');
+  const colors=['#C96444','#3AAEAA','#C9993A','#7E6BAE','#E8A898','#9FDBD7'];
+  const pieces=Array.from({length:100},()=>({
+    x:Math.random()*canvas.width,y:-10,r:Math.random()*5+3,
+    c:colors[Math.floor(Math.random()*colors.length)],
+    vx:(Math.random()-.5)*4,vy:Math.random()*3+2,angle:Math.random()*360,spin:(Math.random()-.5)*8
+  }));
+  let frame=0;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p=>{
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.angle*Math.PI/180);
+      ctx.fillStyle=p.c;ctx.fillRect(-p.r,-p.r/2,p.r*2,p.r);ctx.restore();
+      p.x+=p.vx;p.y+=p.vy;p.vy+=.06;p.angle+=p.spin;
+    });
+    frame++;
+    if(frame<100)requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  draw();
+}
+
+// ─────────────────────────────────────────────────────────────
+// DB / LEADERBOARD
+// ─────────────────────────────────────────────────────────────
+let dbRef=null,userRef=null;
+
+async function initDB(){
+  try{dbRef=await window.claude.use('db');userRef=await window.claude.use('user');}
+  catch(e){dbRef=null;userRef=null;}
+}
+
+async function saveScore(name){
+  if(!dbRef||!userRef){showLBMsg('Leaderboard requires the claude.ai artifact viewer.');return;}
+  const scores=session.scores;
+  const total=session.total;
+  const count=scores.length;
+  if(count===0){showLBMsg('Answer at least one question first!');return;}
+  const correct=scores.filter(s=>s>0).length;
+  const avg=parseFloat((total/count).toFixed(2));
+  const uid=await userRef.id();
+  const docId=uid||('anon_'+Date.now().toString(36));
+  try{
+    await dbRef.collection('disease-type-leaderboard').doc(docId).set({
+      name:name.trim().substring(0,30),totalScore:total,questionsAnswered:count,
+      correct,avgScore:avg,date:new Date().toLocaleDateString(),timestamp:Date.now()
+    });
+    document.getElementById('save-btn').disabled=true;
+    document.getElementById('save-btn').textContent='Saved! ✅';
+    loadLeaderboard();
+  }catch(e){showLBMsg('Could not save. Try again.');}
+}
+
+async function loadLeaderboard(){
+  const tbody=document.getElementById('lb-body');
+  if(!dbRef){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:#aaa;padding:12px">Leaderboard requires the claude.ai artifact viewer.</td></tr>';return;}
+  try{
+    const snap=await dbRef.collection('disease-type-leaderboard').orderBy('totalScore','desc').limit(20).get();
+    if(snap.empty){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:#aaa;padding:12px">No scores yet — be the first! 🏆</td></tr>';return;}
+    tbody.innerHTML=snap.docs.map((doc,i)=>{
+      const d=doc.data();if(!d)return'';
+      return`<tr><td class="lb-rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</td>
+        <td>${escHtml(d.name||'Anonymous')}</td><td><strong>${d.totalScore||0}</strong></td>
+        <td>${d.correct||0}</td><td>${typeof d.avgScore==='number'?d.avgScore.toFixed(1):d.avgScore||0}</td>
+        <td style="color:#aaa;font-size:.78rem">${d.date||''}</td></tr>`;
+    }).join('');
+  }catch(e){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:#aaa;padding:12px">Could not load leaderboard.</td></tr>';}
+}
+
+function showLBMsg(msg){
+  document.getElementById('lb-body').innerHTML=`<tr><td colspan="6" style="text-align:center;color:#c44;padding:12px">${msg}</td></tr>`;
+}
+
+// ─────────────────────────────────────────────────────────────
+// EVENT LISTENERS
+// ─────────────────────────────────────────────────────────────
+document.getElementById('start-btn').addEventListener('click',()=>{
+  const name=document.getElementById('player-name').value.trim();
+  session.playerName=name||'Student';
+  startSession();
+});
+document.getElementById('player-name').addEventListener('keydown',e=>{
+  if(e.key==='Enter')document.getElementById('start-btn').click();
+});
+document.getElementById('submit-btn').addEventListener('click',()=>{
+  submitAnswer(document.getElementById('answer-input').value);
+});
+document.getElementById('answer-input').addEventListener('keydown',e=>{
+  if(e.key==='Enter')submitAnswer(e.target.value);
+});
+['mc-a','mc-b','mc-c'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',function(){mcClick(this);});
+});
+document.getElementById('end-session-btn').addEventListener('click',()=>{
+  if(confirm('End the session now? Your current question won\'t count.'))endSession();
+});
+document.getElementById('save-btn').addEventListener('click',()=>{
+  const n=document.getElementById('save-name').value.trim();
+  if(!n){document.getElementById('save-name').focus();return;}
+  saveScore(n);
+});
+document.getElementById('play-again-btn').addEventListener('click',()=>{
+  startSession();
+});
+document.getElementById('back-to-name-btn').addEventListener('click',()=>{
+  if(round.intervalId)clearInterval(round.intervalId);
+  showScreen('name-screen');
+  document.getElementById('player-name').focus();
+});
+
+// ─────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────
+initDB();
+</script>
+</body>
+</html>
