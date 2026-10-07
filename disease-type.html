@@ -105,6 +105,12 @@ canvas#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:200}
 .mc-btn.wrong{background:#F5DDD8;border-color:#D8B0A8;color:#7A2818}
 .mc-btn:disabled{cursor:default}
 
+#close-spell{text-align:center;margin-bottom:8px;display:none}
+#close-spell-btn{padding:10px 22px;background:var(--amber);color:#fff;border:none;
+  border-radius:10px;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:800;
+  cursor:pointer;transition:background .2s}
+#close-spell-btn:hover{background:var(--amber-dark)}
+
 @keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── End screen ── */
@@ -193,6 +199,10 @@ canvas#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:200}
   </div>
 
   <div id="feedback" class="neutral">Type the genus and species of the organism that causes this disease.</div>
+
+  <div id="close-spell">
+    <button id="close-spell-btn" onclick="acceptClose()">Accept with correct spelling &minus;5 pts</button>
+  </div>
 
   <div id="hint1">
     <div id="hint1-label">Hint 1 — Gram stain &amp; shape (−10 pts)</div>
@@ -366,7 +376,7 @@ function loadQuestion(idx){
   round = {
     pair, startMs:performance.now(), elapsed:0,
     baseScore:100, hint1Shown:false, hint2Shown:false,
-    answered:false, intervalId:null
+    answered:false, intervalId:null, closePenalty:false
   };
 
   // Reset UI
@@ -376,6 +386,7 @@ function loadQuestion(idx){
   document.getElementById('answer-input').disabled=false;
   document.getElementById('submit-btn').disabled=false;
   setFeedback('Type the genus and species of the organism that causes this disease.','neutral');
+  document.getElementById('close-spell').style.display='none';
   document.getElementById('hint1').className='';
   document.getElementById('hint2').className='';
   setTimer(60,'safe');
@@ -464,6 +475,7 @@ function timeUp(){
   document.getElementById('answer-input').disabled=true;
   document.getElementById('submit-btn').disabled=true;
   ['mc-a','mc-b','mc-c'].forEach(id=>document.getElementById(id).disabled=true);
+  document.getElementById('close-spell').style.display='none';
   setFeedback(`Time's up! The answer was ${round.pair[1]}.`,'error');
   session.scores.push(0);
   // Don't add to total for 0 scores
@@ -488,6 +500,12 @@ function submitAnswer(raw){
   if(round.answered) return;
   if(!raw.trim()) return;
 
+  // Capitalization check — genus must start with uppercase
+  if(!/^[A-Z]/.test(raw.trim())){
+    setFeedback("Heads up: the genus must be capitalized! ✏️ (e.g., Staphylococcus aureus)",'negative');
+    return;
+  }
+
   const guess = norm(raw);
   const correct = norm(round.pair[1]);
   const correctGenus = correct.split(' ')[0];
@@ -495,26 +513,49 @@ function submitAnswer(raw){
 
   // Correct
   if(guess === correct){
+    document.getElementById('close-spell').style.display='none';
     handleCorrect();
     return;
   }
   // Right genus, wrong species
   if(guessGenus === correctGenus){
-    setFeedback("You've got the genus right — check your species! 🔬",'negative');
+    const guessSpecies = guess.split(' ').slice(1).join(' ');
+    const correctSpecies = correct.split(' ').slice(1).join(' ');
+    if(levenshtein(guessSpecies, correctSpecies) <= 2){
+      setFeedback("Genus is right — almost on the species spelling! ✏️",'negative');
+      showCloseSpell();
+    } else {
+      setFeedback("You've got the genus right — check your species! 🔬",'negative');
+    }
     return;
   }
-  // Close spelling (Levenshtein ≤ 2)
+  // Close spelling on full name (Levenshtein ≤ 2)
   if(levenshtein(guess, correct) <= 2){
     setFeedback("Almost there — check your spelling! ✏️",'negative');
+    showCloseSpell();
     return;
   }
-  // Close genus
+  // Close genus spelling
   if(levenshtein(guessGenus, correctGenus) <= 2 && guessGenus !== correctGenus){
     setFeedback("Almost there — check your spelling! ✏️",'negative');
+    showCloseSpell();
     return;
   }
   // Wrong
+  document.getElementById('close-spell').style.display='none';
   setFeedback(WRONG_MSGS[Math.floor(Math.random()*WRONG_MSGS.length)],'error');
+}
+
+function showCloseSpell(){
+  document.getElementById('close-spell').style.display='block';
+}
+
+function acceptClose(){
+  if(round.answered) return;
+  round.closePenalty = true;
+  document.getElementById('close-spell').style.display='none';
+  document.getElementById('answer-input').value = round.pair[1];
+  handleCorrect();
 }
 
 function handleCorrect(){
@@ -525,6 +566,7 @@ function handleCorrect(){
   let pts = 100 - elapsedInt;
   if(round.hint1Shown) pts -= 10;
   if(round.hint2Shown) pts -= 10;
+  if(round.closePenalty) pts -= 5;
   pts = Math.max(21, pts); // never below 21 if answered (vs 0 for timeout)
 
   session.scores.push(pts);
