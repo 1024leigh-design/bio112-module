@@ -40,12 +40,44 @@
   .point-row:last-child { border-bottom: none; }
   .point-icon { font-size: 1.3em; flex-shrink: 0; margin-top: 1px; }
 
-  .exposure-card { background: linear-gradient(135deg, #fff8e1, #fff3cd); border-radius: 20px; padding: 28px; margin-bottom: 22px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
-  .exp-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-  .exp-label { width: 170px; font-size: 0.82em; font-weight: 600; flex-shrink: 0; }
-  .exp-bar-bg { flex: 1; height: 12px; background: rgba(0,0,0,0.08); border-radius: 6px; overflow: hidden; }
-  .exp-bar { height: 100%; border-radius: 6px; transition: width 1s ease-out; }
-  .exp-note { width: 60px; font-size: 0.75em; color: #666; text-align: right; flex-shrink: 0; }
+  /* Fresh vs stale */
+  .fresh-card { background: white; border-radius: 20px; padding: 28px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); margin-bottom: 22px; }
+  .fs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+  .fs-box { border-radius: 14px; padding: 16px 18px; font-size: 0.86em; line-height: 1.55; color: #444; }
+  .fs-box h3 { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.05em; margin-bottom: 6px; }
+  .fs-box.fresh { background: #e8fafa; border: 2px solid #b2e8e8; }
+  .fs-box.fresh h3 { color: #007a7a; }
+  .fs-box.stale { background: #f5eeff; border: 2px solid #dbbfff; }
+  .fs-box.stale h3 { color: #7d3c98; }
+  .fs-sub { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.95em; margin-bottom: 8px; }
+  .fs-list { list-style: none; }
+  .fs-list li { display: flex; gap: 12px; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid #f5f5f5; font-size: 0.86em; line-height: 1.5; }
+  .fs-list li:last-child { border-bottom: none; }
+  .fs-list .li-icon { font-size: 1.2em; flex-shrink: 0; }
+  .fs-note { margin-top: 12px; background: #fffbe8; border-left: 4px solid var(--yellow); border-radius: 0 10px 10px 0; padding: 10px 14px; font-size: 0.85em; font-weight: 600; color: #555; }
+
+  /* Tip groups */
+  .tip-group-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 6px 0 12px; }
+  .tip-tag { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.85em; padding: 6px 14px; border-radius: 20px; }
+  .tip-tag.fresh { background: #e8fafa; color: #007a7a; border: 2px solid var(--teal); }
+  .tip-tag.tired { background: #f5eeff; color: #7d3c98; border: 2px solid var(--purple); }
+  .tip-tag.habit { background: #fffbe8; color: #856404; border: 2px solid var(--yellow); }
+  .tip-group-head p { font-size: 0.82em; color: #777; }
+  .tip-card.fresh { border-top: 4px solid var(--teal); }
+  .tip-card.tired { border-top: 4px solid var(--purple); }
+  .tip-card.habit { border-top: 4px solid var(--yellow); }
+
+  /* Study pie */
+  .pie-card { background: linear-gradient(135deg, #fff8e1, #fff3cd); border-radius: 20px; padding: 28px; margin-bottom: 22px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+  .pie-wrap { display: flex; align-items: center; gap: 28px; }
+  .pie-svg { width: 260px; max-width: 100%; flex-shrink: 0; }
+  .pie-legend { list-style: none; flex: 1; }
+  .pie-legend li { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 0.86em; font-weight: 600; }
+  .pie-legend .sw { width: 16px; height: 16px; border-radius: 4px; flex-shrink: 0; }
+  .pie-legend .lg-tag { margin-left: auto; font-size: 0.78em; font-weight: 700; padding: 2px 10px; border-radius: 12px; }
+  .lg-tag.fresh { background: #e8fafa; color: #007a7a; }
+  .lg-tag.tired { background: #f5eeff; color: #7d3c98; }
+  .lg-tag.any { background: #eef7ee; color: #1a7a42; }
 
   .checklist-card { background: white; border-radius: 20px; padding: 28px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); margin-bottom: 22px; }
   .check-item { display: flex; gap: 12px; align-items: center; padding: 10px 8px; border-bottom: 1px solid #f5f5f5; cursor: pointer; border-radius: 8px; user-select: none; transition: background 0.15s; }
@@ -65,7 +97,10 @@
   @media (max-width: 600px) {
     .tips-grid { grid-template-columns: 1fr; }
     .hero h1 { font-size: 2em; }
-    .exp-label { width: 120px; font-size: 0.76em; }
+    .fs-grid { grid-template-columns: 1fr; }
+    .pie-wrap { flex-direction: column; }
+    .pie-svg { width: 230px; }
+    .pie-legend { width: 100%; }
   }
 </style>
 <style id="modnav-css">
@@ -114,69 +149,102 @@
     </div>
   </div>
 
+  <!-- Fresh vs stale studying -->
+  <div class="fresh-card">
+    <div class="section-title">Fresh Studying vs. Stale Studying</div>
+    <div class="fs-grid">
+      <div class="fs-box fresh">
+        <h3>🔋 Fresh studying</h3>
+        You are locked in and your brain has energy. Spend it on the hard, active stuff: reading the slides and the book, writing things by hand, making flashcards, and drawing diagrams and pathways. This is where the deepest learning happens.
+      </div>
+      <div class="fs-box stale">
+        <h3>🪫 Stale studying</h3>
+        That "I am SO sick of studying" feeling. You have read the same slide five times and nothing is going in. This is not a failure. It is a signal to switch things up, not to stop.
+      </div>
+    </div>
+    <p class="fs-sub">How to freshen it up and stay productive:</p>
+    <ul class="fs-list">
+      <li><span class="li-icon">📺</span><div><strong>Watch a video.</strong> Put on an Amoeba Sisters or Bozeman Science video on the same topic. A new voice and new visuals can wake your brain back up.</div></li>
+      <li><span class="li-icon">💻</span><div><strong>Work through the online modules or MicrobeAI.</strong> Clicking, answering, and getting quizzed feels different from staring at notes.</div></li>
+      <li><span class="li-icon">👥</span><div><strong>Study with classmates.</strong> Explain a concept out loud or quiz each other. Teaching someone else is one of the best ways to learn.</div></li>
+      <li><span class="li-icon">🚶</span><div><strong>Take a real break.</strong> Ten minutes away from the screen, then come back to fresh studying when you have the energy again.</div></li>
+    </ul>
+    <div class="fs-note">💛 Tired studying still counts. Ten minutes of a video beats an hour of staring at slides that are not sinking in.</div>
+  </div>
+
+  <!-- Fresh brain tips -->
+  <div class="tip-group-head"><span class="tip-tag fresh">🔋 Fresh brain: lock in</span><p>Do these when you have energy.</p></div>
   <div class="tips-grid">
 
-    <div class="tip-card" style="border-top: 4px solid var(--teal);">
+    <div class="tip-card fresh">
+      <div class="tip-icon">✍️</div>
+      <h3>Write Things by Hand</h3>
+      <p>Flashcards, diagrams, pathways, rewritten notes: do them with pen and paper. Research shows that writing things <strong>by hand</strong> helps commit them to memory better than reading, typing, or hearing them alone. Be specific with your flashcard wording, since vague flashcards make vague answers, and review them a little every day instead of cramming.</p>
+    </div>
+
+    <div class="tip-card fresh">
+      <div class="tip-icon">📚</div>
+      <h3>Read the Book</h3>
+      <p>Even reading the chapter summary and bolded terms before lecture makes a real difference. The textbook is also free on OpenStax, so no excuses. The more ways you are exposed to the material, the better it sticks.</p>
+    </div>
+
+  </div>
+
+  <!-- Tired brain tips -->
+  <div class="tip-group-head"><span class="tip-tag tired">🪫 Tired brain: freshen it up</span><p>Still productive when you are running low.</p></div>
+  <div class="tips-grid">
+
+    <div class="tip-card tired">
       <div class="tip-icon">👥</div>
       <h3>Make a Study Group</h3>
-      <p>Find classmates and meet up outside of class in person. Students who study together consistently do better. When you explain something to someone else, you actually learn it. Don't underestimate this one -- put your pride aside and connect with your classmates.</p>
+      <p>Find classmates and meet up outside of class in person. Students who study together consistently do better. When you explain something to someone else, you actually learn it. Don't underestimate this one. Put your pride aside and connect with your classmates.</p>
     </div>
 
-    <div class="tip-card" style="border-top: 4px solid var(--coral);">
-      <div class="tip-icon">🗣️</div>
-      <h3>Talk in Class</h3>
-      <p>Ask questions. Yell out answers. You don't need to raise your hand in my class -- just speak up. The faster we move through questions together, the sooner we get to lab. Participation helps you process what you're hearing in real time.</p>
-    </div>
-
-    <div class="tip-card" style="border-top: 4px solid var(--yellow);">
-      <div class="tip-icon">🃏</div>
-      <h3>Make Flashcards</h3>
-      <p>Be specific with your wording -- vague flashcards make vague answers. Review them once a day, even briefly. Daily exposure builds the memory trace more effectively than one big cramming session. Microbiology is dense vocab and this is your best friend for it.</p>
-    </div>
-
-    <div class="tip-card" style="border-top: 4px solid var(--purple);">
+    <div class="tip-card tired">
       <div class="tip-icon">📺</div>
       <h3>Watch YouTube Videos</h3>
-      <p>I post YouTube videos for every lecture set -- mostly Amoeba Sisters and Bozeman Science (ngl). Watch while commuting, while doing dishes, whenever. 10 minutes makes a real difference. Every new way you see the material helps it stick.</p>
+      <p>I post YouTube videos for every lecture set, mostly Amoeba Sisters and Bozeman Science (ngl). Watch while commuting, while doing dishes, whenever. 10 minutes makes a real difference. Every new way you see the material helps it stick.</p>
     </div>
 
-    <div class="tip-card" style="border-top: 4px solid var(--green);">
+    <div class="tip-card tired">
       <div class="tip-icon">🤖</div>
       <h3>Use MicrobeAI</h3>
       <p>Ask it to quiz you, explain concepts different ways, or walk you through a pathway. Great for personalized review and studying on your own schedule.</p>
     </div>
 
-    <div class="tip-card" style="border-top: 4px solid var(--teal);">
-      <div class="tip-icon">📚</div>
-      <h3>Read the Book</h3>
-      <p>Even reading the chapter summary and bolded terms before lecture makes a real difference. The textbook is also free on OpenStax -- no excuses. The more ways you are exposed to the material, the better it sticks.</p>
+  </div>
+
+  <!-- Weekly habits -->
+  <div class="tip-group-head"><span class="tip-tag habit">📅 Every week habits</span><p>Small things that keep you on track.</p></div>
+  <div class="tips-grid">
+
+    <div class="tip-card habit">
+      <div class="tip-icon">🗣️</div>
+      <h3>Talk in Class</h3>
+      <p>Ask questions. Yell out answers. You don't need to raise your hand in my class, just speak up. The faster we move through questions together, the sooner we get to lab. Participation helps you process what you're hearing in real time.</p>
     </div>
 
-    <div class="tip-card" style="border-top: 4px solid var(--coral);">
+    <div class="tip-card habit">
       <div class="tip-icon">💬</div>
       <h3>Check Canvas and Pronto Daily</h3>
-      <p>This is where everything lives -- assignments, announcements, due dates, the Daily Study Question. Set a notification. Make it a habit. Missing an announcement is not an excuse for a missed deadline.</p>
+      <p>This is where everything lives: assignments, announcements, due dates, the Daily Study Question. Set a notification. Make it a habit. Missing an announcement is not an excuse for a missed deadline.</p>
     </div>
 
-    <div class="tip-card" style="border-top: 4px solid var(--purple);">
+    <div class="tip-card habit">
       <div class="tip-icon">📢</div>
       <h3>Read the Weekend Update</h3>
-      <p>Posted as a Canvas announcement Thursday or Friday. It covers everything for the coming week -- what is due, what to prepare, what to bring. This is your weekly GPS for the course. Do not skip it.</p>
+      <p>Posted as a Canvas announcement Thursday or Friday. It covers everything for the coming week: what is due, what to prepare, what to bring. This is your weekly GPS for the course. Do not skip it.</p>
     </div>
 
   </div>
 
-  <!-- Exposure meter -->
-  <div class="exposure-card">
-    <div class="section-title" style="--color: var(--yellow);">The More Ways You See It, the Better</div>
-    <p style="margin-bottom: 16px; font-size: 0.88em; color: #666;">Microbiology sticks through repetition across different formats. Each new way you engage with the material builds a stronger memory trace. Do all of them. Seriously.</p>
-    <div id="meter">
-      <div class="exp-row"><div class="exp-label">Lecture + slides</div><div class="exp-bar-bg"><div class="exp-bar" style="width:0%; background: var(--teal);" data-width="70%"></div></div><div class="exp-note">baseline</div></div>
-      <div class="exp-row"><div class="exp-label">Flashcards (daily)</div><div class="exp-bar-bg"><div class="exp-bar" style="width:0%; background: var(--purple);" data-width="80%"></div></div><div class="exp-note">+memory</div></div>
-      <div class="exp-row"><div class="exp-label">YouTube / video</div><div class="exp-bar-bg"><div class="exp-bar" style="width:0%; background: var(--coral);" data-width="75%"></div></div><div class="exp-note">+visual</div></div>
-      <div class="exp-row"><div class="exp-label">Drawing / rewriting</div><div class="exp-bar-bg"><div class="exp-bar" style="width:0%; background: #e67e22;" data-width="82%"></div></div><div class="exp-note">+kinetic</div></div>
-      <div class="exp-row"><div class="exp-label">Study group</div><div class="exp-bar-bg"><div class="exp-bar" style="width:0%; background: var(--green);" data-width="90%"></div></div><div class="exp-note">+teaching</div></div>
-      <div class="exp-row"><div class="exp-label">Office hours</div><div class="exp-bar-bg"><div class="exp-bar" style="width:0%; background: #c0392b;" data-width="95%"></div></div><div class="exp-note">+targeted</div></div>
+  <!-- Study pie -->
+  <div class="pie-card">
+    <div class="section-title">Build Your Study Pie</div>
+    <p style="margin-bottom: 18px; font-size: 0.88em; color: #666; line-height: 1.55;">Everyone's pie looks different, and yours will shift from week to week. Some weeks are heavy on flashcards, other weeks you basically live at office hours. That's normal! The goal is to keep every slice in your pie.</p>
+    <div class="pie-wrap">
+      <svg class="pie-svg" id="studyPie" viewBox="0 0 220 220" role="img" aria-label="Pie chart with six study methods: lecture and slides, writing by hand, reading the book, videos, study group, and office hours. The slices gently grow and shrink to show that everyone's mix is different."></svg>
+      <ul class="pie-legend" id="pieLegend"></ul>
     </div>
   </div>
 
@@ -187,7 +255,6 @@
     <div class="point-row"><div class="point-icon">📅</div><div><strong>Know your due dates.</strong> Check the syllabus, check Canvas, read the weekend update. No late work is accepted -- not even close-to-late.</div></div>
     <div class="point-row"><div class="point-icon">📝</div><div><strong>Take quizzes seriously.</strong> Treat every quiz like a mini exam. They add up to 300 points between lecture and lab and revisiting that material early pays off when you hit exam week. Missing even one hurts.</div></div>
     <div class="point-row"><div class="point-icon">⏰</div><div><strong>Show up on time.</strong> Quizzes start in the first 15 minutes of class. If you walk in late, you start from where we are -- no extra time. Three absences and you are dropped.</div></div>
-    <div class="point-row"><div class="point-icon">🤖</div><div><strong>Do not use AI on assignments.</strong> An em dash in your write-up means an automatic zero. A rough draft you wrote yourself will always be better than a zero.</div></div>
   </div>
 
   <!-- Student quotes -->
@@ -219,11 +286,6 @@
       <p>"Rewrite your notes. I started doing it toward the end of the semester and it really helped engrave the material. Also study every day, even for a few minutes."</p>
       <div class="attribution">-- former student</div>
     </div>
-
-    <div class="quote-item">
-      <p>"When sterilizing the inoculating loop or needle, heat some of the shaft near the wire too. Part of the shaft ends up inside the tube, so sterilizing it can help reduce contamination."</p>
-      <div class="attribution">-- former student</div>
-    </div>
   </div>
 
   <!-- Checklist -->
@@ -236,7 +298,7 @@
     <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-label">Read the Canvas Weekend Update (posted Thu/Fri)</div></div>
     <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-label">Did at least one Pronto Daily Study Question</div></div>
     <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-label">Reviewed notes soon after class while they were fresh</div></div>
-    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-label">Made or reviewed flashcards at least once today</div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-label">Wrote out notes, diagrams, or flashcards by hand</div></div>
     <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-label">Watched a YouTube video or used MicrobeAI for review</div></div>
     <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-label">Studied or reviewed with at least one classmate</div></div>
     <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-label">Went to or sent a question during office hours</div></div>
@@ -250,13 +312,63 @@ function toggleCheck(el) {
   el.classList.toggle('checked');
   el.querySelector('.check-box').textContent = el.classList.contains('checked') ? '✓' : '';
 }
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    document.querySelectorAll('.exp-bar').forEach(bar => {
-      bar.style.width = bar.getAttribute('data-width');
+// Study pie: equal slices that gently grow and shrink
+(function() {
+  var slices = [
+    {label: 'Lecture + slides',  icon: '📊', color: '#00B4B4', tag: 'fresh', tagText: 'fresh'},
+    {label: 'Write it by hand',  icon: '✍️', color: '#9B59B6', tag: 'fresh', tagText: 'fresh'},
+    {label: 'Read the book',     icon: '📚', color: '#e67e22', tag: 'fresh', tagText: 'fresh'},
+    {label: 'YouTube / video',   icon: '📺', color: '#FF6B6B', tag: 'tired', tagText: 'tired'},
+    {label: 'Study group',       icon: '👥', color: '#27AE60', tag: 'tired', tagText: 'tired'},
+    {label: 'Office hours',      icon: '🙋', color: '#c0392b', tag: 'any',   tagText: 'any time'}
+  ];
+  var svg = document.getElementById('studyPie');
+  var legend = document.getElementById('pieLegend');
+  if (!svg || !legend) return;
+  var NS = 'http://www.w3.org/2000/svg', C = 110, R = 104;
+
+  slices.forEach(function(sl) {
+    sl.path = document.createElementNS(NS, 'path');
+    sl.path.setAttribute('fill', sl.color);
+    sl.path.setAttribute('stroke', 'white');
+    sl.path.setAttribute('stroke-width', '2');
+    svg.appendChild(sl.path);
+    var li = document.createElement('li');
+    li.innerHTML = '<span class="sw" style="background:' + sl.color + '"></span>' + sl.icon + ' ' + sl.label +
+      '<span class="lg-tag ' + sl.tag + '">' + sl.tagText + '</span>';
+    legend.appendChild(li);
+  });
+  slices.forEach(function(sl) {
+    sl.text = document.createElementNS(NS, 'text');
+    sl.text.setAttribute('text-anchor', 'middle');
+    sl.text.setAttribute('dominant-baseline', 'central');
+    sl.text.setAttribute('font-size', '20');
+    sl.text.textContent = sl.icon;
+    svg.appendChild(sl.text);
+  });
+
+  function pt(a, r) { return [C + r * Math.sin(a), C - r * Math.cos(a)]; }
+  function draw(t) {
+    var w = slices.map(function(sl, i) { return 1 + 0.4 * Math.sin(t * (0.5 + 0.13 * i) + i * 1.7); });
+    var total = w.reduce(function(a, b) { return a + b; }, 0);
+    var a0 = 0;
+    slices.forEach(function(sl, i) {
+      var a1 = a0 + (w[i] / total) * Math.PI * 2;
+      var p0 = pt(a0, R), p1 = pt(a1, R), large = (a1 - a0) > Math.PI ? 1 : 0;
+      sl.path.setAttribute('d', 'M' + C + ',' + C + ' L' + p0[0] + ',' + p0[1] +
+        ' A' + R + ',' + R + ' 0 ' + large + ' 1 ' + p1[0] + ',' + p1[1] + ' Z');
+      var m = pt((a0 + a1) / 2, R * 0.62);
+      sl.text.setAttribute('x', m[0]);
+      sl.text.setAttribute('y', m[1]);
+      a0 = a1;
     });
-  }, 300);
-});
+  }
+
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) { draw(0); return; }
+  function frame(ms) { draw(ms / 1000); requestAnimationFrame(frame); }
+  requestAnimationFrame(frame);
+})();
 </script>
 
 <script>
