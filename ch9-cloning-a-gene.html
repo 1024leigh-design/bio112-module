@@ -1,0 +1,2324 @@
+<title>Cloning a Gene v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* layout: hub = one big textbook-style process figure with clickable numbered stages; each stage opens a module page (header, pipeline strip, interactive panels, check-yourself, prev/next) */
+:root{
+  --bg:#f2f5f8; --surface:#ffffff; --surface-2:#e8eef4; --ink:#14223a; --muted:#53657b; --line:#d3dde7;
+  --arrow:#1683cc; --arrow-soft:#dcecf9; --label:#8cc0e8;
+  --plasmid:#7c5cc4; --plasmid-soft:#ede7fa; --gene:#e04b34; --gene-soft:#fce3de;
+  --cell:#f5d2a4; --cell-edge:#a9653f; --donor:#fadfe6; --donor-edge:#c7778e; --chrom:#8a70cc; --gold:#e3b42a;
+  --newdna:#1683cc; --protein:#2a6fb8; --agar:#f5ecc4; --ice:#dff0fb;
+  --good:#1f8a55; --good-soft:#dcf2e5; --warn:#a96c05; --warn-soft:#fbefd4; --bad:#c43a2b; --bad-soft:#fbe0db;
+  --lcd-bg:#0e1b22; --lcd-panel:#14262f; --lcd-fg:#7ff0c6; --lcd-dim:#5f8584; --lcd-line:#24404a;
+  --f-display:'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --f-body:'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
+  --f-mono:'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Menlo, monospace;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
+    --arrow:#4aa9ee; --arrow-soft:#173450; --label:#3b6f99;
+    --plasmid:#ad96f2; --plasmid-soft:#2a2547; --gene:#ff7059; --gene-soft:#47231e;
+    --cell:#6e4d31; --cell-edge:#d6976a; --donor:#4c2d39; --donor-edge:#e08aa3; --chrom:#b6a2f4; --gold:#f0c54a;
+    --newdna:#4aa9ee; --protein:#72b2f6; --agar:#3d3725; --ice:#163247;
+    --good:#4ccb8b; --good-soft:#153a29; --warn:#ecb54e; --warn-soft:#3c3016; --bad:#ff7d6d; --bad-soft:#46211d;
+    --lcd-bg:#081218; --lcd-panel:#0f1f27; --lcd-fg:#7ff0c6; --lcd-dim:#4d6e6d; --lcd-line:#1d3540;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
+  --arrow:#4aa9ee; --arrow-soft:#173450; --label:#3b6f99;
+  --plasmid:#ad96f2; --plasmid-soft:#2a2547; --gene:#ff7059; --gene-soft:#47231e;
+  --cell:#6e4d31; --cell-edge:#d6976a; --donor:#4c2d39; --donor-edge:#e08aa3; --chrom:#b6a2f4; --gold:#f0c54a;
+  --newdna:#4aa9ee; --protein:#72b2f6; --agar:#3d3725; --ice:#163247;
+  --good:#4ccb8b; --good-soft:#153a29; --warn:#ecb54e; --warn-soft:#3c3016; --bad:#ff7d6d; --bad-soft:#46211d;
+  --lcd-bg:#081218; --lcd-panel:#0f1f27; --lcd-fg:#7ff0c6; --lcd-dim:#4d6e6d; --lcd-line:#1d3540;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:17px; line-height:1.55}
+.wrap{max-width:1100px; margin:0 auto; padding-inline:20px; padding-block:0 60px}
+h1,h2,h3,h4{font-family:var(--f-display); margin:0; text-wrap:balance; letter-spacing:-.01em}
+p{margin:0}
+button{font:inherit; color:inherit}
+.mono{font-family:var(--f-mono)}
+:focus-visible{outline:3px solid var(--arrow); outline-offset:2px; border-radius:6px}
+b,strong{font-weight:700}
+.key{color:var(--gene); font-weight:700}
+
+/* top bar */
+.topbar{position:sticky; top:env(safe-area-inset-top,0px); z-index:30; background:var(--bg); display:flex; align-items:center; gap:12px; padding-block:12px; border-bottom:1px solid var(--line); margin-bottom:22px}
+.brand{font-family:var(--f-display); font-weight:700; font-size:17px; white-space:nowrap; display:flex; align-items:center; gap:8px; cursor:pointer; background:none; border:0; padding:0}
+.brand svg{width:26px; height:26px}
+.crumb{font-size:15px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0}
+.homebtn{margin-left:auto; display:inline-flex; align-items:center; gap:6px; font-weight:700; font-size:15px; padding:9px 14px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface); cursor:pointer; white-space:nowrap}
+.homebtn:hover{border-color:var(--arrow); color:var(--arrow)}
+
+/* views */
+.view{display:none}
+.view.active{display:block; animation:fadein .25s ease}
+@keyframes fadein{from{opacity:.4; transform:translateY(4px)}to{opacity:1; transform:none}}
+
+/* HUB */
+.hero{display:flex; flex-wrap:wrap; align-items:flex-end; gap:10px 28px; margin-bottom:8px}
+.hero h1{font-size:clamp(34px,5vw,52px); line-height:1; font-weight:800}
+.hero h1 span{color:var(--arrow)}
+.eyebrow{font-family:var(--f-mono); font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--arrow); margin-bottom:8px; font-weight:600}
+.hero p{color:var(--muted); font-size:18px; max-width:46ch; padding-bottom:4px}
+.figure{background:var(--surface); border:1px solid var(--line); border-radius:22px; padding:10px; margin-top:18px; overflow-x:auto}
+.figure svg{display:block; width:100%; min-width:640px; height:auto}
+.hub .ntitle{font:700 21px var(--f-display); fill:var(--ink)}
+.hub .nsub{font:400 15px var(--f-body); fill:var(--muted)}
+.hub .tiny{font:600 12px var(--f-mono); fill:var(--muted)}
+.hub .pale{font:800 34px var(--f-display); fill:var(--label); letter-spacing:-.01em}
+.hub .flow{fill:none; stroke:var(--arrow); stroke-width:10; stroke-linecap:round}
+.hub .thin{fill:none; stroke:var(--muted); stroke-width:2; stroke-linecap:round}
+.hub .orx{font:800 20px var(--f-display); fill:var(--arrow)}
+.node{cursor:pointer}
+.node:focus{outline:none}
+.node .halo{fill:var(--arrow-soft); opacity:0; transition:opacity .2s; stroke:var(--arrow); stroke-width:0}
+.node:hover .halo{opacity:.75}
+.node:focus-visible .halo{opacity:.75; stroke-width:3}
+.badge circle{fill:var(--arrow); transition:transform .2s; transform-box:fill-box; transform-origin:center}
+.badge text{fill:#fff; font:700 16px var(--f-mono); text-anchor:middle; dominant-baseline:central}
+.badge .pulse{fill:none; stroke:var(--arrow); stroke-width:3; opacity:0}
+.node:hover .badge circle:not(.pulse){transform:scale(1.18)}
+.node.done .badge circle:not(.pulse){fill:var(--good)}
+.hub-loaded .badge .pulse{animation:pulse 1.6s ease-out 2}
+@keyframes pulse{0%{opacity:.8; transform:scale(1)}100%{opacity:0; transform:scale(2.2)}}
+.figure-foot{display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-top:14px}
+.figure-foot .lbl{font-family:var(--f-mono); font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-right:4px}
+.jump{display:inline-flex; align-items:center; gap:8px; padding:7px 13px 7px 7px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface); cursor:pointer; font-weight:700; font-size:15px}
+.jump:hover{border-color:var(--arrow)}
+.jump .n{min-width:26px; height:26px; padding:0 4px; border-radius:999px; background:var(--arrow); color:#fff; display:inline-flex; align-items:center; justify-content:center; font:700 13px var(--f-mono)}
+.jump.done .n{background:var(--good)}
+.legend-done{display:inline-flex; align-items:center; gap:6px; font-size:14px; color:var(--muted); margin-left:auto}
+.legend-done i{width:12px; height:12px; border-radius:50%; background:var(--good); display:inline-block}
+
+.sec-title{display:flex; align-items:baseline; gap:12px; margin:40px 0 14px}
+.sec-title h2{font-size:28px}
+.sec-title p{color:var(--muted)}
+.cards{display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.tile{display:flex; gap:14px; align-items:flex-start; text-align:left; background:var(--surface); border:1.5px solid var(--line); border-radius:var(--r); padding:16px; cursor:pointer; transition:border-color .15s, transform .15s}
+.tile:hover{border-color:var(--arrow); transform:translateY(-2px)}
+.tile svg{width:60px; height:60px; flex-shrink:0}
+.tile .t{font-family:var(--f-display); font-weight:700; font-size:20px; line-height:1.2}
+.tile .d{color:var(--muted); font-size:15.5px; margin-top:4px}
+.tile .tag{display:inline-block; margin-top:8px; font:600 12px var(--f-mono); text-transform:uppercase; letter-spacing:.05em; color:var(--arrow)}
+.footnote{margin-top:34px; padding:16px 18px; border:1.5px dashed var(--line); border-radius:var(--r); display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center; color:var(--muted)}
+.footnote b{color:var(--ink)}
+.pill{font:600 13px var(--f-mono); padding:6px 12px; border-radius:999px; background:var(--surface-2); color:var(--muted)}
+
+/* MODULE PAGES */
+.pipe{display:flex; gap:6px; overflow-x:auto; padding-bottom:6px; margin-bottom:22px; scrollbar-width:thin}
+.pipe button{flex:0 0 auto; display:flex; align-items:center; gap:7px; border:1.5px solid var(--line); background:var(--surface); border-radius:999px; padding:5px 12px 5px 5px; cursor:pointer; font-size:14.5px; font-weight:700; color:var(--muted)}
+.pipe button .n{min-width:24px; height:24px; padding:0 4px; border-radius:999px; background:var(--surface-2); color:var(--muted); display:inline-flex; align-items:center; justify-content:center; font:700 12px var(--f-mono)}
+.pipe button.cur{border-color:var(--arrow); color:var(--ink); background:var(--arrow-soft)}
+.pipe button.cur .n{background:var(--arrow); color:#fff}
+.pipe .sep{flex:0 0 auto; align-self:center; color:var(--line); font-weight:700}
+.mhead{display:flex; gap:18px; align-items:flex-start; margin-bottom:26px}
+.mbadge{flex-shrink:0; width:64px; height:64px; border-radius:50%; background:var(--arrow); color:#fff; display:flex; align-items:center; justify-content:center; font:700 24px var(--f-mono)}
+.mbadge.lab{background:var(--plasmid)}
+.mbadge.app{background:var(--good)}
+.mhead h2{font-size:clamp(30px,4.2vw,42px); line-height:1.05; font-weight:800}
+.mhead .lede{font-size:19px; color:var(--muted); margin-top:10px; max-width:62ch}
+.block{margin-bottom:34px; scroll-margin-top:80px}
+.block > h3{font-size:25px; margin-bottom:6px}
+.block > .sub{color:var(--muted); margin-bottom:14px; max-width:68ch}
+.panel{background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:20px}
+.panel + .panel{margin-top:14px}
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+.grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+.grid2 > *, .grid3 > *{min-width:0}
+@media (max-width:820px){ .grid2, .grid3{grid-template-columns:1fr} }
+.idea{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:16px; display:flex; flex-direction:column; gap:6px}
+.idea .ic{width:46px; height:46px}
+.idea h4{font-size:19px}
+.idea p{color:var(--muted); font-size:16px}
+.idea.flat{background:var(--surface-2); border-color:transparent}
+.note{display:flex; gap:12px; align-items:flex-start; background:var(--arrow-soft); border-radius:var(--r); padding:14px 16px; font-size:16.5px}
+.note .nl{font:600 12px var(--f-mono); text-transform:uppercase; letter-spacing:.06em; color:var(--arrow); display:block; margin-bottom:2px}
+.note svg{width:36px; height:36px; flex-shrink:0}
+.chiprow{display:flex; flex-wrap:wrap; align-items:stretch; gap:8px}
+.chip{flex:1 1 150px; background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:12px; display:flex; flex-direction:column; gap:6px; align-items:flex-start; min-width:0}
+.chip .cn{font:700 12px var(--f-mono); color:var(--arrow)}
+.chip svg{width:40px; height:40px}
+.chip b{font-size:16px; line-height:1.25}
+.chip span{font-size:14.5px; color:var(--muted); line-height:1.4}
+.chiparrow{align-self:center; color:var(--arrow); font-weight:800; font-size:22px; flex:0 0 auto}
+@media (max-width:640px){ .chiparrow{display:none} }
+.btn{display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:10px 18px; font-weight:700; font-size:16px; cursor:pointer; border:1.5px solid var(--arrow); background:var(--arrow); color:#fff}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent; color:var(--arrow)}
+.btn.small{padding:7px 13px; font-size:14.5px}
+.btn:disabled{opacity:.45; cursor:not-allowed; filter:none}
+.btnrow{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.msg{border-radius:12px; padding:12px 14px; font-size:16px; background:var(--surface-2)}
+.msg.good{background:var(--good-soft)} .msg.good b:first-child{color:var(--good)}
+.msg.bad{background:var(--bad-soft)} .msg.bad b:first-child{color:var(--bad)}
+.msg.warn{background:var(--warn-soft)} .msg.warn b:first-child{color:var(--warn)}
+.svgbox{width:100%; overflow-x:auto}
+.svgbox svg{display:block; width:100%; height:auto}
+.svgtext{font-family:var(--f-body); fill:var(--ink)}
+.svgmuted{font-family:var(--f-body); fill:var(--muted)}
+.svgmono{font-family:var(--f-mono); fill:var(--muted)}
+
+/* stepper (dots) */
+.stepper .dots{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px}
+.stepper .dots button{border:1.5px solid var(--line); background:var(--surface); border-radius:999px; padding:6px 12px; font-size:14.5px; font-weight:700; cursor:pointer; color:var(--muted)}
+.stepper .dots button.on{background:var(--arrow); color:#fff; border-color:var(--arrow)}
+.stepper .cap{min-height:56px; display:flex; gap:12px; align-items:flex-start; margin-top:10px}
+.stepper .cap .where{flex-shrink:0; font:700 12px var(--f-mono); text-transform:uppercase; letter-spacing:.06em; padding:5px 9px; border-radius:8px; background:var(--plasmid-soft); color:var(--plasmid)}
+.stepper .cap .where.lab{background:var(--arrow-soft); color:var(--arrow)}
+.st{opacity:0; transition:opacity .45s}
+.st.on{opacity:1}
+
+/* flip cards */
+.flips{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px}
+.flip{position:relative; min-height:150px; perspective:900px; cursor:pointer; border:0; background:none; padding:0; text-align:left}
+.flip .in{position:absolute; inset:0; transition:transform .5s; transform-style:preserve-3d}
+.flip.on .in{transform:rotateY(180deg)}
+.flip .fa, .flip .fb{position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:var(--r); padding:16px; display:flex; flex-direction:column; justify-content:center; gap:6px}
+.flip .fa{background:var(--plasmid-soft); border:1.5px solid var(--plasmid)}
+.flip .fa b{font-family:var(--f-display); font-size:22px; color:var(--ink)}
+.flip .fa span{font:600 12px var(--f-mono); color:var(--plasmid); text-transform:uppercase; letter-spacing:.05em}
+.flip .fb{background:var(--surface); border:1.5px solid var(--line); transform:rotateY(180deg); font-size:15.5px; color:var(--ink)}
+
+/* reveal */
+.reveal{border:1.5px solid var(--line); border-radius:var(--r); background:var(--surface); padding:16px}
+.reveal .q{font-weight:700; font-size:17px}
+.reveal .ql{font:600 12px var(--f-mono); text-transform:uppercase; letter-spacing:.06em; color:var(--plasmid); margin-bottom:4px; display:block}
+.reveal .a{margin-top:12px; padding-top:12px; border-top:1px dashed var(--line)}
+.reveal .btn{margin-top:10px}
+
+/* quiz */
+.quiz{background:var(--surface); border:1.5px solid var(--line); border-radius:20px; padding:20px}
+.quiz .qhead{display:flex; align-items:center; gap:10px; margin-bottom:14px}
+.quiz .qhead h3{font-size:24px}
+.quiz .qhead .score{margin-left:auto; font:600 14px var(--f-mono); color:var(--muted)}
+.qitem + .qitem{margin-top:20px; padding-top:18px; border-top:1px solid var(--line)}
+.qitem .qq{font-weight:700; font-size:18px; margin-bottom:10px}
+.qopts{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+@media (max-width:640px){ .qopts{grid-template-columns:1fr} }
+.qopt{text-align:left; border:1.5px solid var(--line); background:var(--bg); border-radius:12px; padding:11px 14px; cursor:pointer; font-size:16px; line-height:1.35}
+.qopt:hover:not(:disabled){border-color:var(--arrow)}
+.qopt.right{border-color:var(--good); background:var(--good-soft)}
+.qopt.wrong{border-color:var(--bad); background:var(--bad-soft)}
+.qopt:disabled{cursor:default}
+.qwhy{margin-top:10px}
+
+/* step nav */
+.stepnav{display:flex; justify-content:space-between; gap:12px; margin-top:30px; flex-wrap:wrap}
+.stepnav button{display:flex; flex-direction:column; gap:2px; text-align:left; border:1.5px solid var(--line); background:var(--surface); border-radius:var(--r); padding:12px 16px; cursor:pointer; min-width:200px}
+.stepnav button:hover{border-color:var(--arrow)}
+.stepnav button.next{text-align:right; margin-left:auto}
+.stepnav small{font:600 12px var(--f-mono); color:var(--muted); text-transform:uppercase; letter-spacing:.05em}
+.stepnav b{font-family:var(--f-display); font-size:19px}
+
+/* plasmid map */
+.mapwrap{display:grid; grid-template-columns:minmax(0,360px) 1fr; gap:20px; align-items:center}
+@media (max-width:820px){ .mapwrap{grid-template-columns:1fr} }
+.part{cursor:pointer; transition:stroke-width .15s}
+.part:hover, .part.on{stroke-width:30}
+.partlbl{font:700 14px var(--f-body); fill:var(--ink); cursor:pointer}
+.partinfo h4{font-size:24px; display:flex; align-items:center; gap:10px}
+.partinfo h4 i{width:18px; height:18px; border-radius:5px; display:inline-block}
+.partinfo p{margin-top:8px; font-size:17px}
+.partbtns{display:flex; flex-wrap:wrap; gap:6px; margin-top:14px}
+.partbtns button{border:1.5px solid var(--line); background:var(--surface); border-radius:999px; padding:5px 12px; cursor:pointer; font-size:14px; font-weight:700}
+.partbtns button.on{border-color:var(--ink)}
+
+/* sequence (EcoRI) */
+.seqbox{overflow-x:auto; padding:18px 8px; background:var(--surface-2); border-radius:16px}
+.seqrow{display:flex; align-items:center; justify-content:center; min-width:max-content; margin-inline:auto}
+.seqrow > *{transition:transform .6s cubic-bezier(.3,1.4,.5,1), opacity .4s}
+.seqrow .base{width:34px; height:40px; display:flex; align-items:center; justify-content:center; font:600 21px var(--f-mono); border-radius:7px; background:var(--surface); border:1.5px solid var(--line)}
+.seqrow .base.site{background:var(--gene-soft); border-color:var(--gene)}
+.seqrow .gap{width:16px; height:40px; border:0; padding:0; background:transparent}
+.seqrow button.gap{cursor:pointer; position:relative}
+.seqrow button.gap::after{content:""; position:absolute; left:7px; top:4px; bottom:4px; width:2px; border-radius:2px; background:var(--line); transition:background .15s}
+.seqrow button.gap:hover::after{background:var(--gene); width:3px; left:6px}
+.seqrow .end{width:34px; font:600 15px var(--f-mono); color:var(--muted); text-align:center}
+.seqrow .rung{width:34px; height:18px; display:flex; justify-content:center}
+.seqrow .rung::before{content:""; width:2px; height:100%; background:var(--muted); opacity:.5}
+.seqrow .sp{width:16px}
+.seqbox.cut .L{transform:translateX(-22px)}
+.seqbox.cut .R{transform:translateX(22px)}
+.seqbox.cut .X{opacity:0}
+.seqbox.cut .seqrow.top .R.base:nth-child(-n+0){}
+.seqbox .ov{background:var(--warn-soft)!important; border-color:var(--warn)!important}
+.seqlabels{display:flex; justify-content:space-between; font:600 13px var(--f-mono); color:var(--muted); margin-top:8px; flex-wrap:wrap; gap:6px}
+
+/* match game */
+.match{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:18px; align-items:center}
+@media (max-width:820px){ .match{grid-template-columns:1fr} }
+.tray{display:flex; flex-direction:column; gap:10px}
+.frag{touch-action:none; user-select:none; cursor:grab; text-align:left; border:1.5px solid var(--line); background:var(--surface); border-radius:var(--r); padding:10px 14px; display:flex; flex-direction:column; gap:4px; transition:transform .35s, border-color .15s; position:relative; z-index:1}
+.frag:hover{border-color:var(--gene)}
+.frag.dragging{cursor:grabbing; transition:none; z-index:20; box-shadow:0 10px 30px rgba(0,0,0,.18)}
+.frag .fl{font:700 13px var(--f-mono); text-transform:uppercase; letter-spacing:.05em; color:var(--muted)}
+.frag pre{margin:0; font:600 17px/1.25 var(--f-mono); color:var(--ink)}
+.frag pre i{font-style:normal; color:var(--gene)}
+.frag pre u{text-decoration:none; background:var(--warn-soft); border-radius:3px}
+.frag.shake{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.frag.used{visibility:hidden}
+#dropzone{transition:opacity .2s}
+.dz-hot #dropzone{opacity:1!important}
+
+/* PCR cycler */
+.cycler{display:grid; grid-template-columns:minmax(0,400px) minmax(0,1fr); gap:18px}
+@media (max-width:900px){ .cycler{grid-template-columns:1fr} }
+.lcd{background:var(--lcd-bg); color:var(--lcd-fg); border-radius:20px; padding:16px; font-family:var(--f-mono); color-scheme:dark}
+.lcd .lt{display:flex; justify-content:space-between; align-items:center; font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--lcd-dim); margin-bottom:10px}
+.lcd .lt b{color:var(--lcd-fg)}
+.prog{background:var(--lcd-panel); border:1px solid var(--lcd-line); border-radius:12px; padding:12px; margin-bottom:10px}
+.prog.act{border-color:var(--lcd-fg)}
+.prog .ph{display:flex; justify-content:space-between; align-items:baseline; gap:8px}
+.prog .ph b{font-size:14px; letter-spacing:.08em; text-transform:uppercase}
+.prog .ph .val{font-size:22px; font-weight:600}
+.prog .ph .val small{font-size:14px; color:var(--lcd-dim); margin-left:6px}
+.prog .dot{width:10px; height:10px; border-radius:50%; display:inline-block; margin-right:6px; vertical-align:middle}
+.prog label{display:grid; grid-template-columns:52px 1fr; align-items:center; gap:8px; font-size:12px; color:var(--lcd-dim); margin-top:6px}
+.prog input[type=range]{width:100%; accent-color:var(--lcd-fg)}
+.lcd .run{display:flex; gap:8px; flex-wrap:wrap; margin-top:4px}
+.lcd .run button{flex:1 1 auto; border-radius:10px; border:1.5px solid var(--lcd-fg); background:transparent; color:var(--lcd-fg); padding:10px 12px; font:700 14px var(--f-mono); cursor:pointer}
+.lcd .run button.primary{background:var(--lcd-fg); color:var(--lcd-bg)}
+.lcd .run button:disabled{opacity:.4; cursor:not-allowed}
+.s-good{background:#4fd39a} .s-warn{background:#f2b84b} .s-fail{background:#ff6b5c}
+.screens{display:flex; flex-direction:column; gap:14px; min-width:0}
+.screen{background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:14px}
+.screen .sh{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:6px; flex-wrap:wrap}
+.screen .sh b{font-family:var(--f-display); font-size:18px}
+.phases{display:flex; gap:6px}
+.phases span{font:600 12px var(--f-mono); padding:4px 9px; border-radius:999px; background:var(--surface-2); color:var(--muted); text-transform:uppercase}
+.phases span.on{background:var(--arrow); color:#fff}
+.copies{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap}
+.copies .big{font:700 34px var(--f-display); font-variant-numeric:tabular-nums; color:var(--arrow)}
+.copies .lbl{color:var(--muted)}
+.fb{display:grid; gap:8px}
+.fbrow{display:grid; grid-template-columns:110px 1fr; gap:10px; align-items:start; padding:10px 12px; border-radius:12px; background:var(--surface-2); font-size:15.5px}
+.fbrow .who{font:700 13px var(--f-mono); text-transform:uppercase; display:flex; align-items:center; gap:6px; padding-top:2px}
+.fbrow.good{background:var(--good-soft)} .fbrow.warn{background:var(--warn-soft)} .fbrow.fail{background:var(--bad-soft)}
+.fbrow .who i{width:10px; height:10px; border-radius:50%; display:inline-block}
+.fbrow.good .who i{background:var(--good)} .fbrow.warn .who i{background:var(--warn)} .fbrow.fail .who i{background:var(--bad)}
+@media (max-width:560px){ .fbrow{grid-template-columns:1fr} }
+
+/* compare table */
+.compare{display:grid; grid-template-columns:150px 1fr 1fr; border:1px solid var(--line); border-radius:var(--r); overflow:hidden; background:var(--surface)}
+.compare > div{padding:12px 14px; border-top:1px solid var(--line); font-size:15.5px; min-width:0}
+.compare .hd{font-family:var(--f-display); font-weight:700; font-size:18px; border-top:0; background:var(--surface-2)}
+.compare .rl{font:700 13px var(--f-mono); text-transform:uppercase; color:var(--muted); background:var(--surface-2)}
+@media (max-width:640px){ .compare{grid-template-columns:1fr} .compare .rl{border-top:2px solid var(--line)} .compare .hd.blank{display:none} }
+
+/* heat shock */
+.stagebar{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px}
+.stagebar button{display:flex; align-items:center; gap:6px; border:1.5px solid var(--line); background:var(--surface); border-radius:999px; padding:6px 12px 6px 6px; cursor:pointer; font-weight:700; font-size:14.5px; color:var(--muted)}
+.stagebar button .n{width:24px; height:24px; border-radius:50%; background:var(--surface-2); display:inline-flex; align-items:center; justify-content:center; font:700 12px var(--f-mono)}
+.stagebar button.on{border-color:var(--arrow); color:var(--ink)}
+.stagebar button.on .n{background:var(--arrow); color:#fff}
+#hs svg *{transition:all .8s ease}
+.pl{transition:transform 1.1s cubic-bezier(.4,0,.2,1)!important}
+
+/* selection sim */
+.selwrap{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,320px); gap:18px; align-items:start}
+@media (max-width:820px){ .selwrap{grid-template-columns:1fr} }
+.counter{display:flex; gap:8px; flex-wrap:wrap}
+.counter div{flex:1 1 80px; background:var(--surface-2); border-radius:12px; padding:10px; text-align:center}
+.counter b{display:block; font:700 26px var(--f-display); font-variant-numeric:tabular-nums}
+.counter span{font-size:13px; color:var(--muted)}
+.col{transition:opacity .6s, transform .6s; transform-box:fill-box; transform-origin:center}
+.col.dead{opacity:.12}
+.col.grow{transform:scale(1.25)}
+.col.pick{cursor:pointer}
+.col.pick:hover{transform:scale(1.5)}
+
+/* chromatography */
+.chromo{display:grid; grid-template-columns:minmax(0,420px) minmax(0,1fr); gap:18px; align-items:start}
+@media (max-width:860px){ .chromo{grid-template-columns:1fr} }
+.chromo canvas{width:100%; max-width:420px; aspect-ratio:420/470; display:block; background:var(--surface-2); border-radius:16px}
+.seg{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px}
+.seg button{border:1.5px solid var(--line); background:var(--surface); border-radius:999px; padding:7px 14px; font-weight:700; cursor:pointer; font-size:15px}
+.seg button.on{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+.legend{display:flex; flex-direction:column; gap:6px; font-size:15px; margin:12px 0}
+.legend span{display:flex; align-items:center; gap:8px}
+.legend i{display:inline-block; border-radius:50%}
+.tubes{display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-top:10px}
+.tubes div{background:var(--surface-2); border-radius:10px; padding:8px; font-size:13.5px}
+.tubes div b{font-family:var(--f-mono); font-size:12px; display:block; color:var(--muted)}
+.tubes div.best{outline:2px solid var(--good); background:var(--good-soft)}
+
+/* process strip */
+.strip{display:grid; grid-template-columns:repeat(5,1fr); gap:8px}
+@media (max-width:760px){ .strip{grid-template-columns:repeat(2,1fr)} }
+.strip button{border:1.5px solid var(--line); background:var(--surface); border-radius:var(--r); padding:12px 8px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; font-weight:700; font-size:15px}
+.strip button svg{width:54px; height:54px}
+.strip button small{font:600 11px var(--f-mono); color:var(--muted)}
+.strip button.on{border-color:var(--arrow); background:var(--arrow-soft)}
+.stripinfo{margin-top:12px}
+
+/* tabs */
+.tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:22px}
+.tabs button{display:flex; align-items:center; gap:8px; border:1.5px solid var(--line); background:var(--surface); border-radius:999px; padding:9px 16px; font-weight:700; cursor:pointer; font-size:16px}
+.tabs button.on{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+.tabpanel{display:none}
+.tabpanel.on{display:block}
+
+/* timeline */
+.tline{position:relative; display:flex; justify-content:space-between; gap:4px; padding:26px 6px 6px; overflow-x:auto}
+.tline::before{content:""; position:absolute; left:14px; right:14px; top:38px; height:3px; background:var(--line); border-radius:2px}
+.tdot{position:relative; z-index:1; flex:1 0 64px; display:flex; flex-direction:column; align-items:center; gap:8px; background:none; border:0; cursor:pointer; padding:0}
+.tdot i{width:24px; height:24px; border-radius:50%; border:3px solid var(--surface); box-shadow:0 0 0 2px var(--muted); background:var(--muted); transition:transform .15s}
+.tdot.good i{background:var(--good); box-shadow:0 0 0 2px var(--good)}
+.tdot.bad i{background:var(--bad); box-shadow:0 0 0 2px var(--bad)}
+.tdot span{font:600 12.5px var(--f-mono); color:var(--muted); text-align:center; line-height:1.2}
+.tdot.on i{transform:scale(1.35)}
+.tdot.on span{color:var(--ink)}
+.tcard{display:grid; grid-template-columns:auto 1fr; gap:16px; align-items:center; margin-top:14px; background:var(--surface-2); border-radius:16px; padding:16px}
+.tcard .yr{font:800 30px var(--f-display); color:var(--muted); min-width:100px}
+.tcard.good .yr{color:var(--good)} .tcard.bad .yr{color:var(--bad)}
+.tcard h4{font-size:21px}
+.tcard p{margin-top:4px}
+@media (max-width:560px){ .tcard{grid-template-columns:1fr} }
+.stat{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:14px; text-align:center}
+.stat b{display:block; font:800 38px var(--f-display); color:var(--bad); font-variant-numeric:tabular-nums}
+.stat span{color:var(--muted); font-size:15px}
+.pc{border-radius:var(--r); padding:14px 16px}
+.pc.good{background:var(--good-soft)} .pc.bad{background:var(--warn-soft)}
+.pc h4{font-size:18px; margin-bottom:6px}
+.pc ul{margin:0; padding-left:20px; font-size:15.5px}
+.prompts{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:10px}
+.prompts div{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:14px; font-size:16px; display:flex; gap:10px}
+.prompts div b{font:700 22px var(--f-display); color:var(--plasmid); line-height:1}
+.plates{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px}
+.plate{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:14px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:6px}
+.plate svg{width:110px; height:110px}
+.plate .cond{font:600 13px var(--f-mono); color:var(--muted)}
+.plate b{font-size:16.5px}
+.plate span{font-size:14.5px; color:var(--muted)}
+.toggle{display:inline-flex; border:1.5px solid var(--line); border-radius:999px; overflow:hidden}
+.toggle button{border:0; background:var(--surface); padding:8px 16px; font-weight:700; cursor:pointer}
+.toggle button.on{background:var(--plasmid); color:#fff}
+.soon{display:inline-flex; align-items:center; gap:8px; font:600 13px var(--f-mono); color:var(--muted); border:1.5px dashed var(--line); border-radius:999px; padding:7px 13px}
+
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; scroll-behavior:auto!important}
+}
+</style>
+
+<div class="wrap">
+<header class="topbar">
+  <button class="brand" type="button" data-go="hub" aria-label="Back to the big picture">
+    <svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="9.5" fill="none" stroke="var(--plasmid)" stroke-width="3.5"/><path d="M5.6 7.5 A9.5 9.5 0 0 1 12 3.55" fill="none" stroke="var(--gene)" stroke-width="3.5"/></svg>
+    BIO 112 &middot; Ch. 9
+  </button>
+  <span class="crumb" id="crumb"></span>
+  <button class="homebtn" type="button" id="homeBtn" data-go="hub" hidden>&larr; Big picture</button>
+</header>
+
+<!-- ===================== HUB ===================== -->
+<section class="view active" id="view-hub">
+  <div class="hero">
+    <div>
+      <div class="eyebrow">Chapter 9 &middot; Microbial biotechnology</div>
+      <h1>Cloning a <span>Gene</span></h1>
+    </div>
+    <p>Follow the blue arrows from a gene in one organism to a product you can harvest. Click any numbered step to open it.</p>
+  </div>
+
+  <div class="figure">
+  <svg class="hub" id="hubsvg" viewBox="0 0 1000 950" role="group" aria-label="Cloning a gene: clickable diagram of every step">
+    <defs>
+      <marker id="ah" viewBox="0 0 10 10" refX="4" refY="5" markerWidth="2.6" markerHeight="2.6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--arrow)"/></marker>
+      <marker id="ahs" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="var(--muted)"/></marker>
+    </defs>
+
+    <!-- big pale labels, like the textbook figure -->
+    <text class="pale" x="790" y="300">bacterium</text>
+    <text class="pale" x="112" y="520">recombinant DNA</text>
+    <text class="pale" x="112" y="556" style="font-size:24px">(plasmid)</text>
+
+    <!-- flow arrows -->
+    <path class="flow" marker-end="url(#ah)" d="M352 268 C 400 290, 430 330, 446 372"/>
+    <path class="flow" marker-end="url(#ah)" d="M636 300 C 608 330, 584 350, 562 374"/>
+    <path class="flow" marker-end="url(#ah)" d="M572 452 L 678 452"/>
+    <path class="flow" marker-end="url(#ah)" d="M900 538 C 904 560, 898 578, 888 598"/>
+    <path class="flow" marker-end="url(#ah)" d="M700 690 L 540 690"/>
+    <path class="flow" marker-end="url(#ah)" d="M398 760 C 360 785, 320 795, 282 808"/>
+    <path class="flow" marker-end="url(#ah)" d="M488 760 C 526 785, 566 795, 604 808"/>
+    <text class="orx" x="443" y="806" text-anchor="middle">OR</text>
+
+    <!-- 1 FIND THE GENE -->
+    <g class="node" data-go="gene" tabindex="0" role="button" aria-label="Step 1: Find and copy the gene">
+      <rect class="halo" x="22" y="18" width="350" height="275" rx="24"/>
+      <g class="badge"><circle class="pulse" cx="52" cy="48" r="18"/><circle cx="52" cy="48" r="18"/><text x="52" y="48">1</text></g>
+      <text class="ntitle" x="80" y="46">Find &amp; copy the gene</text>
+      <text class="nsub" x="80" y="68">mRNA &#8594; reverse transcriptase &#8594; cDNA</text>
+      <ellipse cx="142" cy="172" rx="96" ry="74" fill="var(--donor)" stroke="var(--donor-edge)" stroke-width="3"/>
+      <circle cx="122" cy="168" r="42" fill="var(--surface)" fill-opacity=".55" stroke="var(--chrom)" stroke-width="2" stroke-dasharray="5 4"/>
+      <path data-tangle="122,168,30,30,15,7" fill="none" stroke="var(--chrom)" stroke-width="2.6"/>
+      <path d="M106 150 q 9 -9 20 -3" fill="none" stroke="var(--gene)" stroke-width="6" stroke-linecap="round"/>
+      <path d="M168 150 q 6 -6 12 0 t 12 0 t 12 0 t 12 0" fill="none" stroke="var(--gene)" stroke-width="3" stroke-linecap="round"/>
+      <path d="M170 176 q 6 -6 12 0 t 12 0 t 12 0 t 12 0" fill="none" stroke="var(--gene)" stroke-width="3" stroke-linecap="round"/>
+      <text class="tiny" x="196" y="200" text-anchor="middle">mRNA</text>
+      <text class="tiny" x="136" y="272" text-anchor="middle">donor cell (another species)</text>
+      <path class="thin" marker-end="url(#ahs)" d="M226 196 C 246 210, 262 222, 270 234"/>
+      <text class="tiny" x="232" y="236" text-anchor="end">RT</text>
+      <g transform="translate(262 244)">
+        <rect x="0" y="0" width="84" height="8" rx="3" fill="var(--gene)"/>
+        <rect x="8" y="14" width="84" height="8" rx="3" fill="var(--gene)"/>
+        <path d="M14 8v6M24 8v6M34 8v6M44 8v6M54 8v6M64 8v6M74 8v6" stroke="var(--gene)" stroke-width="2" opacity=".55"/>
+      </g>
+      <text class="tiny" x="304" y="238" text-anchor="middle" style="fill:var(--gene)">cDNA</text>
+    </g>
+
+    <!-- 2 CUT THE VECTOR -->
+    <g class="node" data-go="vector" data-anchor="cut" tabindex="0" role="button" aria-label="Step 2: Cut the vector with a restriction enzyme">
+      <rect class="halo" x="600" y="18" width="385" height="300" rx="24"/>
+      <g class="badge"><circle class="pulse" cx="632" cy="48" r="18"/><circle cx="632" cy="48" r="18"/><text x="632" y="48">2</text></g>
+      <text class="ntitle" x="660" y="46">Cut the vector</text>
+      <text class="nsub" x="660" y="68">A restriction enzyme opens the plasmid</text>
+      <g transform="rotate(-16 862 168)">
+        <rect x="748" y="112" width="232" height="112" rx="56" fill="var(--cell)" stroke="var(--cell-edge)" stroke-width="7"/>
+        <rect x="758" y="122" width="212" height="92" rx="46" fill="none" stroke="var(--cell-edge)" stroke-width="2" opacity=".4"/>
+        <path data-tangle="830,168,42,30,16,3" fill="none" stroke="var(--chrom)" stroke-width="2.4"/>
+        <circle cx="918" cy="162" r="21" fill="none" stroke="var(--plasmid)" stroke-width="5"/>
+      </g>
+      <path class="thin" marker-end="url(#ahs)" d="M770 222 C 748 236, 730 244, 716 248"/>
+      <text class="tiny" x="760" y="258">isolate</text>
+      <path data-arc="668,262,40,248,562" fill="none" stroke="var(--plasmid)" stroke-width="10" stroke-linecap="butt"/>
+      <g transform="translate(606 230) rotate(-30)" stroke="var(--ink)" stroke-width="2.4" fill="none" stroke-linecap="round">
+        <circle cx="-6" cy="14" r="5"/><circle cx="6" cy="14" r="5"/><path d="M-3 10 L 8 -10 M3 10 L -8 -10"/>
+      </g>
+      <text class="tiny" x="668" y="324" text-anchor="middle">sticky ends</text>
+    </g>
+
+    <!-- 3 INSERT & SEAL -->
+    <g class="node" data-go="vector" data-anchor="insert" tabindex="0" role="button" aria-label="Step 3: Insert the gene and seal it with ligase">
+      <rect class="halo" x="96" y="378" width="490" height="190" rx="24"/>
+      <g class="badge"><circle class="pulse" cx="128" cy="424" r="18"/><circle cx="128" cy="424" r="18"/><text x="128" y="424">3</text></g>
+      <text class="ntitle" x="156" y="422">Insert &amp; seal</text>
+      <text class="nsub" x="156" y="444">DNA ligase joins the sticky ends</text>
+      <circle cx="502" cy="452" r="58" fill="none" stroke="var(--plasmid)" stroke-width="12"/>
+      <path data-arc="502,452,58,-38,14" fill="none" stroke="var(--gene)" stroke-width="12"/>
+      <text class="tiny" x="502" y="456" text-anchor="middle">+ gene</text>
+    </g>
+
+    <!-- 4 PCR -->
+    <g class="node" data-go="pcr" tabindex="0" role="button" aria-label="Step 4: Amplify with PCR">
+      <rect class="halo" x="672" y="340" width="315" height="200" rx="24"/>
+      <g class="badge"><circle class="pulse" cx="702" cy="372" r="18"/><circle cx="702" cy="372" r="18"/><text x="702" y="372">4</text></g>
+      <text class="ntitle" x="730" y="370">Amplify with PCR</text>
+      <text class="nsub" x="730" y="392">Millions of copies, before transformation</text>
+      <path d="M712 418 h34 v40 l-17 32 l-17 -32 z" fill="var(--surface-2)" stroke="var(--muted)" stroke-width="2.5" stroke-linejoin="round"/>
+      <rect x="708" y="410" width="42" height="9" rx="3" fill="var(--muted)"/>
+      <path d="M714 466 h30 l-15 23 z" fill="var(--plasmid)" opacity=".55"/>
+      <g class="thin" style="stroke-width:1.5">
+        <path d="M796 466 L 836 442 M796 466 L 836 494 M850 442 L 896 426 M850 442 L 896 452 M850 494 L 896 478 M850 494 L 896 504"/>
+      </g>
+      <g data-mini="784,466,13"></g>
+      <g data-mini="846,442,12"></g><g data-mini="846,494,12"></g>
+      <g data-mini="906,426,10"></g><g data-mini="906,452,10"></g><g data-mini="906,478,10"></g><g data-mini="906,504,10"></g>
+      <text class="tiny" x="950" y="470" text-anchor="middle">&#215;2</text>
+      <text class="tiny" x="950" y="486" text-anchor="middle">per</text>
+      <text class="tiny" x="950" y="502" text-anchor="middle">cycle</text>
+    </g>
+
+    <!-- 5 TRANSFORM -->
+    <g class="node" data-go="transform" tabindex="0" role="button" aria-label="Step 5: Transform the plasmid into cells">
+      <rect class="halo" x="690" y="598" width="300" height="220" rx="24"/>
+      <rect x="708" y="618" width="270" height="134" rx="67" fill="var(--cell)" stroke="var(--gold)" stroke-width="8"/>
+      <rect x="720" y="630" width="246" height="110" rx="55" fill="none" stroke="var(--cell-edge)" stroke-width="2" opacity=".45"/>
+      <path data-tangle="800,684,50,36,17,11" fill="none" stroke="var(--chrom)" stroke-width="2.4"/>
+      <g data-mini="906,660,18"></g><g data-mini="928,710,13"></g><g data-mini="878,720,11"></g>
+      <g class="badge"><circle class="pulse" cx="720" cy="788" r="18"/><circle cx="720" cy="788" r="18"/><text x="720" y="788">5</text></g>
+      <text class="ntitle" x="748" y="786">Transform into cells</text>
+      <text class="nsub" x="748" y="808">Heat shock and other methods</text>
+    </g>
+
+    <!-- 6 SELECT -->
+    <g class="node" data-go="selection" tabindex="0" role="button" aria-label="Step 6: Select the cells that worked">
+      <rect class="halo" x="96" y="602" width="440" height="160" rx="24"/>
+      <circle cx="456" cy="688" r="70" fill="var(--agar)" stroke="var(--muted)" stroke-width="3"/>
+      <circle cx="456" cy="688" r="61" fill="none" stroke="var(--muted)" stroke-width="1.5" opacity=".5"/>
+      <g fill="var(--surface)" stroke="var(--plasmid)" stroke-width="2">
+        <circle cx="430" cy="662" r="7"/><circle cx="470" cy="652" r="6"/><circle cx="488" cy="684" r="7"/><circle cx="440" cy="702" r="6"/>
+        <circle cx="468" cy="718" r="7"/><circle cx="418" cy="686" r="5"/><circle cx="494" cy="712" r="5"/><circle cx="454" cy="676" r="5"/>
+      </g>
+            <g class="badge"><circle class="pulse" cx="128" cy="672" r="18"/><circle cx="128" cy="672" r="18"/><text x="128" y="672">6</text></g>
+      <text class="ntitle" x="156" y="670">Select the winners</text>
+      <text class="nsub" x="156" y="692">Antibiotic + a second check,</text>
+      <text class="nsub" x="156" y="712">then grow the right clone</text>
+    </g>
+
+    <!-- 7a COPIES -->
+    <g class="node" data-go="copies" tabindex="0" role="button" aria-label="Step 7a: Harvest copies of the gene">
+      <rect class="halo" x="80" y="800" width="360" height="145" rx="24"/>
+      <g transform="rotate(-12 150 840)"><rect x="110" y="822" width="80" height="36" rx="18" fill="var(--cell)" stroke="var(--cell-edge)" stroke-width="4"/></g>
+      <g data-mini="150,838,9"></g>
+      <rect x="200" y="826" width="80" height="36" rx="18" fill="var(--cell)" stroke="var(--cell-edge)" stroke-width="4"/>
+      <g data-mini="240,844,9"></g>
+      <g transform="rotate(10 324 838)"><rect x="284" y="820" width="80" height="36" rx="18" fill="var(--cell)" stroke="var(--cell-edge)" stroke-width="4"/></g>
+      <g data-mini="324,838,9"></g>
+      <g class="badge"><circle class="pulse" cx="112" cy="904" r="18"/><circle cx="112" cy="904" r="18"/><text x="112" y="904" style="font-size:14px">7a</text></g>
+      <text class="ntitle" x="140" y="902">Harvest copies of the gene</text>
+      <text class="nsub" x="140" y="924">Cells copy the plasmid every division</text>
+    </g>
+
+    <!-- 7b PROTEIN -->
+    <g class="node" data-go="product" tabindex="0" role="button" aria-label="Step 7b: Harvest the protein product">
+      <rect class="halo" x="560" y="800" width="400" height="145" rx="24"/>
+      <rect x="600" y="820" width="88" height="40" rx="20" fill="var(--cell)" stroke="var(--cell-edge)" stroke-width="4"/>
+      <g data-mini="620,840,9"></g>
+      <path d="M636 834 q4 -5 8 0 t8 0" fill="none" stroke="var(--good)" stroke-width="2.5"/>
+      <g fill="var(--protein)"><circle cx="664" cy="846" r="4"/><circle cx="670" cy="839" r="4"/><circle cx="674" cy="848" r="4"/></g>
+      <g transform="rotate(14 750 838)"><rect x="704" y="818" width="88" height="40" rx="20" fill="var(--cell)" stroke="var(--cell-edge)" stroke-width="4"/></g>
+      <g data-mini="728,834,9"></g>
+      <g fill="var(--protein)"><circle cx="760" cy="840" r="4"/><circle cx="766" cy="847" r="4"/><circle cx="757" cy="850" r="4"/><circle cx="770" cy="838" r="4"/></g>
+      <path d="M842 812 h20 v52 a10 10 0 0 1 -20 0 z" fill="var(--surface-2)" stroke="var(--muted)" stroke-width="2.5"/>
+      <rect x="845" y="836" width="14" height="34" rx="6" fill="var(--protein)" opacity=".75"/>
+      <path class="thin" marker-end="url(#ahs)" d="M802 842 L 832 842"/>
+      <g class="badge"><circle class="pulse" cx="592" cy="904" r="18"/><circle cx="592" cy="904" r="18"/><text x="592" y="904" style="font-size:14px">7b</text></g>
+      <text class="ntitle" x="620" y="902">Harvest the protein product</text>
+      <text class="nsub" x="620" y="924">Lyse the cells, then purify</text>
+    </g>
+  </svg>
+  </div>
+  <div class="figure-foot" id="jumpRow"><span class="lbl">Jump to</span></div>
+
+  <div class="sec-title"><h2>See it in the lab</h2><p>Selection examples from our labs</p></div>
+  <div class="cards">
+    <button class="tile" type="button" data-go="xgal">
+      <svg viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="27" fill="var(--agar)" stroke="var(--muted)" stroke-width="2"/><g stroke="var(--muted)" stroke-width="1"><circle cx="20" cy="22" r="5" fill="#3a6fd8"/><circle cx="36" cy="18" r="4.5" fill="var(--surface)"/><circle cx="40" cy="34" r="5" fill="#3a6fd8"/><circle cx="24" cy="40" r="4.5" fill="var(--surface)"/><circle cx="32" cy="29" r="3.5" fill="var(--surface)"/></g></svg>
+      <span><span class="t">X-gal blue-white selection</span><span class="d" style="display:block">The lac operon story behind blue vs. white colonies.</span><span class="tag">Lab example</span></span>
+    </button>
+    <button class="tile" type="button" data-go="pglo">
+      <svg viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="27" fill="#16301f" stroke="var(--muted)" stroke-width="2"/><g fill="#5dff9a"><circle cx="20" cy="24" r="4.5"/><circle cx="36" cy="18" r="4"/><circle cx="40" cy="36" r="5"/><circle cx="24" cy="40" r="4"/></g><g fill="#5dff9a" opacity=".25"><circle cx="20" cy="24" r="8"/><circle cx="40" cy="36" r="9"/></g></svg>
+      <span><span class="t">pGLO transformation lab</span><span class="d" style="display:block">GFP, arabinose, and why colonies glow under UV.</span><span class="tag">Lab example</span></span>
+    </button>
+  </div>
+
+  <div class="sec-title"><h2>Why it matters</h2><p>Applications of the same pipeline</p></div>
+  <div class="cards">
+    <button class="tile" type="button" data-go="apps" data-tab="ther">
+      <svg viewBox="0 0 60 60" aria-hidden="true"><rect x="10" y="24" width="34" height="13" rx="3" fill="var(--arrow-soft)" stroke="var(--arrow)" stroke-width="2.5" transform="rotate(-35 30 30)"/><path d="M42 12 l8 -8 M38 16 l6 6" stroke="var(--arrow)" stroke-width="3" stroke-linecap="round"/><path d="M14 44 l-8 8" stroke="var(--arrow)" stroke-width="3" stroke-linecap="round"/></svg>
+      <span><span class="t">Therapeutics</span><span class="d" style="display:block">Vaccines, CRISPR, RNAi, gene therapy</span></span>
+    </button>
+    <button class="tile" type="button" data-go="apps" data-tab="foren">
+      <svg viewBox="0 0 60 60" aria-hidden="true"><circle cx="25" cy="25" r="15" fill="none" stroke="var(--plasmid)" stroke-width="4"/><path d="M36 36 l14 14" stroke="var(--plasmid)" stroke-width="5" stroke-linecap="round"/><rect x="18" y="20" width="14" height="5" rx="2.5" fill="var(--gene)"/><rect x="20" y="27" width="10" height="3" rx="1.5" fill="var(--gene)" opacity=".6"/></svg>
+      <span><span class="t">Forensics</span><span class="d" style="display:block">The 2001 anthrax attacks</span></span>
+    </button>
+    <button class="tile" type="button" data-go="apps" data-tab="ag">
+      <svg viewBox="0 0 60 60" aria-hidden="true"><path d="M30 56 V20" stroke="var(--good)" stroke-width="3"/><ellipse cx="30" cy="20" rx="7" ry="14" fill="var(--gold)"/><path d="M30 40 C 18 36, 12 26, 10 16 C 22 20, 28 28, 30 40Z M30 46 C 42 42, 48 32, 50 22 C 38 26, 32 34, 30 46Z" fill="var(--good)"/></svg>
+      <span><span class="t">Agriculture</span><span class="d" style="display:block">Bt crops, biofertilizers, GMOs</span></span>
+    </button>
+  </div>
+
+  <div class="footnote"><b>Need a refresher on earlier chapters?</b> The Chapter 5 &amp; 8 study site link will go here. <span class="pill">Link coming soon</span></div>
+</section>
+
+<!-- ===================== 1 GENE ===================== -->
+<section class="view" id="view-gene">
+  <nav class="pipe" aria-label="Steps"></nav>
+  <div class="mhead"><div class="mbadge">1</div><div>
+    <div class="eyebrow">Step 1</div>
+    <h2>Find &amp; copy the gene</h2>
+    <p class="lede">First you need a copy of the gene you want. For genes from eukaryotes like us, scientists start with the mRNA and copy it back into DNA.</p>
+  </div></div>
+
+  <div class="block">
+    <h3>From gene to cDNA</h3>
+    <p class="sub">Click through the four stages. Purple tags happen inside the cell; blue tags happen in the lab.</p>
+    <div class="panel stepper" id="cdnaStepper">
+      <div class="dots"></div>
+      <div class="svgbox">
+      <svg viewBox="0 0 760 210" aria-label="Gene to cDNA animation">
+        <defs><marker id="ahg" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="var(--muted)"/></marker></defs>
+        <!-- state 0: gene with exons/introns -->
+        <g class="st" data-st="0">
+          <line x1="30" y1="92" x2="730" y2="92" stroke="var(--muted)" stroke-width="3"/>
+          <line x1="30" y1="122" x2="730" y2="122" stroke="var(--muted)" stroke-width="3"/>
+          <rect x="60" y="86" width="130" height="42" rx="8" fill="var(--gene)"/>
+          <rect x="190" y="86" width="110" height="42" rx="8" fill="var(--surface-2)" stroke="var(--line)" stroke-width="2"/>
+          <rect x="300" y="86" width="120" height="42" rx="8" fill="var(--gene)"/>
+          <rect x="420" y="86" width="130" height="42" rx="8" fill="var(--surface-2)" stroke="var(--line)" stroke-width="2"/>
+          <rect x="550" y="86" width="150" height="42" rx="8" fill="var(--gene)"/>
+          <g class="svgtext" font-size="15" font-weight="700" text-anchor="middle">
+            <text x="125" y="70">exon</text><text x="245" y="70" class="svgmuted">intron</text><text x="360" y="70">exon</text><text x="485" y="70" class="svgmuted">intron</text><text x="625" y="70">exon</text>
+          </g>
+          <text x="380" y="170" text-anchor="middle" class="svgmuted" font-size="15">the gene, as it sits in the chromosome (double-stranded DNA)</text>
+        </g>
+        <!-- state 1: mature mRNA -->
+        <g class="st" data-st="1">
+          <path d="M230 70 q -20 -40 20 -44 q 40 4 20 44" fill="none" stroke="var(--line)" stroke-width="10" stroke-linecap="round"/>
+          <path d="M470 70 q -20 -40 20 -44 q 40 4 20 44" fill="none" stroke="var(--line)" stroke-width="10" stroke-linecap="round"/>
+          <text x="370" y="40" text-anchor="middle" class="svgmuted" font-size="14">introns spliced out</text>
+          <rect x="170" y="98" width="130" height="18" rx="9" fill="var(--gene-soft)" stroke="var(--gene)" stroke-width="2.5"/>
+          <rect x="300" y="98" width="120" height="18" rx="9" fill="var(--gene-soft)" stroke="var(--gene)" stroke-width="2.5"/>
+          <rect x="420" y="98" width="150" height="18" rx="9" fill="var(--gene-soft)" stroke="var(--gene)" stroke-width="2.5"/>
+          <text x="152" y="112" text-anchor="end" class="svgmono" font-size="14">5'</text><text x="588" y="112" class="svgmono" font-size="14">3'</text>
+          <text x="370" y="160" text-anchor="middle" class="svgtext" font-size="16" font-weight="700">mature mRNA: single-stranded, exons only</text>
+        </g>
+        <!-- state 2: reverse transcriptase -->
+        <g class="st" data-st="2">
+          <rect x="170" y="76" width="400" height="18" rx="9" fill="var(--gene-soft)" stroke="var(--gene)" stroke-width="2.5"/>
+          <text x="152" y="90" text-anchor="end" class="svgmono" font-size="14">5'</text><text x="588" y="90" class="svgmono" font-size="14">3'</text>
+          <text x="152" y="130" text-anchor="end" class="svgmono" font-size="14">3'</text>
+          <rect id="rtGrow" x="170" y="118" width="400" height="14" rx="7" fill="var(--gene)"/>
+          <g id="rtEnz"><ellipse cx="570" cy="108" rx="34" ry="26" fill="var(--plasmid)" opacity=".9"/><text x="570" y="113" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="var(--f-mono)">RT</text></g>
+          <text x="370" y="180" text-anchor="middle" class="svgtext" font-size="16" font-weight="700">reverse transcriptase builds a DNA strand on the mRNA template</text>
+        </g>
+        <!-- state 3: double stranded cDNA -->
+        <g class="st" data-st="3">
+          <rect x="170" y="86" width="400" height="14" rx="7" fill="var(--gene)"/>
+          <rect x="170" y="116" width="400" height="14" rx="7" fill="var(--gene)"/>
+          <path d="M190 100v16M215 100v16M240 100v16M265 100v16M290 100v16M315 100v16M340 100v16M365 100v16M390 100v16M415 100v16M440 100v16M465 100v16M490 100v16M515 100v16M540 100v16" stroke="var(--gene)" stroke-width="2.5" opacity=".5"/>
+          <text x="370" y="64" text-anchor="middle" class="svgtext" font-size="20" font-weight="700" font-family="var(--f-display)">cDNA</text>
+          <text x="370" y="170" text-anchor="middle" class="svgmuted" font-size="15">double-stranded, intron-free: a bacterium can read it straight through</text>
+        </g>
+      </svg>
+      </div>
+      <div class="cap"><span class="where"></span><p></p></div>
+      <div class="btnrow" style="margin-top:12px"><button class="btn ghost small" data-step="-1" type="button">&larr; Back</button><button class="btn small" data-step="1" type="button">Next stage &rarr;</button></div>
+    </div>
+  </div>
+
+  <div class="block grid2">
+    <div class="idea">
+      <svg class="ic" viewBox="0 0 46 46" aria-hidden="true"><rect x="4" y="4" width="38" height="38" rx="9" fill="var(--plasmid-soft)"/><path d="M14 18 h16 l-5 -5 M32 28 h-16 l5 5" fill="none" stroke="var(--plasmid)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <h4>Reverse transcriptase: the UNO reverse card</h4>
+      <p>Normal transcription goes DNA &#8594; RNA. Reverse transcriptase runs it backward, building DNA from an RNA template. It needs an RNA template, a primer, and dNTPs.</p>
+      <p>It's found in retroviruses like HIV. It was first discovered in 1970 in retroviruses that cause tumors in animals, years before HIV was identified.</p>
+    </div>
+    <div class="idea">
+      <svg class="ic" viewBox="0 0 46 46" aria-hidden="true"><rect x="4" y="4" width="38" height="38" rx="9" fill="var(--gene-soft)"/><rect x="10" y="16" width="26" height="5" rx="2.5" fill="var(--gene)"/><rect x="10" y="25" width="26" height="5" rx="2.5" fill="var(--gene)"/></svg>
+      <h4>Why bother with cDNA?</h4>
+      <p>Mature mRNA has already had its introns spliced out. Bacteria can't remove introns, so we hand them <span class="key">cDNA</span> ("complementary DNA"): an intron-free DNA version of the gene they can read straight through.</p>
+      <p>Reverse transcriptase is also the "RT" in RT-PCR, like the COVID test in Step 4.</p>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Building a cDNA library</h3>
+    <p class="sub">A collection of cDNA that represents the genes being expressed (transcribed) in a tissue or cell at a specific time.</p>
+    <div class="chiprow">
+      <div class="chip"><span class="cn">1</span><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M6 20 q4 -6 8 0 t8 0 t8 0 t8 0" fill="none" stroke="var(--gene)" stroke-width="3"/></svg><b>Isolate mRNA</b><span>from the cells or tissue of interest</span></div>
+      <span class="chiparrow">&#8594;</span>
+      <div class="chip"><span class="cn">2</span><svg viewBox="0 0 40 40" aria-hidden="true"><ellipse cx="20" cy="20" rx="15" ry="11" fill="var(--plasmid)"/><text x="20" y="24" text-anchor="middle" fill="#fff" font-size="11" font-weight="700" font-family="monospace">RT</text></svg><b>Reverse transcriptase</b><span>synthesizes cDNA from the mRNA</span></div>
+      <span class="chiparrow">&#8594;</span>
+      <div class="chip"><span class="cn">3</span><svg viewBox="0 0 40 40" aria-hidden="true"><rect x="5" y="13" width="30" height="5" rx="2.5" fill="var(--gene)"/><rect x="5" y="22" width="30" height="5" rx="2.5" fill="var(--gene)"/></svg><b>Make it double-stranded</b><span>convert to dsDNA</span></div>
+      <span class="chiparrow">&#8594;</span>
+      <div class="chip"><span class="cn">4</span><svg viewBox="0 0 40 40" aria-hidden="true"><g fill="var(--gene)"><rect x="4" y="8" width="14" height="4" rx="2"/><rect x="22" y="8" width="14" height="4" rx="2"/><rect x="4" y="18" width="14" height="4" rx="2"/><rect x="22" y="18" width="14" height="4" rx="2"/><rect x="4" y="28" width="14" height="4" rx="2"/><rect x="22" y="28" width="14" height="4" rx="2"/></g></svg><b>PCR copies</b><span>enough to sequence or clone</span></div>
+    </div>
+    <div class="flips" style="margin-top:14px">
+      <button class="flip" type="button"><span class="in"><span class="fa"><span>Tap to flip</span><b>cDNA</b></span><span class="fb">"Complementary DNA": DNA made from cellular mRNA. No introns.</span></span></button>
+      <button class="flip" type="button"><span class="in"><span class="fa"><span>Tap to flip</span><b>cDNA library</b></span><span class="fb">A collection of cDNA used to build new vectors or to see which genes a cell is transcribing.</span></span></button>
+      <button class="flip" type="button"><span class="in"><span class="fa"><span>Tap to flip</span><b>Clone</b></span><span class="fb">A population of genetically identical cells that all came from one cell carrying one DNA fragment.</span></span></button>
+    </div>
+  </div>
+
+  <div class="quiz" data-quiz="gene"></div>
+  <div class="stepnav"></div>
+</section>
+
+<!-- ===================== 2-3 VECTOR ===================== -->
+<section class="view" id="view-vector">
+  <nav class="pipe" aria-label="Steps"></nav>
+  <div class="mhead"><div class="mbadge">2&ndash;3</div><div>
+    <div class="eyebrow">Steps 2 &amp; 3</div>
+    <h2>Build the vector, cut it, insert the gene</h2>
+    <p class="lede">A <span class="key">vector</span> is a DNA molecule that carries foreign DNA into a cell, usually a plasmid (sometimes a virus). Think of it as a USB drive for DNA.</p>
+  </div></div>
+
+  <div class="block">
+    <h3>What does our vector need?</h3>
+    <div class="grid3">
+      <div class="idea"><svg class="ic" viewBox="0 0 46 46" aria-hidden="true"><rect x="4" y="4" width="38" height="38" rx="9" fill="var(--gene-soft)"/><rect x="10" y="19" width="26" height="8" rx="4" fill="var(--gene)"/></svg><h4>1. The gene of interest</h4><p>The DNA you actually want carried into the cell.</p></div>
+      <div class="idea"><svg class="ic" viewBox="0 0 46 46" aria-hidden="true"><rect x="4" y="4" width="38" height="38" rx="9" fill="var(--plasmid-soft)"/><circle cx="23" cy="23" r="11" fill="none" stroke="var(--plasmid)" stroke-width="4"/></svg><h4>2. A self-replicating backbone</h4><p>A plasmid with an origin of replication, so the host copies it on its own.</p></div>
+      <div class="idea"><svg class="ic" viewBox="0 0 46 46" aria-hidden="true"><rect x="4" y="4" width="38" height="38" rx="9" fill="var(--good-soft)"/><path d="M14 24 l6 6 l12 -13" fill="none" stroke="var(--good)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><h4>3. A way to tell it worked</h4><p>A color change or an antibiotic resistance gene. More in Step 6.</p></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Explore a plasmid vector</h3>
+    <p class="sub">Plasmids are small, circular DNA molecules that copy themselves independently of the chromosome. Click each part of the map.</p>
+    <div class="panel mapwrap">
+      <div class="svgbox"><svg id="pmap" viewBox="0 0 340 340" aria-label="Plasmid map"></svg></div>
+      <div class="partinfo" aria-live="polite">
+        <h4 id="partTitle"></h4>
+        <p id="partText"></p>
+        <div class="partbtns" id="partBtns"></div>
+        <div class="note" style="margin-top:16px"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="13" fill="none" stroke="var(--arrow)" stroke-width="3"/><path d="M18 12v8M18 24v1" stroke="var(--arrow)" stroke-width="3" stroke-linecap="round"/></svg><span><span class="nl">Natural plasmids</span>Wild plasmids carry genes for antibiotic resistance, toxin production, metal resistance, and conjugation. Lab vectors borrow that backbone.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block" id="cut">
+    <h3>Step 2: Cut it with EcoRI</h3>
+    <p class="sub">Restriction enzymes are molecular scissors. Each one recognizes a short, specific, usually palindromic sequence and cuts the DNA backbone there. <b>EcoRI</b> recognizes <span class="mono">GAATTC</span>. Plasmids come preloaded with these restriction sites.</p>
+    <div class="panel">
+      <p style="margin-bottom:12px"><b>Your turn:</b> find GAATTC on the top strand, then click the spot between two bases where EcoRI cuts.</p>
+      <div class="seqbox" id="seqbox"></div>
+      <div class="seqlabels"><span>Top strand reads 5' &#8594; 3'</span><span>Bottom strand reads 3' &#8594; 5'</span></div>
+      <div class="btnrow" style="margin-top:12px"><button class="btn ghost small" type="button" id="seqHint">Highlight the site</button><button class="btn ghost small" type="button" id="seqReset">Reset</button></div>
+      <div class="msg" id="seqMsg" style="margin-top:12px" aria-live="polite">Tip: read the bottom strand right to left (5' &#8594; 3'). It also says GAATTC. That's what makes the site a palindrome.</div>
+    </div>
+  </div>
+
+  <div class="block" id="insert">
+    <h3>Step 3: Match the sticky ends, then seal</h3>
+    <p class="sub">The plasmid below was opened with EcoRI. Drag the gene fragment that will base-pair with its sticky ends into the gap (or just click a fragment).</p>
+    <div class="panel match">
+      <div class="svgbox"><svg id="matchSvg" viewBox="0 0 320 270" aria-label="Opened plasmid">
+        <rect id="dropzone" x="96" y="6" width="128" height="78" rx="14" fill="var(--arrow-soft)" stroke="var(--arrow)" stroke-width="2" stroke-dasharray="6 5" opacity=".55"/>
+        <text id="dropTxt" x="160" y="30" text-anchor="middle" class="svgmono" font-size="12" style="fill:var(--arrow)">drop here</text>
+        <path id="openRing" data-arc="160,150,88,26,334" fill="none" stroke="var(--plasmid)" stroke-width="18"/>
+        <path id="insertArc" data-arc="160,150,88,-26,26" fill="none" stroke="var(--gene)" stroke-width="18" opacity="0"/>
+        <g id="nicks" opacity="0"><path data-tick="160,150,88,-26" stroke="var(--surface)" stroke-width="4"/><path data-tick="160,150,88,26" stroke="var(--surface)" stroke-width="4"/></g>
+        <text id="endL" x="78" y="84" text-anchor="end" class="svgmono" font-size="13" style="fill:var(--warn)">TTAA</text>
+        <text id="endR" x="242" y="84" class="svgmono" font-size="13" style="fill:var(--warn)">AATT</text>
+        <text id="ringLbl" x="160" y="146" text-anchor="middle" class="svgtext" font-size="16" font-weight="700">opened plasmid</text>
+        <text id="ringSub" x="160" y="168" text-anchor="middle" class="svgmuted" font-size="13">cut with EcoRI</text>
+      </svg></div>
+      <div>
+        <div class="tray" id="tray"></div>
+        <div class="msg" id="matchMsg" style="margin-top:12px" aria-live="polite">Which fragment's overhangs are complementary to AATT? (A pairs with T, G pairs with C.)</div>
+        <div class="btnrow" style="margin-top:10px"><button class="btn" type="button" id="ligaseBtn" hidden>Add DNA ligase</button><button class="btn ghost small" type="button" id="matchReset">Reset</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block grid2">
+    <div class="reveal">
+      <span class="ql">Reading guide</span>
+      <p class="q">Cutting DNA with a restriction enzyme: endergonic or exergonic? Catabolic or anabolic? What happens to activation energy?</p>
+      <button class="btn small ghost" type="button" data-reveal>Show answer</button>
+      <div class="a" hidden>Cutting DNA breaks bonds, so it's <b>catabolic</b>, and it releases energy, so it's <b>exergonic</b>. The enzyme <b>lowers the activation energy</b>, which speeds up a reaction that was already favorable. Classic enzyme behavior: bind the substrate at the active site, form an enzyme-substrate complex, use induced fit to stabilize the transition state, release the products, and the enzyme is free to go again.</div>
+    </div>
+    <div class="idea">
+      <svg class="ic" viewBox="0 0 46 46" aria-hidden="true"><circle cx="23" cy="23" r="15" fill="none" stroke="var(--plasmid)" stroke-width="5"/><path d="M14.5 10.6 A15 15 0 0 1 27 8.5" fill="none" stroke="var(--gene)" stroke-width="5"/></svg>
+      <h4>Recombinant DNA</h4>
+      <p>Recombinant means "recombined": one DNA molecule built from DNA from two different sources. This recombinant plasmid is what gets amplified next and then carried into a host cell.</p>
+    </div>
+  </div>
+
+  <div class="quiz" data-quiz="vector"></div>
+  <div class="stepnav"></div>
+</section>
+
+<!-- ===================== 4 PCR ===================== -->
+<section class="view" id="view-pcr">
+  <nav class="pipe" aria-label="Steps"></nav>
+  <div class="mhead"><div class="mbadge">4</div><div>
+    <div class="eyebrow">Step 4</div>
+    <h2>Amplify with PCR</h2>
+    <p class="lede">Transformations are done on a LOT of cells, so we need a LOT of plasmid. PCR (polymerase chain reaction) copies the recombinant plasmid millions of times before it goes into bacteria. After that, the bacteria keep copying it every time they divide.</p>
+  </div></div>
+
+  <div class="block">
+    <h3>PCR is DNA replication, in a tube</h3>
+    <p class="sub">In your cells, replication needs helicase, primase, and DNA polymerase. PCR swaps in heat and lab-made ingredients for each job.</p>
+    <div class="chiprow">
+      <div class="chip"><svg viewBox="0 0 40 40" aria-hidden="true"><rect x="5" y="13" width="30" height="5" rx="2.5" fill="var(--plasmid)"/><rect x="5" y="22" width="30" height="5" rx="2.5" fill="var(--plasmid)"/></svg><b>DNA template</b><span>the plasmid you want copied</span></div>
+      <div class="chip"><svg viewBox="0 0 40 40" aria-hidden="true"><rect x="4" y="17" width="12" height="6" rx="3" fill="var(--gene)"/><rect x="24" y="17" width="12" height="6" rx="3" fill="var(--gene)"/></svg><b>Primers</b><span>short pieces that mark where copying starts (the job primase does in cells)</span></div>
+      <div class="chip"><svg viewBox="0 0 40 40" aria-hidden="true"><ellipse cx="20" cy="20" rx="15" ry="11" fill="var(--warn)"/><text x="20" y="24" text-anchor="middle" fill="#fff" font-size="11" font-weight="700" font-family="monospace">Taq</text></svg><b>Heat-stable DNA polymerase</b><span>Taq survives the repeated heating</span></div>
+      <div class="chip"><svg viewBox="0 0 40 40" aria-hidden="true"><g fill="var(--arrow)"><circle cx="11" cy="13" r="4"/><circle cx="27" cy="11" r="4"/><circle cx="18" cy="24" r="4"/><circle cx="31" cy="27" r="4"/></g></svg><b>dNTPs + buffer</b><span>nucleotide building blocks, plus Mg&#178;&#8314; buffer</span></div>
+    </div>
+  </div>
+
+  <div class="block" id="cyclerBlock">
+    <h3>Program the thermocycler</h3>
+    <p class="sub">Change the temperatures and times, then watch one cycle or run the whole program. The feedback explains what each setting does to the DNA.</p>
+    <div class="cycler">
+      <div class="lcd" id="lcd">
+        <div class="lt"><span>Thermocycler program</span><b id="lcdState">READY</b></div>
+        <div class="prog" data-ph="den">
+          <div class="ph"><b><i class="dot" data-s="dT"></i>1 Denature</b><span class="val"><span id="v-dtemp"></span>&deg;C<small id="v-dt"></small></span></div>
+          <label for="pcr-dtemp">temp<input type="range" id="pcr-dtemp" min="80" max="100" step="1" value="95"></label>
+          <label for="pcr-dt">time<input type="range" id="pcr-dt" min="5" max="120" step="5" value="30"></label>
+        </div>
+        <div class="prog" data-ph="ann">
+          <div class="ph"><b><i class="dot" data-s="aT"></i>2 Anneal</b><span class="val"><span id="v-atemp"></span>&deg;C<small id="v-at"></small></span></div>
+          <label for="pcr-atemp">temp<input type="range" id="pcr-atemp" min="35" max="80" step="1" value="55"></label>
+          <label for="pcr-at">time<input type="range" id="pcr-at" min="5" max="90" step="5" value="30"></label>
+        </div>
+        <div class="prog" data-ph="ext">
+          <div class="ph"><b><i class="dot" data-s="eT"></i>3 Extend</b><span class="val"><span id="v-etemp"></span>&deg;C<small id="v-et"></small></span></div>
+          <label for="pcr-etemp">temp<input type="range" id="pcr-etemp" min="55" max="85" step="1" value="72"></label>
+          <label for="pcr-et">time<input type="range" id="pcr-et" min="10" max="180" step="5" value="60"></label>
+        </div>
+        <div class="prog">
+          <div class="ph"><b><i class="dot" data-s="n"></i>Repeat</b><span class="val"><span id="v-n"></span><small>cycles</small></span></div>
+          <label for="pcr-n">cycles<input type="range" id="pcr-n" min="1" max="40" step="1" value="30"></label>
+        </div>
+        <div class="run">
+          <button type="button" class="primary" id="pcrWatch">&#9654; Watch 1 cycle</button>
+          <button type="button" id="pcrRun">&#9193; Run all cycles</button>
+          <button type="button" id="pcrStd">Reset to standard</button>
+        </div>
+      </div>
+      <div class="screens">
+        <div class="screen">
+          <div class="sh"><b>Temperature profile, one cycle</b><span class="svgmono" style="font-size:12px" id="cycLen"></span></div>
+          <div class="svgbox"><svg id="profile" viewBox="0 0 600 180" aria-label="Temperature profile"></svg></div>
+        </div>
+        <div class="screen">
+          <div class="sh"><b>Inside the tube</b><div class="phases"><span data-p="den">Denature</span><span data-p="ann">Anneal</span><span data-p="ext">Extend</span></div></div>
+          <div class="svgbox"><svg id="dna" viewBox="0 0 600 210" aria-label="DNA during one PCR cycle"></svg></div>
+        </div>
+        <div class="screen">
+          <div class="sh"><b>Copies of the target</b><span class="copies"><span class="big" id="copyBig">1</span><span class="lbl" id="copyLbl">starting copy</span></span></div>
+          <div class="svgbox"><svg id="copyChart" viewBox="0 0 600 170" aria-label="Copies per cycle"></svg></div>
+        </div>
+      </div>
+    </div>
+    <div class="fb" id="pcrFb" style="margin-top:14px" aria-live="polite"></div>
+  </div>
+
+  <div class="block grid2">
+    <div class="reveal">
+      <span class="ql">From the slides</span>
+      <p class="q">Why does DNA split into two strands when heated, instead of falling apart (depolymerizing)?</p>
+      <button class="btn small ghost" type="button" data-reveal>Show answer</button>
+      <div class="a" hidden>The two strands are held together by <b>hydrogen bonds</b> between base pairs, which are weak and break at about 94&ndash;96&deg;C. Each strand's own backbone is held together by <b>covalent phosphodiester bonds</b>, which are much stronger and survive the heat. So the strands separate, but each strand stays intact.</div>
+    </div>
+    <div class="idea">
+      <svg class="ic" viewBox="0 0 46 46" aria-hidden="true"><rect x="6" y="12" width="15" height="4" rx="2" fill="var(--plasmid)"/><rect x="6" y="20" width="15" height="4" rx="2" fill="var(--newdna)"/><rect x="25" y="12" width="15" height="4" rx="2" fill="var(--newdna)"/><rect x="25" y="20" width="15" height="4" rx="2" fill="var(--plasmid)"/></svg>
+      <h4>Semi-conservative, just like in cells</h4>
+      <p>Meselson and Stahl (1958) showed each new DNA molecule keeps one original strand and gains one new strand. Watch the PCR animation: every copy is one purple (old) strand plus one blue (new) strand.</p>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Example: the COVID-19 PCR test</h3>
+    <p class="sub">Same cycle, different goal.</p>
+    <div class="compare">
+      <div class="hd blank"></div><div class="hd">Cloning PCR</div><div class="hd">COVID-19 RT-PCR test</div>
+      <div class="rl">Starts with</div><div>DNA: your recombinant plasmid</div><div>RNA: SARS-CoV-2 has an RNA genome</div>
+      <div class="rl">Extra first step</div><div>None</div><div>Reverse transcription turns viral RNA into cDNA (the "RT" in RT-PCR)</div>
+      <div class="rl">Goal</div><div>Make lots of physical copies to carry into transformation</div><div>Detect whether viral genetic material is there at all</div>
+      <div class="rl">Readout</div><div>The copies themselves get used in the next step</div><div>Fluorescent probes for viral genes (like the E and RdRp genes) are read in real time. Positive if the signal crosses a threshold early (a low Ct value).</div>
+      <div class="rl">What can go wrong</div><div>Bad temperatures or times (try it above)</div><div><b>False negative:</b> low viral load, degraded sample, or the swab missed infected tissue. <b>False positive:</b> contamination or primers binding the wrong target.</div>
+    </div>
+  </div>
+
+  <div class="quiz" data-quiz="pcr"></div>
+  <div class="stepnav"></div>
+</section>
+
+<!-- ===================== 5 TRANSFORM ===================== -->
+<section class="view" id="view-transform">
+  <nav class="pipe" aria-label="Steps"></nav>
+  <div class="mhead"><div class="mbadge">5</div><div>
+    <div class="eyebrow">Step 5</div>
+    <h2>Transform the plasmid into cells</h2>
+    <p class="lede">Transformation is a cell taking up DNA from its surroundings. Cells that are able to do this are called <span class="key">competent cells</span>. Once they take in the plasmid, they are recombinant.</p>
+  </div></div>
+
+  <div class="block">
+    <h3>The heat-shock method</h3>
+    <p class="sub">Click through each stage and watch the thermometer, the membrane, and the plasmids.</p>
+    <div class="panel" id="hs">
+      <div class="stagebar" id="hsBar"></div>
+      <div class="svgbox"><svg id="hsSvg" viewBox="0 0 680 290" aria-label="Heat shock transformation"></svg></div>
+      <div class="msg" id="hsMsg" style="margin-top:12px" aria-live="polite"></div>
+      <div class="btnrow" style="margin-top:10px"><button class="btn ghost small" type="button" id="hsPrev">&larr; Back</button><button class="btn small" type="button" id="hsNext">Next stage &rarr;</button></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Other ways to get DNA into a cell</h3>
+    <div class="grid3">
+      <div class="idea">
+        <svg class="ic" viewBox="0 0 46 46" aria-hidden="true"><rect x="4" y="4" width="38" height="38" rx="9" fill="var(--warn-soft)"/><path d="M25 8 L15 25 h8 l-3 13 l11 -18 h-8 z" fill="var(--warn)"/></svg>
+        <h4>Electroporation</h4>
+        <p>A brief electric pulse opens temporary pores in the membrane so DNA can get in. It works on bacteria directly, cell walls and all. Plant cells, with their thick walls, are often turned into protoplasts first.</p>
+      </div>
+      <div class="idea">
+        <svg class="ic" viewBox="0 0 46 46" aria-hidden="true"><rect x="4" y="4" width="38" height="38" rx="9" fill="var(--good-soft)"/><circle cx="17" cy="23" r="8" fill="none" stroke="var(--good)" stroke-width="2.5" stroke-dasharray="3 2"/><circle cx="29" cy="23" r="8" fill="none" stroke="var(--good)" stroke-width="2.5" stroke-dasharray="3 2"/></svg>
+        <h4>Protoplasts &amp; fusion</h4>
+        <p>Enzymes strip off the cell wall, leaving a protoplast (just a fragile membrane). Polyethylene glycol fuses two protoplasts, their chromosomes recombine, and a new wall grows back. Most common in plants and algae.</p>
+      </div>
+      <div class="idea">
+        <svg class="ic" viewBox="0 0 46 46" aria-hidden="true"><rect x="4" y="4" width="38" height="38" rx="9" fill="var(--arrow-soft)"/><circle cx="27" cy="27" r="11" fill="var(--donor)" stroke="var(--donor-edge)" stroke-width="2"/><path d="M6 6 L 24 24" stroke="var(--arrow)" stroke-width="3" stroke-linecap="round"/></svg>
+        <h4>Microinjection</h4>
+        <p>A glass micropipette punctures the membrane and injects DNA directly. Used on larger cells, like animal eggs or embryos. It's also how CRISPR mixes get into animals.</p>
+      </div>
+    </div>
+    <div class="note" style="margin-top:14px">
+      <svg viewBox="0 0 36 36" aria-hidden="true"><path d="M4 22 C 10 10, 16 30, 22 18 S 30 12, 33 16" fill="none" stroke="var(--arrow)" stroke-width="3.5" stroke-linecap="round"/><circle cx="33" cy="16" r="2" fill="var(--arrow)"/></svg>
+      <span><span class="nl">Model organism: C. elegans</span>A transparent roundworm, about 1 mm long, that eats bacteria. It was the first multicellular organism to have its whole genome sequenced, and all 302 neurons of its nervous system are mapped. It's see-through with a short life cycle, so it's easy to microinject DNA into its gonad and watch the changes in its offspring.</span>
+    </div>
+  </div>
+
+  <div class="quiz" data-quiz="transform"></div>
+  <div class="stepnav"></div>
+</section>
+
+<!-- ===================== 6 SELECTION ===================== -->
+<section class="view" id="view-selection">
+  <nav class="pipe" aria-label="Steps"></nav>
+  <div class="mhead"><div class="mbadge">6</div><div>
+    <div class="eyebrow">Step 6</div>
+    <h2>Selection: did it work?</h2>
+    <p class="lede">Not every cell takes up the plasmid, and not every plasmid has the gene inserted. Plasmid vectors carry marker genes so you can tell. Most protocols use <b>dual selection</b>, kind of like two-factor authentication.</p>
+  </div></div>
+
+  <div class="block">
+    <h3>Find your clone</h3>
+    <p class="sub">After transformation, the plate holds three kinds of cells. Run both checks to find the one you want.</p>
+    <div class="panel selwrap">
+      <div>
+        <div class="svgbox"><svg id="selSvg" viewBox="0 0 420 330" aria-label="Selection plate"></svg></div>
+      </div>
+      <div>
+        <div class="counter"><div><b id="cAll">24</b><span>cells plated</span></div><div><b id="cAmp">&ndash;</b><span>survive amp</span></div><div><b id="cWin">&ndash;</b><span>have your gene</span></div></div>
+        <div class="legend">
+          <span><svg width="20" height="20" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="var(--surface-2)" stroke="var(--muted)" stroke-width="2"/></svg>No plasmid</span>
+          <span><svg width="20" height="20" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="var(--surface)" stroke="var(--plasmid)" stroke-width="3"/></svg>Empty plasmid (no gene)</span>
+          <span><svg width="20" height="20" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="var(--surface)" stroke="var(--plasmid)" stroke-width="3"/><path d="M4.5 5.5 A7 7 0 0 1 10 3" fill="none" stroke="var(--gene)" stroke-width="3"/></svg>Recombinant plasmid</span>
+        </div>
+        <div class="btnrow" id="selBtns"></div>
+        <div class="msg" id="selMsg" style="margin-top:12px" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block grid2">
+    <div class="idea">
+      <svg class="ic" viewBox="0 0 46 46" aria-hidden="true"><rect x="4" y="4" width="38" height="38" rx="9" fill="var(--warn-soft)"/><text x="23" y="29" text-anchor="middle" font-weight="700" font-size="14" fill="var(--warn)" font-family="monospace">AMP</text></svg>
+      <h4>Primary selection: antibiotic</h4>
+      <p>The host bacteria are naturally sensitive to the antibiotic. The plasmid carries a resistance gene: <b>ampicillin</b> is the most common, and tetracycline and kanamycin work the same way. Only transformed cells grow on the selective medium.</p>
+    </div>
+    <div class="idea">
+      <svg class="ic" viewBox="0 0 46 46" aria-hidden="true"><rect x="4" y="4" width="38" height="38" rx="9" fill="var(--good-soft)"/><path d="M14 24 l6 6 l12 -13" fill="none" stroke="var(--good)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <h4>Secondary selection: is the gene in there?</h4>
+      <p>Growing on antibiotic only proves a cell has <i>a</i> plasmid. Secondary selection checks for the insert:</p>
+      <p><b>Color change</b> (GFP, X-gal) &middot; <b>DNA probes and chips</b> (labeled DNA that binds complementary sequences; chips hold arrays of probes) &middot; <b>Gene product analysis</b> (directly detects the protein; examples include DNA sequencing, Western blots, northern blots, and ELISA).</p>
+    </div>
+  </div>
+  <div class="cards">
+    <button class="tile" type="button" data-go="xgal"><svg viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="27" fill="var(--agar)" stroke="var(--muted)" stroke-width="2"/><g stroke="var(--muted)" stroke-width="1"><circle cx="20" cy="22" r="5" fill="#3a6fd8"/><circle cx="36" cy="18" r="4.5" fill="var(--surface)"/><circle cx="40" cy="34" r="5" fill="#3a6fd8"/><circle cx="24" cy="40" r="4.5" fill="var(--surface)"/></g></svg><span><span class="t">Go deeper: X-gal</span><span class="d" style="display:block">Blue-white selection, step by step</span></span></button>
+    <button class="tile" type="button" data-go="pglo"><svg viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="27" fill="#16301f" stroke="var(--muted)" stroke-width="2"/><g fill="#5dff9a"><circle cx="20" cy="24" r="4.5"/><circle cx="36" cy="18" r="4"/><circle cx="40" cy="36" r="5"/><circle cx="24" cy="40" r="4"/></g></svg><span><span class="t">Go deeper: pGLO</span><span class="d" style="display:block">GFP + arabinose case study</span></span></button>
+  </div>
+
+  <div class="quiz" data-quiz="selection" style="margin-top:34px"></div>
+  <div class="stepnav"></div>
+</section>
+
+<!-- ===================== 7a COPIES ===================== -->
+<section class="view" id="view-copies">
+  <nav class="pipe" aria-label="Steps"></nav>
+  <div class="mhead"><div class="mbadge">7a</div><div>
+    <div class="eyebrow">Step 7a</div>
+    <h2>Harvest copies of the gene</h2>
+    <p class="lede">Once you have the right clone, the bacteria do the copying for you. Every time a cell divides, it copies its plasmid too, so the culture becomes a factory of gene copies.</p>
+  </div></div>
+
+  <div class="block">
+    <div class="panel">
+      <div class="svgbox"><svg id="divSvg" viewBox="0 0 640 230" aria-label="Bacteria dividing"></svg></div>
+      <div class="btnrow" style="margin-top:10px"><button class="btn" type="button" id="divBtn">Let them divide</button><button class="btn ghost small" type="button" id="divReset">Start over</button><span id="divTxt" class="svgmono" style="font-size:14px"></span></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>What the copies are used for</h3>
+    <div class="grid2">
+      <div class="idea"><svg class="ic" viewBox="0 0 46 46" aria-hidden="true"><path d="M23 42 V14" stroke="var(--good)" stroke-width="3"/><ellipse cx="23" cy="14" rx="5" ry="10" fill="var(--gold)"/><path d="M23 30 C 14 27, 10 20, 8 12 C 17 15, 21 21, 23 30Z M23 35 C 32 32, 36 25, 38 17 C 29 20, 25 26, 23 35Z" fill="var(--good)"/></svg><h4>Into other organisms</h4><p>A gene encoding a protein for pest resistance is inserted into plant cells (like Bt corn, in Applications).</p></div>
+      <div class="idea"><svg class="ic" viewBox="0 0 46 46" aria-hidden="true"><rect x="10" y="10" width="26" height="30" rx="4" fill="var(--cell)" stroke="var(--cell-edge)" stroke-width="2.5"/><path d="M10 20 h26 M10 30 h26" stroke="var(--cell-edge)" stroke-width="2.5"/></svg><h4>Cleanup crews</h4><p>A gene encoding an enzyme that breaks down toxic waste is inserted into bacterial cells to help clean it up.</p></div>
+    </div>
+    <div class="note" style="margin-top:14px"><svg viewBox="0 0 36 36" aria-hidden="true"><path d="M10 30 V8 h16 v22" fill="none" stroke="var(--arrow)" stroke-width="3"/><path d="M14 14h8M14 19h8M14 24h5" stroke="var(--arrow)" stroke-width="2.5"/></svg><span><span class="nl">Loops back to Step 1</span>Harvested gene copies also feed cDNA libraries and new rounds of cloning. <button class="btn small ghost" type="button" data-go="gene" style="margin-top:6px">Revisit cDNA libraries</button></span></div>
+  </div>
+
+  <div class="quiz" data-quiz="copies"></div>
+  <div class="stepnav"></div>
+</section>
+
+<!-- ===================== 7b PRODUCT ===================== -->
+<section class="view" id="view-product">
+  <nav class="pipe" aria-label="Steps"></nav>
+  <div class="mhead"><div class="mbadge">7b</div><div>
+    <div class="eyebrow">Step 7b</div>
+    <h2>Lyse the cells &amp; purify the product</h2>
+    <p class="lede">Some products are secreted (the protein is released naturally). Intracellular products stay trapped inside the cell, so getting them out is its own multi-step process.</p>
+  </div></div>
+
+  <div class="block">
+    <h3>From culture to pure protein</h3>
+    <p class="sub">Click each stage.</p>
+    <div class="strip" id="strip"></div>
+    <div class="panel stripinfo" id="stripInfo" aria-live="polite"></div>
+  </div>
+
+  <div class="block" id="chromoBlock">
+    <h3>Try a chromatography column</h3>
+    <p class="sub">Pick a column type, load your lysate, and watch what comes out in each collection tube.</p>
+    <div class="panel chromo">
+      <canvas id="chromoCv" width="420" height="450" aria-label="Chromatography column animation"></canvas>
+      <div>
+        <div class="seg" id="chromoMode">
+          <button type="button" data-m="sec" class="on">Size exclusion</button>
+          <button type="button" data-m="aff">Affinity</button>
+          <button type="button" data-m="iex">Ion exchange</button>
+        </div>
+        <p id="chromoExplain"></p>
+        <div class="legend">
+          <span><i style="width:14px;height:14px;background:var(--protein)"></i>Large protein (contaminant)</span>
+          <span><i style="width:10px;height:10px;background:var(--gene)"></i><b>Your protein</b>&nbsp;(medium, His-tagged, negatively charged)</span>
+          <span><i style="width:6px;height:6px;background:var(--muted)"></i>Small molecules (contaminant)</span>
+        </div>
+        <div class="btnrow"><button class="btn" type="button" id="chromoGo">Load lysate</button><button class="btn ghost small" type="button" id="chromoReset">Reset</button></div>
+        <div class="msg" id="chromoMsg" style="margin-top:12px" aria-live="polite"></div>
+        <div class="tubes" id="chromoTubes"></div>
+      </div>
+    </div>
+    <div class="reveal" style="margin-top:14px">
+      <span class="ql">From the slides</span>
+      <p class="q">If our column had cations (positive charges) as probes, what particles would end up in the final purification?</p>
+      <button class="btn small ghost" type="button" data-reveal>Show answer</button>
+      <div class="a" hidden>Opposite charges attract, so the positive column traps <b>negatively charged (anionic)</b> particles. Neutral and positive particles flow through. Raising the salt releases the negative particles, so your final purification holds the negatively charged ones. Try the ion exchange column above to see it.</div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Products made this way</h3>
+    <div class="grid2">
+      <div class="idea"><svg class="ic" viewBox="0 0 46 46" aria-hidden="true"><path d="M8 30 l15 -6 l15 6 l-15 8 z" fill="var(--plasmid)"/><path d="M8 24 l15 -6 l15 6 l-15 8 z" fill="var(--arrow)"/><path d="M8 18 l15 -6 l15 6 l-15 8 z" fill="var(--good)"/></svg><h4>Enzymes for industry</h4><p>Amylase, cellulase, and other enzymes are used to prepare fabrics for clothing manufacturing.</p></div>
+      <div class="idea"><svg class="ic" viewBox="0 0 46 46" aria-hidden="true"><path d="M12 6 v34 M12 8 h6 M12 14 h4 M12 20 h6 M12 26 h4 M12 32 h6 M12 38 h4" stroke="var(--muted)" stroke-width="2.5"/><circle cx="30" cy="14" r="5" fill="var(--donor-edge)"/><path d="M30 20 v12 M24 26 h12 M30 32 l-5 8 M30 32 l5 8" stroke="var(--donor-edge)" stroke-width="3" stroke-linecap="round"/></svg><h4>Medicines</h4><p>Human growth hormone, made by bacteria, treats stunted growth. Subunit vaccines are made the same way (see Applications).</p></div>
+    </div>
+  </div>
+
+  <div class="quiz" data-quiz="product"></div>
+  <div class="stepnav"></div>
+</section>
+
+<!-- ===================== X-GAL ===================== -->
+<section class="view" id="view-xgal">
+  <div class="mhead"><div class="mbadge lab">Lab</div><div>
+    <div class="eyebrow">Lab example &middot; dual selection</div>
+    <h2>X-gal blue-white selection</h2>
+    <p class="lede">X-gal selection is built on the <i>lac</i> operon. It turns "did my gene actually insert?" into something you can see: a blue colony or a white one.</p>
+  </div></div>
+
+  <div class="block grid2">
+    <div class="idea"><h4>The vector</h4>
+      <p><b>1. Ampicillin resistance gene:</b> primary selection. Only transformed cells survive.</p>
+      <p><b>2. lacZ gene, broken by an MCS:</b> lacZ codes for &beta;-galactosidase. The multiple cloning site (MCS), a cluster of upwards of 20 restriction sites, sits inside lacZ. Inserting your gene there breaks lacZ, so it's non-functional.</p>
+    </div>
+    <div class="idea"><h4>What's in the media</h4>
+      <p><b>Ampicillin:</b> selects transformed cells.</p>
+      <p><b>IPTG:</b> mimics lactose and induces lacZ expression.</p>
+      <p><b>X-gal:</b> a chromogenic substrate for &beta;-galactosidase. When it's cleaved, it makes an insoluble blue molecule, turning the colony blue.</p>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>The lac operon: inducible negative control</h3>
+    <p class="sub">Toggle IPTG to see what happens at the operator.</p>
+    <div class="panel">
+      <div class="btnrow" style="margin-bottom:10px"><span class="toggle" id="iptgToggle"><button type="button" data-v="0" class="on">No IPTG</button><button type="button" data-v="1">IPTG added</button></span></div>
+      <div class="svgbox"><svg id="lacSvg" viewBox="0 0 680 200" aria-label="lac operon"></svg></div>
+      <div class="msg" id="lacMsg" style="margin-top:10px" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Reading the plate (amp + IPTG + X-gal)</h3>
+    <div class="plates">
+      <div class="plate"><svg viewBox="0 0 110 110" aria-hidden="true"><circle cx="55" cy="55" r="50" fill="var(--agar)" stroke="var(--muted)" stroke-width="2"/><g fill="var(--surface)" stroke="var(--muted)"><circle cx="38" cy="40" r="7"/><circle cx="66" cy="34" r="6"/><circle cx="72" cy="66" r="7"/><circle cx="44" cy="72" r="6"/><circle cx="56" cy="54" r="5"/></g></svg><span class="cond">WHITE colonies</span><b>Successful insertion</b><span>Your gene broke lacZ. No functional &beta;-galactosidase, so X-gal isn't cleaved.</span></div>
+      <div class="plate"><svg viewBox="0 0 110 110" aria-hidden="true"><circle cx="55" cy="55" r="50" fill="var(--agar)" stroke="var(--muted)" stroke-width="2"/><g fill="#3a6fd8" stroke="var(--muted)"><circle cx="38" cy="40" r="7"/><circle cx="66" cy="34" r="6"/><circle cx="72" cy="66" r="7"/><circle cx="44" cy="72" r="6"/><circle cx="56" cy="54" r="5"/></g></svg><span class="cond">BLUE colonies</span><b>Unsuccessful insertion</b><span>The plasmid closed without the gene. lacZ works, &beta;-galactosidase cleaves X-gal, and it turns blue.</span></div>
+      <div class="plate"><svg viewBox="0 0 110 110" aria-hidden="true"><circle cx="55" cy="55" r="50" fill="var(--agar)" stroke="var(--muted)" stroke-width="2"/></svg><span class="cond">NO colonies</span><b>No plasmid</b><span>Without the plasmid, there's no ampicillin resistance, so nothing grows.</span></div>
+    </div>
+    <div class="soon" style="margin-top:14px">Plate simulator: in the study module (link coming soon)</div>
+  </div>
+
+  <div class="quiz" data-quiz="xgal"></div>
+</section>
+
+<!-- ===================== pGLO ===================== -->
+<section class="view" id="view-pglo">
+  <div class="mhead"><div class="mbadge lab">Lab</div><div>
+    <div class="eyebrow">Lab example &middot; case study</div>
+    <h2>pGLO transformation lab</h2>
+    <p class="lede">The pGLO lab runs the same pipeline you just walked through, with a striking payoff: bacteria that glow.</p>
+  </div></div>
+
+  <div class="block grid2">
+    <div class="idea"><h4>The pGLO plasmid</h4>
+      <p><b>Ampicillin resistance gene:</b> primary selection, same as always.</p>
+      <p><b>GFP gene:</b> green fluorescent protein, originally from the jellyfish <i>Aequorea victoria</i>. GFP is controlled by the <b>pBAD promoter</b>, which only switches on when the sugar <b>arabinose</b> is present.</p>
+    </div>
+    <div class="note" style="align-self:start"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="13" fill="none" stroke="var(--arrow)" stroke-width="3"/><path d="M12 18 h12 M18 12 v12" stroke="var(--arrow)" stroke-width="3" stroke-linecap="round"/></svg><span><span class="nl">Same logic as X-gal, different sugar</span>pBAD is switched on by arabinose the way the lac operon is switched on by lactose (or IPTG). A sugar in the environment turns a promoter on.</span></div>
+  </div>
+
+  <div class="block">
+    <h3>The procedure</h3>
+    <div class="chiprow">
+      <div class="chip"><span class="cn">1</span><b>Mix &amp; chill</b><span>competent <i>E. coli</i> + pGLO on ice</span></div><span class="chiparrow">&#8594;</span>
+      <div class="chip"><span class="cn">2</span><b>Heat shock</b><span>about 50 seconds at 42&deg;C</span></div><span class="chiparrow">&#8594;</span>
+      <div class="chip"><span class="cn">3</span><b>Recover</b><span>back on ice, then nutrient broth</span></div><span class="chiparrow">&#8594;</span>
+      <div class="chip"><span class="cn">4</span><b>Plate</b><span>spread on different plates to compare</span></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Reading the plates</h3>
+    <div class="plates">
+      <div class="plate"><svg viewBox="0 0 110 110" aria-hidden="true"><circle cx="55" cy="55" r="50" fill="var(--agar)" stroke="var(--muted)" stroke-width="2"/><circle cx="55" cy="55" r="42" fill="var(--surface)" opacity=".7"/></svg><span class="cond">LB only</span><b>Lawn of growth</b><span>Transformed and untransformed cells both grow. Shows the culture is alive.</span></div>
+      <div class="plate"><svg viewBox="0 0 110 110" aria-hidden="true"><circle cx="55" cy="55" r="50" fill="var(--agar)" stroke="var(--muted)" stroke-width="2"/><g fill="var(--surface)" stroke="var(--muted)"><circle cx="38" cy="40" r="6"/><circle cx="66" cy="34" r="5"/><circle cx="72" cy="66" r="6"/><circle cx="44" cy="72" r="5"/></g></svg><span class="cond">LB + amp</span><b>Transformed colonies, not glowing</b><span>Amp selects for the plasmid, but no arabinose means pBAD is off.</span></div>
+      <div class="plate"><svg viewBox="0 0 110 110" aria-hidden="true"><circle cx="55" cy="55" r="50" fill="#16301f" stroke="var(--muted)" stroke-width="2"/><g fill="#5dff9a" opacity=".25"><circle cx="38" cy="40" r="11"/><circle cx="72" cy="66" r="11"/></g><g fill="#5dff9a"><circle cx="38" cy="40" r="6"/><circle cx="66" cy="34" r="5"/><circle cx="72" cy="66" r="6"/><circle cx="44" cy="72" r="5"/></g></svg><span class="cond">LB + amp + arabinose</span><b>Glowing colonies under UV</b><span>Arabinose switches pBAD on and GFP is made: visible proof the gene works.</span></div>
+      <div class="plate"><svg viewBox="0 0 110 110" aria-hidden="true"><circle cx="55" cy="55" r="50" fill="var(--agar)" stroke="var(--muted)" stroke-width="2"/><circle cx="55" cy="55" r="42" fill="var(--surface)" opacity=".7"/></svg><span class="cond">LB + arabinose</span><b>Lawn, no selection</b><span>Without ampicillin, you can't separate transformed cells from untransformed ones by growth.</span></div>
+    </div>
+    <p style="margin-top:14px; max-width:68ch">This is gene product analysis in its most direct form. You aren't guessing from a growth pattern; you're watching the expressed protein glow.</p>
+    <div class="soon" style="margin-top:14px">Plate simulator: in the study module (link coming soon)</div>
+  </div>
+
+  <div class="quiz" data-quiz="pglo"></div>
+</section>
+
+<!-- ===================== APPLICATIONS ===================== -->
+<section class="view" id="view-apps">
+  <div class="mhead"><div class="mbadge app">Use</div><div>
+    <div class="eyebrow">Why this matters</div>
+    <h2>Applications</h2>
+    <p class="lede">The same pipeline (vector, PCR, transform, select, grow, harvest) is behind vaccines, gene therapy, forensic science, and modern agriculture.</p>
+  </div></div>
+
+  <div class="tabs" role="tablist">
+    <button type="button" data-tab="ther" class="on">Therapeutics</button>
+    <button type="button" data-tab="foren">Forensics</button>
+    <button type="button" data-tab="ag">Agriculture</button>
+  </div>
+
+  <div class="tabpanel on" id="tab-ther">
+    <div class="block">
+      <h3>Two kinds of recombinant vaccines</h3>
+      <p class="sub">Both start the same way. The difference is what gets purified and injected.</p>
+      <div class="grid2">
+        <div class="panel">
+          <h4 style="font-size:20px; margin-bottom:10px">Subunit vaccine</h4>
+          <div class="chiprow">
+            <div class="chip"><span class="cn">1</span><b>Viral surface protein gene &#8594; vector</b></div>
+            <div class="chip"><span class="cn">2</span><b>Transform &amp; select</b></div>
+            <div class="chip"><span class="cn">3</span><b>Grow; cells express the protein</b></div>
+            <div class="chip"><span class="cn">4</span><b>Lyse cells</b></div>
+            <div class="chip" style="border-color:var(--gene)"><span class="cn">5</span><b>Purify the <span class="key">protein</span></b><span>chromatography</span></div>
+            <div class="chip"><span class="cn">6</span><b>Add adjuvants</b><span>additives that boost the immune response</span></div>
+          </div>
+          <p style="margin-top:10px; color:var(--muted)">Example: Hepatitis B surface antigen, produced in yeast or bacteria.</p>
+        </div>
+        <div class="panel">
+          <h4 style="font-size:20px; margin-bottom:10px">DNA (vector) vaccine</h4>
+          <div class="chiprow">
+            <div class="chip"><span class="cn">1</span><b>Surface protein gene &#8594; vector with a <i>eukaryotic</i> promoter</b></div>
+            <div class="chip"><span class="cn">2</span><b>Transform &amp; select</b></div>
+            <div class="chip"><span class="cn">3</span><b>Grow to copy the vector</b></div>
+            <div class="chip"><span class="cn">4</span><b>Lyse cells</b></div>
+            <div class="chip" style="border-color:var(--plasmid)"><span class="cn">5</span><b>Purify the <span style="color:var(--plasmid)">DNA vector</span></b></div>
+            <div class="chip"><span class="cn">6</span><b>Add adjuvants</b></div>
+          </div>
+          <p style="margin-top:10px; color:var(--muted)">The patient's own cells read the vector and make the viral protein. ZyCoV-D was the first plasmid DNA vaccine approved for COVID-19; Oncept is a veterinary DNA vaccine for canine melanoma.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <h3>Gene editing with CRISPR-Cas9</h3>
+      <p class="sub">CRISPR (Clustered Regularly Interspaced Short Palindromic Repeats) started as a bacterial defense: a DNA region that stores "memories" of past viral infections. In the lab, we give Cas9 a new target. Click through the four steps.</p>
+      <div class="panel stepper" id="crisprStepper">
+        <div class="dots"></div>
+        <div class="svgbox"><svg viewBox="0 0 700 220" aria-label="CRISPR-Cas9 steps">
+          <g id="cr-dna">
+            <rect x="30" y="150" width="640" height="10" rx="5" fill="var(--plasmid)"/>
+            <rect x="30" y="176" width="640" height="10" rx="5" fill="var(--plasmid)"/>
+            <path d="M50 160v16M80 160v16M110 160v16M140 160v16M170 160v16M200 160v16M230 160v16M260 160v16M290 160v16M320 160v16M350 160v16M380 160v16M410 160v16M440 160v16M470 160v16M500 160v16M530 160v16M560 160v16M590 160v16M620 160v16M650 160v16" stroke="var(--plasmid)" stroke-width="2" opacity=".45"/>
+            <rect x="400" y="146" width="120" height="44" rx="8" fill="none" stroke="var(--gene)" stroke-width="2.5" stroke-dasharray="5 4"/>
+            <text x="460" y="210" text-anchor="middle" class="svgmono" font-size="12" style="fill:var(--gene)">target sequence</text>
+          </g>
+          <g id="cr-complex" style="transition:transform 1s cubic-bezier(.4,0,.2,1)">
+            <ellipse cx="0" cy="0" rx="78" ry="52" fill="var(--arrow-soft)" stroke="var(--arrow)" stroke-width="3"/>
+            <text x="0" y="-18" text-anchor="middle" class="svgtext" font-size="15" font-weight="700">Cas9</text>
+            <text x="0" y="0" text-anchor="middle" class="svgmuted" font-size="12">the scissors</text>
+            <path id="cr-grna" d="M-50 30 q 12 -10 24 0 t 24 0 t 24 0 t 24 0" fill="none" stroke="var(--good)" stroke-width="5" stroke-linecap="round" opacity="0" style="transition:opacity .6s"/>
+          </g>
+          <g id="cr-grna-free" style="transition:opacity .6s">
+            <path d="M80 60 q 12 -10 24 0 t 24 0 t 24 0 t 24 0" fill="none" stroke="var(--good)" stroke-width="5" stroke-linecap="round"/>
+            <text x="128" y="40" text-anchor="middle" class="svgtext" font-size="14" font-weight="700" style="fill:var(--good)">guide RNA</text>
+            <text x="128" y="88" text-anchor="middle" class="svgmuted" font-size="12">the Google Maps</text>
+          </g>
+          <g id="cr-cut" opacity="0" style="transition:opacity .5s">
+            <path d="M458 140 L 462 196" stroke="var(--bad)" stroke-width="4" stroke-dasharray="6 4"/>
+            <text x="470" y="134" class="svgtext" font-size="14" font-weight="700" style="fill:var(--bad)">cut!</text>
+          </g>
+          <g id="cr-fix" opacity="0" style="transition:opacity .5s">
+            <rect x="436" y="150" width="48" height="10" rx="3" fill="var(--gold)"/>
+            <rect x="436" y="176" width="48" height="10" rx="3" fill="var(--gold)"/>
+            <text x="460" y="134" text-anchor="middle" class="svgtext" font-size="14" font-weight="700">edited</text>
+          </g>
+        </svg></div>
+        <div class="cap"><span class="where lab">Step</span><p></p></div>
+        <div class="btnrow" style="margin-top:12px"><button class="btn ghost small" data-step="-1" type="button">&larr; Back</button><button class="btn small" data-step="1" type="button">Next step &rarr;</button></div>
+      </div>
+      <div class="grid3" style="margin-top:14px">
+        <div class="idea flat"><h4>In the lab</h4><p>A "master mix" of Cas9/gRNA, salts, and a repair template is microinjected into animals or applied to cells. Example: <i>C. elegans</i> with GFP-tagged neurons.</p></div>
+        <div class="idea flat"><h4>Old school: ZFNs &amp; TALENs</h4><p>Zinc-finger nucleases and TALENs use engineered proteins to find a sequence, fused to the FokI nuclease to cut. Every new target needs a new protein. CRISPR only needs a new guide RNA, so it's easier, faster, cheaper, more versatile, and more efficient.</p></div>
+        <div class="idea flat"><h4>Gene editing in the wild</h4><p>Golden rice was engineered with beta-carotene genes to fight vitamin A deficiency. Researchers are working on editing mosquito DNA to stop the spread of malaria.</p></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <h3>Gene silencing (RNAi)</h3>
+      <p class="sub">Turns off gene expression without changing the DNA sequence.</p>
+      <div class="chiprow">
+        <div class="chip"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M6 20 q4 -6 8 0 t8 0" fill="none" stroke="var(--good)" stroke-width="3.5"/></svg><b>siRNA</b><span>small interfering RNA</span></div><span class="chiparrow">&#8594;</span>
+        <div class="chip"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M4 16 q4 -6 8 0 t8 0 t8 0 t8 0" fill="none" stroke="var(--gene)" stroke-width="3"/><path d="M12 24 q4 -6 8 0 t8 0" fill="none" stroke="var(--good)" stroke-width="3.5"/></svg><b>Binds the target mRNA</b><span>by complementary base pairing</span></div><span class="chiparrow">&#8594;</span>
+        <div class="chip"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="13" fill="var(--plasmid-soft)" stroke="var(--plasmid)" stroke-width="2.5"/><text x="20" y="24" text-anchor="middle" font-size="10" font-weight="700" fill="var(--plasmid)" font-family="monospace">RISC</text></svg><b>RISC destroys the mRNA</b><span>RNA-induced silencing complex</span></div><span class="chiparrow">&#8594;</span>
+        <div class="chip"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="13" fill="none" stroke="var(--bad)" stroke-width="3"/><path d="M11 11 L29 29" stroke="var(--bad)" stroke-width="3"/></svg><b>No protein</b><span>the gene is silenced</span></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <h3>Gene therapy: a bumpy history</h3>
+      <p class="sub">Click a year, or use the arrows. Green = success, red = setback.</p>
+      <div class="panel">
+        <div class="tline" id="tline"></div>
+        <div class="tcard" id="tcard" aria-live="polite"></div>
+        <div class="btnrow" style="margin-top:10px"><button class="btn ghost small" type="button" id="tPrev">&larr; Earlier</button><button class="btn small" type="button" id="tNext">Later &rarr;</button></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <h3>Ethical considerations</h3>
+      <p class="sub">No right answers here. Pick one and talk it through with a classmate.</p>
+      <div class="prompts">
+        <div><b>1</b>Should we edit genes to prevent diseases? What about to enhance traits? Where's the line?</div>
+        <div><b>2</b>Who decides which traits are "desirable"?</div>
+        <div><b>3</b>Could the price of gene editing increase social inequality?</div>
+        <div><b>4</b>Should parents be able to edit their child's DNA? Can babies or young children consent?</div>
+        <div><b>5</b>What limits, if any, should governments set on human gene editing?</div>
+        <div><b>6</b>How do we make sure people give informed consent for gene-editing procedures?</div>
+        <div><b>7</b>Are we "playing God" by editing human genes?</div>
+        <div><b>8</b>How do we weigh long-term consequences when edits are made at birth?</div>
+      </div>
+    </div>
+    <div class="quiz" data-quiz="apps"></div>
+  </div>
+
+  <div class="tabpanel" id="tab-foren">
+    <div class="block">
+      <h3>Forensic microbiology</h3>
+      <div class="grid2">
+        <div class="idea"><h4>Microbial fingerprints</h4><p>Uses microbes and their DNA to solve crimes or trace contamination: identifying pathogens, bioterror agents, or the source of an outbreak. Microbial "fingerprints" can link suspects, environments, or materials.</p></div>
+        <div class="idea"><h4>Same tools as this chapter</h4><p>PCR, DNA sequencing, and metagenomics. Used in criminal cases, food safety, and biodefense.</p></div>
+      </div>
+    </div>
+    <div class="block">
+      <h3>Case study: the post-9/11 anthrax attacks</h3>
+      <div class="grid3" style="margin-bottom:14px">
+        <div class="stat"><b style="color:var(--ink)">2001</b><span>letters with spores mailed to U.S. offices and media outlets</span></div>
+        <div class="stat"><b>22</b><span>people infected</span></div>
+        <div class="stat"><b>5</b><span>deaths</span></div>
+      </div>
+      <div class="chiprow">
+        <div class="chip"><b>The agent</b><span>Anthrax spores are the endospores of <i>Bacillus anthracis</i>.</span></div><span class="chiparrow">&#8594;</span>
+        <div class="chip"><b>The evidence</b><span>Genetic sequencing found specific mutations unique to the attack strain.</span></div><span class="chiparrow">&#8594;</span>
+        <div class="chip"><b>The outcome</b><span>Helped investigators trace the source. The first major case where microbial genomics was central to solving a crime.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabpanel" id="tab-ag">
+    <div class="block">
+      <h3>Why modify crops?</h3>
+      <div class="chiprow">
+        <div class="chip"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 5 L33 10 V20 C33 28 27 33 20 36 C13 33 7 28 7 20 V10 Z" fill="var(--good-soft)" stroke="var(--good)" stroke-width="2.5"/></svg><b>Prevent infection</b><span>by dangerous microbes</span></div>
+        <div class="chip"><svg viewBox="0 0 40 40" aria-hidden="true"><ellipse cx="20" cy="22" rx="8" ry="11" fill="var(--warn)"/><path d="M12 16 L5 11 M12 24 L4 25 M28 16 L35 11 M28 24 L36 25 M17 11 L14 5 M23 11 L26 5" stroke="var(--warn)" stroke-width="2.5" stroke-linecap="round"/></svg><b>Stop pests</b><span>from eating the crops</span></div>
+        <div class="chip"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 36 V10" stroke="var(--good)" stroke-width="3"/><ellipse cx="20" cy="12" rx="6" ry="9" fill="var(--gold)"/><path d="M8 34 h24" stroke="var(--muted)" stroke-width="2.5"/></svg><b>Bigger &amp; more nutritious</b><span>improve size and nutritional quality</span></div>
+        <div class="chip"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M4 28 h32 v8 h-32 z" fill="var(--cell-edge)" opacity=".6"/><path d="M20 28 V14 M20 20 c-6 -2 -8 -6 -8 -10 c5 1 8 4 8 10 M20 18 c5 -2 7 -5 7 -9 c-5 1 -7 4 -7 9" stroke="var(--good)" stroke-width="2.5" fill="none"/></svg><b>Healthier soil</b><span>more eco-friendly farming</span></div>
+      </div>
+    </div>
+    <div class="block grid2">
+      <div class="idea"><h4>Biofertilizers</h4><p>Nitrogen-fixing bacteria added to soil: fertilizer containing microbes, not just dirt! Plant&ndash;microbe symbiosis research also improves soil health and sustainability.</p></div>
+      <div class="idea"><h4>Biopesticides</h4><p><i>Bacillus thuringiensis</i> (Bt) makes a crystal protein toxin (Cry protein) that kills insect larvae, cutting the need for chemical pesticide sprays.</p></div>
+    </div>
+    <div class="block grid2">
+      <div class="pc good"><h4>Advantages</h4><ul><li>Compatible with organic farming &amp; IPM</li><li>Safer for humans &amp; the environment</li><li>Lower risk of pesticide resistance</li><li>Minimal residue</li></ul></div>
+      <div class="pc bad"><h4>Disadvantages</h4><ul><li>Slower-acting than chemical pesticides</li><li>Effectiveness depends on conditions</li><li>Shorter shelf life</li><li>May need more frequent application</li></ul></div>
+    </div>
+    <div class="block">
+      <h3>Transgenic crops: Bt corn</h3>
+      <div class="chiprow">
+        <div class="chip"><b>Bt toxin gene</b><span>from <i>Bacillus thuringiensis</i></span></div><span class="chiparrow">&#8594;</span>
+        <div class="chip"><b>Inserted into crop DNA</b><span>genes for pest or herbicide resistance</span></div><span class="chiparrow">&#8594;</span>
+        <div class="chip"><b>Plant makes its own insecticide</b><span>less crop loss, fewer sprays, safer for non-target species</span></div>
+      </div>
+      <p style="margin-top:12px; max-width:68ch">Bt corn has been widely adopted since the 1990s, increasing yield and sustainability. A <b>GMO</b> (genetically modified organism) is the same technology applied more broadly. GMOs aren't microbes, but it's still genetic editing!</p>
+    </div>
+  </div>
+</section>
+</div>
+
+<script>
+(function(){
+"use strict";
+var NS = "http://www.w3.org/2000/svg";
+var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+function $(s, r){ return (r||document).querySelector(s); }
+function $$(s, r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); }
+function S(tag, attrs, parent){ var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+function rng(seed){ return function(){ seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function polar(cx, cy, r, a){ var t = a * Math.PI / 180; return [cx + r * Math.sin(t), cy - r * Math.cos(t)]; }
+function arcD(cx, cy, r, a0, a1){ var p0 = polar(cx, cy, r, a0), p1 = polar(cx, cy, r, a1); var large = (a1 - a0) > 180 ? 1 : 0; return "M" + p0[0].toFixed(1) + " " + p0[1].toFixed(1) + " A" + r + " " + r + " 0 " + large + " 1 " + p1[0].toFixed(1) + " " + p1[1].toFixed(1); }
+function tickD(cx, cy, r, a){ var p0 = polar(cx, cy, r - 13, a), p1 = polar(cx, cy, r + 13, a); return "M" + p0[0] + " " + p0[1] + " L" + p1[0] + " " + p1[1]; }
+function tangleD(cx, cy, rx, ry, n, seed){
+  var R = rng(seed), pts = [];
+  for (var i = 0; i < n; i++){ var a = R() * Math.PI * 2, d = Math.sqrt(R()); pts.push([cx + Math.cos(a) * rx * d, cy + Math.sin(a) * ry * d]); }
+  var s = "M" + pts[0][0].toFixed(1) + " " + pts[0][1].toFixed(1);
+  for (var j = 0; j < n; j++){
+    var p0 = pts[(j - 1 + n) % n], p1 = pts[j], p2 = pts[(j + 1) % n], p3 = pts[(j + 2) % n];
+    var c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6], c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    s += " C" + c1[0].toFixed(1) + " " + c1[1].toFixed(1) + " " + c2[0].toFixed(1) + " " + c2[1].toFixed(1) + " " + p2[0].toFixed(1) + " " + p2[1].toFixed(1);
+  }
+  return s + "Z";
+}
+function ease(t){ return t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+function tween(ms, fn){ return new Promise(function(res){ if (reduced){ fn(1); res(); return; } var t0 = performance.now(); function f(now){ var t = Math.min(1, (now - t0) / ms); fn(ease(t)); if (t < 1) requestAnimationFrame(f); else res(); } requestAnimationFrame(f); }); }
+function sleep(ms){ return new Promise(function(r){ setTimeout(r, reduced ? 0 : ms); }); }
+function cssVar(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function shuffle(a, R){ R = R || Math.random; a = a.slice(); for (var i = a.length - 1; i > 0; i--){ var j = Math.floor(R() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function store(k, v){ try { if (v === undefined) return JSON.parse(localStorage.getItem(k)); localStorage.setItem(k, JSON.stringify(v)); } catch (e) { return null; } }
+function miniPlasmid(g, cx, cy, r){
+  S("circle", {cx: cx, cy: cy, r: r, fill: "none", stroke: "var(--plasmid)", "stroke-width": Math.max(2.5, r * .33)}, g);
+  S("path", {d: arcD(cx, cy, r, -45, 10), fill: "none", stroke: "var(--gene)", "stroke-width": Math.max(2.5, r * .33)}, g);
+}
+function decorate(root){
+  $$("[data-tangle]", root).forEach(function(p){ var a = p.getAttribute("data-tangle").split(",").map(Number); p.setAttribute("d", tangleD(a[0], a[1], a[2], a[3], a[4], a[5])); });
+  $$("[data-arc]", root).forEach(function(p){ var a = p.getAttribute("data-arc").split(",").map(Number); p.setAttribute("d", arcD(a[0], a[1], a[2], a[3], a[4])); });
+  $$("[data-tick]", root).forEach(function(p){ var a = p.getAttribute("data-tick").split(",").map(Number); p.setAttribute("d", tickD(a[0], a[1], a[2], a[3])); });
+  $$("[data-mini]", root).forEach(function(g){ var a = g.getAttribute("data-mini").split(",").map(Number); miniPlasmid(g, a[0], a[1], a[2]); });
+}
+
+/* ================= ROUTER ================= */
+var STEPS = [
+  {n: "1", label: "Find the gene", view: "gene"},
+  {n: "2", label: "Cut the vector", view: "vector", anchor: "cut"},
+  {n: "3", label: "Insert & seal", view: "vector", anchor: "insert"},
+  {n: "4", label: "PCR", view: "pcr"},
+  {n: "5", label: "Transform", view: "transform"},
+  {n: "6", label: "Select", view: "selection"},
+  {n: "7a", label: "Gene copies", view: "copies"},
+  {n: "7b", label: "Protein", view: "product"}
+];
+var NAMES = {hub: "", gene: "Step 1: Find the gene", vector: "Steps 2–3: The vector", pcr: "Step 4: PCR", transform: "Step 5: Transform", selection: "Step 6: Select", copies: "Step 7a: Gene copies", product: "Step 7b: Protein", xgal: "X-gal selection", pglo: "pGLO lab", apps: "Applications"};
+var ORDER = ["gene", "vector", "pcr", "transform", "selection", "copies", "product"];
+var TITLES = {hub: "Big picture", gene: "Find & copy the gene", vector: "Cut, insert & seal", pcr: "Amplify with PCR", transform: "Transform into cells", selection: "Select the winners", copies: "Harvest gene copies", product: "Harvest the protein", apps: "Applications"};
+var visited = store("clone-v2-visited") || {};
+var current = "hub";
+
+function markVisited(){
+  $$(".node").forEach(function(n){ n.classList.toggle("done", !!visited[n.getAttribute("data-go")]); });
+  $$(".jump").forEach(function(j){ j.classList.toggle("done", !!visited[j.getAttribute("data-go")]); });
+}
+function go(view, anchor, tab, fromHistory){
+  if (!document.getElementById("view-" + view)) view = "hub";
+  $$(".view").forEach(function(v){ v.classList.toggle("active", v.id === "view-" + view); });
+  current = view;
+  $("#homeBtn").hidden = view === "hub";
+  $("#crumb").textContent = NAMES[view] ? "/ " + NAMES[view] : "";
+  if (view !== "hub"){ visited[view] = 1; store("clone-v2-visited", visited); }
+  markVisited();
+  if (view === "apps") showTab(tab || "ther");
+  if (view === "product") requestAnimationFrame(chromoResize);
+  if (!fromHistory){ try { history.pushState({v: view}, "", "#" + view); } catch (e) {} }
+  window.scrollTo(0, 0);
+  if (anchor){ setTimeout(function(){ var el = document.getElementById(anchor); if (el) el.scrollIntoView({behavior: reduced ? "auto" : "smooth", block: "start"}); }, 60); }
+}
+window.addEventListener("popstate", function(){ var h = (location.hash || "").slice(1); go(h || "hub", null, null, true); });
+document.addEventListener("click", function(e){
+  var el = e.target.closest("[data-go]");
+  if (!el) return;
+  e.preventDefault();
+  go(el.getAttribute("data-go"), el.getAttribute("data-anchor"), el.getAttribute("data-tab"));
+});
+$$(".node").forEach(function(n){ n.addEventListener("keydown", function(e){ if (e.key === "Enter" || e.key === " "){ e.preventDefault(); n.dispatchEvent(new MouseEvent("click", {bubbles: true})); } }); });
+
+function buildNav(){
+  $$(".pipe").forEach(function(nav){
+    var view = nav.closest(".view").id.replace("view-", "");
+    STEPS.forEach(function(s, i){
+      if (i) { var sep = document.createElement("span"); sep.className = "sep"; sep.textContent = "›"; nav.appendChild(sep); }
+      var b = document.createElement("button"); b.type = "button";
+      b.setAttribute("data-go", s.view); if (s.anchor) b.setAttribute("data-anchor", s.anchor);
+      b.innerHTML = '<span class="n">' + s.n + "</span>" + s.label;
+      if (s.view === view) b.classList.add("cur");
+      nav.appendChild(b);
+    });
+  });
+  $$(".stepnav").forEach(function(sn){
+    var view = sn.closest(".view").id.replace("view-", ""), i = ORDER.indexOf(view);
+    var prev = i > 0 ? ORDER[i - 1] : "hub", next = i < ORDER.length - 1 ? ORDER[i + 1] : "apps";
+    sn.innerHTML = '<button type="button" data-go="' + prev + '"><small>&larr; Previous</small><b>' + TITLES[prev] + '</b></button>' +
+      '<button type="button" class="next" data-go="' + next + '"><small>Next &rarr;</small><b>' + TITLES[next] + "</b></button>";
+  });
+  var jr = $("#jumpRow");
+  STEPS.forEach(function(s){
+    if (s.n === "3") return;
+    var b = document.createElement("button"); b.type = "button"; b.className = "jump";
+    b.setAttribute("data-go", s.view); if (s.anchor) b.setAttribute("data-anchor", s.anchor);
+    b.innerHTML = '<span class="n">' + (s.n === "2" ? "2–3" : s.n) + "</span>" + (s.n === "2" ? "Vector" : s.label);
+    jr.appendChild(b);
+  });
+  var lg = document.createElement("span"); lg.className = "legend-done"; lg.innerHTML = "<i></i>visited"; jr.appendChild(lg);
+}
+
+/* ================= GENERIC WIDGETS ================= */
+$$(".flip").forEach(function(f){ f.addEventListener("click", function(){ f.classList.toggle("on"); }); });
+$$("[data-reveal]").forEach(function(b){ b.addEventListener("click", function(){ var a = b.parentNode.querySelector(".a"); a.hidden = !a.hidden; b.textContent = a.hidden ? "Show answer" : "Hide answer"; }); });
+
+function makeStepper(root, states, onShow){
+  var dots = $(".dots", root), cap = $(".cap", root), idx = 0;
+  states.forEach(function(s, i){ var b = document.createElement("button"); b.type = "button"; b.textContent = (i + 1) + ". " + s.dot; b.addEventListener("click", function(){ show(i); }); dots.appendChild(b); });
+  function show(i){
+    idx = Math.max(0, Math.min(states.length - 1, i));
+    $$("button", dots).forEach(function(b, j){ b.classList.toggle("on", j === idx); });
+    var w = $(".where", cap); w.textContent = states[idx].where; w.classList.toggle("lab", !!states[idx].lab);
+    $("p", cap).textContent = states[idx].text;
+    $(".btnrow [data-step='-1']", root).disabled = idx === 0;
+    $(".btnrow [data-step='1']", root).disabled = idx === states.length - 1;
+    onShow(idx);
+  }
+  $$(".btnrow [data-step]", root).forEach(function(b){ b.addEventListener("click", function(){ show(idx + Number(b.getAttribute("data-step"))); }); });
+  show(0);
+}
+
+/* cDNA stepper */
+makeStepper($("#cdnaStepper"), [
+  {dot: "Gene", where: "In the cell", text: "The gene in the chromosome has exons (the coding parts) with introns (non-coding parts) in between."},
+  {dot: "mRNA", where: "In the cell", text: "Transcription and splicing: the introns are cut out, leaving mature mRNA with only exons."},
+  {dot: "Reverse transcribe", where: "In the lab", lab: 1, text: "Reverse transcriptase reads the mRNA and builds a matching DNA strand."},
+  {dot: "cDNA", where: "In the lab", lab: 1, text: "The single DNA strand is made double-stranded. That's cDNA: the gene with no introns."}
+], function(i){
+  $$("#cdnaStepper .st").forEach(function(g){ g.classList.toggle("on", Number(g.getAttribute("data-st")) === i); });
+  if (i === 2){
+    var r = $("#rtGrow"), en = $("#rtEnz");
+    tween(2200, function(t){ var w = 400 * t; r.setAttribute("x", 570 - w); r.setAttribute("width", Math.max(.1, w)); en.setAttribute("transform", "translate(" + (-400 * t) + " 0)"); });
+  }
+});
+
+/* CRISPR stepper */
+(function(){
+  var cx = $("#cr-complex"), POS = [[560, 70], [300, 70], [460, 112], [460, 112], [560, 50]];
+  makeStepper($("#crisprStepper"), [
+    {dot: "The parts", where: "Meet", text: "Cas9 is the molecular scissors. The guide RNA (gRNA) is the Google Maps: it tells Cas9 where to cut."},
+    {dot: "Form complex", where: "Step 1", lab: 1, text: "The gRNA binds Cas9 to form a complex."},
+    {dot: "Find target", where: "Step 2", lab: 1, text: "The Cas9/gRNA complex locates and binds the target DNA. The gRNA base-pairs with the matching sequence."},
+    {dot: "Cut", where: "Step 3", lab: 1, text: "Cas9 cuts the DNA at the target site."},
+    {dot: "Repair", where: "Step 4", lab: 1, text: "The cell repairs the DNA, which makes the edit. Repairs can knock the gene out with small mutations or copy in a repair template you supplied."}
+  ], function(i){
+    var p = POS[i]; cx.style.transform = "translate(" + p[0] + "px," + p[1] + "px)";
+    $("#cr-grna").style.opacity = i >= 1 ? 1 : 0;
+    $("#cr-grna-free").style.opacity = i === 0 ? 1 : 0;
+    $("#cr-cut").style.opacity = i === 3 ? 1 : 0;
+    $("#cr-fix").style.opacity = i === 4 ? 1 : 0;
+  });
+})();
+
+/* tabs */
+function showTab(t){
+  $$(".tabs button").forEach(function(b){ b.classList.toggle("on", b.getAttribute("data-tab") === t); });
+  $$(".tabpanel").forEach(function(p){ p.classList.toggle("on", p.id === "tab-" + t); });
+}
+$$(".tabs button").forEach(function(b){ b.addEventListener("click", function(){ showTab(b.getAttribute("data-tab")); }); });
+
+/* ================= PLASMID MAP ================= */
+(function(){
+  var svg = $("#pmap"), C = 170, R = 105;
+  var PARTS = [
+    {id: "mcs", short: "MCS", name: "Multiple cloning site (MCS)", a0: -14, a1: 14, col: "var(--gene)", text: "A cluster of restriction sites (often 20 or more) where the plasmid gets cut open and your gene gets inserted. Common sites include EcoRI, BamHI, and HindIII."},
+    {id: "pro", short: "Promoter", name: "Promoter", a0: -60, a1: -22, col: "var(--good)", text: "Where RNA polymerase binds to start transcription, so the inserted gene actually gets expressed."},
+    {id: "amp", short: "AmpR", name: "Antibiotic resistance gene (AmpR)", a0: 95, a1: 170, col: "var(--warn)", text: "Lets only cells that took up the plasmid survive on antibiotic plates. This is your primary selection marker (Step 6)."},
+    {id: "ori", short: "ori", name: "Origin of replication (ori)", a0: 205, a1: 250, col: "var(--arrow)", text: "Where the host cell starts copying the plasmid. This is what makes the plasmid self-replicating."}
+  ];
+  S("circle", {cx: C, cy: C, r: R, fill: "none", stroke: "var(--plasmid)", "stroke-width": 14, opacity: .35}, svg);
+  var t1 = S("text", {x: C, y: C - 4, "text-anchor": "middle", "class": "svgtext", "font-size": 17, "font-weight": 700}, svg); t1.textContent = "plasmid vector";
+  var t2 = S("text", {x: C, y: C + 18, "text-anchor": "middle", "class": "svgmono", "font-size": 12}, svg); t2.textContent = "click a part";
+  var btns = $("#partBtns");
+  PARTS.forEach(function(p){
+    var path = S("path", {d: arcD(C, C, R, p.a0, p.a1), fill: "none", stroke: p.col, "stroke-width": 22, "class": "part", tabindex: 0, role: "button", "aria-label": p.name}, svg);
+    var mid = (p.a0 + p.a1) / 2, lp = polar(C, C, R + 40, mid);
+    var lab = S("text", {x: lp[0], y: lp[1] + 5, "text-anchor": Math.abs(lp[0] - C) < 20 ? "middle" : (lp[0] > C ? "start" : "end"), "class": "partlbl"}, svg); lab.textContent = p.short;
+    var b = document.createElement("button"); b.type = "button"; b.textContent = p.short; btns.appendChild(b);
+    p.path = path; p.btn = b;
+    [path, lab, b].forEach(function(el){ el.addEventListener("click", function(){ pick(p); }); });
+    path.addEventListener("keydown", function(e){ if (e.key === "Enter" || e.key === " "){ e.preventDefault(); pick(p); } });
+  });
+  function pick(p){
+    PARTS.forEach(function(q){ q.path.classList.toggle("on", q === p); q.btn.classList.toggle("on", q === p); });
+    $("#partTitle").innerHTML = '<i style="background:' + p.col + '"></i>' + p.name;
+    $("#partText").textContent = p.text;
+  }
+  pick(PARTS[0]);
+})();
+
+/* ================= EcoRI CUT ================= */
+(function(){
+  var TOP = "ATCGAATTCGCA", BOT = "TAGCTTAAGCGT", box = $("#seqbox"), msg = $("#seqMsg"), tries = 0, cut = false;
+  function cls(kind, i){
+    if (kind === "tb") return i <= 3 ? "L" : "R";
+    if (kind === "tg") return i < 3 ? "L" : (i === 3 ? "X" : "R");
+    if (kind === "bb") return i <= 7 ? "L" : "R";
+    if (kind === "bg") return i < 7 ? "L" : (i === 7 ? "X" : "R");
+    if (kind === "r") return i <= 3 ? "L" : (i >= 8 ? "R" : "X");
+    if (kind === "rs") return i < 3 ? "L" : (i >= 8 ? "R" : "X");
+  }
+  function build(){
+    cut = false; tries = 0; box.classList.remove("cut");
+    var h = '<div class="seqrow top"><span class="end L">5\'</span>';
+    for (var i = 0; i < 12; i++){ h += '<span class="base ' + cls("tb", i) + '" data-t="' + i + '">' + TOP[i] + "</span>"; if (i < 11) h += '<button type="button" class="gap ' + cls("tg", i) + '" data-g="' + i + '" aria-label="Cut between base ' + (i + 1) + " and " + (i + 2) + '"></button>'; }
+    h += '<span class="end R">3\'</span></div><div class="seqrow"><span class="end L"></span>';
+    for (i = 0; i < 12; i++){ h += '<span class="rung ' + cls("r", i) + '"></span>'; if (i < 11) h += '<span class="sp ' + cls("rs", i) + '"></span>'; }
+    h += '<span class="end R"></span></div><div class="seqrow"><span class="end L">3\'</span>';
+    for (i = 0; i < 12; i++){ h += '<span class="base ' + cls("bb", i) + '" data-b="' + i + '">' + BOT[i] + "</span>"; if (i < 11) h += '<span class="gap ' + cls("bg", i) + '"></span>'; }
+    h += '<span class="end R">5\'</span></div>';
+    box.innerHTML = h;
+    $$("button.gap", box).forEach(function(g){ g.addEventListener("click", function(){ hit(Number(g.getAttribute("data-g"))); }); });
+    setMsg("", "Tip: read the bottom strand right to left (5' → 3'). It also says GAATTC. That's what makes the site a palindrome.");
+  }
+  function setMsg(kind, html){ msg.className = "msg" + (kind ? " " + kind : ""); msg.innerHTML = html; }
+  function highlight(){ $$("[data-t],[data-b]", box).forEach(function(b){ var i = Number(b.getAttribute("data-t") || b.getAttribute("data-b")); if (i >= 3 && i <= 8) b.classList.add("site"); }); }
+  function hit(i){
+    if (cut) return;
+    if (i === 3){
+      cut = true; highlight(); box.classList.add("cut");
+      $$("[data-t],[data-b]", box).forEach(function(b){ var j = Number(b.getAttribute("data-t") || b.getAttribute("data-b")); if (j >= 4 && j <= 7) b.classList.add("ov"); });
+      setMsg("good", "<b>Snip!</b> EcoRI cut between the G and A on both strands (G^AATTC). The cuts are staggered, so each end keeps a 4-base single-stranded overhang: AATT (highlighted). These are <b>sticky ends</b>. Anything else cut with EcoRI will have matching, complementary ends.");
+      return;
+    }
+    tries++;
+    if (i >= 4 && i <= 7) setMsg("warn", "<b>Close!</b> You're inside the GAATTC site, but EcoRI cuts between the G and the first A: G^AATTC.");
+    else setMsg("bad", "<b>Not quite.</b> EcoRI only cuts inside its recognition site, GAATTC. Find that sequence on the top strand first.");
+    if (tries >= 2) highlight();
+  }
+  $("#seqHint").addEventListener("click", highlight);
+  $("#seqReset").addEventListener("click", build);
+  build();
+})();
+
+/* ================= STICKY-END MATCH ================= */
+(function(){
+  var FR = [
+    {id: "eco", label: "Cut with EcoRI", top: "5' <u>AATT</u>C<i>=======</i>G     3'", bot: "3'     G<i>=======</i>C<u>TTAA</u> 5'", ok: 1},
+    {id: "bam", label: "Cut with BamHI", top: "5' <u>GATC</u>C<i>=======</i>G     3'", bot: "3'     G<i>=======</i>C<u>CTAG</u> 5'", why: "<b>Not a match.</b> BamHI leaves GATC overhangs, and GATC can't base-pair with AATT. Sticky ends only stick when they're complementary, so cut the plasmid and the gene with the same enzyme."},
+    {id: "blunt", label: "Blunt ends (no overhang)", top: "5' GGG<i>=======</i>CCC 3'", bot: "3' CCC<i>=======</i>GGG 5'", why: "<b>Not a match.</b> Blunt ends have no overhang, so there's nothing to base-pair with the plasmid's AATT sticky ends."}
+  ];
+  var tray = $("#tray"), svg = $("#matchSvg"), dz = $("#dropzone"), msg = $("#matchMsg"), lig = $("#ligaseBtn"), done = false;
+  function setMsg(kind, html){ msg.className = "msg" + (kind ? " " + kind : ""); msg.innerHTML = html; }
+  function reset(){
+    done = false; tray.innerHTML = ""; lig.hidden = true;
+    ["#insertArc", "#nicks"].forEach(function(s){ $(s).setAttribute("opacity", 0); });
+    dz.style.display = ""; $("#dropTxt").style.display = ""; $("#endL").style.display = ""; $("#endR").style.display = "";
+    $("#ringLbl").textContent = "opened plasmid"; $("#ringSub").textContent = "cut with EcoRI";
+    setMsg("", "Which fragment's overhangs are complementary to AATT? (A pairs with T, G pairs with C.)");
+    shuffle(FR).forEach(function(f){
+      var b = document.createElement("button"); b.type = "button"; b.className = "frag"; b.setAttribute("data-id", f.id);
+      b.innerHTML = '<span class="fl">' + f.label + "</span><pre>" + f.top + "\n" + f.bot + "</pre>";
+      tray.appendChild(b); wire(b, f);
+    });
+  }
+  function over(el){ var a = el.getBoundingClientRect(), b = dz.getBoundingClientRect(); return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom); }
+  function wire(el, f){
+    var sx, sy, moved = false, active = false;
+    el.addEventListener("pointerdown", function(e){ if (done || e.button > 0) return; active = true; moved = false; sx = e.clientX; sy = e.clientY; try { el.setPointerCapture(e.pointerId); } catch (x) {} });
+    el.addEventListener("pointermove", function(e){
+      if (!active) return; var dx = e.clientX - sx, dy = e.clientY - sy;
+      if (!moved && Math.hypot(dx, dy) > 6){ moved = true; el.classList.add("dragging"); }
+      if (moved){ el.style.transform = "translate(" + dx + "px," + dy + "px)"; svg.classList.toggle("dz-hot", over(el)); }
+    });
+    function end(){ if (!active) return; active = false; svg.classList.remove("dz-hot"); el.classList.remove("dragging"); if (moved){ if (over(el)) attempt(el, f); else el.style.transform = ""; } else attempt(el, f); }
+    el.addEventListener("pointerup", end);
+    el.addEventListener("pointercancel", function(){ active = false; el.classList.remove("dragging"); el.style.transform = ""; });
+    el.addEventListener("click", function(e){ if (e.detail === 0) attempt(el, f); });
+  }
+  function attempt(el, f){
+    if (done) return;
+    if (!f.ok){ el.style.transform = ""; el.classList.remove("shake"); void el.offsetWidth; el.classList.add("shake"); setMsg("bad", f.why); return; }
+    done = true; el.classList.add("used");
+    dz.style.display = "none"; $("#dropTxt").style.display = "none"; $("#endL").style.display = "none"; $("#endR").style.display = "none";
+    $("#insertArc").setAttribute("opacity", 1); $("#nicks").setAttribute("opacity", 1);
+    $("#ringLbl").textContent = "gene inserted"; $("#ringSub").textContent = "held by hydrogen bonds";
+    setMsg("good", "<b>Base-paired!</b> The AATT overhangs found their complementary partners. Right now they're held only by hydrogen bonds, and the backbone still has gaps called nicks (the white marks).");
+    lig.hidden = false;
+  }
+  lig.addEventListener("click", function(){
+    var n = $("#nicks"); tween(700, function(t){ n.setAttribute("opacity", 1 - t); });
+    $("#ringLbl").textContent = "recombinant plasmid"; $("#ringSub").textContent = "sealed by DNA ligase";
+    lig.hidden = true;
+    setMsg("good", "<b>Sealed!</b> DNA ligase formed covalent bonds in the sugar-phosphate backbone of both strands. You made <b>recombinant DNA</b>: one molecule built from DNA from two different sources.");
+  });
+  $("#matchReset").addEventListener("click", reset);
+  reset();
+})();
+
+/* ================= PCR THERMOCYCLER ================= */
+var STD = {dT: 95, dt: 30, aT: 55, at: 30, eT: 72, et: 60, n: 30};
+var P = Object.assign({}, STD);
+var pcrBusy = false;
+function fmtTime(s){ var m = Math.floor(s / 60), r = s % 60; return m + ":" + (r < 10 ? "0" : "") + r; }
+function fmtBig(v){
+  v = Math.round(v);
+  if (v < 1e6) return v.toLocaleString();
+  var U = [[1e15, "quadrillion"], [1e12, "trillion"], [1e9, "billion"], [1e6, "million"]];
+  for (var i = 0; i < U.length; i++) if (v >= U[i][0]){ var x = v / U[i][0]; return (x < 10 ? x.toFixed(2) : x < 100 ? x.toFixed(1) : x.toFixed(0)) + " " + U[i][1]; }
+}
+function fmtShort(v){ if (v < 1e3) return String(Math.round(v)); var U = [[1e15, "Q"], [1e12, "T"], [1e9, "B"], [1e6, "M"], [1e3, "K"]]; for (var i = 0; i < U.length; i++) if (v >= U[i][0]) return (v / U[i][0]).toFixed(v / U[i][0] < 10 ? 1 : 0) + U[i][1]; }
+function evalPCR(p){
+  var r = {};
+  if (p.dT < 90) r.dT = ["fail", p.dT + "°C is too cool. The hydrogen bonds between base pairs don't break, so the DNA stays double-stranded and there's no single strand to copy. In your cells, helicase unzips DNA at 37°C; PCR has to use heat instead."];
+  else if (p.dT < 94) r.dT = ["warn", "Some strands separate, but many stay zipped, especially G–C rich stretches (3 hydrogen bonds per pair vs. 2 for A–T). Fewer templates each cycle."];
+  else if (p.dT <= 97) r.dT = ["good", "Hot enough to break the hydrogen bonds and separate the strands. This is PCR's \"artificial helicase.\" The covalent backbone of each strand stays intact."];
+  else r.dT = ["warn", "The strands separate, but heat this high wears out even heat-stable Taq polymerase faster, so later cycles lose steam."];
+  if (p.dt < 15) r.dt = ["warn", "Only " + p.dt + " seconds: not every molecule has time to fully separate."];
+  else if (p.dt <= 60) r.dt = ["good", ""];
+  else r.dt = ["warn", "Longer than needed. Extra time at high heat wears down the polymerase."];
+  if (p.aT >= p.dT) r.aT = ["fail", "Annealing has to be cooler than denaturing, or primers can never bind to the separated strands."];
+  else if (p.aT >= 68) r.aT = ["fail", p.aT + "°C is too hot for primers to hydrogen-bond to the template, so they don't stay put. With no primer, the polymerase has nowhere to start. Same rule as in your cells: DNA polymerase can only add to an existing strand, which is why primase lays down an RNA primer first."];
+  else if (p.aT > 65) r.aT = ["warn", "Borderline. Only some primers stay bound long enough, so fewer strands get copied."];
+  else if (p.aT >= 50) r.aT = ["good", "Cool enough for primers to hydrogen-bond to their matching sequences and mark where copying starts, like RNA primers do during DNA replication."];
+  else if (p.aT >= 45) r.aT = ["warn", "Primers bind, but loosely enough that some stick to near-matches. Expect some wrong products."];
+  else r.aT = ["fail", p.aT + "°C is so cool that primers stick to almost any partial match. You mostly copy the wrong pieces of DNA."];
+  if (p.at < 10) r.at = ["warn", "Very short. Primers need a moment to find their matching spots."];
+  else if (p.at <= 60) r.at = ["good", ""];
+  else r.at = ["warn", "Longer than needed. It still works; it just makes every cycle slower."];
+  if (p.eT >= p.dT) r.eT = ["fail", "Extension has to be cooler than denaturation, or the new strands fall apart as they're built."];
+  else if (p.eT >= 80) r.eT = ["fail", p.eT + "°C is hot enough that primers melt off before the polymerase can extend them."];
+  else if (p.eT >= 76) r.eT = ["warn", "A bit hot. Some primers melt off before extension starts, and Taq works best a little cooler."];
+  else if (p.eT >= 70) r.eT = ["good", "Taq polymerase's sweet spot (about 72°C). It adds dNTPs to the 3' end of each primer, building the new strand 5' to 3', exactly like DNA polymerase during replication."];
+  else if (p.eT >= 64) r.eT = ["warn", "Works, but Taq is slower away from about 72°C."];
+  else r.eT = ["warn", "Too cool for Taq to work efficiently. Copying is slow, and copies may come out incomplete."];
+  if (p.et < 30) r.et = ["fail", "Not enough time. Taq adds roughly 1,000 nucleotides per minute, and our target is about 1,000 base pairs, so the new strands come out unfinished."];
+  else if (p.et < 50) r.et = ["warn", "Cutting it close. Some new strands won't reach the end of the 1,000 base pair target (rule of thumb: about 1 minute per 1,000 base pairs)."];
+  else if (p.et <= 120) r.et = ["good", ""];
+  else r.et = ["warn", "Longer than needed. It works, but adds time to every cycle."];
+  if (p.n < 20) r.n = ["warn", p.n + " cycles gives 2^" + p.n + " = " + Math.pow(2, p.n).toLocaleString() + " copies at best. Typical runs use 20–40 cycles."];
+  else if (p.n <= 35) r.n = ["good", "Each cycle doubles the DNA. " + p.n + " cycles is right in the typical 20–40 range."];
+  else r.n = ["warn", "Extra cycles add little. Primers and dNTPs start running out, so copying levels off (plateaus)."];
+  return r;
+}
+var RANK = {good: 0, warn: 1, fail: 2};
+function worst(a, b){ return RANK[a[0]] >= RANK[b[0]] ? a[0] : b[0]; }
+function efficiency(r){
+  var keys = ["dT", "dt", "aT", "at", "eT", "et"], warns = 0;
+  for (var i = 0; i < keys.length; i++){ if (r[keys[i]][0] === "fail") return 0; if (r[keys[i]][0] === "warn") warns++; }
+  return Math.pow(.8, warns);
+}
+function series(p, eff){ var s = [1]; for (var k = 1; k <= p.n; k++){ var f = k <= 30 ? 1 : Math.max(.05, 1 - (k - 30) * .12); s.push(s[k - 1] * (1 + eff * f)); } return s; }
+
+function idk(k){ return k.replace(/T$/, "temp"); }
+function readInputs(){ ["dT", "dt", "aT", "at", "eT", "et", "n"].forEach(function(k){ P[k] = Number($("#pcr-" + idk(k)).value); }); }
+function renderPCR(){
+  var r = evalPCR(P);
+  $("#v-dtemp").textContent = P.dT; $("#v-dt").textContent = fmtTime(P.dt);
+  $("#v-atemp").textContent = P.aT; $("#v-at").textContent = fmtTime(P.at);
+  $("#v-etemp").textContent = P.eT; $("#v-et").textContent = fmtTime(P.et);
+  $("#v-n").textContent = P.n;
+  var steps = [["Denature", "dT", "dt"], ["Anneal", "aT", "at"], ["Extend", "eT", "et"]];
+  var h = "", eff = efficiency(r);
+  var overall = eff === 0 ? ["fail", "<b>No full-length copies.</b> Fix the red step and try again."] : eff < 1 ? ["warn", "<b>It works, but not at full speed.</b> Each yellow setting cuts how many copies you get per cycle."] : ["good", "<b>Textbook run!</b> Every cycle doubles the DNA."];
+  h += '<div class="fbrow ' + overall[0] + '"><span class="who"><i></i>Overall</span><span>' + overall[1] + "</span></div>";
+  steps.forEach(function(s){
+    var a = r[s[1]], b = r[s[2]], st = worst(a, b);
+    var m = a[1] + (b[0] !== "good" && b[1] ? " " + b[1] : "");
+    h += '<div class="fbrow ' + st + '"><span class="who"><i></i>' + s[0] + "</span><span>" + m + "</span></div>";
+    var dot = $('.dot[data-s="' + s[1] + '"]'); dot.className = "dot s-" + st;
+  });
+  h += '<div class="fbrow ' + r.n[0] + '"><span class="who"><i></i>Cycles</span><span>' + r.n[1] + "</span></div>";
+  $('.dot[data-s="n"]').className = "dot s-" + r.n[0];
+  $("#pcrFb").innerHTML = h;
+  var cyc = P.dt + P.at + P.et, tot = Math.round(cyc * P.n / 60);
+  $("#cycLen").textContent = "1 cycle ≈ " + fmtTime(cyc) + " · " + P.n + " cycles ≈ " + tot + " min";
+  drawProfile(null);
+  var s = series(P, eff);
+  drawCopies(s, null);
+  setCopies(s[s.length - 1], P.n, eff);
+  return r;
+}
+function setCopies(v, n, eff){
+  $("#copyBig").textContent = fmtBig(v);
+  $("#copyLbl").textContent = eff === 0 ? "full-length copies (no amplification)" : "copies after " + n + " cycle" + (n === 1 ? "" : "s") + (eff === 1 && n <= 30 ? " (2^" + n + ")" : "");
+}
+function drawProfile(active){
+  var svg = $("#profile"); svg.innerHTML = "";
+  function y(T){ return 160 - (T - 20) / 80 * 140; }
+  [40, 60, 80, 100].forEach(function(T){
+    S("line", {x1: 44, x2: 590, y1: y(T), y2: y(T), stroke: "var(--line)", "stroke-width": 1}, svg);
+    var t = S("text", {x: 38, y: y(T) + 4, "text-anchor": "end", "class": "svgmono", "font-size": 11}, svg); t.textContent = T + "°";
+  });
+  S("line", {x1: 44, x2: 590, y1: y(90), y2: y(90), stroke: "var(--bad)", "stroke-width": 1.2, "stroke-dasharray": "4 4", opacity: .6}, svg);
+  var lt = S("text", {x: 586, y: y(90) - 4, "text-anchor": "end", "class": "svgmono", "font-size": 10, fill: "var(--bad)"}, svg); lt.textContent = "90°C"; lt.style.fill = "var(--bad)";
+  var total = P.dt + P.at + P.et, avail = 600 - 50 - 20 - 30 - 54, pts = [], x = 50;
+  pts.push([x, y(25)]); x += 30;
+  var segs = [["den", P.dT, P.dt, "var(--bad)"], ["ann", P.aT, P.at, "var(--arrow)"], ["ext", P.eT, P.et, "var(--good)"]];
+  var plates = [];
+  segs.forEach(function(s){ x += 18; var w = 30 + (s[2] / total) * (avail - 90); plates.push([s, x, x + w]); pts.push([x, y(s[1])]); x += w; pts.push([x, y(s[1])]); });
+  var d = "M50 " + y(25) + " L80 " + y(25); plates.forEach(function(p){ d += " L" + p[1] + " " + y(p[0][1]) + " L" + p[2] + " " + y(p[0][1]); });
+  S("path", {d: d, fill: "none", stroke: "var(--muted)", "stroke-width": 2}, svg);
+  plates.forEach(function(p){
+    var s = p[0], on = active === s[0];
+    S("line", {x1: p[1], x2: p[2], y1: y(s[1]), y2: y(s[1]), stroke: s[3], "stroke-width": on ? 9 : 5, "stroke-linecap": "round"}, svg);
+    var tx = S("text", {x: (p[1] + p[2]) / 2, y: y(s[1]) - 10, "text-anchor": "middle", "class": "svgtext", "font-size": 13, "font-weight": 700}, svg); tx.textContent = s[1] + "°C";
+    var tt = S("text", {x: (p[1] + p[2]) / 2, y: y(s[1]) + 18, "text-anchor": "middle", "class": "svgmono", "font-size": 11}, svg); tt.textContent = fmtTime(s[2]);
+  });
+  var last = plates[2][2];
+  S("path", {d: "M" + (last + 4) + " " + y(P.eT) + " q 14 0 14 -14 v -" + Math.max(10, y(P.eT) - y(P.dT) - 28), fill: "none", stroke: "var(--muted)", "stroke-width": 1.5, "stroke-dasharray": "3 3"}, svg);
+  var rp = S("text", {x: Math.min(588, last + 18), y: 152, "text-anchor": "end", "class": "svgmono", "font-size": 11}, svg); rp.textContent = "repeat ×" + P.n;
+}
+function drawCopies(s, upto){
+  var svg = $("#copyChart"); svg.innerHTML = "";
+  var n = s.length - 1, max = s[n], show = upto == null ? n : upto;
+  function X(k){ return 50 + k * (530 / 40); }
+  function Y(v){ return 145 - (max <= 1 ? 0 : v / max * 120); }
+  S("line", {x1: 50, x2: 585, y1: 145, y2: 145, stroke: "var(--line)"}, svg);
+  S("line", {x1: 50, x2: 585, y1: 25, y2: 25, stroke: "var(--line)", "stroke-dasharray": "3 4"}, svg);
+  [0, 10, 20, 30, 40].forEach(function(k){ var t = S("text", {x: X(k), y: 162, "text-anchor": "middle", "class": "svgmono", "font-size": 11}, svg); t.textContent = k; });
+  var cl = S("text", {x: 585, y: 140, "text-anchor": "end", "class": "svgmono", "font-size": 11}, svg); cl.textContent = "cycle";
+  var ml = S("text", {x: 44, y: 29, "text-anchor": "end", "class": "svgmono", "font-size": 11}, svg); ml.textContent = fmtShort(max);
+  var zl = S("text", {x: 44, y: 149, "text-anchor": "end", "class": "svgmono", "font-size": 11}, svg); zl.textContent = "0";
+  if (max <= 1){ var nt = S("text", {x: 300, y: 100, "text-anchor": "middle", "class": "svgmuted", "font-size": 15}, svg); nt.textContent = "No new full-length copies"; return; }
+  var d = "M" + X(0) + " " + Y(s[0]), a = "M" + X(0) + " 145 L" + X(0) + " " + Y(s[0]);
+  for (var k = 1; k <= show; k++){ d += " L" + X(k).toFixed(1) + " " + Y(s[k]).toFixed(1); a += " L" + X(k).toFixed(1) + " " + Y(s[k]).toFixed(1); }
+  a += " L" + X(show) + " 145 Z";
+  S("path", {d: a, fill: "var(--arrow)", opacity: .15}, svg);
+  S("path", {d: d, fill: "none", stroke: "var(--arrow)", "stroke-width": 3, "stroke-linejoin": "round"}, svg);
+  S("circle", {cx: X(show), cy: Y(s[show]), r: 5, fill: "var(--arrow)"}, svg);
+  if (n > 30){ S("line", {x1: X(30), x2: X(30), y1: 25, y2: 145, stroke: "var(--warn)", "stroke-dasharray": "4 4"}, svg); var pt = S("text", {x: X(30) - 6, y: 40, "text-anchor": "end", "class": "svgmono", "font-size": 11}, svg); pt.textContent = "reagents run low"; }
+}
+
+/* DNA animation */
+var D = {};
+function buildDNA(){
+  var svg = $("#dna"); svg.innerHTML = "";
+  D.rungs = S("g", {}, svg);
+  for (var x = 68; x <= 532; x += 18) S("line", {x1: x, x2: x, y1: 91, y2: 115, stroke: "var(--muted)", "stroke-width": 2, opacity: .5}, D.rungs);
+  D.top = S("g", {}, svg); S("rect", {x: 60, y: -4, width: 480, height: 8, rx: 4, fill: "var(--plasmid)"}, D.top);
+  var a = S("text", {x: 52, y: 5, "text-anchor": "end", "class": "svgmono", "font-size": 12}, D.top); a.textContent = "5'";
+  var b = S("text", {x: 548, y: 5, "class": "svgmono", "font-size": 12}, D.top); b.textContent = "3'";
+  D.bot = S("g", {}, svg); S("rect", {x: 60, y: -4, width: 480, height: 8, rx: 4, fill: "var(--plasmid)"}, D.bot);
+  var c = S("text", {x: 52, y: 5, "text-anchor": "end", "class": "svgmono", "font-size": 12}, D.bot); c.textContent = "3'";
+  var e = S("text", {x: 548, y: 5, "class": "svgmono", "font-size": 12}, D.bot); e.textContent = "5'";
+  D.newA = S("rect", {x: 486, y: 58, width: 0, height: 8, rx: 4, fill: "var(--newdna)"}, svg);
+  D.newB = S("rect", {x: 114, y: 140, width: 0, height: 8, rx: 4, fill: "var(--newdna)"}, svg);
+  D.pA = S("rect", {x: 486, y: 58, width: 54, height: 8, rx: 4, fill: "var(--gene)", opacity: 0}, svg);
+  D.pB = S("rect", {x: 60, y: 140, width: 54, height: 8, rx: 4, fill: "var(--gene)", opacity: 0}, svg);
+  D.wrong = S("g", {opacity: 0}, svg);
+  [[200, 58], [330, 58], [250, 140], [400, 140]].forEach(function(q){ S("rect", {x: q[0], y: q[1], width: 40, height: 8, rx: 4, fill: "var(--gene)"}, D.wrong); });
+  D.polA = S("g", {opacity: 0}, svg); S("ellipse", {cx: 0, cy: 0, rx: 17, ry: 12, fill: "var(--warn)"}, D.polA);
+  D.polB = S("g", {opacity: 0}, svg); S("ellipse", {cx: 0, cy: 0, rx: 17, ry: 12, fill: "var(--warn)"}, D.polB);
+  D.temp = S("text", {x: 592, y: 22, "text-anchor": "end", "class": "svgtext", "font-size": 16, "font-weight": 700, "font-family": "var(--f-mono)"}, svg);
+  D.status = S("text", {x: 300, y: 200, "text-anchor": "middle", "class": "svgtext", "font-size": 15, "font-weight": 700}, svg);
+  resetDNA();
+}
+function setY(g, y){ g.setAttribute("transform", "translate(0 " + y + ")"); }
+function resetDNA(){
+  setY(D.top, 88); setY(D.bot, 118); D.rungs.setAttribute("opacity", 1);
+  D.newA.setAttribute("width", 0); D.newA.setAttribute("x", 486); D.newB.setAttribute("width", 0);
+  D.pA.setAttribute("opacity", 0); D.pB.setAttribute("opacity", 0); D.pA.setAttribute("y", 58); D.pB.setAttribute("y", 140);
+  D.wrong.setAttribute("opacity", 0); D.polA.setAttribute("opacity", 0); D.polB.setAttribute("opacity", 0);
+  D.temp.textContent = "25°C"; D.status.textContent = "Press “Watch 1 cycle”"; D.status.style.fill = "";
+}
+function phaseOn(p){ $$(".phases span").forEach(function(s){ s.classList.toggle("on", s.getAttribute("data-p") === p); }); $$(".prog[data-ph]").forEach(function(g){ g.classList.toggle("act", g.getAttribute("data-ph") === p); }); drawProfile(p); }
+function status(txt, kind){ D.status.textContent = txt; D.status.style.fill = kind === "fail" ? "var(--bad)" : kind === "good" ? "var(--good)" : ""; }
+function lockPCR(on){ pcrBusy = on; ["#pcrWatch", "#pcrRun", "#pcrStd"].forEach(function(s){ $(s).disabled = on; }); $$(".lcd input").forEach(function(i){ i.disabled = on; }); $("#lcdState").textContent = on ? "RUNNING" : "READY"; }
+async function watchCycle(){
+  if (pcrBusy) return; lockPCR(true);
+  var r = renderPCR(); resetDNA();
+  phaseOn("den"); D.temp.textContent = P.dT + "°C"; status("Denaturing…");
+  if (r.dT[0] === "fail"){
+    await tween(900, function(t){ var w = Math.sin(t * Math.PI * 4) * 4; setY(D.top, 88 - w); setY(D.bot, 118 + w); });
+    status("✗ Too cool: the strands stay zipped together", "fail"); return finish();
+  }
+  await tween(1000, function(t){ setY(D.top, 88 - 40 * t); setY(D.bot, 118 + 40 * t); D.rungs.setAttribute("opacity", 1 - t); });
+  phaseOn("ann"); D.temp.textContent = P.aT + "°C"; status("Annealing…");
+  if (r.aT[0] === "fail" && P.aT < 45){
+    await tween(800, function(t){ D.pA.setAttribute("opacity", t); D.pB.setAttribute("opacity", t); D.wrong.setAttribute("opacity", t); });
+    status("✗ Primers stuck in the wrong places", "fail"); return finish();
+  }
+  await tween(800, function(t){ D.pA.setAttribute("opacity", t); D.pB.setAttribute("opacity", t); D.pA.setAttribute("y", 20 + 38 * t); D.pB.setAttribute("y", 190 - 50 * t); });
+  if (r.aT[0] === "fail"){
+    await tween(800, function(t){ D.pA.setAttribute("opacity", 1 - t); D.pB.setAttribute("opacity", 1 - t); D.pA.setAttribute("y", 58 - 40 * t); D.pB.setAttribute("y", 140 + 45 * t); });
+    status("✗ Too hot: primers won't stay bound", "fail"); return finish();
+  }
+  phaseOn("ext"); D.temp.textContent = P.eT + "°C"; status("Extending 5' → 3'…");
+  if (r.eT[0] === "fail"){
+    await tween(700, function(t){ D.pA.setAttribute("opacity", 1 - t); D.pB.setAttribute("opacity", 1 - t); });
+    status("✗ Primers melted off before extension", "fail"); return finish();
+  }
+  var frac = Math.min(1, P.et / 60), dur = r.eT[0] === "warn" ? 2200 : 1500;
+  D.polA.setAttribute("opacity", 1); D.polB.setAttribute("opacity", 1);
+  await tween(dur, function(t){
+    var L = 372 * frac * t;
+    D.newA.setAttribute("x", 486 - L); D.newA.setAttribute("width", L); D.polA.setAttribute("transform", "translate(" + (486 - L) + " 62)");
+    D.newB.setAttribute("width", L); D.polB.setAttribute("transform", "translate(" + (114 + L) + " 144)");
+  });
+  D.polA.setAttribute("opacity", 0); D.polB.setAttribute("opacity", 0);
+  if (frac < 1) status("✗ Ran out of time: the new strands are incomplete", "fail");
+  else status("✓ 2 copies, each with 1 old + 1 new strand", "good");
+  finish();
+  function finish(){ lockPCR(false); phaseOn(null); }
+}
+async function runAll(){
+  if (pcrBusy) return; lockPCR(true);
+  var r = renderPCR(), eff = efficiency(r), s = series(P, eff), n = P.n;
+  for (var k = 0; k <= n; k++){ drawCopies(s, k); setCopies(s[k], k, eff); await sleep(Math.max(40, 1800 / n)); }
+  lockPCR(false);
+}
+function initPCR(){
+  buildDNA();
+  ["dT", "dt", "aT", "at", "eT", "et", "n"].forEach(function(k){ $("#pcr-" + idk(k)).addEventListener("input", function(){ readInputs(); renderPCR(); resetDNA(); }); });
+  $("#pcrWatch").addEventListener("click", watchCycle);
+  $("#pcrRun").addEventListener("click", runAll);
+  $("#pcrStd").addEventListener("click", function(){ for (var k in STD) $("#pcr-" + idk(k)).value = STD[k]; readInputs(); renderPCR(); resetDNA(); });
+  readInputs(); renderPCR();
+}
+
+/* ================= HEAT SHOCK ================= */
+function initHS(){
+  var svg = $("#hsSvg");
+  var bg = S("rect", {x: 120, y: 16, width: 545, height: 258, rx: 22, fill: "var(--ice)"}, svg);
+  var ice = S("g", {}, svg);
+  [[150, 40], [610, 36], [140, 220], [620, 226], [580, 120]].forEach(function(q){ S("rect", {x: q[0], y: q[1], width: 26, height: 26, rx: 6, fill: "var(--surface)", opacity: .7, stroke: "var(--arrow)", "stroke-width": 1.5}, ice); });
+  S("rect", {x: 46, y: 26, width: 24, height: 206, rx: 12, fill: "var(--surface)", stroke: "var(--line)", "stroke-width": 2}, svg);
+  S("circle", {cx: 58, cy: 244, r: 22, fill: "var(--arrow)", id: "hsBulb"}, svg);
+  var merc = S("rect", {x: 52, y: 200, width: 12, height: 44, rx: 6, fill: "var(--arrow)"}, svg);
+  var ttxt = S("text", {x: 58, y: 284, "text-anchor": "middle", "class": "svgtext", "font-size": 15, "font-weight": 700, "font-family": "var(--f-mono)"}, svg);
+  var cell = S("g", {}, svg);
+  var mem = S("rect", {x: 250, y: 82, width: 290, height: 136, rx: 68, fill: "var(--cell)", stroke: "var(--cell-edge)", "stroke-width": 7}, cell);
+  S("path", {d: tangleD(340, 150, 52, 38, 16, 21), fill: "none", stroke: "var(--chrom)", "stroke-width": 2.4}, cell);
+  var amp = S("g", {opacity: 0}, cell);
+  [[440, 112], [468, 128], [430, 200], [480, 196], [380, 120]].forEach(function(q){ S("circle", {cx: q[0], cy: q[1], r: 5, fill: "var(--warn)"}, amp); });
+  var cacl = S("text", {x: 250, y: 66, "class": "svgmono", "font-size": 13}, svg); cacl.textContent = "competent cell (CaCl₂-treated)";
+  var OUT = [[176, 96], [602, 92], [190, 210], [604, 200], [420, 40], [392, 254]], IN = [[460, 140], [492, 176], [430, 184], [470, 202]];
+  var pls = OUT.map(function(){ var g = S("g", {"class": "pl"}, svg); miniPlasmid(g, 0, 0, 14); return g; });
+  var plate = S("g", {opacity: 0}, svg);
+  S("circle", {cx: 392, cy: 145, r: 112, fill: "var(--agar)", stroke: "var(--muted)", "stroke-width": 3}, plate);
+  var R = rng(5); for (var i = 0; i < 14; i++){ var a = R() * 6.283, d = Math.sqrt(R()) * 90; S("circle", {cx: 392 + Math.cos(a) * d, cy: 145 + Math.sin(a) * d, r: 6 + R() * 3, fill: "var(--surface)", stroke: "var(--plasmid)", "stroke-width": 2}, plate); }
+  var pt = S("text", {x: 392, y: 285, "text-anchor": "middle", "class": "svgmono", "font-size": 13}, plate); pt.textContent = "selective plate (+ ampicillin)";
+  var STAGES = [
+    {n: "Chill on ice", T: 0, txt: "<b>Chill on ice.</b> Competent cells (made competent with cold CaCl₂, which helps DNA cling to and cross the membrane) are mixed with plasmid and chilled."},
+    {n: "Heat shock", T: 42, txt: "<b>Heat shock.</b> A quick ~42°C shock (about 50 seconds in the pGLO lab) opens temporary pores in the membrane. Plasmids slip inside."},
+    {n: "Back on ice", T: 0, txt: "<b>Back on ice.</b> The membrane reseals, trapping the plasmid inside."},
+    {n: "Recover", T: 37, txt: "<b>Recover.</b> Cells rest in nutrient broth and start expressing the plasmid's genes, like the ampicillin resistance enzyme (yellow dots)."},
+    {n: "Plate", T: 37, txt: "<b>Plate.</b> Cells are spread on selective media to find which ones actually took up the plasmid. That's Step 6: Selection."}
+  ];
+  var bar = $("#hsBar"), idx = 0;
+  STAGES.forEach(function(s, i){ var b = document.createElement("button"); b.type = "button"; b.innerHTML = '<span class="n">' + (i + 1) + "</span>" + s.n; b.addEventListener("click", function(){ show(i); }); bar.appendChild(b); });
+  function show(i){
+    idx = Math.max(0, Math.min(4, i)); var s = STAGES[idx];
+    $$("button", bar).forEach(function(b, j){ b.classList.toggle("on", j === idx); });
+    var h = 26 + (s.T / 50) * 180; merc.setAttribute("y", 244 - h); merc.setAttribute("height", h);
+    var hot = s.T >= 40 ? "var(--bad)" : s.T > 0 ? "var(--warn)" : "var(--arrow)";
+    merc.setAttribute("fill", hot); $("#hsBulb").setAttribute("fill", hot);
+    ttxt.textContent = s.T + "°C";
+    bg.setAttribute("fill", idx === 1 ? "var(--warn-soft)" : idx === 3 ? "var(--surface-2)" : idx === 4 ? "var(--surface)" : "var(--ice)");
+    ice.setAttribute("opacity", idx === 0 || idx === 2 ? 1 : 0);
+    mem.setAttribute("stroke-dasharray", idx === 1 ? "26 16" : "none");
+    amp.setAttribute("opacity", idx === 3 ? 1 : 0);
+    var showCell = idx < 4; cell.setAttribute("opacity", showCell ? 1 : 0); cacl.setAttribute("opacity", idx < 3 ? 1 : 0); plate.setAttribute("opacity", showCell ? 0 : 1);
+    pls.forEach(function(g, k){ var p = (idx >= 1 && k < 4) ? IN[k] : OUT[k]; g.style.transform = "translate(" + p[0] + "px," + p[1] + "px)"; g.style.opacity = showCell ? 1 : 0; });
+    $("#hsMsg").innerHTML = s.txt;
+    $("#hsPrev").disabled = idx === 0; $("#hsNext").disabled = idx === 4;
+  }
+  $("#hsPrev").addEventListener("click", function(){ show(idx - 1); });
+  $("#hsNext").addEventListener("click", function(){ show(idx + 1); });
+  show(0);
+}
+
+/* ================= SELECTION ================= */
+function initSel(){
+  var svg = $("#selSvg"), cols = [], phase = 0;
+  function build(){
+    svg.innerHTML = ""; cols = []; phase = 0;
+    S("circle", {cx: 210, cy: 165, r: 152, fill: "var(--agar)", stroke: "var(--muted)", "stroke-width": 3}, svg);
+    S("circle", {cx: 210, cy: 165, r: 140, fill: "none", stroke: "var(--muted)", "stroke-width": 1.2, opacity: .5}, svg);
+    var R = rng(12), pts = [];
+    while (pts.length < 24){ var a = R() * 6.283, d = Math.sqrt(R()) * 118, x = 210 + Math.cos(a) * d, y = 165 + Math.sin(a) * d; if (pts.every(function(p){ return Math.hypot(p[0] - x, p[1] - y) > 30; })) pts.push([x, y]); }
+    var types = shuffle([].concat(Array(10).fill("none"), Array(8).fill("empty"), Array(6).fill("rec")), rng(4));
+    pts.forEach(function(p, i){
+      var t = types[i], g = S("g", {"class": "col"}, svg);
+      var c = S("circle", {cx: p[0], cy: p[1], r: 10, fill: t === "none" ? "var(--surface-2)" : "var(--surface)", stroke: t === "none" ? "var(--muted)" : "var(--plasmid)", "stroke-width": t === "none" ? 2 : 3}, g);
+      if (t === "rec") S("path", {d: arcD(p[0], p[1], 10, -50, 10), fill: "none", stroke: "var(--gene)", "stroke-width": 3}, g);
+      cols.push({t: t, g: g, c: c, x: p[0], y: p[1]});
+    });
+    $("#cAll").textContent = 24; $("#cAmp").textContent = "–"; $("#cWin").textContent = "–";
+    btns([["Plate on ampicillin", amp]]);
+    msg("", "24 cells were spread on the plate after transformation. Some never took up a plasmid. Start with <b>primary selection</b>.");
+  }
+  function msg(k, h){ var m = $("#selMsg"); m.className = "msg" + (k ? " " + k : ""); m.innerHTML = h; }
+  function btns(list){
+    var b = $("#selBtns"); b.innerHTML = "";
+    list.forEach(function(x){ var e = document.createElement("button"); e.type = "button"; e.className = x[2] ? "btn ghost small" : "btn small"; e.textContent = x[0]; e.addEventListener("click", x[1]); b.appendChild(e); });
+    var r = document.createElement("button"); r.type = "button"; r.className = "btn ghost small"; r.textContent = "Reset"; r.addEventListener("click", build); b.appendChild(r);
+  }
+  function amp(){
+    phase = 1;
+    cols.forEach(function(c){ if (c.t === "none"){ c.g.classList.add("dead"); S("path", {d: "M" + (c.x - 7) + " " + (c.y - 7) + " L" + (c.x + 7) + " " + (c.y + 7) + " M" + (c.x + 7) + " " + (c.y - 7) + " L" + (c.x - 7) + " " + (c.y + 7), stroke: "var(--bad)", "stroke-width": 2.5}, c.g); } else c.g.classList.add("grow"); });
+    $("#cAmp").textContent = 14;
+    msg("warn", "<b>Primary selection done.</b> Only cells with a plasmid (and its AmpR gene) survived. But an empty plasmid gives resistance too. Which colonies have your gene? Pick a secondary check:");
+    btns([["Color change", function(){ second("color"); }, 1], ["DNA probe", function(){ second("probe"); }, 1], ["Gene product", function(){ second("product"); }, 1]]);
+  }
+  function second(kind){
+    if (phase !== 1) return; phase = 2;
+    cols.forEach(function(c){
+      if (c.t === "empty" && kind === "color") c.c.setAttribute("fill", "#3a6fd8");
+      if (c.t === "rec"){
+        if (kind === "probe") S("circle", {cx: c.x, cy: c.y, r: 15, fill: "none", stroke: "var(--good)", "stroke-width": 3.5}, c.g);
+        if (kind === "product") S("path", {d: "M" + c.x + " " + (c.y - 20) + " l3 6 l6 1 l-4.5 4 l1 6 l-5.5 -3 l-5.5 3 l1 -6 l-4.5 -4 l6 -1 z", fill: "var(--gold)"}, c.g);
+        c.g.classList.add("pick");
+        c.g.addEventListener("click", function(){ pick(c); });
+      }
+    });
+    $("#cWin").textContent = 6;
+    var txt = {color: "<b>Color change</b> (like X-gal): colonies with an empty plasmid turn blue. White colonies have your insert.", probe: "<b>DNA probe:</b> a labeled piece of DNA base-pairs only with your gene's sequence, lighting up the colonies that have it (green rings).", product: "<b>Gene product analysis</b> detects the actual protein (stars). It's the most direct proof the insert works."}[kind];
+    msg("good", txt + " <b>Click one of your winning colonies</b> to grow it up.");
+    btns([]);
+  }
+  function pick(c){
+    if (phase !== 2) return; phase = 3;
+    cols.forEach(function(o){ if (o !== c){ o.g.classList.add("dead"); } o.g.classList.remove("pick"); });
+    S("circle", {cx: c.x, cy: c.y, r: 22, fill: "none", stroke: "var(--arrow)", "stroke-width": 3, "stroke-dasharray": "5 4"}, c.g);
+    msg("good", "<b>Picked!</b> This clone gets grown into a large liquid culture, enough cell mass to harvest something useful. Next, harvest either the gene or the protein.");
+    var b = $("#selBtns"); b.innerHTML = '<button type="button" class="btn small" data-go="copies">7a: Gene copies</button><button type="button" class="btn small" data-go="product">7b: Protein</button>';
+    var r = document.createElement("button"); r.type = "button"; r.className = "btn ghost small"; r.textContent = "Reset"; r.addEventListener("click", build); b.appendChild(r);
+  }
+  build();
+}
+
+/* ================= DIVISION ================= */
+function initDiv(){
+  var svg = $("#divSvg"), gen = 0;
+  function draw(){
+    svg.innerHTML = "";
+    var n = Math.pow(2, gen), perRow = Math.min(n, 8), rows = Math.ceil(n / perRow), w = gen >= 3 ? 62 : 90, h = gen >= 3 ? 30 : 44;
+    var gx = (640 - perRow * (w + 12)) / 2, gy = (210 - rows * (h + 16)) / 2;
+    for (var i = 0; i < n; i++){
+      var x = gx + (i % perRow) * (w + 12), y = gy + Math.floor(i / perRow) * (h + 16);
+      var g = S("g", {}, svg);
+      S("rect", {x: x, y: y, width: w, height: h, rx: h / 2, fill: "var(--cell)", stroke: "var(--cell-edge)", "stroke-width": 3.5}, g);
+      miniPlasmid(g, x + w * .35, y + h / 2, h * .22); miniPlasmid(g, x + w * .68, y + h / 2, h * .2);
+      if (!reduced && i >= n / 2 && gen > 0){ g.style.opacity = 0; g.style.transition = "opacity .5s"; requestAnimationFrame(function(gg){ return function(){ gg.style.opacity = 1; }; }(g)); }
+    }
+    var t = S("text", {x: 320, y: 224, "text-anchor": "middle", "class": "svgmono", "font-size": 13}, svg);
+    t.textContent = "generation " + gen + ": " + n + " cell" + (n > 1 ? "s" : "") + ", every one carrying the plasmid";
+    $("#divBtn").disabled = gen >= 4;
+    $("#divTxt").textContent = gen >= 4 ? "4 divisions = 16 cells. A real overnight culture reaches billions." : "";
+  }
+  $("#divBtn").addEventListener("click", function(){ if (gen < 4){ gen++; draw(); } });
+  $("#divReset").addEventListener("click", function(){ gen = 0; draw(); });
+  draw();
+}
+
+/* ================= PRODUCT STRIP ================= */
+function initStrip(){
+  var ICON = {
+    harvest: '<svg viewBox="0 0 54 54"><path d="M17 6 h20 v30 l-10 14 l-10 -14 z" fill="var(--surface-2)" stroke="var(--muted)" stroke-width="2.5" stroke-linejoin="round"/><path d="M18 14 h18 v20 h-18z" fill="var(--agar)" opacity=".8"/><path d="M21 38 h12 l-6 9z" fill="var(--cell-edge)"/></svg>',
+    lyse: '<svg viewBox="0 0 54 54"><rect x="8" y="16" width="38" height="22" rx="11" fill="var(--cell)" stroke="var(--cell-edge)" stroke-width="3" stroke-dasharray="7 5"/><g fill="var(--protein)"><circle cx="6" cy="10" r="3"/><circle cx="48" cy="12" r="3"/><circle cx="50" cy="42" r="3"/><circle cx="8" cy="44" r="3"/></g></svg>',
+    clear: '<svg viewBox="0 0 54 54"><path d="M10 10 h34 l-12 16 v16 l-10 6 v-22 z" fill="var(--surface-2)" stroke="var(--muted)" stroke-width="2.5" stroke-linejoin="round"/><g fill="var(--cell-edge)"><circle cx="18" cy="15" r="2.5"/><circle cx="27" cy="13" r="2.5"/><circle cx="35" cy="16" r="2.5"/></g></svg>',
+    purify: '<svg viewBox="0 0 54 54"><rect x="18" y="6" width="18" height="36" rx="3" fill="var(--plasmid-soft)" stroke="var(--plasmid)" stroke-width="2.5"/><g fill="var(--plasmid)" opacity=".5"><circle cx="23" cy="14" r="2.5"/><circle cx="30" cy="20" r="2.5"/><circle cx="23" cy="27" r="2.5"/><circle cx="31" cy="34" r="2.5"/></g><path d="M27 42 v6" stroke="var(--plasmid)" stroke-width="2.5"/><circle cx="27" cy="50" r="2.5" fill="var(--gene)"/></svg>',
+    test: '<svg viewBox="0 0 54 54"><rect x="8" y="8" width="38" height="38" rx="6" fill="var(--surface-2)" stroke="var(--muted)" stroke-width="2.5"/><path d="M16 18h8M30 18h8M16 26h8M30 30h8M16 36h8" stroke="var(--protein)" stroke-width="3.5" stroke-linecap="round"/></svg>'
+  };
+  var ST = [
+    {id: "harvest", n: "Harvest", s: "centrifuge", h: "<h4>Harvest the cells</h4><p>Cells are collected from the culture, usually by <b>centrifugation</b>. Centrifugation separates by weight: the denser cells form a pellet at the bottom, and the liquid (supernatant) stays on top.</p>"},
+    {id: "lyse", n: "Lyse", s: "break open", h: '<h4>Break the cells open (lyse)</h4><div class="grid2" style="margin-top:10px"><div class="idea flat"><h4>Mechanical</h4><p>Sonication (the molecular blender), French press, bead milling (grinding up), pestle and mortar.</p></div><div class="idea flat"><h4>Chemical</h4><p>Detergents (soap!) and <b>lysozyme</b>, a natural enzyme (found in tears and saliva) that hydrolyzes the bonds between sugars in the peptidoglycan backbone. More effective against gram-positive bacteria.</p></div></div><p style="margin-top:10px">A <span class="key">spheroplast</span> is the round, remaining outer wall layer left after lysozyme breaks down the cell wall.</p>'},
+    {id: "clear", n: "Clear debris", s: "spin / filter", h: '<h4>Clear the debris</h4><p>Centrifugation or filtration removes cell debris. The supernatant contains the soluble proteins, including your product.</p><p style="margin-top:8px">If your product forms <span class="key">inclusion bodies</span> (non-membrane-bound granules in the cytoplasm), it may need to be solubilized (dissolved) first.</p>'},
+    {id: "purify", n: "Purify", s: "chromatography", h: '<h4>Purify with chromatography</h4><p>Run the material through a column. The column traps the particle of interest while everything else flows through. Then treat the column with salt to release it. Now you have only your particle of interest!</p><button type="button" class="btn small" id="toChromo" style="margin-top:10px">Try the column below &darr;</button>'},
+    {id: "test", n: "Quality test", s: "right product?", h: "<h4>Quality testing</h4><p>Final step: is this the right thing? Confirm the purified material really is your product, often with the same gene product analysis tools from Step 6 (like a Western blot).</p>"}
+  ];
+  var strip = $("#strip");
+  ST.forEach(function(s, i){ var b = document.createElement("button"); b.type = "button"; b.innerHTML = ICON[s.id] + (i + 1) + ". " + s.n + "<small>" + s.s + "</small>"; b.addEventListener("click", function(){ show(i); }); strip.appendChild(b); });
+  function show(i){
+    $$("button", strip).forEach(function(b, j){ b.classList.toggle("on", j === i); });
+    $("#stripInfo").innerHTML = ST[i].h;
+    var t = $("#toChromo"); if (t) t.addEventListener("click", function(){ $("#chromoBlock").scrollIntoView({behavior: reduced ? "auto" : "smooth"}); });
+  }
+  show(0);
+}
+
+/* ================= CHROMATOGRAPHY ================= */
+var CW = 420, CH = 470, cv, ctx, C = {mode: "sec", phase: "idle", parts: [], beads: [], tubes: [], frames: 0, tube: 0, raf: 0};
+var COL = {x0: 150, x1: 270, y0: 60, y1: 330};
+var TUBEX = [45, 111, 177, 243, 309, 375];
+var EXPLAIN = {
+  sec: "<b>Size exclusion:</b> the beads are porous. Small molecules wander into the pores, which slows them down. Large molecules can't fit, so they take the short way around and come out first.",
+  aff: "<b>Affinity:</b> the resin grabs a tag on your protein (here, a His-tag). Everything else washes straight through. Then an elution buffer releases just your protein.",
+  iex: "<b>Ion exchange:</b> the resin carries a charge. Here it's positive (cations), so it traps negatively charged molecules like your protein. Everything else flows through. Raising the salt releases what's stuck."
+};
+function chromoResize(){
+  if (!cv) return;
+  var dpr = window.devicePixelRatio || 1;
+  cv.width = CW * dpr; cv.height = CH * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); drawChromo();
+}
+function chromoReset(){
+  cancelAnimationFrame(C.raf);
+  C.phase = "idle"; C.frames = 0; C.tube = 0; C.tubes = TUBEX.map(function(){ return {big: 0, tgt: 0, sm: 0, n: 0}; });
+  var R = rng(31); C.beads = [];
+  for (var i = 0; i < 70; i++) C.beads.push([COL.x0 + 10 + R() * (COL.x1 - COL.x0 - 20), COL.y0 + 8 + R() * (COL.y1 - COL.y0 - 16), 6 + R() * 2.5]);
+  var R2 = rng(77); C.parts = [];
+  [["big", 22], ["tgt", 22], ["sm", 30]].forEach(function(t){ for (var i = 0; i < t[1]; i++) C.parts.push({t: t[0], x: 175 + R2() * 70, y: 22 + R2() * 28, st: "res", jit: .9 + R2() * .2, bindY: 85 + R2() * 70}); });
+  $("#chromoExplain").innerHTML = EXPLAIN[C.mode];
+  $("#chromoGo").textContent = "Load lysate"; $("#chromoGo").disabled = false;
+  chromoMsg("", "Your lysate (cell contents after lysis) is in the reservoir above the column. Click <b>Load lysate</b>.");
+  $("#chromoTubes").innerHTML = "";
+  drawChromo();
+}
+function chromoMsg(k, h){ var m = $("#chromoMsg"); m.className = "msg" + (k ? " " + k : ""); m.innerHTML = h; }
+function speed(p){
+  if (C.mode === "sec") return {big: 1.7, tgt: 1.05, sm: .62}[p.t] * p.jit;
+  return {big: 1.5, tgt: 1.2, sm: 1.3}[p.t] * p.jit;
+}
+function chromoAction(){
+  if (C.phase === "idle"){
+    C.parts.forEach(function(p){ p.y = COL.y0 + 4 + (p.y - 22) * .9; p.st = "col"; });
+    C.phase = "loaded"; $("#chromoGo").textContent = "Run buffer through";
+    chromoMsg("", "The lysate is sitting on top of the resin. Click <b>Run buffer through</b>."); drawChromo();
+  } else if (C.phase === "loaded"){
+    C.phase = "flow"; $("#chromoGo").disabled = true; chromoMsg("", "Buffer is pushing everything down the column…"); loop();
+  } else if (C.phase === "bound"){
+    C.phase = "elute"; C.tube = 4; $("#chromoGo").disabled = true;
+    C.parts.forEach(function(p){ if (p.st === "held"){ p.st = "col"; p.rel = true; } });
+    chromoMsg("", C.mode === "aff" ? "Elution buffer is releasing your protein…" : "The salt is releasing your protein…"); loop();
+  } else if (C.phase === "done"){ chromoReset(); }
+}
+function loop(){
+  cancelAnimationFrame(C.raf);
+  var steps = reduced ? 400 : 2;
+  for (var s = 0; s < steps; s++) tick();
+  drawChromo();
+  var moving = C.parts.some(function(p){ return p.st === "col" || p.st === "drop"; });
+  if (moving){ C.raf = requestAnimationFrame(loop); return; }
+  if (C.phase === "flow" && C.mode !== "sec"){
+    C.phase = "bound"; $("#chromoGo").disabled = false;
+    $("#chromoGo").textContent = C.mode === "aff" ? "Add elution buffer" : "Raise the salt";
+    chromoMsg("warn", C.mode === "aff" ? "<b>Everything else washed out.</b> Your protein's His-tag is stuck to the resin. Now add elution buffer to release it." : "<b>Everything else flowed through.</b> Your negatively charged protein is stuck to the positive resin. Now raise the salt to release it.");
+    tubeReport(); return;
+  }
+  C.phase = "done"; $("#chromoGo").disabled = false; $("#chromoGo").textContent = "Run again";
+  tubeReport(true);
+}
+function tick(){
+  if (C.phase === "flow"){ C.frames++; var per = C.mode === "sec" ? 150 : 140; C.tube = Math.min(C.mode === "sec" ? 5 : 2, Math.floor(C.frames / per)); }
+  C.parts.forEach(function(p){
+    if (p.st === "col"){
+      if (C.mode !== "sec" && p.t === "tgt" && !p.rel && p.y >= p.bindY){ p.st = "held"; return; }
+      p.y += speed(p) * .5; p.x += (Math.random() - .5) * .9; p.x = Math.max(COL.x0 + 6, Math.min(COL.x1 - 6, p.x));
+      if (p.y >= COL.y1){
+        p.st = "drop"; var tb = C.tubes[C.tube]; tb[p.t]++; var k = tb.n++;
+        p.tx = TUBEX[C.tube] - 12 + (k % 5) * 6; p.ty = 436 - Math.floor(k / 5) * 5; p.x = 210; p.y = 344;
+      }
+    } else if (p.st === "drop"){
+      var dx = p.tx - p.x, dy = p.ty - p.y, d = Math.hypot(dx, dy);
+      if (d < 3){ p.x = p.tx; p.y = p.ty; p.st = "in"; } else { p.x += dx / d * 3; p.y += dy / d * 3; }
+    }
+  });
+}
+function tubeReport(final){
+  var NAME = {big: "large protein", tgt: "your protein", sm: "small molecules"}, best = -1, bestP = 0, h = "";
+  C.tubes.forEach(function(t, i){ if (t.n && t.tgt){ var pur = t.tgt / t.n; if (pur > bestP || (pur === bestP && t.tgt > C.tubes[best].tgt)){ bestP = pur; best = i; } } });
+  C.tubes.forEach(function(t, i){
+    if (!t.n) return;
+    var parts = []; ["tgt", "big", "sm"].forEach(function(k){ if (t[k]) parts.push(t[k] + " " + NAME[k]); });
+    h += '<div class="' + (final && i === best ? "best" : "") + '"><b>TUBE ' + (i + 1) + (C.mode !== "sec" && i === 4 ? " · eluted" : "") + "</b>" + parts.join(", ") + "</div>";
+  });
+  $("#chromoTubes").innerHTML = h;
+  if (!final) return;
+  var pct = Math.round(bestP * 100);
+  var txt = C.mode === "sec" ? "Large proteins came out first, then your protein, then the small molecules. Your purest tube is <b>Tube " + (best + 1) + "</b> (" + pct + "% your protein). Size exclusion separates well, but neighboring sizes can overlap."
+    : C.mode === "aff" ? "The elution buffer released only your His-tagged protein: <b>Tube " + (best + 1) + "</b> is " + pct + "% pure. That's why affinity tags are so popular."
+    : "Positive and neutral molecules flowed through. Raising the salt released your negatively charged protein into <b>Tube " + (best + 1) + "</b> (" + pct + "% pure).";
+  chromoMsg("good", "<b>Done!</b> " + txt);
+}
+function drawChromo(){
+  if (!ctx) return;
+  var c = ctx, v = {ink: cssVar("--ink"), muted: cssVar("--muted"), line: cssVar("--line"), surf: cssVar("--surface"), s2: cssVar("--surface-2"), pl: cssVar("--plasmid-soft"), plx: cssVar("--plasmid"), big: cssVar("--protein"), tgt: cssVar("--gene"), good: cssVar("--good"), arrow: cssVar("--arrow")};
+  c.clearRect(0, 0, CW, CH);
+  c.fillStyle = v.s2; c.strokeStyle = v.muted; c.lineWidth = 2.5;
+  c.beginPath(); c.moveTo(160, 12); c.lineTo(260, 12); c.lineTo(COL.x1, COL.y0); c.lineTo(COL.x0, COL.y0); c.closePath(); c.fill(); c.stroke();
+  c.fillStyle = v.surf; c.fillRect(COL.x0, COL.y0, COL.x1 - COL.x0, COL.y1 - COL.y0); c.strokeRect(COL.x0, COL.y0, COL.x1 - COL.x0, COL.y1 - COL.y0);
+  c.beginPath(); c.moveTo(COL.x0, COL.y1); c.lineTo(200, 344); c.lineTo(220, 344); c.lineTo(COL.x1, COL.y1); c.fillStyle = v.s2; c.fill(); c.stroke();
+  C.beads.forEach(function(b){
+    c.beginPath(); c.arc(b[0], b[1], b[2], 0, 6.283); c.fillStyle = v.pl; c.fill(); c.strokeStyle = v.line; c.lineWidth = 1; c.stroke();
+    if (C.mode === "sec"){ c.fillStyle = v.s2; c.beginPath(); c.arc(b[0] - 2, b[1] - 1, 1.6, 0, 6.283); c.arc(b[0] + 2, b[1] + 2, 1.4, 0, 6.283); c.fill(); }
+    else if (C.mode === "aff"){ c.strokeStyle = v.good; c.lineWidth = 1.5; c.beginPath(); c.moveTo(b[0] + b[2], b[1]); c.lineTo(b[0] + b[2] + 3, b[1] - 3); c.moveTo(b[0] + b[2], b[1]); c.lineTo(b[0] + b[2] + 3, b[1] + 3); c.stroke(); }
+    else { c.strokeStyle = v.arrow; c.lineWidth = 1.6; c.beginPath(); c.moveTo(b[0] - 3, b[1]); c.lineTo(b[0] + 3, b[1]); c.moveTo(b[0], b[1] - 3); c.lineTo(b[0], b[1] + 3); c.stroke(); }
+  });
+  if (C.phase === "flow" || C.phase === "elute"){ c.strokeStyle = v.arrow; c.setLineDash([3, 4]); c.lineWidth = 2; c.beginPath(); c.moveTo(210, 346); c.lineTo(TUBEX[C.tube], 372); c.stroke(); c.setLineDash([]); }
+  TUBEX.forEach(function(x, i){
+    c.strokeStyle = i === C.tube && (C.phase === "flow" || C.phase === "elute") ? v.arrow : v.muted; c.lineWidth = 2;
+    c.beginPath(); c.moveTo(x - 18, 376); c.lineTo(x - 18, 432); c.quadraticCurveTo(x - 18, 444, x, 444); c.quadraticCurveTo(x + 18, 444, x + 18, 432); c.lineTo(x + 18, 376); c.stroke();
+    c.fillStyle = v.muted; c.font = "600 12px " + cssVar("--f-mono"); c.textAlign = "center"; c.fillText(String(i + 1), x, 462);
+  });
+  if (C.mode !== "sec"){ c.fillStyle = v.muted; c.font = "600 10px " + cssVar("--f-mono"); c.fillText("elution", TUBEX[4], 370); }
+  var R = {big: 6.5, tgt: 4.5, sm: 2.6};
+  C.parts.forEach(function(p){ c.beginPath(); c.arc(p.x, p.y, R[p.t] * (p.st === "in" ? .55 : 1), 0, 6.283); c.fillStyle = p.t === "big" ? v.big : p.t === "tgt" ? v.tgt : v.muted; c.fill(); });
+  c.fillStyle = v.muted; c.font = "600 11px " + cssVar("--f-mono"); c.textAlign = "left"; c.fillText("lysate in", 272, 30); c.fillText("column", 278, 200);
+}
+function initChromo(){
+  cv = $("#chromoCv"); ctx = cv.getContext("2d");
+  $$("#chromoMode button").forEach(function(b){ b.addEventListener("click", function(){ $$("#chromoMode button").forEach(function(x){ x.classList.toggle("on", x === b); }); C.mode = b.getAttribute("data-m"); chromoReset(); }); });
+  $("#chromoGo").addEventListener("click", chromoAction);
+  $("#chromoReset").addEventListener("click", chromoReset);
+  chromoReset(); chromoResize();
+}
+
+/* ================= LAC OPERON ================= */
+function initLac(){
+  var svg = $("#lacSvg");
+  S("rect", {x: 20, y: 130, width: 640, height: 10, rx: 5, fill: "var(--muted)", opacity: .5}, svg);
+  var boxes = [[30, 70, "lacI", "var(--surface-2)", "regulator"], [180, 60, "P", "var(--good-soft)", "promoter"], [240, 50, "O", "var(--warn-soft)", "operator"], [290, 300, "lacZ", "var(--plasmid-soft)", "β-galactosidase gene"]];
+  boxes.forEach(function(b){
+    S("rect", {x: b[0], y: 120, width: b[1], height: 30, rx: 6, fill: b[3], stroke: "var(--line)", "stroke-width": 2}, svg);
+    var t = S("text", {x: b[0] + b[1] / 2, y: 140, "text-anchor": "middle", "class": "svgtext", "font-size": 14, "font-weight": 700}, svg); t.textContent = b[2];
+    var u = S("text", {x: b[0] + b[1] / 2, y: 170, "text-anchor": "middle", "class": "svgmono", "font-size": 11}, svg); u.textContent = b[4];
+  });
+  S("rect", {x: 420, y: 116, width: 40, height: 38, rx: 6, fill: "none", stroke: "var(--gene)", "stroke-width": 2.5, "stroke-dasharray": "4 3"}, svg);
+  var mt = S("text", {x: 440, y: 190, "text-anchor": "middle", "class": "svgmono", "font-size": 11}, svg); mt.textContent = "MCS: your gene goes here"; mt.style.fill = "var(--gene)";
+  var pol = S("g", {style: "transition:transform 1s ease"}, svg);
+  S("ellipse", {cx: 0, cy: 0, rx: 34, ry: 20, fill: "var(--arrow)"}, pol);
+  var pt = S("text", {x: 0, y: 4, "text-anchor": "middle", fill: "#fff", "font-size": 11, "font-weight": 700, "font-family": "var(--f-mono)"}, pol); pt.textContent = "RNA pol";
+  var rep = S("g", {style: "transition:transform 1s ease"}, svg);
+  var rb = S("path", {d: "M-24 10 Q-26 -14 0 -16 Q26 -14 24 10 L10 10 L6 2 L-6 2 L-10 10 Z", fill: "var(--plasmid)", style: "transition:d .6s"}, rep);
+  var rt = S("text", {x: 0, y: -2, "text-anchor": "middle", fill: "#fff", "font-size": 10, "font-weight": 700, "font-family": "var(--f-mono)"}, rep); rt.textContent = "repressor";
+  var iptg = S("path", {d: "M0 -6 L7 6 L-7 6 Z", fill: "var(--gold)", style: "transition:transform 1s ease, opacity .5s"}, svg);
+  var mrna = S("path", {d: "M300 70 q10 -10 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0", fill: "none", stroke: "var(--gene)", "stroke-width": 3, opacity: 0, style: "transition:opacity .6s .6s"}, svg);
+  var mtt = S("text", {x: 380, y: 50, "text-anchor": "middle", "class": "svgmono", "font-size": 11, opacity: 0, style: "transition:opacity .6s .6s"}, svg); mtt.textContent = "lacZ mRNA";
+  function set(on){
+    $$("#iptgToggle button").forEach(function(b){ b.classList.toggle("on", b.getAttribute("data-v") === (on ? "1" : "0")); });
+    rep.style.transform = on ? "translate(560px,52px) rotate(25deg)" : "translate(265px,106px)";
+    pol.style.transform = on ? "translate(360px,98px)" : "translate(200px,98px)";
+    iptg.style.transform = on ? "translate(576px,40px)" : "translate(620px,22px)";
+    iptg.style.opacity = on ? 1 : 0;
+    mrna.setAttribute("opacity", on ? 1 : 0); mtt.setAttribute("opacity", on ? 1 : 0);
+    $("#lacMsg").innerHTML = on
+      ? "<b>IPTG added:</b> like lactose (allolactose), IPTG fits the repressor's allosteric site. The repressor changes shape (a conformational change) and falls off the operator, so RNA polymerase can transcribe lacZ. If your gene broke lacZ, no working &beta;-galactosidase is made: <b>white</b>. If lacZ is intact, &beta;-galactosidase cleaves X-gal: <b>blue</b>."
+      : "<b>No IPTG:</b> the repressor is made all the time and sits on the operator, blocking RNA polymerase. No transcription, no &beta;-galactosidase. That's why the lac operon is called <b>inducible negative</b>.";
+  }
+  $$("#iptgToggle button").forEach(function(b){ b.addEventListener("click", function(){ set(b.getAttribute("data-v") === "1"); }); });
+  set(false);
+}
+
+/* ================= TIMELINE ================= */
+var TL = [
+  {y: "1990", t: "good", h: "The first gene therapy", b: "ADA-SCID (\"bubble boy disease\") patients were treated in the U.S. and Italy in the early 1990s. Their stem cells got a working ADA gene from a viral vector, and immune function improved. The first human gene therapy to restore a missing gene's function."},
+  {y: "1999", t: "bad", h: "Jesse Gelsinger dies", b: "An 18-year-old died from an immune reaction to the adenoviral vector in an OTC trial. It shocked the field."},
+  {y: "1999–2002", t: "bad", h: "X-linked SCID trials", b: "23 children were treated with retroviral gene therapy. 5 later developed leukemia, and 2 died."},
+  {y: "2000s", t: "neutral", h: "Pause and rebuild", b: "Gene therapy was paused and safety rules were overhauled. Follow-up ADA-SCID trials improved safety and long-term benefits. Takeaway: vector design and immune response are crucial, and monitoring is mandatory."},
+  {y: "2012", t: "neutral", h: "CRISPR arrives", b: "CRISPR-Cas9 is developed as a gene editing tool: precise, cheap, and versatile. The same year, Glybera became the first commercial gene therapy approved in the EU (later withdrawn)."},
+  {y: "2018", t: "bad", h: "\"CRISPR babies\" scandal", b: "Embryos were edited for HIV resistance in China. Scientists around the world condemned it."},
+  {y: "2019–20", t: "good", h: "First CRISPR human trials", b: "Early successes treating sickle cell disease and certain cancers."},
+  {y: "2023", t: "good", h: "Casgevy: sickle cell disease", b: "97% of patients were crisis-free after a CRISPR-edited stem cell transplant. The first approved CRISPR-based therapy."},
+  {y: "2024", t: "good", h: "Vision and amyloidosis", b: "EDIT-101: vision improved in about 80% of Leber congenital amaurosis patients after in-eye CRISPR therapy. In transthyretin amyloidosis, a single CRISPR infusion cut disease protein levels significantly."},
+  {y: "2025", t: "good", h: "HIV", b: "In early trials, CRISPR-edited T cells showed sustained control of HIV without drugs."}
+];
+function initTimeline(){
+  var line = $("#tline"), idx = 0;
+  TL.forEach(function(e, i){ var b = document.createElement("button"); b.type = "button"; b.className = "tdot " + e.t; b.innerHTML = "<i></i><span>" + e.y + "</span>"; b.setAttribute("aria-label", e.y + ": " + e.h); b.addEventListener("click", function(){ show(i); }); line.appendChild(b); });
+  function show(i){
+    idx = Math.max(0, Math.min(TL.length - 1, i)); var e = TL[idx];
+    $$(".tdot", line).forEach(function(d, j){ d.classList.toggle("on", j === idx); });
+    var c = $("#tcard"); c.className = "tcard " + e.t; c.innerHTML = '<div class="yr">' + e.y + "</div><div><h4>" + e.h + "</h4><p>" + e.b + "</p></div>";
+    $("#tPrev").disabled = idx === 0; $("#tNext").disabled = idx === TL.length - 1;
+  }
+  $("#tPrev").addEventListener("click", function(){ show(idx - 1); });
+  $("#tNext").addEventListener("click", function(){ show(idx + 1); });
+  show(0);
+}
+
+/* ================= QUIZZES ================= */
+var QUIZ = {
+  gene: [
+    {q: "Why do we clone a eukaryotic gene into bacteria as cDNA instead of copying it straight from the chromosome?", o: ["cDNA has no introns, and bacteria can't splice introns out", "cDNA is made of RNA, which bacteria read faster", "Chromosomal DNA can't be cut by restriction enzymes", "cDNA already comes with sticky ends"], w: "cDNA is copied from mature mRNA, so the introns are already gone. Bacteria don't have the machinery to remove introns themselves."},
+    {q: "Reverse transcriptase makes…", o: ["DNA from an RNA template", "RNA from a DNA template", "protein from mRNA", "a copy of a plasmid"], w: "Normal transcription goes DNA → RNA. Reverse transcriptase runs it backward: RNA → DNA. It's the UNO reverse card."}
+  ],
+  vector: [
+    {q: "You cut the plasmid with EcoRI and your gene with BamHI. What happens when you mix them?", o: ["The ends aren't complementary, so the gene won't base-pair into the plasmid", "Ligase joins them anyway", "The gene inserts backward", "Any two sticky ends will pair"], w: "Sticky ends only pair when they're complementary. EcoRI leaves AATT overhangs and BamHI leaves GATC. Cut both pieces with the same enzyme."},
+    {q: "What does DNA ligase do?", o: ["Seals the sugar-phosphate backbone, joining the fragments", "Cuts DNA at palindromic sites", "Copies the plasmid", "Makes the sticky ends"], w: "Sticky ends hold together with hydrogen bonds, but the backbone still has nicks. Ligase forms the covalent bonds that seal them."},
+    {q: "Which plasmid part lets the host cell copy the plasmid on its own?", o: ["Origin of replication", "Promoter", "Multiple cloning site", "AmpR gene"], w: "The origin of replication is where copying starts. It's what makes a plasmid self-replicating."}
+  ],
+  pcr: [
+    {q: "Which PCR step does the job that helicase does in your cells?", o: ["Denaturation", "Annealing", "Extension", "None of them"], w: "High heat (about 94–96°C) breaks the hydrogen bonds between the strands. PCR's artificial helicase."},
+    {q: "Your annealing step is set to 72°C and nothing amplifies. Why?", o: ["Primers can't stay bound, so the polymerase has no starting point", "The DNA never separated", "Taq is destroyed at 72°C", "The dNTPs break down"], w: "DNA polymerase can only add nucleotides to an existing 3' end. With no primer bound, it can't start."},
+    {q: "Starting with 1 copy, how many copies after 10 perfect cycles?", o: ["1,024", "20", "100", "10"], w: "Each cycle doubles: 2¹⁰ = 1,024. Same math as the \"double a dollar every day\" question."}
+  ],
+  transform: [
+    {q: "What is the brief 42°C heat shock for?", o: ["It opens temporary pores so the plasmid can enter", "It kills cells without the plasmid", "It activates the antibiotic", "It copies the plasmid"], w: "The heat shock opens temporary pores in the membrane. Back on ice, the membrane reseals with the plasmid inside."},
+    {q: "Which method uses an electric pulse to open pores in the membrane?", o: ["Electroporation", "Microinjection", "Protoplast fusion", "Heat shock"], w: "Electroporation uses a brief electric pulse. It works directly on bacteria, cell walls and all."}
+  ],
+  selection: [
+    {q: "A colony grows on ampicillin. What do you know for sure?", o: ["It took up a plasmid, but not necessarily one with your gene", "It has your gene of interest", "It's making your protein", "Nothing: everything grows on ampicillin"], w: "Antibiotic resistance only proves a plasmid is there. An empty plasmid gives resistance too, which is why we need secondary selection."},
+    {q: "Which secondary method most directly proves the inserted gene actually works?", o: ["Gene product analysis", "Antibiotic resistance", "Colony size", "Heat shock"], w: "Gene product analysis detects the actual protein, so it shows the gene is functional."}
+  ],
+  copies: [
+    {q: "Why does a growing culture of transformed bacteria make more copies of your gene?", o: ["Each time a cell divides, it copies its plasmid too", "Bacteria run PCR inside the cell", "Ligase keeps adding more genes", "Heat shock makes copies"], w: "Plasmids are self-replicating. Every cell division passes copies of the plasmid to both daughter cells."}
+  ],
+  product: [
+    {q: "In size-exclusion chromatography, which molecules come out first?", o: ["The largest", "The smallest", "The most charged", "The tagged ones"], w: "Large molecules can't enter the bead pores, so they take the shortest path and come out first."},
+    {q: "How does lysozyme break cells open?", o: ["It hydrolyzes bonds in peptidoglycan", "It dissolves the membrane like soap", "It spins the cells in a centrifuge", "It binds a His-tag"], w: "Lysozyme breaks the bonds between sugars in the peptidoglycan backbone, which is why it works best on gram-positive cells with their thick peptidoglycan."},
+    {q: "Centrifugation separates cells from the culture liquid based on…", o: ["Weight (density)", "Charge", "Color", "Size of their plasmids"], w: "Cells are denser than the liquid, so they pellet at the bottom while the supernatant stays on top."}
+  ],
+  xgal: [
+    {q: "A plate of ampicillin-resistant colonies comes back mostly blue. What does that tell you?", o: ["Transformation worked, but most plasmids closed without your gene", "Transformation failed", "Your gene is being expressed", "The X-gal was missing"], w: "They grew on ampicillin, so they have a plasmid. Blue means lacZ is intact, so most plasmids re-closed empty instead of taking up your gene."},
+    {q: "What does IPTG do in X-gal media?", o: ["Induces the lac operon by pulling the repressor off the operator", "Kills cells without a plasmid", "Turns colonies blue by itself", "Cuts open lacZ"], w: "IPTG acts like lactose. It binds the repressor's allosteric site so RNA polymerase can transcribe lacZ."}
+  ],
+  pglo: [
+    {q: "Colonies grow on LB + amp but don't glow. Why?", o: ["No arabinose, so the pBAD promoter is off", "They didn't take up pGLO", "GFP needs X-gal to glow", "The UV light killed them"], w: "Growing on ampicillin proves they have pGLO. GFP is only made when arabinose switches the pBAD promoter on."}
+  ],
+  apps: [
+    {q: "In CRISPR-Cas9, what tells Cas9 where to cut?", o: ["The guide RNA", "A restriction site", "A zinc finger protein", "siRNA"], w: "The gRNA is the Google Maps: it base-pairs with the target sequence and brings Cas9 (the scissors) there."},
+    {q: "How does RNAi silence a gene?", o: ["RISC destroys the target mRNA, so no protein is made", "Cas9 cuts the gene out", "It deletes the promoter", "It changes the DNA sequence"], w: "Gene silencing turns off expression without changing the DNA. siRNA binds the mRNA and RISC destroys it."},
+    {q: "What gets purified and injected in a DNA (vector) vaccine?", o: ["The plasmid vector, so the patient's cells make the protein", "The purified viral protein", "A weakened virus", "Cas9 and a guide RNA"], w: "A DNA vaccine delivers the vector itself. A subunit vaccine is the one that purifies and injects the protein."}
+  ]
+};
+function initQuizzes(){
+  $$(".quiz[data-quiz]").forEach(function(box){
+    var set = QUIZ[box.getAttribute("data-quiz")] || [], right = 0, answered = 0;
+    box.innerHTML = '<div class="qhead"><svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="15" fill="var(--good-soft)"/><path d="M10 17 l5 5 l9 -10" fill="none" stroke="var(--good)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>Check yourself</h3><span class="score">0 / ' + set.length + "</span></div>";
+    set.forEach(function(item){
+      var d = document.createElement("div"); d.className = "qitem";
+      d.innerHTML = '<p class="qq">' + item.q + '</p><div class="qopts"></div><div class="msg qwhy" hidden></div>';
+      var opts = $(".qopts", d), why = $(".qwhy", d);
+      shuffle(item.o.map(function(o, i){ return [o, i === 0]; })).forEach(function(o){
+        var b = document.createElement("button"); b.type = "button"; b.className = "qopt"; b.textContent = o[0];
+        b.addEventListener("click", function(){
+          answered++; if (o[1]) right++;
+          $$(".qopt", opts).forEach(function(x){ x.disabled = true; });
+          b.classList.add(o[1] ? "right" : "wrong");
+          if (!o[1]) $$(".qopt", opts).forEach(function(x){ if (x.textContent === item.o[0]) x.classList.add("right"); });
+          why.hidden = false; why.className = "msg qwhy " + (o[1] ? "good" : "bad");
+          why.innerHTML = "<b>" + (o[1] ? "Yes!" : "Not quite.") + "</b> " + item.w;
+          $(".score", box).textContent = right + " / " + set.length + (answered === set.length ? (right === set.length ? "  ✨ perfect" : "") : "");
+        });
+        opts.appendChild(b);
+      });
+      box.appendChild(d);
+    });
+  });
+}
+
+/* ================= INIT ================= */
+decorate(document);
+buildNav();
+markVisited();
+initPCR(); initHS(); initSel(); initDiv(); initStrip(); initChromo(); initLac(); initTimeline(); initQuizzes();
+function rethemed(){ drawChromo(); }
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", rethemed); } catch (e) {}
+try { new MutationObserver(rethemed).observe(document.documentElement, {attributes: true, attributeFilter: ["data-theme"]}); } catch (e) {}
+window.addEventListener("resize", function(){ if (current === "product") chromoResize(); });
+var h0 = (location.hash || "").slice(1);
+if (h0 && document.getElementById("view-" + h0)) go(h0, null, null, true);
+requestAnimationFrame(function(){ $("#hubsvg").classList.add("hub-loaded"); });
+})();
+
+</script>
