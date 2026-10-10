@@ -71,7 +71,7 @@ b,strong{font-weight:700}
 .hero p{color:var(--muted); font-size:18px; max-width:46ch; padding-bottom:4px}
 .figure{background:var(--surface); border:1px solid var(--line); border-radius:22px; padding:10px; margin-top:18px; overflow-x:auto}
 .figure svg{display:block; width:100%; min-width:640px; height:auto}
-.hub .ntitle{font:700 21px var(--f-display); fill:var(--ink)}
+.hub .ntitle{font:700 19px var(--f-display); fill:var(--ink)}
 .hub .nsub{font:400 15px var(--f-body); fill:var(--muted)}
 .hub .tiny{font:600 12px var(--f-mono); fill:var(--muted)}
 .hub .pale{font:800 34px var(--f-display); fill:var(--label); letter-spacing:-.01em}
@@ -113,6 +113,15 @@ b,strong{font-weight:700}
 .footnote b{color:var(--ink)}
 .pill{font:600 13px var(--f-mono); padding:6px 12px; border-radius:999px; background:var(--surface-2); color:var(--muted)}
 
+.hub .card{fill:var(--bg); stroke:var(--line); stroke-width:1.5; transition:fill .2s, stroke .2s}
+.node:hover .card{fill:var(--arrow-soft); stroke:var(--arrow)}
+.node:focus-visible .card{stroke:var(--arrow); stroke-width:3}
+.hub .keycard{fill:none; stroke:var(--line); stroke-width:1.5; stroke-dasharray:6 5}
+.hub .keytxt{font:400 15px var(--f-body); fill:var(--ink)}
+.tile.feature{grid-column:1/-1; align-items:center; background:var(--plasmid-soft); border-color:var(--plasmid)}
+.tile.feature svg{width:84px; height:84px}
+.tile.feature .t{font-size:24px}
+
 /* MODULE PAGES */
 .pipe{display:flex; gap:6px; overflow-x:auto; padding-bottom:6px; margin-bottom:22px; scrollbar-width:thin}
 .pipe button{flex:0 0 auto; display:flex; align-items:center; gap:7px; border:1.5px solid var(--line); background:var(--surface); border-radius:999px; padding:5px 12px 5px 5px; cursor:pointer; font-size:14.5px; font-weight:700; color:var(--muted)}
@@ -124,6 +133,7 @@ b,strong{font-weight:700}
 .mbadge{flex-shrink:0; width:64px; height:64px; border-radius:50%; background:var(--arrow); color:#fff; display:flex; align-items:center; justify-content:center; font:700 24px var(--f-mono)}
 .mbadge.lab{background:var(--plasmid)}
 .mbadge.app{background:var(--good)}
+.mbadge.edit{background:var(--gene); font-size:19px}
 .mhead h2{font-size:clamp(30px,4.2vw,42px); line-height:1.05; font-weight:800}
 .mhead .lede{font-size:19px; color:var(--muted); margin-top:10px; max-width:62ch}
 .block{margin-bottom:34px; scroll-margin-top:80px}
@@ -313,7 +323,8 @@ b,strong{font-weight:700}
 .compare > div{padding:12px 14px; border-top:1px solid var(--line); font-size:15.5px; min-width:0}
 .compare .hd{font-family:var(--f-display); font-weight:700; font-size:18px; border-top:0; background:var(--surface-2)}
 .compare .rl{font:700 13px var(--f-mono); text-transform:uppercase; color:var(--muted); background:var(--surface-2)}
-@media (max-width:640px){ .compare{grid-template-columns:1fr} .compare .rl{border-top:2px solid var(--line)} .compare .hd.blank{display:none} }
+.compare.c3{grid-template-columns:150px repeat(3,1fr)}
+@media (max-width:640px){ .compare, .compare.c3{grid-template-columns:1fr} .compare .rl{border-top:2px solid var(--line)} .compare .hd.blank{display:none} }
 
 /* heat shock */
 .stagebar{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px}
@@ -408,6 +419,7 @@ b,strong{font-weight:700}
 @media (prefers-reduced-motion: reduce){
   *, *::before, *::after{animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; scroll-behavior:auto!important}
 }
+#bactSvg [data-s]{transition:opacity .5s}
 </style>
 
 <div class="wrap">
@@ -431,160 +443,170 @@ b,strong{font-weight:700}
   </div>
 
   <div class="figure">
-  <svg class="hub" id="hubsvg" viewBox="0 0 1000 950" role="group" aria-label="Cloning a gene: clickable diagram of every step">
+  <svg class="hub" id="hubsvg" viewBox="0 0 1000 990" role="group" aria-label="Cloning a gene: clickable diagram of every step">
     <defs>
       <marker id="ah" viewBox="0 0 10 10" refX="4" refY="5" markerWidth="2.6" markerHeight="2.6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--arrow)"/></marker>
       <marker id="ahs" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="var(--muted)"/></marker>
     </defs>
 
-    <!-- big pale labels, like the textbook figure -->
-    <text class="pale" x="790" y="300">bacterium</text>
-    <text class="pale" x="112" y="520">recombinant DNA</text>
-    <text class="pale" x="112" y="556" style="font-size:24px">(plasmid)</text>
-
-    <!-- flow arrows -->
-    <path class="flow" marker-end="url(#ah)" d="M352 268 C 400 290, 430 330, 446 372"/>
-    <path class="flow" marker-end="url(#ah)" d="M636 300 C 608 330, 584 350, 562 374"/>
-    <path class="flow" marker-end="url(#ah)" d="M572 452 L 678 452"/>
-    <path class="flow" marker-end="url(#ah)" d="M900 538 C 904 560, 898 578, 888 598"/>
-    <path class="flow" marker-end="url(#ah)" d="M700 690 L 540 690"/>
-    <path class="flow" marker-end="url(#ah)" d="M398 760 C 360 785, 320 795, 282 808"/>
-    <path class="flow" marker-end="url(#ah)" d="M488 760 C 526 785, 566 795, 604 808"/>
-    <text class="orx" x="443" y="806" text-anchor="middle">OR</text>
+    <!-- flow arrows, drawn in the gaps between cards -->
+    <path class="flow" marker-end="url(#ah)" d="M308 160 L 338 160"/>
+    <path class="flow" marker-end="url(#ah)" d="M692 160 L 662 160"/>
+    <path class="flow" marker-end="url(#ah)" d="M404 308 C 384 338, 340 352, 306 366"/>
+    <path class="flow" marker-end="url(#ah)" d="M308 510 L 338 510"/>
+    <path class="flow" marker-end="url(#ah)" d="M648 510 L 678 510"/>
+    <path class="flow" marker-end="url(#ah)" d="M840 648 L 840 692"/>
+    <path class="flow" marker-end="url(#ah)" d="M766 648 C 730 672, 690 684, 654 700"/>
+    <text class="orx" x="796" y="704" text-anchor="middle">OR</text>
 
     <!-- 1 FIND THE GENE -->
     <g class="node" data-go="gene" tabindex="0" role="button" aria-label="Step 1: Find and copy the gene">
-      <rect class="halo" x="22" y="18" width="350" height="275" rx="24"/>
-      <g class="badge"><circle class="pulse" cx="52" cy="48" r="18"/><circle cx="52" cy="48" r="18"/><text x="52" y="48">1</text></g>
-      <text class="ntitle" x="80" y="46">Find &amp; copy the gene</text>
-      <text class="nsub" x="80" y="68">mRNA &#8594; reverse transcriptase &#8594; cDNA</text>
-      <ellipse cx="142" cy="172" rx="96" ry="74" fill="var(--donor)" stroke="var(--donor-edge)" stroke-width="3"/>
-      <circle cx="122" cy="168" r="42" fill="var(--surface)" fill-opacity=".55" stroke="var(--chrom)" stroke-width="2" stroke-dasharray="5 4"/>
-      <path data-tangle="122,168,30,30,15,7" fill="none" stroke="var(--chrom)" stroke-width="2.6"/>
-      <path d="M106 150 q 9 -9 20 -3" fill="none" stroke="var(--gene)" stroke-width="6" stroke-linecap="round"/>
-      <path d="M168 150 q 6 -6 12 0 t 12 0 t 12 0 t 12 0" fill="none" stroke="var(--gene)" stroke-width="3" stroke-linecap="round"/>
-      <path d="M170 176 q 6 -6 12 0 t 12 0 t 12 0 t 12 0" fill="none" stroke="var(--gene)" stroke-width="3" stroke-linecap="round"/>
-      <text class="tiny" x="196" y="200" text-anchor="middle">mRNA</text>
-      <text class="tiny" x="136" y="272" text-anchor="middle">donor cell (another species)</text>
-      <path class="thin" marker-end="url(#ahs)" d="M226 196 C 246 210, 262 222, 270 234"/>
-      <text class="tiny" x="232" y="236" text-anchor="end">RT</text>
-      <g transform="translate(262 244)">
-        <rect x="0" y="0" width="84" height="8" rx="3" fill="var(--gene)"/>
-        <rect x="8" y="14" width="84" height="8" rx="3" fill="var(--gene)"/>
-        <path d="M14 8v6M24 8v6M34 8v6M44 8v6M54 8v6M64 8v6M74 8v6" stroke="var(--gene)" stroke-width="2" opacity=".55"/>
+      <rect class="card" x="20" y="20" width="280" height="280" rx="22"/>
+      <g class="badge"><circle class="pulse" cx="54" cy="58" r="17"/><circle cx="54" cy="58" r="17"/><text x="54" y="58">1</text></g>
+      <text class="ntitle" x="80" y="64">Find &amp; copy the gene</text>
+      <text class="nsub" x="40" y="96">mRNA &#8594; reverse transcriptase</text>
+      <text class="nsub" x="40" y="116">&#8594; cDNA</text>
+      <ellipse cx="96" cy="208" rx="64" ry="54" fill="var(--donor)" stroke="var(--donor-edge)" stroke-width="3"/>
+      <circle cx="84" cy="206" r="29" fill="var(--surface)" fill-opacity=".6" stroke="var(--chrom)" stroke-width="2" stroke-dasharray="5 4"/>
+      <path data-tangle="84,206,19,19,12,7" fill="none" stroke="var(--chrom)" stroke-width="2.4"/>
+      <path d="M134 192 q5 -5 10 0 t10 0 t10 0 t10 0" fill="none" stroke="var(--gene)" stroke-width="3" stroke-linecap="round"/>
+      <path d="M136 214 q5 -5 10 0 t10 0 t10 0 t10 0" fill="none" stroke="var(--gene)" stroke-width="3" stroke-linecap="round"/>
+      <text class="tiny" x="156" y="240" text-anchor="middle">mRNA</text>
+      <path class="thin" marker-end="url(#ahs)" d="M180 204 L 204 204"/>
+      <text class="tiny" x="192" y="192" text-anchor="middle">RT</text>
+      <g transform="translate(214 196)">
+        <rect x="0" y="0" width="66" height="7" rx="3" fill="var(--gene)"/>
+        <rect x="6" y="12" width="66" height="7" rx="3" fill="var(--gene)"/>
+        <path d="M12 7v5M22 7v5M32 7v5M42 7v5M52 7v5M62 7v5" stroke="var(--gene)" stroke-width="2" opacity=".55"/>
       </g>
-      <text class="tiny" x="304" y="238" text-anchor="middle" style="fill:var(--gene)">cDNA</text>
+      <text class="tiny" x="250" y="186" text-anchor="middle" style="fill:var(--gene)">cDNA</text>
     </g>
 
     <!-- 2 CUT THE VECTOR -->
     <g class="node" data-go="vector" data-anchor="cut" tabindex="0" role="button" aria-label="Step 2: Cut the vector with a restriction enzyme">
-      <rect class="halo" x="600" y="18" width="385" height="300" rx="24"/>
-      <g class="badge"><circle class="pulse" cx="632" cy="48" r="18"/><circle cx="632" cy="48" r="18"/><text x="632" y="48">2</text></g>
-      <text class="ntitle" x="660" y="46">Cut the vector</text>
-      <text class="nsub" x="660" y="68">A restriction enzyme opens the plasmid</text>
-      <g transform="rotate(-16 862 168)">
-        <rect x="748" y="112" width="232" height="112" rx="56" fill="var(--cell)" stroke="var(--cell-edge)" stroke-width="7"/>
-        <rect x="758" y="122" width="212" height="92" rx="46" fill="none" stroke="var(--cell-edge)" stroke-width="2" opacity=".4"/>
-        <path data-tangle="830,168,42,30,16,3" fill="none" stroke="var(--chrom)" stroke-width="2.4"/>
-        <circle cx="918" cy="162" r="21" fill="none" stroke="var(--plasmid)" stroke-width="5"/>
+      <rect class="card" x="700" y="20" width="280" height="280" rx="22"/>
+      <g class="badge"><circle class="pulse" cx="734" cy="58" r="17"/><circle cx="734" cy="58" r="17"/><text x="734" y="58">2</text></g>
+      <text class="ntitle" x="760" y="64">Cut the vector</text>
+      <text class="nsub" x="720" y="96">A restriction enzyme opens</text>
+      <text class="nsub" x="720" y="116">the plasmid</text>
+      <g transform="rotate(-10 782 204)">
+        <rect x="718" y="170" width="128" height="66" rx="33" fill="var(--cell)" stroke="var(--cell-edge)" stroke-width="5"/>
+        <rect x="725" y="177" width="114" height="52" rx="26" fill="none" stroke="var(--cell-edge)" stroke-width="1.5" opacity=".4"/>
+        <path data-tangle="766,203,24,16,13,3" fill="none" stroke="var(--chrom)" stroke-width="2"/>
+        <circle cx="818" cy="200" r="11" fill="none" stroke="var(--plasmid)" stroke-width="3.5"/>
       </g>
-      <path class="thin" marker-end="url(#ahs)" d="M770 222 C 748 236, 730 244, 716 248"/>
-      <text class="tiny" x="760" y="258">isolate</text>
-      <path data-arc="668,262,40,248,562" fill="none" stroke="var(--plasmid)" stroke-width="10" stroke-linecap="butt"/>
-      <g transform="translate(606 230) rotate(-30)" stroke="var(--ink)" stroke-width="2.4" fill="none" stroke-linecap="round">
-        <circle cx="-6" cy="14" r="5"/><circle cx="6" cy="14" r="5"/><path d="M-3 10 L 8 -10 M3 10 L -8 -10"/>
+      <path class="thin" marker-end="url(#ahs)" d="M854 204 L 878 204"/>
+      <path data-arc="926,204,30,248,562" fill="none" stroke="var(--plasmid)" stroke-width="8"/>
+      <g transform="translate(886 248) rotate(-30)" stroke="var(--ink)" stroke-width="2" fill="none" stroke-linecap="round">
+        <circle cx="-5" cy="11" r="4"/><circle cx="5" cy="11" r="4"/><path d="M-2.5 8 L 7 -8 M2.5 8 L -7 -8"/>
       </g>
-      <text class="tiny" x="668" y="324" text-anchor="middle">sticky ends</text>
+      <text class="tiny" x="926" y="160" text-anchor="middle">sticky ends</text>
     </g>
 
-    <!-- 3 INSERT & SEAL -->
-    <g class="node" data-go="vector" data-anchor="insert" tabindex="0" role="button" aria-label="Step 3: Insert the gene and seal it with ligase">
-      <rect class="halo" x="96" y="378" width="490" height="190" rx="24"/>
-      <g class="badge"><circle class="pulse" cx="128" cy="424" r="18"/><circle cx="128" cy="424" r="18"/><text x="128" y="424">3</text></g>
-      <text class="ntitle" x="156" y="422">Insert &amp; seal</text>
-      <text class="nsub" x="156" y="444">DNA ligase joins the sticky ends</text>
-      <circle cx="502" cy="452" r="58" fill="none" stroke="var(--plasmid)" stroke-width="12"/>
-      <path data-arc="502,452,58,-38,14" fill="none" stroke="var(--gene)" stroke-width="12"/>
-      <text class="tiny" x="502" y="456" text-anchor="middle">+ gene</text>
+    <!-- 3 INSERT -->
+    <g class="node" data-go="vector" data-anchor="insert" tabindex="0" role="button" aria-label="Step 3: Insert the gene into the plasmid">
+      <rect class="card" x="360" y="20" width="280" height="280" rx="22"/>
+      <g class="badge"><circle class="pulse" cx="394" cy="58" r="17"/><circle cx="394" cy="58" r="17"/><text x="394" y="58">3</text></g>
+      <text class="ntitle" x="420" y="64">Insert the gene</text>
+      <text class="nsub" x="380" y="96">The gene's sticky ends pair</text>
+      <text class="nsub" x="380" y="116">with the opened plasmid</text>
+      <circle cx="500" cy="196" r="44" fill="none" stroke="var(--plasmid)" stroke-width="11"/>
+      <path data-arc="500,196,44,-38,14" fill="none" stroke="var(--gene)" stroke-width="11"/>
+      <text class="tiny" x="500" y="200" text-anchor="middle">+ gene</text>
+      <text class="pale" x="500" y="276" text-anchor="middle" style="font-size:23px">recombinant DNA</text>
     </g>
 
     <!-- 4 PCR -->
     <g class="node" data-go="pcr" tabindex="0" role="button" aria-label="Step 4: Amplify with PCR">
-      <rect class="halo" x="672" y="340" width="315" height="200" rx="24"/>
-      <g class="badge"><circle class="pulse" cx="702" cy="372" r="18"/><circle cx="702" cy="372" r="18"/><text x="702" y="372">4</text></g>
-      <text class="ntitle" x="730" y="370">Amplify with PCR</text>
-      <text class="nsub" x="730" y="392">Millions of copies, before transformation</text>
-      <path d="M712 418 h34 v40 l-17 32 l-17 -32 z" fill="var(--surface-2)" stroke="var(--muted)" stroke-width="2.5" stroke-linejoin="round"/>
-      <rect x="708" y="410" width="42" height="9" rx="3" fill="var(--muted)"/>
-      <path d="M714 466 h30 l-15 23 z" fill="var(--plasmid)" opacity=".55"/>
+      <rect class="card" x="20" y="380" width="280" height="260" rx="22"/>
+      <g class="badge"><circle class="pulse" cx="54" cy="418" r="17"/><circle cx="54" cy="418" r="17"/><text x="54" y="418">4</text></g>
+      <text class="ntitle" x="80" y="424">Amplify with PCR</text>
+      <text class="nsub" x="40" y="456">Millions of copies, before</text>
+      <text class="nsub" x="40" y="476">transformation</text>
+      <path d="M42 510 h30 v38 l-15 28 l-15 -28 z" fill="var(--surface-2)" stroke="var(--muted)" stroke-width="2.5" stroke-linejoin="round"/>
+      <rect x="38" y="502" width="38" height="8" rx="3" fill="var(--muted)"/>
+      <path d="M47 556 h20 l-10 16 z" fill="var(--plasmid)" opacity=".55"/>
       <g class="thin" style="stroke-width:1.5">
-        <path d="M796 466 L 836 442 M796 466 L 836 494 M850 442 L 896 426 M850 442 L 896 452 M850 494 L 896 478 M850 494 L 896 504"/>
+        <path d="M120 548 L 154 526 M120 548 L 154 570 M170 526 L 214 512 M170 526 L 214 538 M170 570 L 214 562 M170 570 L 214 588"/>
       </g>
-      <g data-mini="784,466,13"></g>
-      <g data-mini="846,442,12"></g><g data-mini="846,494,12"></g>
-      <g data-mini="906,426,10"></g><g data-mini="906,452,10"></g><g data-mini="906,478,10"></g><g data-mini="906,504,10"></g>
-      <text class="tiny" x="950" y="470" text-anchor="middle">&#215;2</text>
-      <text class="tiny" x="950" y="486" text-anchor="middle">per</text>
-      <text class="tiny" x="950" y="502" text-anchor="middle">cycle</text>
+      <g data-mini="110,548,11"></g>
+      <g data-mini="162,526,10"></g><g data-mini="162,570,10"></g>
+      <g data-mini="224,512,9"></g><g data-mini="224,538,9"></g><g data-mini="224,562,9"></g><g data-mini="224,588,9"></g>
+      <text class="tiny" x="264" y="546" text-anchor="middle">&#215;2</text>
+      <text class="tiny" x="264" y="562" text-anchor="middle">each</text>
+      <text class="tiny" x="264" y="578" text-anchor="middle">cycle</text>
     </g>
 
     <!-- 5 TRANSFORM -->
     <g class="node" data-go="transform" tabindex="0" role="button" aria-label="Step 5: Transform the plasmid into cells">
-      <rect class="halo" x="690" y="598" width="300" height="220" rx="24"/>
-      <rect x="708" y="618" width="270" height="134" rx="67" fill="var(--cell)" stroke="var(--gold)" stroke-width="8"/>
-      <rect x="720" y="630" width="246" height="110" rx="55" fill="none" stroke="var(--cell-edge)" stroke-width="2" opacity=".45"/>
-      <path data-tangle="800,684,50,36,17,11" fill="none" stroke="var(--chrom)" stroke-width="2.4"/>
-      <g data-mini="906,660,18"></g><g data-mini="928,710,13"></g><g data-mini="878,720,11"></g>
-      <g class="badge"><circle class="pulse" cx="720" cy="788" r="18"/><circle cx="720" cy="788" r="18"/><text x="720" y="788">5</text></g>
-      <text class="ntitle" x="748" y="786">Transform into cells</text>
-      <text class="nsub" x="748" y="808">Heat shock and other methods</text>
+      <rect class="card" x="360" y="380" width="280" height="260" rx="22"/>
+      <g class="badge"><circle class="pulse" cx="394" cy="418" r="17"/><circle cx="394" cy="418" r="17"/><text x="394" y="418">5</text></g>
+      <text class="ntitle" x="420" y="424">Transform into cells</text>
+      <text class="nsub" x="380" y="456">Heat shock and other</text>
+      <text class="nsub" x="380" y="476">methods</text>
+      <rect x="392" y="504" width="216" height="108" rx="54" fill="var(--cell)" stroke="var(--gold)" stroke-width="7"/>
+      <rect x="402" y="514" width="196" height="88" rx="44" fill="none" stroke="var(--cell-edge)" stroke-width="1.5" opacity=".45"/>
+      <path data-tangle="460,558,36,26,16,11" fill="none" stroke="var(--chrom)" stroke-width="2.2"/>
+      <g data-mini="540,536,13"></g><g data-mini="566,576,10"></g><g data-mini="520,584,9"></g>
     </g>
 
     <!-- 6 SELECT -->
     <g class="node" data-go="selection" tabindex="0" role="button" aria-label="Step 6: Select the cells that worked">
-      <rect class="halo" x="96" y="602" width="440" height="160" rx="24"/>
-      <circle cx="456" cy="688" r="70" fill="var(--agar)" stroke="var(--muted)" stroke-width="3"/>
-      <circle cx="456" cy="688" r="61" fill="none" stroke="var(--muted)" stroke-width="1.5" opacity=".5"/>
+      <rect class="card" x="700" y="380" width="280" height="260" rx="22"/>
+      <g class="badge"><circle class="pulse" cx="734" cy="418" r="17"/><circle cx="734" cy="418" r="17"/><text x="734" y="418">6</text></g>
+      <text class="ntitle" x="760" y="424">Select the winners</text>
+      <text class="nsub" x="720" y="456">Antibiotic + a second check,</text>
+      <text class="nsub" x="720" y="476">then grow the right clone</text>
+      <circle cx="840" cy="560" r="58" fill="var(--agar)" stroke="var(--muted)" stroke-width="3"/>
+      <circle cx="840" cy="560" r="50" fill="none" stroke="var(--muted)" stroke-width="1.2" opacity=".5"/>
       <g fill="var(--surface)" stroke="var(--plasmid)" stroke-width="2">
-        <circle cx="430" cy="662" r="7"/><circle cx="470" cy="652" r="6"/><circle cx="488" cy="684" r="7"/><circle cx="440" cy="702" r="6"/>
-        <circle cx="468" cy="718" r="7"/><circle cx="418" cy="686" r="5"/><circle cx="494" cy="712" r="5"/><circle cx="454" cy="676" r="5"/>
+        <circle cx="818" cy="538" r="6"/><circle cx="852" cy="530" r="5"/><circle cx="868" cy="558" r="6"/><circle cx="826" cy="574" r="5"/>
+        <circle cx="850" cy="588" r="6"/><circle cx="808" cy="558" r="4"/><circle cx="872" cy="582" r="4"/><circle cx="840" cy="552" r="4"/>
       </g>
-            <g class="badge"><circle class="pulse" cx="128" cy="672" r="18"/><circle cx="128" cy="672" r="18"/><text x="128" y="672">6</text></g>
-      <text class="ntitle" x="156" y="670">Select the winners</text>
-      <text class="nsub" x="156" y="692">Antibiotic + a second check,</text>
-      <text class="nsub" x="156" y="712">then grow the right clone</text>
+    </g>
+
+    <!-- COLOR KEY (not a step) -->
+    <g aria-label="Color key">
+      <rect class="keycard" x="20" y="720" width="280" height="250" rx="22"/>
+      <text class="ntitle" x="44" y="760" style="font-size:18px">Color key</text>
+      <circle cx="56" cy="796" r="10" fill="none" stroke="var(--plasmid)" stroke-width="4"/><text class="keytxt" x="80" y="801">plasmid (the vector)</text>
+      <rect x="44" y="830" width="26" height="8" rx="4" fill="var(--gene)"/><text class="keytxt" x="80" y="839">gene of interest</text>
+      <path d="M44 876 q6 -10 12 0 t12 0" fill="none" stroke="var(--chrom)" stroke-width="2.5"/><text class="keytxt" x="80" y="879">bacterial chromosome</text>
+      <rect x="44" y="906" width="26" height="18" rx="9" fill="var(--cell)" stroke="var(--gold)" stroke-width="3"/><text class="keytxt" x="80" y="919">transformed cell</text>
+      <path d="M44 952 h18" stroke="var(--arrow)" stroke-width="5" stroke-linecap="round"/><path d="M60 945 l9 7 l-9 7 z" fill="var(--arrow)"/><text class="keytxt" x="80" y="957">next step</text>
     </g>
 
     <!-- 7a COPIES -->
     <g class="node" data-go="copies" tabindex="0" role="button" aria-label="Step 7a: Harvest copies of the gene">
-      <rect class="halo" x="80" y="800" width="360" height="145" rx="24"/>
-      <g transform="rotate(-12 150 840)"><rect x="110" y="822" width="80" height="36" rx="18" fill="var(--cell)" stroke="var(--cell-edge)" stroke-width="4"/></g>
-      <g data-mini="150,838,9"></g>
-      <rect x="200" y="826" width="80" height="36" rx="18" fill="var(--cell)" stroke="var(--cell-edge)" stroke-width="4"/>
-      <g data-mini="240,844,9"></g>
-      <g transform="rotate(10 324 838)"><rect x="284" y="820" width="80" height="36" rx="18" fill="var(--cell)" stroke="var(--cell-edge)" stroke-width="4"/></g>
-      <g data-mini="324,838,9"></g>
-      <g class="badge"><circle class="pulse" cx="112" cy="904" r="18"/><circle cx="112" cy="904" r="18"/><text x="112" y="904" style="font-size:14px">7a</text></g>
-      <text class="ntitle" x="140" y="902">Harvest copies of the gene</text>
-      <text class="nsub" x="140" y="924">Cells copy the plasmid every division</text>
+      <rect class="card" x="360" y="720" width="280" height="250" rx="22"/>
+      <g class="badge"><circle class="pulse" cx="394" cy="758" r="17"/><circle cx="394" cy="758" r="17"/><text x="394" y="758" style="font-size:13px">7a</text></g>
+      <text class="ntitle" x="420" y="764">Harvest gene copies</text>
+      <text class="nsub" x="380" y="796">Cells copy the plasmid</text>
+      <text class="nsub" x="380" y="816">every time they divide</text>
+      <g transform="rotate(-10 417 878)"><rect x="384" y="862" width="66" height="32" rx="16" fill="var(--cell)" stroke="var(--cell-edge)" stroke-width="4"/></g>
+      <g data-mini="417,878,8"></g>
+      <rect x="467" y="876" width="66" height="32" rx="16" fill="var(--cell)" stroke="var(--cell-edge)" stroke-width="4"/>
+      <g data-mini="500,892,8"></g>
+      <g transform="rotate(10 583 878)"><rect x="550" y="862" width="66" height="32" rx="16" fill="var(--cell)" stroke="var(--cell-edge)" stroke-width="4"/></g>
+      <g data-mini="583,878,8"></g>
     </g>
 
     <!-- 7b PROTEIN -->
     <g class="node" data-go="product" tabindex="0" role="button" aria-label="Step 7b: Harvest the protein product">
-      <rect class="halo" x="560" y="800" width="400" height="145" rx="24"/>
-      <rect x="600" y="820" width="88" height="40" rx="20" fill="var(--cell)" stroke="var(--cell-edge)" stroke-width="4"/>
-      <g data-mini="620,840,9"></g>
-      <path d="M636 834 q4 -5 8 0 t8 0" fill="none" stroke="var(--good)" stroke-width="2.5"/>
-      <g fill="var(--protein)"><circle cx="664" cy="846" r="4"/><circle cx="670" cy="839" r="4"/><circle cx="674" cy="848" r="4"/></g>
-      <g transform="rotate(14 750 838)"><rect x="704" y="818" width="88" height="40" rx="20" fill="var(--cell)" stroke="var(--cell-edge)" stroke-width="4"/></g>
-      <g data-mini="728,834,9"></g>
-      <g fill="var(--protein)"><circle cx="760" cy="840" r="4"/><circle cx="766" cy="847" r="4"/><circle cx="757" cy="850" r="4"/><circle cx="770" cy="838" r="4"/></g>
-      <path d="M842 812 h20 v52 a10 10 0 0 1 -20 0 z" fill="var(--surface-2)" stroke="var(--muted)" stroke-width="2.5"/>
-      <rect x="845" y="836" width="14" height="34" rx="6" fill="var(--protein)" opacity=".75"/>
-      <path class="thin" marker-end="url(#ahs)" d="M802 842 L 832 842"/>
-      <g class="badge"><circle class="pulse" cx="592" cy="904" r="18"/><circle cx="592" cy="904" r="18"/><text x="592" y="904" style="font-size:14px">7b</text></g>
-      <text class="ntitle" x="620" y="902">Harvest the protein product</text>
-      <text class="nsub" x="620" y="924">Lyse the cells, then purify</text>
+      <rect class="card" x="700" y="720" width="280" height="250" rx="22"/>
+      <g class="badge"><circle class="pulse" cx="734" cy="758" r="17"/><circle cx="734" cy="758" r="17"/><text x="734" y="758" style="font-size:13px">7b</text></g>
+      <text class="ntitle" x="760" y="764">Harvest the protein</text>
+      <text class="nsub" x="720" y="796">Lyse the cells, then purify</text>
+      <rect x="722" y="852" width="80" height="38" rx="19" fill="var(--cell)" stroke="var(--cell-edge)" stroke-width="4"/>
+      <g data-mini="740,871,8"></g>
+      <path d="M754 866 q4 -5 8 0 t8 0" fill="none" stroke="var(--good)" stroke-width="2.5"/>
+      <g fill="var(--protein)"><circle cx="782" cy="876" r="4"/><circle cx="788" cy="868" r="4"/><circle cx="792" cy="878" r="4"/></g>
+      <g transform="rotate(12 852 878)"><rect x="812" y="860" width="80" height="38" rx="19" fill="var(--cell)" stroke="var(--cell-edge)" stroke-width="4"/></g>
+      <g data-mini="832,872,8"></g>
+      <g fill="var(--protein)"><circle cx="860" cy="876" r="4"/><circle cx="868" cy="882" r="4"/><circle cx="858" cy="886" r="4"/><circle cx="871" cy="871" r="4"/></g>
+      <path class="thin" marker-end="url(#ahs)" d="M902 878 L 922 878"/>
+      <path d="M934 846 h18 v48 a9 9 0 0 1 -18 0 z" fill="var(--surface-2)" stroke="var(--muted)" stroke-width="2.5"/>
+      <rect x="937" y="868" width="12" height="30" rx="5" fill="var(--protein)" opacity=".75"/>
     </g>
   </svg>
   </div>
@@ -602,8 +624,12 @@ b,strong{font-weight:700}
     </button>
   </div>
 
-  <div class="sec-title"><h2>Why it matters</h2><p>Applications of the same pipeline</p></div>
+  <div class="sec-title"><h2>Why it matters</h2><p>What this pipeline makes possible</p></div>
   <div class="cards">
+    <button class="tile feature" type="button" data-go="editing">
+      <svg viewBox="0 0 84 84" aria-hidden="true"><rect x="8" y="48" width="68" height="8" rx="4" fill="var(--plasmid)"/><rect x="8" y="62" width="68" height="8" rx="4" fill="var(--plasmid)"/><ellipse cx="42" cy="44" rx="26" ry="17" fill="var(--arrow-soft)" stroke="var(--arrow)" stroke-width="3"/><path d="M26 30 q4 -5 8 0 t8 0 t8 0 t8 0" fill="none" stroke="var(--good)" stroke-width="3.5" stroke-linecap="round"/><path d="M42 40 v34" stroke="var(--bad)" stroke-width="3" stroke-dasharray="4 3"/></svg>
+      <span><span class="t">CRISPR &amp; gene editing</span><span class="d" style="display:block">How bacteria use CRISPR to remember viruses, the Nobel Prize that turned it into a tool, ZFNs and TALENs, and gene therapy in humans.</span><span class="tag">New page</span></span>
+    </button>
     <button class="tile" type="button" data-go="apps" data-tab="ther">
       <svg viewBox="0 0 60 60" aria-hidden="true"><rect x="10" y="24" width="34" height="13" rx="3" fill="var(--arrow-soft)" stroke="var(--arrow)" stroke-width="2.5" transform="rotate(-35 30 30)"/><path d="M42 12 l8 -8 M38 16 l6 6" stroke="var(--arrow)" stroke-width="3" stroke-linecap="round"/><path d="M14 44 l-8 8" stroke="var(--arrow)" stroke-width="3" stroke-linecap="round"/></svg>
       <span><span class="t">Therapeutics</span><span class="d" style="display:block">Vaccines, CRISPR, RNAi, gene therapy</span></span>
@@ -770,7 +796,7 @@ b,strong{font-weight:700}
   </div>
 
   <div class="block" id="insert">
-    <h3>Step 3: Match the sticky ends, then seal</h3>
+    <h3>Step 3: Match the sticky ends</h3>
     <p class="sub">The plasmid below was opened with EcoRI. Drag the gene fragment that will base-pair with its sticky ends into the gap (or just click a fragment).</p>
     <div class="panel match">
       <div class="svgbox"><svg id="matchSvg" viewBox="0 0 320 270" aria-label="Opened plasmid">
@@ -787,7 +813,7 @@ b,strong{font-weight:700}
       <div>
         <div class="tray" id="tray"></div>
         <div class="msg" id="matchMsg" style="margin-top:12px" aria-live="polite">Which fragment's overhangs are complementary to AATT? (A pairs with T, G pairs with C.)</div>
-        <div class="btnrow" style="margin-top:10px"><button class="btn" type="button" id="ligaseBtn" hidden>Add DNA ligase</button><button class="btn ghost small" type="button" id="matchReset">Reset</button></div>
+        <div class="btnrow" style="margin-top:10px"><button class="btn ghost small" type="button" id="matchReset">Reset</button></div>
       </div>
     </div>
   </div>
@@ -1134,7 +1160,7 @@ b,strong{font-weight:700}
       <div class="plate"><svg viewBox="0 0 110 110" aria-hidden="true"><circle cx="55" cy="55" r="50" fill="var(--agar)" stroke="var(--muted)" stroke-width="2"/><g fill="#3a6fd8" stroke="var(--muted)"><circle cx="38" cy="40" r="7"/><circle cx="66" cy="34" r="6"/><circle cx="72" cy="66" r="7"/><circle cx="44" cy="72" r="6"/><circle cx="56" cy="54" r="5"/></g></svg><span class="cond">BLUE colonies</span><b>Unsuccessful insertion</b><span>The plasmid closed without the gene. lacZ works, &beta;-galactosidase cleaves X-gal, and it turns blue.</span></div>
       <div class="plate"><svg viewBox="0 0 110 110" aria-hidden="true"><circle cx="55" cy="55" r="50" fill="var(--agar)" stroke="var(--muted)" stroke-width="2"/></svg><span class="cond">NO colonies</span><b>No plasmid</b><span>Without the plasmid, there's no ampicillin resistance, so nothing grows.</span></div>
     </div>
-    <div class="soon" style="margin-top:14px">Plate simulator: in the study module (link coming soon)</div>
+    <a class="btn" style="margin-top:14px" href="https://1024leigh-design.github.io/Unit-2-Studying/pretranscriptional-control.html#lab-xgal" target="_blank" rel="noopener">Try the X-gal plate lab (Unit 2 lac operon module) &#8599;</a>
   </div>
 
   <div class="quiz" data-quiz="xgal"></div>
@@ -1175,7 +1201,7 @@ b,strong{font-weight:700}
       <div class="plate"><svg viewBox="0 0 110 110" aria-hidden="true"><circle cx="55" cy="55" r="50" fill="var(--agar)" stroke="var(--muted)" stroke-width="2"/><circle cx="55" cy="55" r="42" fill="var(--surface)" opacity=".7"/></svg><span class="cond">LB + arabinose</span><b>Lawn, no selection</b><span>Without ampicillin, you can't separate transformed cells from untransformed ones by growth.</span></div>
     </div>
     <p style="margin-top:14px; max-width:68ch">This is gene product analysis in its most direct form. You aren't guessing from a growth pattern; you're watching the expressed protein glow.</p>
-    <div class="soon" style="margin-top:14px">Plate simulator: in the study module (link coming soon)</div>
+    <a class="btn" style="margin-top:14px" href="https://1024leigh-design.github.io/Unit-2-Studying/pretranscriptional-control.html#lab-pglo" target="_blank" rel="noopener">Try the pGLO plate lab (Unit 2 lac operon module) &#8599;</a>
   </div>
 
   <div class="quiz" data-quiz="pglo"></div>
@@ -1228,50 +1254,6 @@ b,strong{font-weight:700}
     </div>
 
     <div class="block">
-      <h3>Gene editing with CRISPR-Cas9</h3>
-      <p class="sub">CRISPR (Clustered Regularly Interspaced Short Palindromic Repeats) started as a bacterial defense: a DNA region that stores "memories" of past viral infections. In the lab, we give Cas9 a new target. Click through the four steps.</p>
-      <div class="panel stepper" id="crisprStepper">
-        <div class="dots"></div>
-        <div class="svgbox"><svg viewBox="0 0 700 220" aria-label="CRISPR-Cas9 steps">
-          <g id="cr-dna">
-            <rect x="30" y="150" width="640" height="10" rx="5" fill="var(--plasmid)"/>
-            <rect x="30" y="176" width="640" height="10" rx="5" fill="var(--plasmid)"/>
-            <path d="M50 160v16M80 160v16M110 160v16M140 160v16M170 160v16M200 160v16M230 160v16M260 160v16M290 160v16M320 160v16M350 160v16M380 160v16M410 160v16M440 160v16M470 160v16M500 160v16M530 160v16M560 160v16M590 160v16M620 160v16M650 160v16" stroke="var(--plasmid)" stroke-width="2" opacity=".45"/>
-            <rect x="400" y="146" width="120" height="44" rx="8" fill="none" stroke="var(--gene)" stroke-width="2.5" stroke-dasharray="5 4"/>
-            <text x="460" y="210" text-anchor="middle" class="svgmono" font-size="12" style="fill:var(--gene)">target sequence</text>
-          </g>
-          <g id="cr-complex" style="transition:transform 1s cubic-bezier(.4,0,.2,1)">
-            <ellipse cx="0" cy="0" rx="78" ry="52" fill="var(--arrow-soft)" stroke="var(--arrow)" stroke-width="3"/>
-            <text x="0" y="-18" text-anchor="middle" class="svgtext" font-size="15" font-weight="700">Cas9</text>
-            <text x="0" y="0" text-anchor="middle" class="svgmuted" font-size="12">the scissors</text>
-            <path id="cr-grna" d="M-50 30 q 12 -10 24 0 t 24 0 t 24 0 t 24 0" fill="none" stroke="var(--good)" stroke-width="5" stroke-linecap="round" opacity="0" style="transition:opacity .6s"/>
-          </g>
-          <g id="cr-grna-free" style="transition:opacity .6s">
-            <path d="M80 60 q 12 -10 24 0 t 24 0 t 24 0 t 24 0" fill="none" stroke="var(--good)" stroke-width="5" stroke-linecap="round"/>
-            <text x="128" y="40" text-anchor="middle" class="svgtext" font-size="14" font-weight="700" style="fill:var(--good)">guide RNA</text>
-            <text x="128" y="88" text-anchor="middle" class="svgmuted" font-size="12">the Google Maps</text>
-          </g>
-          <g id="cr-cut" opacity="0" style="transition:opacity .5s">
-            <path d="M458 140 L 462 196" stroke="var(--bad)" stroke-width="4" stroke-dasharray="6 4"/>
-            <text x="470" y="134" class="svgtext" font-size="14" font-weight="700" style="fill:var(--bad)">cut!</text>
-          </g>
-          <g id="cr-fix" opacity="0" style="transition:opacity .5s">
-            <rect x="436" y="150" width="48" height="10" rx="3" fill="var(--gold)"/>
-            <rect x="436" y="176" width="48" height="10" rx="3" fill="var(--gold)"/>
-            <text x="460" y="134" text-anchor="middle" class="svgtext" font-size="14" font-weight="700">edited</text>
-          </g>
-        </svg></div>
-        <div class="cap"><span class="where lab">Step</span><p></p></div>
-        <div class="btnrow" style="margin-top:12px"><button class="btn ghost small" data-step="-1" type="button">&larr; Back</button><button class="btn small" data-step="1" type="button">Next step &rarr;</button></div>
-      </div>
-      <div class="grid3" style="margin-top:14px">
-        <div class="idea flat"><h4>In the lab</h4><p>A "master mix" of Cas9/gRNA, salts, and a repair template is microinjected into animals or applied to cells. Example: <i>C. elegans</i> with GFP-tagged neurons.</p></div>
-        <div class="idea flat"><h4>Old school: ZFNs &amp; TALENs</h4><p>Zinc-finger nucleases and TALENs use engineered proteins to find a sequence, fused to the FokI nuclease to cut. Every new target needs a new protein. CRISPR only needs a new guide RNA, so it's easier, faster, cheaper, more versatile, and more efficient.</p></div>
-        <div class="idea flat"><h4>Gene editing in the wild</h4><p>Golden rice was engineered with beta-carotene genes to fight vitamin A deficiency. Researchers are working on editing mosquito DNA to stop the spread of malaria.</p></div>
-      </div>
-    </div>
-
-    <div class="block">
       <h3>Gene silencing (RNAi)</h3>
       <p class="sub">Turns off gene expression without changing the DNA sequence.</p>
       <div class="chiprow">
@@ -1283,28 +1265,10 @@ b,strong{font-weight:700}
     </div>
 
     <div class="block">
-      <h3>Gene therapy: a bumpy history</h3>
-      <p class="sub">Click a year, or use the arrows. Green = success, red = setback.</p>
-      <div class="panel">
-        <div class="tline" id="tline"></div>
-        <div class="tcard" id="tcard" aria-live="polite"></div>
-        <div class="btnrow" style="margin-top:10px"><button class="btn ghost small" type="button" id="tPrev">&larr; Earlier</button><button class="btn small" type="button" id="tNext">Later &rarr;</button></div>
-      </div>
-    </div>
-
-    <div class="block">
-      <h3>Ethical considerations</h3>
-      <p class="sub">No right answers here. Pick one and talk it through with a classmate.</p>
-      <div class="prompts">
-        <div><b>1</b>Should we edit genes to prevent diseases? What about to enhance traits? Where's the line?</div>
-        <div><b>2</b>Who decides which traits are "desirable"?</div>
-        <div><b>3</b>Could the price of gene editing increase social inequality?</div>
-        <div><b>4</b>Should parents be able to edit their child's DNA? Can babies or young children consent?</div>
-        <div><b>5</b>What limits, if any, should governments set on human gene editing?</div>
-        <div><b>6</b>How do we make sure people give informed consent for gene-editing procedures?</div>
-        <div><b>7</b>Are we "playing God" by editing human genes?</div>
-        <div><b>8</b>How do we weigh long-term consequences when edits are made at birth?</div>
-      </div>
+      <button class="tile feature" type="button" data-go="editing" style="width:100%">
+        <svg viewBox="0 0 84 84" aria-hidden="true"><ellipse cx="42" cy="44" rx="26" ry="17" fill="var(--arrow-soft)" stroke="var(--arrow)" stroke-width="3"/><path d="M26 30 q4 -5 8 0 t8 0 t8 0 t8 0" fill="none" stroke="var(--good)" stroke-width="3.5" stroke-linecap="round"/></svg>
+        <span><span class="t">Gene editing has its own page &#8594;</span><span class="d" style="display:block">CRISPR-Cas9, zinc-finger nucleases, TALENs, and gene therapy in humans.</span></span>
+      </button>
     </div>
     <div class="quiz" data-quiz="apps"></div>
   </div>
@@ -1361,6 +1325,143 @@ b,strong{font-weight:700}
     </div>
   </div>
 </section>
+
+<!-- ===================== GENE EDITING ===================== -->
+<section class="view" id="view-editing">
+  <div class="mhead"><div class="mbadge edit">Edit</div><div>
+    <div class="eyebrow">Gene editing in eukaryotes</div>
+    <h2>CRISPR &amp; gene editing</h2>
+    <p class="lede"><b>Gene editing</b> changes an organism's DNA at specific locations to get a desired trait. Modern tools use guided enzymes to find their target. The most famous one, CRISPR-Cas9, started out as an immune system in bacteria.</p>
+  </div></div>
+
+  <div class="block">
+    <h3>Where CRISPR comes from: bacteria with a memory</h3>
+    <p class="sub">Bacteria get attacked by viruses called bacteriophages. CRISPR lets a bacterium remember a virus it has seen before and destroy it faster the next time. Click through the five stages.</p>
+    <div class="panel stepper" id="bactStepper">
+      <div class="dots"></div>
+      <div class="svgbox"><svg id="bactSvg" viewBox="0 0 760 330" aria-label="CRISPR in a bacterial cell"></svg></div>
+      <div class="cap"><span class="where"></span><p></p></div>
+      <div class="btnrow" style="margin-top:12px"><button class="btn ghost small" data-step="-1" type="button">&larr; Back</button><button class="btn small" data-step="1" type="button">Next stage &rarr;</button></div>
+    </div>
+    <div class="note" style="margin-top:14px"><svg viewBox="0 0 36 36" aria-hidden="true"><g fill="var(--muted)"><rect x="3" y="14" width="4" height="8" rx="1"/><rect x="15" y="14" width="4" height="8" rx="1"/><rect x="27" y="14" width="4" height="8" rx="1"/></g><rect x="7" y="14" width="8" height="8" rx="1" fill="var(--warn)"/><rect x="19" y="14" width="8" height="8" rx="1" fill="var(--protein)"/></svg><span><span class="nl">What the name means</span><b>C</b>lustered <b>R</b>egularly <b>I</b>nterspaced <b>S</b>hort <b>P</b>alindromic <b>R</b>epeats. The <i>repeats</i> are short palindromic sequences (gray). In between them, at regular intervals, sit the <i>spacers</i> (colors): stored pieces of viral DNA.</span></div>
+  </div>
+
+  <div class="block">
+    <h3>Just like your immune system's memory</h3>
+    <p class="sub">Both are <b>adaptive immunity</b>: protection learned from a past infection.</p>
+    <div class="compare">
+      <div class="hd blank"></div><div class="hd">Your immune system</div><div class="hd">A bacterium with CRISPR</div>
+      <div class="rl">First infection</div><div>A pathogen gets in, and your adaptive immune system learns to recognize it.</div><div>A virus injects its DNA. Cas proteins save a snippet of it as a new spacer.</div>
+      <div class="rl">The memory</div><div>Memory B and T cells remember that pathogen.</div><div>The spacer, stored in the CRISPR region of the chromosome.</div>
+      <div class="rl">Second infection</div><div>A faster, stronger response clears it before you get sick.</div><div>A crRNA guides Cas9 straight to the virus, and Cas9 cuts it.</div>
+      <div class="rl">Fun difference</div><div>Your kids don't inherit your immune memories.</div><div>When the bacterium divides, its daughter cells inherit the memory, because it's written into the DNA.</div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>From yogurt bacteria to a Nobel Prize</h3>
+    <p class="sub">Scientists spotted CRISPR in bacteria decades ago. Then two researchers figured out how to scoop it up and reprogram it. Click a year.</p>
+    <div class="panel">
+      <div class="tline" id="dline"></div>
+      <div class="tcard" id="dcard" aria-live="polite"></div>
+      <div class="btnrow" style="margin-top:10px"><button class="btn ghost small" type="button" id="dPrev">&larr; Earlier</button><button class="btn small" type="button" id="dNext">Later &rarr;</button></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>CRISPR-Cas9 in the lab</h3>
+    <p class="sub">Scientists isolate Cas9 and give it a new target. A lab-made guide RNA (gRNA) replaces the bacterium's CRISPR RNA, so Cas9 cuts wherever the gRNA sends it.</p>
+      <div class="panel stepper" id="crisprStepper">
+        <div class="dots"></div>
+        <div class="svgbox"><svg viewBox="0 0 700 220" aria-label="CRISPR-Cas9 steps">
+          <g id="cr-dna">
+            <rect x="30" y="150" width="640" height="10" rx="5" fill="var(--plasmid)"/>
+            <rect x="30" y="176" width="640" height="10" rx="5" fill="var(--plasmid)"/>
+            <path d="M50 160v16M80 160v16M110 160v16M140 160v16M170 160v16M200 160v16M230 160v16M260 160v16M290 160v16M320 160v16M350 160v16M380 160v16M410 160v16M440 160v16M470 160v16M500 160v16M530 160v16M560 160v16M590 160v16M620 160v16M650 160v16" stroke="var(--plasmid)" stroke-width="2" opacity=".45"/>
+            <rect x="400" y="146" width="120" height="44" rx="8" fill="none" stroke="var(--gene)" stroke-width="2.5" stroke-dasharray="5 4"/>
+            <text x="460" y="210" text-anchor="middle" class="svgmono" font-size="12" style="fill:var(--gene)">target sequence</text>
+          </g>
+          <g id="cr-complex" style="transition:transform 1s cubic-bezier(.4,0,.2,1)">
+            <ellipse cx="0" cy="0" rx="78" ry="52" fill="var(--arrow-soft)" stroke="var(--arrow)" stroke-width="3"/>
+            <text x="0" y="-18" text-anchor="middle" class="svgtext" font-size="15" font-weight="700">Cas9</text>
+            <text x="0" y="0" text-anchor="middle" class="svgmuted" font-size="12">the scissors</text>
+            <path id="cr-grna" d="M-50 30 q 12 -10 24 0 t 24 0 t 24 0 t 24 0" fill="none" stroke="var(--good)" stroke-width="5" stroke-linecap="round" opacity="0" style="transition:opacity .6s"/>
+          </g>
+          <g id="cr-grna-free" style="transition:opacity .6s">
+            <path d="M80 60 q 12 -10 24 0 t 24 0 t 24 0 t 24 0" fill="none" stroke="var(--good)" stroke-width="5" stroke-linecap="round"/>
+            <text x="128" y="40" text-anchor="middle" class="svgtext" font-size="14" font-weight="700" style="fill:var(--good)">guide RNA</text>
+            <text x="128" y="88" text-anchor="middle" class="svgmuted" font-size="12">the Google Maps</text>
+          </g>
+          <g id="cr-cut" opacity="0" style="transition:opacity .5s">
+            <path d="M458 140 L 462 196" stroke="var(--bad)" stroke-width="4" stroke-dasharray="6 4"/>
+            <text x="470" y="134" class="svgtext" font-size="14" font-weight="700" style="fill:var(--bad)">cut!</text>
+          </g>
+          <g id="cr-fix" opacity="0" style="transition:opacity .5s">
+            <rect x="436" y="150" width="48" height="10" rx="3" fill="var(--gold)"/>
+            <rect x="436" y="176" width="48" height="10" rx="3" fill="var(--gold)"/>
+            <text x="460" y="134" text-anchor="middle" class="svgtext" font-size="14" font-weight="700">edited</text>
+          </g>
+        </svg></div>
+        <div class="cap"><span class="where lab">Step</span><p></p></div>
+        <div class="btnrow" style="margin-top:12px"><button class="btn ghost small" data-step="-1" type="button">&larr; Back</button><button class="btn small" data-step="1" type="button">Next step &rarr;</button></div>
+      </div>
+    <div class="grid3" style="margin-top:14px">
+      <div class="idea flat"><h4>Not a restriction enzyme</h4><p>EcoRI always cuts the same sequence (GAATTC). Cas9 has no fixed sequence: it cuts wherever its guide RNA base-pairs. Swap the guide and you change the target.</p></div>
+      <div class="idea flat"><h4>The master mix</h4><p>A tube of Cas9/gRNA, salts, and a repair template is injected into animals (microinjection!) or applied directly to cells. The cell's own DNA repair puts in the new DNA.</p></div>
+      <div class="idea flat"><h4>Seen in a worm</h4><p><i>C. elegans</i> with GFP-tagged neurons was made by microinjecting CRISPR-Cas9. You can see its nerve cord, head, and throat muscles glow.</p></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Old school: zinc-finger nucleases &amp; TALENs</h3>
+    <p class="sub">Early gene editing tools, not commonly used anymore. In all three, the cell repairs the cut afterward, causing mutations or insertions.</p>
+    <div class="compare c3">
+      <div class="hd blank"></div><div class="hd">Zinc-finger nucleases</div><div class="hd">TALENs</div><div class="hd" style="color:var(--good)">CRISPR-Cas9</div>
+      <div class="rl">Finds its target with</div><div>Custom-engineered zinc-finger proteins that bind a specific DNA sequence</div><div>TALE proteins (from bacteria) that recognize individual bases</div><div>A guide RNA that base-pairs with the target DNA</div>
+      <div class="rl">Cuts with</div><div>FokI, the nuclease (enzyme) portion</div><div>FokI nuclease</div><div>Cas9</div>
+      <div class="rl">New target?</div><div>Design and build a whole new protein</div><div>Design and build a whole new protein</div><div><b>Just make a new guide RNA</b></div>
+      <div class="rl">Verdict</div><div>Slow and expensive</div><div>Slow and expensive</div><div><b>Easier, faster, cheaper, more versatile, higher efficiency</b></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>What gene editing is used for</h3>
+    <div class="chiprow">
+      <div class="chip"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="17" cy="17" r="10" fill="none" stroke="var(--arrow)" stroke-width="3"/><path d="M25 25 l9 9" stroke="var(--arrow)" stroke-width="3.5" stroke-linecap="round"/></svg><b>Study gene function</b><span>knock a gene out and see what changes</span></div>
+      <div class="chip"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 36 V12" stroke="var(--good)" stroke-width="3"/><ellipse cx="20" cy="12" rx="6" ry="9" fill="var(--gold)"/><path d="M20 26 c-7 -2 -10 -7 -11 -13 c7 2 10 7 11 13" fill="var(--good)"/></svg><b>Better crops</b><span>disease-resistant crops, and golden rice engineered with beta-carotene genes to fight vitamin A deficiency</span></div>
+      <div class="chip"><svg viewBox="0 0 40 40" aria-hidden="true"><ellipse cx="20" cy="22" rx="5" ry="9" fill="var(--muted)"/><path d="M15 18 C 6 10, 4 16, 14 22 M25 18 C 34 10, 36 16, 26 22" fill="none" stroke="var(--muted)" stroke-width="2"/><path d="M20 13 v-6" stroke="var(--muted)" stroke-width="2"/></svg><b>Stopping malaria</b><span>researchers are editing mosquito DNA to block its spread</span></div>
+      <div class="chip"><svg viewBox="0 0 40 40" aria-hidden="true"><rect x="8" y="16" width="24" height="9" rx="3" fill="var(--arrow-soft)" stroke="var(--arrow)" stroke-width="2.5" transform="rotate(-35 20 20)"/><path d="M29 8 l5 -5" stroke="var(--arrow)" stroke-width="3" stroke-linecap="round"/></svg><b>Gene therapy</b><span>fixing defective genes. It works in bacteria, plants, and animals. Humans? See below.</span></div>
+    </div>
+  </div>
+
+    <div class="block">
+      <h3>Gene editing in humans? A bumpy history</h3>
+      <p class="sub">Click a year, or use the arrows. Green = success, red = setback.</p>
+      <div class="panel">
+        <div class="tline" id="tline"></div>
+        <div class="tcard" id="tcard" aria-live="polite"></div>
+        <div class="btnrow" style="margin-top:10px"><button class="btn ghost small" type="button" id="tPrev">&larr; Earlier</button><button class="btn small" type="button" id="tNext">Later &rarr;</button></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <h3>Ethical considerations</h3>
+      <p class="sub">No right answers here. Pick one and talk it through with a classmate.</p>
+      <div class="prompts">
+        <div><b>1</b>Should we edit genes to prevent diseases? What about to enhance traits? Where's the line?</div>
+        <div><b>2</b>Who decides which traits are "desirable"?</div>
+        <div><b>3</b>Could the price of gene editing increase social inequality?</div>
+        <div><b>4</b>Should parents be able to edit their child's DNA? Can babies or young children consent?</div>
+        <div><b>5</b>What limits, if any, should governments set on human gene editing?</div>
+        <div><b>6</b>How do we make sure people give informed consent for gene-editing procedures?</div>
+        <div><b>7</b>Are we "playing God" by editing human genes?</div>
+        <div><b>8</b>How do we weigh long-term consequences when edits are made at birth?</div>
+      </div>
+    </div>
+
+  <div class="quiz" data-quiz="editing"></div>
+</section>
+
 </div>
 
 <script>
@@ -1407,16 +1508,16 @@ function decorate(root){
 var STEPS = [
   {n: "1", label: "Find the gene", view: "gene"},
   {n: "2", label: "Cut the vector", view: "vector", anchor: "cut"},
-  {n: "3", label: "Insert & seal", view: "vector", anchor: "insert"},
+  {n: "3", label: "Insert the gene", view: "vector", anchor: "insert"},
   {n: "4", label: "PCR", view: "pcr"},
   {n: "5", label: "Transform", view: "transform"},
   {n: "6", label: "Select", view: "selection"},
   {n: "7a", label: "Gene copies", view: "copies"},
   {n: "7b", label: "Protein", view: "product"}
 ];
-var NAMES = {hub: "", gene: "Step 1: Find the gene", vector: "Steps 2–3: The vector", pcr: "Step 4: PCR", transform: "Step 5: Transform", selection: "Step 6: Select", copies: "Step 7a: Gene copies", product: "Step 7b: Protein", xgal: "X-gal selection", pglo: "pGLO lab", apps: "Applications"};
+var NAMES = {hub: "", gene: "Step 1: Find the gene", vector: "Steps 2–3: The vector", pcr: "Step 4: PCR", transform: "Step 5: Transform", selection: "Step 6: Select", copies: "Step 7a: Gene copies", product: "Step 7b: Protein", xgal: "X-gal selection", pglo: "pGLO lab", apps: "Applications", editing: "CRISPR & gene editing"};
 var ORDER = ["gene", "vector", "pcr", "transform", "selection", "copies", "product"];
-var TITLES = {hub: "Big picture", gene: "Find & copy the gene", vector: "Cut, insert & seal", pcr: "Amplify with PCR", transform: "Transform into cells", selection: "Select the winners", copies: "Harvest gene copies", product: "Harvest the protein", apps: "Applications"};
+var TITLES = {hub: "Big picture", gene: "Find & copy the gene", vector: "Cut & insert", pcr: "Amplify with PCR", transform: "Transform into cells", selection: "Select the winners", copies: "Harvest gene copies", product: "Harvest the protein", apps: "Applications"};
 var visited = store("clone-v2-visited") || {};
 var current = "hub";
 
@@ -1616,10 +1717,10 @@ $$(".tabs button").forEach(function(b){ b.addEventListener("click", function(){ 
     {id: "bam", label: "Cut with BamHI", top: "5' <u>GATC</u>C<i>=======</i>G     3'", bot: "3'     G<i>=======</i>C<u>CTAG</u> 5'", why: "<b>Not a match.</b> BamHI leaves GATC overhangs, and GATC can't base-pair with AATT. Sticky ends only stick when they're complementary, so cut the plasmid and the gene with the same enzyme."},
     {id: "blunt", label: "Blunt ends (no overhang)", top: "5' GGG<i>=======</i>CCC 3'", bot: "3' CCC<i>=======</i>GGG 5'", why: "<b>Not a match.</b> Blunt ends have no overhang, so there's nothing to base-pair with the plasmid's AATT sticky ends."}
   ];
-  var tray = $("#tray"), svg = $("#matchSvg"), dz = $("#dropzone"), msg = $("#matchMsg"), lig = $("#ligaseBtn"), done = false;
+  var tray = $("#tray"), svg = $("#matchSvg"), dz = $("#dropzone"), msg = $("#matchMsg"), done = false;
   function setMsg(kind, html){ msg.className = "msg" + (kind ? " " + kind : ""); msg.innerHTML = html; }
   function reset(){
-    done = false; tray.innerHTML = ""; lig.hidden = true;
+    done = false; tray.innerHTML = "";
     ["#insertArc", "#nicks"].forEach(function(s){ $(s).setAttribute("opacity", 0); });
     dz.style.display = ""; $("#dropTxt").style.display = ""; $("#endL").style.display = ""; $("#endR").style.display = "";
     $("#ringLbl").textContent = "opened plasmid"; $("#ringSub").textContent = "cut with EcoRI";
@@ -1649,17 +1750,10 @@ $$(".tabs button").forEach(function(b){ b.addEventListener("click", function(){ 
     if (!f.ok){ el.style.transform = ""; el.classList.remove("shake"); void el.offsetWidth; el.classList.add("shake"); setMsg("bad", f.why); return; }
     done = true; el.classList.add("used");
     dz.style.display = "none"; $("#dropTxt").style.display = "none"; $("#endL").style.display = "none"; $("#endR").style.display = "none";
-    $("#insertArc").setAttribute("opacity", 1); $("#nicks").setAttribute("opacity", 1);
-    $("#ringLbl").textContent = "gene inserted"; $("#ringSub").textContent = "held by hydrogen bonds";
-    setMsg("good", "<b>Base-paired!</b> The AATT overhangs found their complementary partners. Right now they're held only by hydrogen bonds, and the backbone still has gaps called nicks (the white marks).");
-    lig.hidden = false;
+    $("#insertArc").setAttribute("opacity", 1);
+    $("#ringLbl").textContent = "recombinant plasmid"; $("#ringSub").textContent = "gene inserted";
+    setMsg("good", "<b>Base-paired!</b> The AATT overhangs found their complementary partners, slotting your gene into the plasmid. You made <b>recombinant DNA</b>: one molecule built from DNA from two different sources.");
   }
-  lig.addEventListener("click", function(){
-    var n = $("#nicks"); tween(700, function(t){ n.setAttribute("opacity", 1 - t); });
-    $("#ringLbl").textContent = "recombinant plasmid"; $("#ringSub").textContent = "sealed by DNA ligase";
-    lig.hidden = true;
-    setMsg("good", "<b>Sealed!</b> DNA ligase formed covalent bonds in the sugar-phosphate backbone of both strands. You made <b>recombinant DNA</b>: one molecule built from DNA from two different sources.");
-  });
   $("#matchReset").addEventListener("click", reset);
   reset();
 })();
@@ -2047,6 +2141,76 @@ function initStrip(){
   show(0);
 }
 
+/* ================= CRISPR IN BACTERIA ================= */
+function drawPhage(g, x){
+  var hx = [];
+  for (var i = 0; i < 6; i++){ var a = Math.PI / 3 * i + Math.PI / 6; hx.push((x + 18 * Math.cos(a)).toFixed(1) + "," + (24 + 18 * Math.sin(a)).toFixed(1)); }
+  S("polygon", {points: hx.join(" "), fill: "var(--surface)", stroke: "var(--protein)", "stroke-width": 2.5}, g);
+  S("path", {d: "M" + (x - 8) + " 24 q4 -6 8 0 t8 0", fill: "none", stroke: "var(--warn)", "stroke-width": 2}, g);
+  S("rect", {x: x - 3.5, y: 42, width: 7, height: 22, fill: "var(--protein)"}, g);
+  S("path", {d: "M" + x + " 64 L" + (x - 14) + " 72 M" + x + " 64 L" + (x + 14) + " 72 M" + x + " 64 L" + (x - 6) + " 73 M" + x + " 64 L" + (x + 6) + " 73", stroke: "var(--protein)", "stroke-width": 2, "stroke-linecap": "round"}, g);
+  S("path", {d: "M" + x + " 76 L" + x + " 112", stroke: "var(--warn)", "stroke-width": 2, "stroke-dasharray": "3 4"}, g);
+}
+function initBact(){
+  var svg = $("#bactSvg");
+  var df = S("defs", {}, svg), mk = S("marker", {id: "ahb", viewBox: "0 0 10 10", refX: 5, refY: 5, markerWidth: 6, markerHeight: 6, orient: "auto"}, df); S("path", {d: "M0,1 L9,5 L0,9 z", fill: "var(--muted)"}, mk);
+  function grp(range){ var g = S("g", {}, svg); if (range) g.setAttribute("data-s", range); return g; }
+  function txt(g, x, y, s, cls, anchor, extra){ var t = S("text", Object.assign({x: x, y: y, "class": cls || "svgmono", "font-size": 13, "text-anchor": anchor || "middle"}, extra || {}), g); t.textContent = s; return t; }
+  S("rect", {x: 110, y: 70, width: 540, height: 236, rx: 118, fill: "var(--cell)", stroke: "var(--cell-edge)", "stroke-width": 7}, svg);
+  S("rect", {x: 121, y: 81, width: 518, height: 214, rx: 107, fill: "none", stroke: "var(--cell-edge)", "stroke-width": 1.5, opacity: .4}, svg);
+  txt(svg, 150, 196, "bacterium", "svgmono", "start");
+  S("path", {d: "M190 252 H 590", stroke: "var(--chrom)", "stroke-width": 4, fill: "none", "stroke-linecap": "round"}, svg);
+  var arr = [[302, 10, "R", "1-4"], [312, 36, "var(--warn)", "1-4"], [348, 10, "R"], [358, 36, "var(--protein)"], [394, 10, "R"], [404, 36, "var(--good)"], [440, 10, "R"], [450, 36, "var(--plasmid)"], [486, 10, "R"]];
+  arr.forEach(function(b){ var g = grp(b[3]); S("rect", {x: b[0], y: 240, width: b[1], height: 24, rx: 3, fill: b[2] === "R" ? "var(--muted)" : b[2]}, g); });
+  txt(svg, 400, 286, "CRISPR region: gray repeats, colored spacers", "svgmono");
+  /* infection 1 */
+  var p1 = grp("0-1"); drawPhage(p1, 250);
+  var v1 = grp("0-1"); S("path", {d: "M210 132 q10 -12 20 0 t20 0 t20 0 t20 0", fill: "none", stroke: "var(--warn)", "stroke-width": 3.5}, v1); txt(v1, 250, 160, "viral DNA");
+  /* memory */
+  var mem = grp("1-1");
+  S("rect", {x: 246, y: 120, width: 24, height: 22, rx: 5, fill: "none", stroke: "var(--ink)", "stroke-width": 2, "stroke-dasharray": "3 3"}, mem);
+  S("ellipse", {cx: 330, cy: 178, rx: 40, ry: 20, fill: "var(--plasmid-soft)", stroke: "var(--plasmid)", "stroke-width": 2.5}, mem);
+  txt(mem, 330, 183, "Cas proteins", "svgtext", "middle", {"font-size": 12, "font-weight": 700});
+  S("path", {d: "M270 136 C 300 140, 310 150, 318 158", fill: "none", stroke: "var(--muted)", "stroke-width": 2, "marker-end": "url(#ahb)"}, mem);
+  S("path", {d: "M332 200 L 330 234", fill: "none", stroke: "var(--muted)", "stroke-width": 2, "marker-end": "url(#ahb)"}, mem);
+  S("rect", {x: 306, y: 235, width: 48, height: 34, rx: 6, fill: "none", stroke: "var(--warn)", "stroke-width": 2.5, "stroke-dasharray": "5 3"}, mem);
+  txt(mem, 470, 225, "new spacer = memory of this virus", "svgtext", "middle", {"font-size": 13, "font-weight": 700});
+  /* guide RNAs */
+  var gr = grp("2-2");
+  S("path", {d: "M400 236 L 400 214", stroke: "var(--muted)", "stroke-width": 2, "marker-end": "url(#ahb)"}, gr);
+  [[290, "var(--warn)"], [370, "var(--protein)"], [450, "var(--good)"]].forEach(function(c){ S("path", {d: "M" + c[0] + " 196 q6 -7 12 0 t12 0 t12 0", fill: "none", stroke: c[1], "stroke-width": 3.5, "stroke-linecap": "round"}, gr); });
+  txt(gr, 400, 176, "transcribed and cut into crRNAs", "svgtext", "middle", {"font-size": 13, "font-weight": 700});
+  /* infection 2 */
+  var p2 = grp("3-4"); drawPhage(p2, 540);
+  var v2 = grp("3-4"); var v2p = S("path", {d: "M500 132 q10 -12 20 0 t20 0 t20 0 t20 0", fill: "none", stroke: "var(--warn)", "stroke-width": 3.5, style: "transition:opacity .5s"}, v2); txt(v2, 566, 40, "same virus!", "svgmono", "start");
+  var cas = grp("3-4"); cas.style.transition = "transform 1s cubic-bezier(.4,0,.2,1), opacity .5s";
+  S("ellipse", {cx: 0, cy: 0, rx: 44, ry: 24, fill: "var(--arrow-soft)", stroke: "var(--arrow)", "stroke-width": 2.5}, cas);
+  txt(cas, 0, 2, "Cas9", "svgtext", "middle", {"font-size": 14, "font-weight": 700});
+  S("path", {d: "M-24 -22 q6 -7 12 0 t12 0 t12 0 t12 0", fill: "none", stroke: "var(--warn)", "stroke-width": 3.5, "stroke-linecap": "round"}, cas);
+  var cut = grp("4-4");
+  S("path", {d: "M526 118 L 518 146 M560 118 L 552 146", stroke: "var(--bad)", "stroke-width": 3.5, "stroke-linecap": "round"}, cut);
+  txt(cut, 470, 112, "cut!", "svgtext", "middle", {"font-size": 15, "font-weight": 700, style: "fill:var(--bad)"});
+  makeStepper($("#bactStepper"), [
+    {dot: "Infection", where: "Infection #1", text: "A virus (bacteriophage) attaches to the bacterium and injects its DNA."},
+    {dot: "Memory", where: "Memory", text: "Cas proteins snip out a piece of the viral DNA and paste it into the CRISPR region of the bacterium's own chromosome as a new spacer. That spacer is a memory of this virus."},
+    {dot: "Guide RNAs", where: "Make guides", text: "The CRISPR region is transcribed into RNA, then cut into short CRISPR RNAs (crRNAs). Each one carries the sequence of one past invader."},
+    {dot: "Reinfection", where: "Infection #2", text: "The same virus attacks again. The crRNA that matches it loads into Cas9 and guides it toward the viral DNA."},
+    {dot: "Destroy", where: "Defense", text: "The crRNA base-pairs with the viral DNA, and Cas9 cuts it. The viral genome is destroyed before the virus can take over. The bacterium remembered!"}
+  ], function(i){
+    $$("[data-s]", svg).forEach(function(e){ var r = e.getAttribute("data-s").split("-").map(Number); e.style.opacity = (i >= r[0] && i <= r[1]) ? 1 : 0; });
+    cas.style.transform = i >= 4 ? "translate(540px,160px)" : "translate(460px,196px)";
+    v2p.style.opacity = i >= 4 ? .35 : 1;
+  });
+}
+var DTL = [
+  {y: "1987", t: "neutral", h: "Weird repeats", b: "Yoshizumi Ishino's team noticed strange repeating sequences in E. coli DNA. Nobody knew what they did."},
+  {y: "2005", t: "neutral", h: "A memory of viruses?", b: "Francisco Mojica and other researchers noticed that the spacers between the repeats matched viral DNA. Maybe bacteria were remembering viruses."},
+  {y: "2007", t: "neutral", h: "Proof, from yogurt bacteria", b: "Scientists at a food company showed that Streptococcus thermophilus, a bacterium used to make yogurt, became resistant to a virus by saving a piece of its DNA as a new spacer. CRISPR really is an immune system."},
+  {y: "2012", t: "good", h: "Reprogramming the scissors", b: "Jennifer Doudna and Emmanuelle Charpentier showed that Cas9 (from Streptococcus pyogenes) can be programmed with a guide RNA to cut almost any DNA sequence you choose."},
+  {y: "2013", t: "good", h: "It works in human cells", b: "Labs led by Feng Zhang and George Church used CRISPR-Cas9 to edit genes in human cells."},
+  {y: "2020", t: "good", h: "Nobel Prize in Chemistry", b: "Doudna and Charpentier won the Nobel Prize in Chemistry for developing CRISPR-Cas9 genome editing, just 8 years after their paper. They took a defense system bacteria evolved against viruses and turned it into one of biology's most powerful tools."}
+];
+
 /* ================= CHROMATOGRAPHY ================= */
 var CW = 420, CH = 470, cv, ctx, C = {mode: "sec", phase: "idle", parts: [], beads: [], tubes: [], frames: 0, tube: 0, raf: 0};
 var COL = {x0: 150, x1: 270, y0: 60, y1: 330};
@@ -2222,17 +2386,17 @@ var TL = [
   {y: "2024", t: "good", h: "Vision and amyloidosis", b: "EDIT-101: vision improved in about 80% of Leber congenital amaurosis patients after in-eye CRISPR therapy. In transthyretin amyloidosis, a single CRISPR infusion cut disease protein levels significantly."},
   {y: "2025", t: "good", h: "HIV", b: "In early trials, CRISPR-edited T cells showed sustained control of HIV without drugs."}
 ];
-function initTimeline(){
-  var line = $("#tline"), idx = 0;
-  TL.forEach(function(e, i){ var b = document.createElement("button"); b.type = "button"; b.className = "tdot " + e.t; b.innerHTML = "<i></i><span>" + e.y + "</span>"; b.setAttribute("aria-label", e.y + ": " + e.h); b.addEventListener("click", function(){ show(i); }); line.appendChild(b); });
+function makeTimeline(data, lineSel, cardSel, prevSel, nextSel){
+  var line = $(lineSel), idx = 0;
+  data.forEach(function(e, i){ var b = document.createElement("button"); b.type = "button"; b.className = "tdot " + e.t; b.innerHTML = "<i></i><span>" + e.y + "</span>"; b.setAttribute("aria-label", e.y + ": " + e.h); b.addEventListener("click", function(){ show(i); }); line.appendChild(b); });
   function show(i){
-    idx = Math.max(0, Math.min(TL.length - 1, i)); var e = TL[idx];
+    idx = Math.max(0, Math.min(data.length - 1, i)); var e = data[idx];
     $$(".tdot", line).forEach(function(d, j){ d.classList.toggle("on", j === idx); });
-    var c = $("#tcard"); c.className = "tcard " + e.t; c.innerHTML = '<div class="yr">' + e.y + "</div><div><h4>" + e.h + "</h4><p>" + e.b + "</p></div>";
-    $("#tPrev").disabled = idx === 0; $("#tNext").disabled = idx === TL.length - 1;
+    var c = $(cardSel); c.className = "tcard " + e.t; c.innerHTML = '<div class="yr">' + e.y + "</div><div><h4>" + e.h + "</h4><p>" + e.b + "</p></div>";
+    $(prevSel).disabled = idx === 0; $(nextSel).disabled = idx === data.length - 1;
   }
-  $("#tPrev").addEventListener("click", function(){ show(idx - 1); });
-  $("#tNext").addEventListener("click", function(){ show(idx + 1); });
+  $(prevSel).addEventListener("click", function(){ show(idx - 1); });
+  $(nextSel).addEventListener("click", function(){ show(idx + 1); });
   show(0);
 }
 
@@ -2243,8 +2407,8 @@ var QUIZ = {
     {q: "Reverse transcriptase makes…", o: ["DNA from an RNA template", "RNA from a DNA template", "protein from mRNA", "a copy of a plasmid"], w: "Normal transcription goes DNA → RNA. Reverse transcriptase runs it backward: RNA → DNA. It's the UNO reverse card."}
   ],
   vector: [
-    {q: "You cut the plasmid with EcoRI and your gene with BamHI. What happens when you mix them?", o: ["The ends aren't complementary, so the gene won't base-pair into the plasmid", "Ligase joins them anyway", "The gene inserts backward", "Any two sticky ends will pair"], w: "Sticky ends only pair when they're complementary. EcoRI leaves AATT overhangs and BamHI leaves GATC. Cut both pieces with the same enzyme."},
-    {q: "What does DNA ligase do?", o: ["Seals the sugar-phosphate backbone, joining the fragments", "Cuts DNA at palindromic sites", "Copies the plasmid", "Makes the sticky ends"], w: "Sticky ends hold together with hydrogen bonds, but the backbone still has nicks. Ligase forms the covalent bonds that seal them."},
+    {q: "You cut the plasmid with EcoRI and your gene with BamHI. What happens when you mix them?", o: ["The ends aren't complementary, so the gene won't base-pair into the plasmid", "They join anyway, because DNA is DNA", "The gene inserts backward", "Any two sticky ends will pair"], w: "Sticky ends only pair when they're complementary. EcoRI leaves AATT overhangs and BamHI leaves GATC. Cut both pieces with the same enzyme."},
+    {q: "Why do we cut the plasmid and the gene with the same restriction enzyme?", o: ["So their sticky ends are complementary and can base-pair", "So the plasmid copies itself", "So the gene gets transcribed", "So bacteria become competent"], w: "The same enzyme leaves the same overhangs on both pieces, so their sticky ends match and base-pair."},
     {q: "Which plasmid part lets the host cell copy the plasmid on its own?", o: ["Origin of replication", "Promoter", "Multiple cloning site", "AmpR gene"], w: "The origin of replication is where copying starts. It's what makes a plasmid self-replicating."}
   ],
   pcr: [
@@ -2272,11 +2436,17 @@ var QUIZ = {
     {q: "A plate of ampicillin-resistant colonies comes back mostly blue. What does that tell you?", o: ["Transformation worked, but most plasmids closed without your gene", "Transformation failed", "Your gene is being expressed", "The X-gal was missing"], w: "They grew on ampicillin, so they have a plasmid. Blue means lacZ is intact, so most plasmids re-closed empty instead of taking up your gene."},
     {q: "What does IPTG do in X-gal media?", o: ["Induces the lac operon by pulling the repressor off the operator", "Kills cells without a plasmid", "Turns colonies blue by itself", "Cuts open lacZ"], w: "IPTG acts like lactose. It binds the repressor's allosteric site so RNA polymerase can transcribe lacZ."}
   ],
+  editing: [
+    {q: "In a bacterium, what is a CRISPR spacer?", o: ["A stored piece of viral DNA from a past infection", "The gene that codes for Cas9", "A restriction enzyme site", "A plasmid"], w: "Spacers sit between the repeats in the CRISPR region. Each one is a saved piece of a virus the bacterium survived: its memory."},
+    {q: "What happens when the same virus attacks a bacterium a second time?", o: ["A matching crRNA guides Cas9 to the viral DNA, and Cas9 cuts it", "The bacterium makes antibodies", "The virus DNA is stored in a plasmid", "The lac operon turns on"], w: "The crRNA base-pairs with the matching viral DNA and brings Cas9 there to cut it. Adaptive immunity, bacteria style."},
+    {q: "In the lab, what tells Cas9 where to cut?", o: ["The guide RNA (gRNA)", "A fixed recognition sequence like GAATTC", "A zinc-finger protein", "siRNA"], w: "The gRNA is the Google Maps: it base-pairs with the target and brings Cas9 (the scissors) there. Unlike EcoRI, Cas9 has no fixed sequence."},
+    {q: "Why did CRISPR-Cas9 replace zinc-finger nucleases and TALENs?", o: ["Targeting a new gene only takes a new guide RNA, not a new protein", "It doesn't cut DNA", "It uses the FokI nuclease", "It only works in bacteria"], w: "ZFNs and TALENs need a custom-built protein for every target. CRISPR just needs a new guide RNA, so it's easier, faster, cheaper, and more versatile."},
+    {q: "Who won the 2020 Nobel Prize in Chemistry for CRISPR-Cas9 genome editing?", o: ["Jennifer Doudna and Emmanuelle Charpentier", "Meselson and Stahl", "Watson and Crick", "Feng Zhang and George Church"], w: "Doudna and Charpentier showed in 2012 that Cas9 could be reprogrammed with a guide RNA, and won the Nobel Prize in 2020."}
+  ],
   pglo: [
     {q: "Colonies grow on LB + amp but don't glow. Why?", o: ["No arabinose, so the pBAD promoter is off", "They didn't take up pGLO", "GFP needs X-gal to glow", "The UV light killed them"], w: "Growing on ampicillin proves they have pGLO. GFP is only made when arabinose switches the pBAD promoter on."}
   ],
   apps: [
-    {q: "In CRISPR-Cas9, what tells Cas9 where to cut?", o: ["The guide RNA", "A restriction site", "A zinc finger protein", "siRNA"], w: "The gRNA is the Google Maps: it base-pairs with the target sequence and brings Cas9 (the scissors) there."},
     {q: "How does RNAi silence a gene?", o: ["RISC destroys the target mRNA, so no protein is made", "Cas9 cuts the gene out", "It deletes the promoter", "It changes the DNA sequence"], w: "Gene silencing turns off expression without changing the DNA. siRNA binds the mRNA and RISC destroys it."},
     {q: "What gets purified and injected in a DNA (vector) vaccine?", o: ["The plasmid vector, so the patient's cells make the protein", "The purified viral protein", "A weakened virus", "Cas9 and a guide RNA"], w: "A DNA vaccine delivers the vector itself. A subunit vaccine is the one that purifies and injects the protein."}
   ]
@@ -2311,7 +2481,7 @@ function initQuizzes(){
 decorate(document);
 buildNav();
 markVisited();
-initPCR(); initHS(); initSel(); initDiv(); initStrip(); initChromo(); initLac(); initTimeline(); initQuizzes();
+initPCR(); initHS(); initSel(); initDiv(); initStrip(); initChromo(); initLac(); initBact(); makeTimeline(TL, "#tline", "#tcard", "#tPrev", "#tNext"); makeTimeline(DTL, "#dline", "#dcard", "#dPrev", "#dNext"); initQuizzes();
 function rethemed(){ drawChromo(); }
 try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", rethemed); } catch (e) {}
 try { new MutationObserver(rethemed).observe(document.documentElement, {attributes: true, attributeFilter: ["data-theme"]}); } catch (e) {}
