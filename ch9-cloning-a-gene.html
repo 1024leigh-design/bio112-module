@@ -1,3 +1,5 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cloning a Gene v2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;600&display=swap">
@@ -136,6 +138,19 @@ b,strong{font-weight:700}
 .pin::after{content:""; position:absolute; left:50%; top:100%; width:2px; height:16px; background:var(--good)}
 .worm figcaption{display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:10px; flex-wrap:wrap}
 .worm figcaption b{font-family:var(--f-display); font-size:18px}
+
+.pcrsteps{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:16px}
+@media (max-width:860px){ .pcrsteps{grid-template-columns:1fr} }
+.pstep{background:var(--surface); border:1px solid var(--line); border-top:6px solid var(--c); border-radius:var(--r); padding:16px; display:flex; flex-direction:column; gap:8px; min-width:0}
+.pstep .temp{font:700 12.5px var(--f-mono); letter-spacing:.05em; color:var(--c)}
+.pstep h4{font-size:21px}
+.pstep > p{font-size:16px}
+details.more{margin-top:auto; border-top:1px dashed var(--line); padding-top:10px}
+details.more summary{cursor:pointer; font-weight:700; color:var(--arrow); list-style:none}
+details.more summary::-webkit-details-marker{display:none}
+details.more summary::before{content:"+ "}
+details.more[open] summary::before{content:"\2212  "}
+details.more ul{margin:8px 0 0; padding-left:18px; font-size:15px; display:flex; flex-direction:column; gap:8px}
 
 /* MODULE PAGES */
 .pipe{display:flex; gap:6px; overflow-x:auto; padding-bottom:6px; margin-bottom:22px; scrollbar-width:thin}
@@ -830,7 +845,7 @@ b,strong{font-weight:700}
 
   <div class="block grid2">
     <div class="reveal">
-      <span class="ql">Reading guide</span>
+      <span class="ql">Think about it</span>
       <p class="q">Cutting DNA with a restriction enzyme: endergonic or exergonic? Catabolic or anabolic? What happens to activation energy?</p>
       <button class="btn small ghost" type="button" data-reveal>Show answer</button>
       <div class="a" hidden>Cutting DNA breaks bonds, so it's <b>catabolic</b>, and it releases energy, so it's <b>exergonic</b>. The enzyme <b>lowers the activation energy</b>, which speeds up a reaction that was already favorable. Classic enzyme behavior: bind the substrate at the active site, form an enzyme-substrate complex, use induced fit to stabilize the transition state, release the products, and the enzyme is free to go again.</div>
@@ -856,19 +871,65 @@ b,strong{font-weight:700}
   </div></div>
 
   <div class="block">
-    <h3>PCR is DNA replication, in a tube</h3>
-    <p class="sub">In your cells, replication needs helicase, primase, and DNA polymerase. PCR swaps in heat and lab-made ingredients for each job.</p>
+    <h3>How PCR works</h3>
+    <p class="sub">PCR copies one stretch of DNA over and over. It's DNA replication, but in a tube instead of a cell. Each trip through three temperature steps is one <b>cycle</b>, and every cycle doubles the DNA.</p>
     <div class="chiprow">
-      <div class="chip"><svg viewBox="0 0 40 40" aria-hidden="true"><rect x="5" y="13" width="30" height="5" rx="2.5" fill="var(--plasmid)"/><rect x="5" y="22" width="30" height="5" rx="2.5" fill="var(--plasmid)"/></svg><b>DNA template</b><span>the plasmid you want copied</span></div>
-      <div class="chip"><svg viewBox="0 0 40 40" aria-hidden="true"><rect x="4" y="17" width="12" height="6" rx="3" fill="var(--gene)"/><rect x="24" y="17" width="12" height="6" rx="3" fill="var(--gene)"/></svg><b>Primers</b><span>short pieces that mark where copying starts (the job primase does in cells)</span></div>
-      <div class="chip"><svg viewBox="0 0 40 40" aria-hidden="true"><ellipse cx="20" cy="20" rx="15" ry="11" fill="var(--warn)"/><text x="20" y="24" text-anchor="middle" fill="#fff" font-size="11" font-weight="700" font-family="monospace">Taq</text></svg><b>Heat-stable DNA polymerase</b><span>Taq survives the repeated heating</span></div>
-      <div class="chip"><svg viewBox="0 0 40 40" aria-hidden="true"><g fill="var(--arrow)"><circle cx="11" cy="13" r="4"/><circle cx="27" cy="11" r="4"/><circle cx="18" cy="24" r="4"/><circle cx="31" cy="27" r="4"/></g></svg><b>dNTPs + buffer</b><span>nucleotide building blocks, plus Mg&#178;&#8314; buffer</span></div>
+      <div class="chip"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M6 14 Q20 26 34 14 M6 26 Q20 14 34 26" fill="none" stroke="var(--bad)" stroke-width="3"/></svg><b>In cells: helicase unzips DNA</b><span>In the tube: <b>heat</b> does it</span></div>
+      <div class="chip"><svg viewBox="0 0 40 40" aria-hidden="true"><rect x="4" y="17" width="12" height="6" rx="3" fill="var(--gene)"/><rect x="24" y="17" width="12" height="6" rx="3" fill="var(--gene)"/></svg><b>In cells: primase makes RNA primers</b><span>In the tube: lab-made <b>DNA primers</b></span></div>
+      <div class="chip"><svg viewBox="0 0 40 40" aria-hidden="true"><ellipse cx="20" cy="20" rx="15" ry="11" fill="var(--warn)"/><text x="20" y="24" text-anchor="middle" fill="#fff" font-size="11" font-weight="700" font-family="monospace">Taq</text></svg><b>In cells: DNA polymerase</b><span>In the tube: heat-stable <b>Taq polymerase</b></span></div>
+      <div class="chip"><svg viewBox="0 0 40 40" aria-hidden="true"><g fill="var(--arrow)"><circle cx="11" cy="13" r="4"/><circle cx="27" cy="11" r="4"/><circle cx="18" cy="24" r="4"/><circle cx="31" cy="27" r="4"/></g></svg><b>In cells: nucleotides</b><span>In the tube: <b>dNTPs</b> + Mg&#178;&#8314; buffer, plus your <b>DNA template</b></span></div>
+    </div>
+
+    <div class="pcrsteps">
+      <div class="pstep" style="--c:var(--bad)">
+        <span class="temp">STEP 1 &middot; ~94&ndash;98&deg;C</span>
+        <h4>Denaturation</h4>
+        <p>High heat separates the two strands of DNA. There's no helicase in the tube, so heat does the unzipping.</p>
+        <details class="more"><summary>Learn more</summary><ul>
+          <li><b>Unzip, not shred.</b> The two strands are held together by <b>hydrogen bonds</b> between base pairs: weak, non-covalent bonds that ~95&deg;C can break. Each strand's backbone is held together by <b>phosphodiester bonds</b>, strong covalent bonds that this heat can't break. So DNA opens like a zipper instead of falling apart.</li>
+          <li>G&ndash;C pairs have 3 hydrogen bonds and A&ndash;T pairs have 2, so G&ndash;C rich DNA needs more heat to separate.</li>
+          <li><b>The exact temperature depends on the polymerase.</b> Taq protocols usually use 94&ndash;95&deg;C, while many high-fidelity polymerases use 98&deg;C. Even heat-stable enzymes slowly wear out this hot, so each denaturation step is short (often 15&ndash;30 seconds).</li>
+          <li>Most programs start with one longer denaturation (about 1&ndash;3 minutes) to fully open long templates, like a whole plasmid.</li>
+        </ul></details>
+      </div>
+      <div class="pstep" style="--c:var(--arrow)">
+        <span class="temp">STEP 2 &middot; ~50&ndash;65&deg;C</span>
+        <h4>Annealing</h4>
+        <p>The tube cools so primers can hydrogen-bond to their matching sequences on each single strand. Primers mark where copying starts, because DNA polymerase can only add onto an existing strand.</p>
+        <details class="more"><summary>Learn more</summary><ul>
+          <li><b>Why doesn't the DNA just zip back up?</b> The primers win the race. There are billions more primer molecules than template strands, and short primers find their matches much faster than two long strands can line back up.</li>
+          <li><b>The annealing temperature depends on the primers.</b> Each primer has a melting temperature (Tm) set by its length and G&ndash;C content. Annealing is set based on the Tm, often a few degrees below it.</li>
+          <li>Too hot, and primers can't stay bound, so nothing gets copied. Too cool, and primers stick to near-matches and copy the wrong DNA.</li>
+          <li>PCR uses <b>two primers</b>, one for each strand. They bind on opposite sides of the target and point toward each other, so together they set the two ends of the copied region.</li>
+        </ul></details>
+      </div>
+      <div class="pstep" style="--c:var(--good)">
+        <span class="temp">STEP 3 &middot; ~72&deg;C</span>
+        <h4>Extension (elongation)</h4>
+        <p>The polymerase adds dNTPs to the 3' end of each primer, building a new strand 5' to 3' that matches the template, just like in DNA replication.</p>
+        <details class="more"><summary>Learn more</summary><ul>
+          <li><b>Time depends on how much DNA you're copying.</b> Taq adds roughly 1,000 nucleotides per minute, so a common rule is about 1 minute per 1,000 base pairs (1 kb). A 3 kb target needs about 3 minutes. Faster high-fidelity enzymes can need only 15&ndash;30 seconds per kb.</li>
+          <li><b>Temperature depends on the polymerase, too.</b> Taq works best around 72&deg;C, which makes sense: it comes from <i>Thermus aquaticus</i>, a bacterium from hot springs in Yellowstone National Park. Some other polymerases use 68&ndash;72&deg;C.</li>
+          <li>Many programs end with one final extension (5&ndash;10 minutes) so every copy gets finished.</li>
+          <li>The polymerase needs Mg&#178;&#8314; ions from the buffer to work.</li>
+        </ul></details>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Watch it double</h3>
+    <p class="sub">Every cycle, each double-stranded DNA becomes two. Purple strands are the original template; blue strands are brand new.</p>
+    <div class="panel">
+      <div class="svgbox"><svg id="dblSvg" viewBox="0 0 640 250" aria-label="DNA copies doubling each cycle"></svg></div>
+      <div class="btnrow" style="margin-top:10px"><button class="btn" type="button" id="dblBtn">Run 1 cycle</button><button class="btn ghost small" type="button" id="dblJump">Skip to 30 cycles</button><button class="btn ghost small" type="button" id="dblReset">Start over</button></div>
+      <div class="msg" id="dblMsg" style="margin-top:12px" aria-live="polite"></div>
     </div>
   </div>
 
   <div class="block" id="cyclerBlock">
     <h3>Program the thermocycler</h3>
-    <p class="sub">Change the temperatures and times, then watch one cycle or run the whole program. The feedback explains what each setting does to the DNA.</p>
+    <p class="sub">Now try it yourself. Change the temperatures and times, then watch one cycle or run the whole program. The feedback explains what each setting does to the DNA.</p>
     <div class="cycler">
       <div class="lcd" id="lcd">
         <div class="lt"><span>Thermocycler program</span><b id="lcdState">READY</b></div>
@@ -915,13 +976,7 @@ b,strong{font-weight:700}
     <div class="fb" id="pcrFb" style="margin-top:14px" aria-live="polite"></div>
   </div>
 
-  <div class="block grid2">
-    <div class="reveal">
-      <span class="ql">From the slides</span>
-      <p class="q">Why does DNA split into two strands when heated, instead of falling apart (depolymerizing)?</p>
-      <button class="btn small ghost" type="button" data-reveal>Show answer</button>
-      <div class="a" hidden>The two strands are held together by <b>hydrogen bonds</b> between base pairs, which are weak and break at about 94&ndash;96&deg;C. Each strand's own backbone is held together by <b>covalent phosphodiester bonds</b>, which are much stronger and survive the heat. So the strands separate, but each strand stays intact.</div>
-    </div>
+  <div class="block">
     <div class="idea">
       <svg class="ic" viewBox="0 0 46 46" aria-hidden="true"><rect x="6" y="12" width="15" height="4" rx="2" fill="var(--plasmid)"/><rect x="6" y="20" width="15" height="4" rx="2" fill="var(--newdna)"/><rect x="25" y="12" width="15" height="4" rx="2" fill="var(--newdna)"/><rect x="25" y="20" width="15" height="4" rx="2" fill="var(--plasmid)"/></svg>
       <h4>Semi-conservative, just like in cells</h4>
@@ -1057,7 +1112,7 @@ b,strong{font-weight:700}
 
   <div class="block">
     <div class="panel">
-      <div class="svgbox"><svg id="divSvg" viewBox="0 0 640 230" aria-label="Bacteria dividing"></svg></div>
+      <div class="svgbox"><svg id="divSvg" viewBox="0 0 640 232" aria-label="Bacteria dividing"></svg></div>
       <div class="btnrow" style="margin-top:10px"><button class="btn" type="button" id="divBtn">Let them divide</button><button class="btn ghost small" type="button" id="divReset">Start over</button><span id="divTxt" class="svgmono" style="font-size:14px"></span></div>
     </div>
   </div>
@@ -1114,7 +1169,7 @@ b,strong{font-weight:700}
       </div>
     </div>
     <div class="reveal" style="margin-top:14px">
-      <span class="ql">From the slides</span>
+      <span class="ql">Think about it</span>
       <p class="q">If our column had cations (positive charges) as probes, what particles would end up in the final purification?</p>
       <button class="btn small ghost" type="button" data-reveal>Show answer</button>
       <div class="a" hidden>Opposite charges attract, so the positive column traps <b>negatively charged (anionic)</b> particles. Neutral and positive particles flow through. Raising the salt releases the negative particles, so your final purification holds the negatively charged ones. Try the ion exchange column above to see it.</div>
@@ -1144,7 +1199,7 @@ b,strong{font-weight:700}
   <div class="block grid2">
     <div class="idea"><h4>The vector</h4>
       <p><b>1. Ampicillin resistance gene:</b> primary selection. Only transformed cells survive.</p>
-      <p><b>2. lacZ gene, broken by an MCS:</b> lacZ codes for &beta;-galactosidase. The multiple cloning site (MCS), a cluster of upwards of 20 restriction sites, sits inside lacZ. Inserting your gene there breaks lacZ, so it's non-functional.</p>
+      <p><b>2. lacZ gene with an MCS inside it:</b> lacZ codes for &beta;-galactosidase. The multiple cloning site (MCS), a cluster of upwards of 20 restriction sites, sits inside lacZ. Inserting your gene there breaks lacZ, so it's non-functional.</p>
     </div>
     <div class="idea"><h4>What's in the media</h4>
       <p><b>Ampicillin:</b> selects transformed cells.</p>
@@ -2126,25 +2181,80 @@ function initSel(){
 
 /* ================= DIVISION ================= */
 function initDiv(){
-  var svg = $("#divSvg"), gen = 0;
+  var svg = $("#divSvg"), gen = 0, MAX = 8;
+  // [columns, cell width, cell height] for each generation
+  var LAY = [[1, 90, 44], [2, 90, 44], [4, 90, 44], [8, 62, 30], [8, 62, 30], [16, 32, 16], [16, 32, 16], [32, 16, 9], [32, 16, 9]];
   function draw(){
     svg.innerHTML = "";
-    var n = Math.pow(2, gen), perRow = Math.min(n, 8), rows = Math.ceil(n / perRow), w = gen >= 3 ? 62 : 90, h = gen >= 3 ? 30 : 44;
-    var gx = (640 - perRow * (w + 12)) / 2, gy = (210 - rows * (h + 16)) / 2;
+    var n = Math.pow(2, gen), L = LAY[gen], cols = L[0], w = L[1], h = L[2], gapx = Math.max(4, w * .2), gapy = Math.max(5, h * .5);
+    var rows = Math.ceil(n / cols), gx = (640 - (cols * (w + gapx) - gapx)) / 2, gy = (205 - (rows * (h + gapy) - gapy)) / 2;
     for (var i = 0; i < n; i++){
-      var x = gx + (i % perRow) * (w + 12), y = gy + Math.floor(i / perRow) * (h + 16);
+      var x = gx + (i % cols) * (w + gapx), y = gy + Math.floor(i / cols) * (h + gapy);
       var g = S("g", {}, svg);
-      S("rect", {x: x, y: y, width: w, height: h, rx: h / 2, fill: "var(--cell)", stroke: "var(--cell-edge)", "stroke-width": 3.5}, g);
-      miniPlasmid(g, x + w * .35, y + h / 2, h * .22); miniPlasmid(g, x + w * .68, y + h / 2, h * .2);
+      S("rect", {x: x, y: y, width: w, height: h, rx: h / 2, fill: "var(--cell)", stroke: "var(--cell-edge)", "stroke-width": h >= 16 ? 3 : 1.5}, g);
+      if (h >= 16){ miniPlasmid(g, x + w * .35, y + h / 2, h * .22); miniPlasmid(g, x + w * .68, y + h / 2, h * .2); }
+      else S("circle", {cx: x + w / 2, cy: y + h / 2, r: 2, fill: "var(--plasmid)"}, g);
       if (!reduced && i >= n / 2 && gen > 0){ g.style.opacity = 0; g.style.transition = "opacity .5s"; requestAnimationFrame(function(gg){ return function(){ gg.style.opacity = 1; }; }(g)); }
     }
     var t = S("text", {x: 320, y: 224, "text-anchor": "middle", "class": "svgmono", "font-size": 13}, svg);
-    t.textContent = "generation " + gen + ": " + n + " cell" + (n > 1 ? "s" : "") + ", every one carrying the plasmid";
-    $("#divBtn").disabled = gen >= 4;
-    $("#divTxt").textContent = gen >= 4 ? "4 divisions = 16 cells. A real overnight culture reaches billions." : "";
+    t.textContent = "generation " + gen + ": " + n.toLocaleString() + " cell" + (n > 1 ? "s" : "") + ", every one carrying the plasmid";
+    $("#divBtn").disabled = gen >= MAX;
+    $("#divTxt").textContent = gen >= MAX ? "8 divisions = 256 cells. A real overnight culture reaches billions." : "";
   }
-  $("#divBtn").addEventListener("click", function(){ if (gen < 4){ gen++; draw(); } });
+  $("#divBtn").addEventListener("click", function(){ if (gen < MAX){ gen++; draw(); } });
   $("#divReset").addEventListener("click", function(){ gen = 0; draw(); });
+  draw();
+}
+
+/* ================= PCR DOUBLING ================= */
+function initDouble(){
+  var svg = $("#dblSvg"), c = 0, mols = [["o", "o"]];
+  // [columns, molecule width] for cycles 0-5; after that there are too many to draw
+  var LAY = [[1, 240], [2, 200], [4, 128], [8, 62], [8, 62], [16, 32]];
+  function strand(x, y, w, th, kind){ S("rect", {x: x, y: y, width: w, height: th, rx: th / 2, fill: kind === "o" ? "var(--plasmid)" : "var(--newdna)"}, svg); }
+  function draw(){
+    svg.innerHTML = "";
+    var n = Math.pow(2, c);
+    if (c <= 5){
+      var cols = LAY[c][0], w = LAY[c][1], th = Math.max(3, w * .05), gap = Math.max(4, w * .07), mh = th * 2 + gap;
+      var gapx = Math.max(8, w * .15), gapy = c >= 4 ? 18 : 30, rows = Math.ceil(n / cols);
+      var gx = (640 - (cols * (w + gapx) - gapx)) / 2, gy = (215 - (rows * (mh + gapy) - gapy)) / 2;
+      mols.forEach(function(m, i){
+        var x = gx + (i % cols) * (w + gapx), y = gy + Math.floor(i / cols) * (mh + gapy);
+        if (w >= 60) for (var r = x + 6; r < x + w - 4; r += 9) S("line", {x1: r, x2: r, y1: y + th, y2: y + th + gap, stroke: "var(--muted)", "stroke-width": 1.5, opacity: .45}, svg);
+        strand(x, y, w, th, m[0]); strand(x, y + th + gap, w, th, m[1]);
+      });
+    } else {
+      var R = rng(c);
+      for (var k = 0; k < 520; k++){
+        var a = R() * 6.283, d = Math.sqrt(R()), x = 320 + Math.cos(a) * 290 * d, y = 105 + Math.sin(a) * 95 * d;
+        S("rect", {x: x, y: y, width: 12, height: 2.5, rx: 1.2, fill: "var(--newdna)", opacity: .18 + R() * .3, transform: "rotate(" + Math.round(R() * 180) + " " + x + " " + y + ")"}, svg);
+      }
+      var big = S("text", {x: 320, y: 112, "text-anchor": "middle", "class": "svgtext", "font-size": 34, "font-weight": 800, "font-family": "var(--f-display)"}, svg);
+      big.textContent = fmtBig(n) + " copies";
+      var sm = S("text", {x: 320, y: 140, "text-anchor": "middle", "class": "svgmono", "font-size": 13}, svg);
+      sm.textContent = "too many to draw!";
+    }
+    var t = S("text", {x: 320, y: 240, "text-anchor": "middle", "class": "svgmono", "font-size": 13}, svg);
+    t.textContent = "cycle " + c + ": 2^" + c + " = " + n.toLocaleString() + " cop" + (n === 1 ? "y" : "ies");
+    var m = $("#dblMsg");
+    m.innerHTML = c === 0 ? "One double-stranded DNA template. Click <b>Run 1 cycle</b>."
+      : c === 1 ? "<b>Cycle 1: 2 copies.</b> Each copy has one original (purple) strand and one new (blue) strand. That's semi-conservative replication, just like Meselson and Stahl showed."
+      : c <= 4 ? "<b>Cycle " + c + ": " + n + " copies.</b> Notice there are still only 2 purple strands. Everything else is brand new DNA."
+      : c === 5 ? "<b>Cycle 5: 32 copies.</b> Getting crowded in here!"
+      : c < 30 ? "<b>Cycle " + c + ": " + n.toLocaleString() + " copies.</b> Too many to draw. Keep going!"
+      : "<b>30 cycles: over 1 billion copies</b> from a single template, in about an hour or two. That's the power of doubling.";
+    $("#dblBtn").disabled = c >= 30; $("#dblJump").disabled = c >= 30;
+  }
+  function step(){
+    if (c >= 30) return;
+    c++;
+    if (c <= 5){ var next = []; mols.forEach(function(m){ next.push([m[0], "n"]); next.push([m[1], "n"]); }); mols = next; }
+    draw();
+  }
+  $("#dblBtn").addEventListener("click", step);
+  $("#dblJump").addEventListener("click", function(){ while (c < 5) step(); c = 30; draw(); });
+  $("#dblReset").addEventListener("click", function(){ c = 0; mols = [["o", "o"]]; draw(); });
   draw();
 }
 
@@ -2447,7 +2557,7 @@ var QUIZ = {
   pcr: [
     {q: "Which PCR step does the job that helicase does in your cells?", o: ["Denaturation", "Annealing", "Extension", "None of them"], w: "High heat (about 94–96°C) breaks the hydrogen bonds between the strands. PCR's artificial helicase."},
     {q: "Your annealing step is set to 72°C and nothing amplifies. Why?", o: ["Primers can't stay bound, so the polymerase has no starting point", "The DNA never separated", "Taq is destroyed at 72°C", "The dNTPs break down"], w: "DNA polymerase can only add nucleotides to an existing 3' end. With no primer bound, it can't start."},
-    {q: "Starting with 1 copy, how many copies after 10 perfect cycles?", o: ["1,024", "20", "100", "10"], w: "Each cycle doubles: 2¹⁰ = 1,024. Same math as the \"double a dollar every day\" question."}
+    {q: "Starting with 1 copy, how many copies after 10 perfect cycles?", o: ["1,024", "20", "100", "10"], w: "Each cycle doubles: 2¹⁰ = 1,024. Same math as doubling a dollar every day: after 10 days you'd have $1,024."}
   ],
   transform: [
     {q: "What is the brief 42°C heat shock for?", o: ["It opens temporary pores so the plasmid can enter", "It kills cells without the plasmid", "It activates the antibiotic", "It copies the plasmid"], w: "The heat shock opens temporary pores in the membrane. Back on ice, the membrane reseals with the plasmid inside."},
@@ -2535,7 +2645,7 @@ function initWorms(){
 decorate(document);
 buildNav();
 markVisited();
-initPCR(); initHS(); initSel(); initDiv(); initStrip(); initChromo(); initLac(); initBact(); makeTimeline(TL, "#tline", "#tcard", "#tPrev", "#tNext"); makeTimeline(DTL, "#dline", "#dcard", "#dPrev", "#dNext"); initQuizzes(); initHalos(); initWorms();
+initPCR(); initDouble(); initHS(); initSel(); initDiv(); initStrip(); initChromo(); initLac(); initBact(); makeTimeline(TL, "#tline", "#tcard", "#tPrev", "#tNext"); makeTimeline(DTL, "#dline", "#dcard", "#dPrev", "#dNext"); initQuizzes(); initHalos(); initWorms();
 function rethemed(){ drawChromo(); }
 try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", rethemed); } catch (e) {}
 try { new MutationObserver(rethemed).observe(document.documentElement, {attributes: true, attributeFilter: ["data-theme"]}); } catch (e) {}
