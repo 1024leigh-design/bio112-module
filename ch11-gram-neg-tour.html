@@ -1,0 +1,936 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gram-Negative Family Tree Tour</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Family Tree Tour page. Design tokens, fonts, buttons, quiz and step-nav styles are copied from ch9-cloning-a-gene.html so the modules match.
+   All tour content lives in the data file loaded below (gram-neg-tree.js). */
+:root{
+  --bg:#f2f5f8; --surface:#ffffff; --surface-2:#e8eef4; --ink:#14223a; --muted:#53657b; --line:#d3dde7;
+  --arrow:#1683cc; --arrow-soft:#dcecf9;
+  --good:#1f8a55; --good-soft:#dcf2e5; --warn:#a96c05; --warn-soft:#fbefd4; --bad:#c43a2b; --bad-soft:#fbe0db;
+  --gn-fill:#f7b6cf; --gn-edge:#c2185b; --mac:#f3c9d3; --col-pink:#d81b60; --col-clear:#fffaf2; --col-clear-edge:#b9a493;
+  --f-display:'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --f-body:'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
+  --f-mono:'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Menlo, monospace;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
+    --arrow:#4aa9ee; --arrow-soft:#173450;
+    --good:#4ccb8b; --good-soft:#153a29; --warn:#ecb54e; --warn-soft:#3c3016; --bad:#ff7d6d; --bad-soft:#46211d;
+    --gn-fill:#9c3d68; --gn-edge:#f48fb6; --mac:#5b3241; --col-pink:#ff5c9a; --col-clear:#efe6da; --col-clear-edge:#8d7b6c;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
+  --arrow:#4aa9ee; --arrow-soft:#173450;
+  --good:#4ccb8b; --good-soft:#153a29; --warn:#ecb54e; --warn-soft:#3c3016; --bad:#ff7d6d; --bad-soft:#46211d;
+  --gn-fill:#9c3d68; --gn-edge:#f48fb6; --mac:#5b3241; --col-pink:#ff5c9a; --col-clear:#efe6da; --col-clear-edge:#8d7b6c;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:18px; line-height:1.55; overflow-x:hidden}
+.wrap{max-width:1240px; margin:0 auto; padding-inline:16px; padding-block:0 60px}
+h1,h2,h3,h4{font-family:var(--f-display); margin:0; text-wrap:balance; letter-spacing:-.01em}
+p{margin:0}
+button,select{font:inherit; color:inherit}
+:focus-visible{outline:3px solid var(--arrow); outline-offset:2px; border-radius:6px}
+b,strong{font-weight:700}
+[hidden]{display:none!important}
+
+/* top bar (from ch9) */
+.topbar{position:sticky; top:0; z-index:30; background:var(--bg); display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; padding-block:10px; border-bottom:1px solid var(--line); margin-bottom:18px}
+.brand{font-family:var(--f-display); font-weight:700; font-size:17px; white-space:nowrap; display:flex; align-items:center; gap:8px; cursor:pointer; background:none; border:0; padding:0}
+.brand svg{width:26px; height:26px}
+.crumb{font-size:15px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; flex:1 1 0}
+.topright{margin-left:auto; display:flex; align-items:center; gap:8px}
+.homebtn{display:inline-flex; align-items:center; gap:6px; font-weight:700; font-size:15px; padding:8px 13px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface); cursor:pointer; white-space:nowrap; text-decoration:none; color:var(--ink)}
+.homebtn:hover{border-color:var(--arrow); color:var(--arrow)}
+@media (max-width:560px){ .crumb{display:none} .homebtn .long{display:none} }
+
+/* Learn / Test toggle */
+.seg{display:inline-flex; padding:3px; border-radius:999px; background:var(--surface-2); border:1.5px solid var(--line)}
+.seg button{border:0; background:transparent; border-radius:999px; padding:6px 13px; font-weight:700; font-size:15px; cursor:pointer; color:var(--muted); white-space:nowrap}
+.seg button[aria-checked="true"]{background:var(--ink); color:var(--bg)}
+
+/* views */
+.view{display:none}
+.view.active{display:block; animation:fadein .25s ease}
+@keyframes fadein{from{opacity:.4; transform:translateY(4px)}to{opacity:1; transform:none}}
+
+/* tabs (from ch9) */
+.tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px}
+.tabs button{display:flex; align-items:center; gap:8px; border:1.5px solid var(--line); background:var(--surface); border-radius:999px; padding:9px 16px; font-weight:700; cursor:pointer; font-size:16px}
+.tabs button.on{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+.tabs button.soon{color:var(--muted); border-style:dashed; background:var(--surface-2)}
+
+/* start screen */
+.hero{display:flex; flex-wrap:wrap; align-items:flex-end; gap:10px 28px; margin-bottom:18px}
+.hero h1{font-size:clamp(34px,5vw,54px); line-height:1.02; font-weight:800}
+.hero h1 span{color:var(--gn-edge)}
+.eyebrow{font-family:var(--f-mono); font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--arrow); margin-bottom:8px; font-weight:600}
+.hero p{color:var(--muted); font-size:19px; max-width:46ch; padding-bottom:4px}
+.startgrid{display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); gap:16px; align-items:start}
+@media (max-width:860px){ .startgrid{grid-template-columns:minmax(0,1fr)} }
+.panel{background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:20px}
+.panel h2{font-size:24px; margin-bottom:12px}
+.goals{margin:0; padding-left:0; list-style:none; counter-reset:g; display:grid; gap:12px}
+.goals li{counter-increment:g; display:flex; gap:12px; align-items:flex-start; font-size:18.5px}
+.goals li::before{content:counter(g); flex-shrink:0; width:30px; height:30px; border-radius:50%; background:var(--gn-edge); color:#fff; display:inline-flex; align-items:center; justify-content:center; font:700 14px var(--f-mono); margin-top:1px}
+.modes{display:grid; gap:10px}
+.modes div{background:var(--surface-2); border-radius:12px; padding:12px 14px; font-size:17px}
+.modes b{display:block; font-family:var(--f-display); font-size:19px}
+.btn{display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:11px 19px; font-weight:700; font-size:17px; cursor:pointer; border:1.5px solid var(--arrow); background:var(--arrow); color:#fff; text-decoration:none}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent; color:var(--arrow)}
+.btn.small{padding:7px 13px; font-size:15px}
+.btn:disabled,.btn.disabled{opacity:.5; cursor:not-allowed; filter:none}
+.btnrow{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.msg{border-radius:12px; padding:12px 14px; font-size:17px; background:var(--surface-2)}
+.msg.good{background:var(--good-soft)} .msg.good > b:first-child{color:var(--good)}
+.msg.bad{background:var(--bad-soft)} .msg.bad > b:first-child{color:var(--bad)}
+
+/* tour layout */
+.tour{display:grid; grid-template-columns:minmax(0,1fr); gap:18px}
+.treepanel{display:flex; flex-direction:column; gap:10px; min-width:0}
+.treehead{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.treehead .lbl{font:600 13px var(--f-mono); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-right:auto}
+.treebox{position:relative; height:340px; overflow:auto; background:var(--surface); border:1px solid var(--line); border-radius:20px; overscroll-behavior:contain; -webkit-overflow-scrolling:touch}
+.treebox.drag{cursor:grabbing; user-select:none}
+#tree{display:block; margin:0 auto}
+#tree .edges path{fill:none; stroke:var(--line); stroke-width:2.5; transition:stroke .3s, stroke-width .3s, opacity .3s}
+#tree .edges path.on{stroke:var(--c); stroke-width:5}
+#tree .edges path.fade{opacity:.3}
+.tn{cursor:pointer; transition:opacity .35s}
+.tn:focus{outline:none}
+.tn rect{fill:var(--surface); fill:color-mix(in srgb, var(--c) 13%, var(--surface)); stroke:var(--c); stroke-width:1.5; transition:stroke-width .2s, fill .2s}
+.tn.leaf rect{fill:var(--surface); stroke:var(--line); stroke:color-mix(in srgb, var(--c) 50%, var(--line))}
+.tn text{font:700 17px var(--f-body); fill:var(--ink); text-anchor:middle; dominant-baseline:central; pointer-events:none}
+.tn.it text{font-style:italic}
+.tn.path rect{stroke-width:3; stroke:var(--c)}
+.tn.cur rect{stroke-width:5; fill:color-mix(in srgb, var(--c) 32%, var(--surface))}
+.tn.fade{opacity:.3}
+.tn.off rect{fill:var(--surface-2); stroke:var(--muted); stroke-dasharray:5 4; stroke-width:1.5}
+.tn.off text{fill:var(--muted)}
+.tn.hid text{fill:var(--muted); letter-spacing:.2em}
+.tn:hover rect, .tn:focus-visible rect{stroke-width:4.5}
+.treehint{font-size:15px; color:var(--muted)}
+@media (min-width:1000px){
+  .tour{grid-template-columns:minmax(0,5fr) minmax(0,6fr); align-items:start}
+  .treepanel{position:sticky; top:76px}
+  .treebox{height:calc(100vh - 210px); min-height:380px}
+}
+
+/* progress */
+.progress{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.progress .count{font:600 14px var(--f-mono); color:var(--muted); text-transform:uppercase; letter-spacing:.05em}
+.bar{flex:1 1 120px; height:8px; border-radius:99px; background:var(--surface-2); overflow:hidden; min-width:80px}
+.bar i{display:block; height:100%; background:var(--gn-edge); border-radius:99px; transition:width .4s}
+
+/* trait ribbon */
+.ribbon{background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:14px 14px 16px; display:flex; flex-direction:column; gap:10px; min-width:0}
+.ribbon .rl{font:600 12.5px var(--f-mono); text-transform:uppercase; letter-spacing:.07em; color:var(--muted)}
+.crumbs{display:flex; flex-wrap:wrap; align-items:center; gap:4px 6px; font-weight:700; font-size:17px}
+.crumbs .sep{color:var(--muted); font-weight:400}
+.crumbs button{border:0; background:none; padding:2px 4px; cursor:pointer; border-radius:6px; text-decoration:underline; text-decoration-color:var(--c); text-decoration-thickness:3px; text-underline-offset:4px}
+.crumbs button:hover{background:var(--surface-2)}
+.crumbs .it{font-style:italic}
+.tgroups{display:flex; flex-direction:column; gap:7px}
+.tg{display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px; padding:7px 10px; border-left:6px solid var(--c); background:color-mix(in srgb, var(--c) 6%, var(--surface)); border-radius:0 12px 12px 0}
+.tgl{font-weight:700; font-size:15.5px; margin-right:2px}
+.chip{display:inline-flex; flex-wrap:wrap; align-items:center; gap:4px; background:var(--surface-2); background:color-mix(in srgb, var(--c) 16%, var(--surface)); border:1.5px solid color-mix(in srgb, var(--c) 45%, transparent); border-radius:999px; padding:3px 12px; font-size:16.5px; line-height:1.35}
+.chip.strong{font-weight:700; border-width:2.5px; border-color:var(--c)}
+.tg.only{--c:var(--ink); border-left-style:dashed; background:var(--surface)}
+.tg.only .chip{background:var(--surface); border-style:dashed; border-color:var(--muted)}
+.tg.note{font-size:16px; color:var(--muted)}
+.hint{font-size:15.5px; color:var(--muted)}
+
+/* blanks (Test mode) */
+select.blank{font-size:16.5px; padding:3px 6px; border-radius:8px; border:2px solid var(--arrow); background:var(--surface); color:var(--ink); max-width:100%; cursor:pointer}
+select.blank:disabled{opacity:1; cursor:default}
+.good select.blank, select.blank.good{border-color:var(--good); background:var(--good-soft)}
+.bad select.blank, select.blank.bad{border-color:var(--bad); background:var(--bad-soft)}
+.mark{font-weight:700}
+.good > .mark, .mark.good{color:var(--good)}
+.bad > .mark, .mark.bad{color:var(--bad)}
+.ans{font-weight:700; color:var(--good)}
+
+/* lesson */
+.lessoncol{display:flex; flex-direction:column; gap:18px; min-width:0}
+.mhead{display:flex; gap:16px; align-items:flex-start}
+.mbadge{flex-shrink:0; width:58px; height:58px; border-radius:50%; background:var(--c, var(--arrow)); color:#fff; display:flex; align-items:center; justify-content:center; font:700 22px var(--f-mono)}
+.mhead > div{min-width:0}
+.mhead h2{font-size:clamp(26px,4vw,40px); line-height:1.08; font-weight:800; overflow-wrap:break-word; hyphens:auto}
+.lesson{margin:0; padding-left:22px; display:flex; flex-direction:column; gap:10px; font-size:19px}
+.lesson ul{margin:6px 0 0; padding-left:22px; display:flex; flex-direction:column; gap:4px}
+.lesson li::marker{color:var(--gn-edge)}
+.figure{background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:12px}
+.figure svg{display:block; width:100%; height:auto; max-width:560px; margin:0 auto}
+.figure figcaption{font-size:15px; color:var(--muted); text-align:center; margin-top:4px}
+.dg-t{font:400 22px var(--f-body); fill:var(--ink)}
+.dg-b{font:700 22px var(--f-body); fill:var(--ink)}
+.dg-m{font:400 20px var(--f-body); fill:var(--muted)}
+.dg-head{fill:var(--gn-edge)}
+.dg-tail{stroke:var(--gn-edge); stroke-width:1.6; fill:none}
+.dg-lps{stroke:var(--warn); stroke-width:3; fill:none; stroke-linecap:round}
+.dg-pg{fill:var(--gn-fill); stroke:var(--gn-edge); stroke-width:1.5}
+.dg-pgl{stroke:var(--gn-edge); stroke-width:1.5}
+.dg-lead{stroke:var(--muted); stroke-width:1.5; fill:none}
+.dg-box{fill:var(--surface-2); stroke:var(--line); stroke-width:1.5}
+.dg-arrow{fill:none; stroke:var(--arrow); stroke-width:4; stroke-linecap:round}
+
+/* organism cards */
+.orgs{display:grid; gap:16px}
+.org{background:var(--surface); border:1.5px solid var(--line); border-top:7px solid var(--c); border-radius:18px; padding:16px 18px; min-width:0; scroll-margin-top:90px; transition:box-shadow .2s, border-color .2s}
+.org.on{border-color:var(--c); box-shadow:0 0 0 3px color-mix(in srgb, var(--c) 30%, transparent)}
+.org header{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:10px; cursor:pointer}
+.org header svg{width:64px; height:44px; flex-shrink:0}
+.org h3{font-size:24px; line-height:1.15; flex:1 1 180px}
+.org h3 small{font-family:var(--f-body); font-weight:400; font-size:17px; color:var(--muted)}
+.org dl{margin:0; display:flex; flex-direction:column; gap:12px}
+.org dt{font:600 12.5px var(--f-mono); text-transform:uppercase; letter-spacing:.07em; color:var(--muted); margin-bottom:2px}
+.org dd{margin:0; font-size:18px}
+.org .num{display:inline-flex; width:22px; height:22px; border-radius:50%; background:var(--surface-2); color:var(--muted); align-items:center; justify-content:center; font:700 11.5px var(--f-mono); margin-right:6px; vertical-align:2px}
+.bul{margin:4px 0 0; padding-left:22px; display:flex; flex-direction:column; gap:3px}
+.idlist{margin:0; padding:0; list-style:none; display:flex; flex-wrap:wrap; gap:6px}
+.idlist li{background:var(--surface-2); border-radius:10px; padding:4px 10px; font-size:17px; display:flex; flex-wrap:wrap; align-items:center; gap:6px}
+.idlist li.good{background:var(--good-soft)} .idlist li.bad{background:var(--bad-soft)}
+.idlist .q{font-weight:700}
+.idlist .full{flex-basis:100%; font-size:15.5px; color:var(--muted)}
+.moreh{font-weight:700; margin-top:8px}
+.hook{background:var(--warn-soft); border-radius:12px; padding:8px 12px}
+.mc{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:4px}
+@media (max-width:640px){ .mc{grid-template-columns:1fr} }
+.mcopt{text-align:left; border:1.5px solid var(--line); background:var(--bg); border-radius:12px; padding:9px 12px; cursor:pointer; font-size:16.5px; line-height:1.35}
+.mcopt:hover:not(:disabled){border-color:var(--arrow)}
+.mcopt.sel{border-color:var(--arrow); background:var(--arrow-soft); font-weight:700}
+.mcopt.right{border-color:var(--good); background:var(--good-soft)}
+.mcopt.wrong{border-color:var(--bad); background:var(--bad-soft)}
+.mcopt:disabled{cursor:default}
+.reveal{margin-top:8px; padding-top:8px; border-top:1px dashed var(--line)}
+
+/* check bar (Test mode) */
+.checkbar{background:var(--surface); border:2px solid var(--arrow); border-radius:18px; padding:16px; display:flex; flex-direction:column; gap:12px}
+.checkbar h3{font-size:21px}
+.checklist{margin:0; padding-left:20px; display:flex; flex-direction:column; gap:6px; font-size:17px}
+
+/* check-in quiz (from ch9) */
+.quiz{background:var(--surface); border:1.5px solid var(--line); border-radius:20px; padding:20px}
+.quiz .qhead{display:flex; align-items:center; gap:10px; margin-bottom:12px}
+.quiz .qhead h3{font-size:23px}
+.quiz .qhead .tag{margin-left:auto; font:600 13px var(--f-mono); color:var(--muted); text-transform:uppercase; letter-spacing:.05em}
+.qq{font-weight:700; font-size:19px; margin-bottom:10px}
+.qopts{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+@media (max-width:640px){ .qopts{grid-template-columns:1fr} }
+.qopt{text-align:left; border:1.5px solid var(--line); background:var(--bg); border-radius:12px; padding:11px 14px; cursor:pointer; font-size:17px; line-height:1.35}
+.qopt:hover:not(:disabled){border-color:var(--arrow)}
+.qopt.right{border-color:var(--good); background:var(--good-soft)}
+.qopt.wrong{border-color:var(--bad); background:var(--bad-soft)}
+.qopt:disabled{cursor:default}
+.qwhy{margin-top:10px}
+
+/* step nav (from ch9) */
+.stepnav{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap}
+.stepnav button{display:flex; flex-direction:column; gap:2px; text-align:left; border:1.5px solid var(--line); background:var(--surface); border-radius:var(--r); padding:12px 16px; cursor:pointer; flex:1 1 200px; max-width:100%}
+.stepnav button:hover{border-color:var(--arrow)}
+.stepnav button.next{text-align:right}
+.stepnav small{font:600 12.5px var(--f-mono); color:var(--muted); text-transform:uppercase; letter-spacing:.05em}
+.stepnav b{font-family:var(--f-display); font-size:19px}
+
+/* finale */
+.takeaways{margin:0; padding-left:0; list-style:none; counter-reset:t; display:grid; gap:12px}
+.takeaways li{counter-increment:t; display:flex; gap:12px; align-items:flex-start; background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:14px 16px; font-size:19px}
+.takeaways li::before{content:counter(t); flex-shrink:0; width:32px; height:32px; border-radius:50%; background:var(--gn-edge); color:#fff; display:inline-flex; align-items:center; justify-content:center; font:700 15px var(--f-mono)}
+.tiles{display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.tile{display:flex; flex-direction:column; gap:4px; text-align:left; background:var(--surface); border:1.5px solid var(--line); border-radius:var(--r); padding:14px 16px; text-decoration:none; color:var(--ink); font-size:17px}
+a.tile:hover{border-color:var(--arrow)}
+.tile b{font-family:var(--f-display); font-size:20px}
+.tile .tag{font:600 12px var(--f-mono); text-transform:uppercase; letter-spacing:.05em; color:var(--arrow)}
+.tile.soon{background:var(--surface-2); border-style:dashed; color:var(--muted)}
+.tile.soon .tag{color:var(--muted)}
+.sech{font-size:22px; margin-bottom:10px}
+
+/* enteric table */
+dialog{border:0; border-radius:20px; padding:0; max-width:min(760px, calc(100vw - 24px)); width:100%; background:var(--surface); color:var(--ink); box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,20,30,.55)}
+.dlghead{display:flex; align-items:center; gap:10px; padding:16px 18px; border-bottom:1px solid var(--line)}
+.dlghead h2{font-size:24px; margin-right:auto}
+.dlgbody{padding:14px 18px 18px; display:flex; flex-direction:column; gap:10px}
+.tablewrap{overflow-x:auto; border:1px solid var(--line); border-radius:12px}
+table.ent{border-collapse:collapse; width:100%; min-width:560px; font-size:17px}
+table.ent th, table.ent td{padding:8px 10px; text-align:center; border-bottom:1px solid var(--line)}
+table.ent th{font:700 14px var(--f-mono); background:var(--surface-2)}
+table.ent td:first-child, table.ent th:first-child{text-align:left; white-space:nowrap}
+table.ent td:first-child{font-style:italic; font-weight:700; border-left:6px solid var(--c)}
+table.ent tr.grp td{background:color-mix(in srgb, var(--c) 12%, var(--surface))}
+.legend{display:flex; flex-wrap:wrap; gap:6px 18px; font-size:16px; color:var(--muted)}
+.legend span{display:inline-flex; align-items:center; gap:8px}
+.legend i{width:16px; height:16px; border-radius:4px; display:inline-block; background:var(--c)}
+
+/* toast */
+.toast{position:fixed; left:50%; bottom:22px; transform:translate(-50%, 20px); opacity:0; background:var(--ink); color:var(--bg); padding:12px 18px; border-radius:14px; font-weight:700; font-size:17px; z-index:60; transition:opacity .25s, transform .25s; pointer-events:none; max-width:calc(100vw - 32px); text-align:center}
+.toast.show{opacity:1; transform:translate(-50%, 0)}
+
+@media (prefers-reduced-motion: reduce){ *{transition:none!important; animation:none!important} html{scroll-behavior:auto} }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="topbar">
+  <button class="brand" type="button" data-act="start" aria-label="Back to the start screen">
+    <svg viewBox="0 0 26 26" aria-hidden="true"><rect x="3" y="9" width="20" height="9" rx="4.5" fill="var(--gn-fill)" stroke="var(--gn-edge)" stroke-width="2"/></svg>
+    <span id="brandTxt"></span>
+  </button>
+  <span class="crumb" id="crumb"></span>
+  <div class="topright">
+    <div class="seg" role="radiogroup" aria-label="Mode">
+      <button type="button" role="radio" data-mode="learn" aria-checked="true">Learn</button>
+      <button type="button" role="radio" data-mode="test" aria-checked="false">Test</button>
+    </div>
+    <a class="homebtn" href="course-index.html" aria-label="All BIO 112 modules">&#9776;<span class="long"> All modules</span></a>
+  </div>
+</header>
+
+<div class="tabs" role="tablist" aria-label="Tours" id="tabs"></div>
+
+<!-- ===================== START ===================== -->
+<section class="view active" id="view-start">
+  <div class="hero">
+    <div>
+      <div class="eyebrow" id="startEyebrow"></div>
+      <h1 id="startTitle"></h1>
+    </div>
+    <p id="startIntro"></p>
+  </div>
+  <div class="startgrid">
+    <div class="panel">
+      <h2>By the end, you can:</h2>
+      <ol class="goals" id="goals"></ol>
+    </div>
+    <div class="panel">
+      <h2>Two ways to use it</h2>
+      <div class="modes">
+        <div><b>Learn</b>Everything is filled in. Read each stop and follow the traits down the tree.</div>
+        <div><b>Test</b>Branch names, defining traits, ID results, diseases, and treatments become blanks. Fill them in, then tap Check.</div>
+      </div>
+      <div class="btnrow" style="margin-top:16px">
+        <button class="btn" type="button" data-act="begin">Start the tour &rarr;</button>
+        <button class="btn ghost" type="button" data-act="explore">Explore the tree</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== TOUR ===================== -->
+<section class="view" id="view-tour">
+  <div class="tour">
+    <aside class="treepanel" aria-label="Family tree">
+      <div class="treehead">
+        <span class="lbl">Family tree</span>
+        <button class="btn small ghost" type="button" data-act="restart">&#8634; Start tour from the beginning</button>
+        <button class="btn small ghost" type="button" data-act="full" id="fullBtn">Show full tree</button>
+      </div>
+      <div class="treebox" id="treebox"><svg id="tree" role="group" aria-label="Bacterial family tree. Every branch is a button."></svg></div>
+      <p class="treehint">Tap any branch to jump there. Drag or scroll to look around.</p>
+    </aside>
+    <div class="lessoncol">
+      <div class="progress">
+        <span class="count" id="count"></span>
+        <div class="bar" aria-hidden="true"><i id="barFill"></i></div>
+        <button class="btn small ghost" type="button" data-act="prev" aria-label="Previous stop">&larr; Back</button>
+        <button class="btn small" type="button" data-act="next" aria-label="Next stop">Next &rarr;</button>
+      </div>
+      <section class="ribbon" id="ribbon" aria-label="Trait ribbon"></section>
+      <article id="lesson" class="lessoncol"></article>
+    </div>
+  </div>
+</section>
+</div>
+
+<dialog id="entDlg" aria-labelledby="entTitle">
+  <div class="dlghead"><h2 id="entTitle">Enteric ID table</h2><button class="btn small ghost" type="button" data-act="closeDlg">Close &times;</button></div>
+  <div class="dlgbody" id="entBody"></div>
+</dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- Tour content. Swap this one line to reuse the page for another tour. -->
+<script src="gram-neg-tree.js"></script>
+<script>
+(function(){
+"use strict";
+var D = window.TOUR_DATA;
+var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ================= helpers (from ch9) ================= */
+function $(s, r){ return (r || document).querySelector(s); }
+function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+function store(k, v){ try { if (v === undefined) return JSON.parse(localStorage.getItem(k)); localStorage.setItem(k, JSON.stringify(v)); } catch (e) { return null; } }
+function rng(seed){ return function(){ seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function shuffle(a, R){ R = R || Math.random; a = a.slice(); for (var i = a.length - 1; i > 0; i--){ var j = Math.floor(R() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function hashStr(s){ var h = 2166136261; for (var i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;"}[c]; }); }
+function plain(html){ var d = document.createElement("div"); d.innerHTML = html; return d.textContent; }
+function ease(t){ return t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+
+/* ================= index the data ================= */
+var N = {}, ROOT = D.tree[0];
+D.tree.forEach(function(n){ N[n.id] = n; n.kids = []; });
+D.tree.forEach(function(n){ if (n.parent) N[n.parent].kids.push(n); });
+function pathTo(id){ var p = [], n = N[id]; while (n){ p.unshift(n); n = n.parent ? N[n.parent] : null; } return p; }
+function colorOf(n){ while (n){ if (n.color) return n.color; n = n.parent ? N[n.parent] : null; } return "#64748b"; }
+function subtree(id, acc){ acc = acc || []; acc.push(id); N[id].kids.forEach(function(k){ subtree(k.id, acc); }); return acc; }
+var ORG = {}, OPEN = {}, ALLORGS = [];
+D.stops.forEach(function(s, i){ s.n = i; (s.orgs || []).forEach(function(o){ o.stop = i; ORG[o.id] = o; if (o.type !== "phylum") ALLORGS.push(o); if (!OPEN[o.node]) OPEN[o.node] = {stop: i, org: o.id}; }); });
+D.stops.forEach(function(s, i){ [s.node].concat(s.also || []).forEach(function(id){ if (!OPEN[id]) OPEN[id] = {stop: i}; }); });
+var LAST = D.stops.length - 1;
+
+/* ================= state ================= */
+var st = {mode: store(D.id + "-mode") === "test" ? "test" : "learn", view: "start", i: 0, org: null, full: false, ans: {}, chk: {}, ci: {}};
+var KEYS = {};   // answer key for every blank currently on screen
+
+function stop(){ return D.stops[st.i]; }
+function testOn(){ return st.mode === "test" && !stop().finale; }
+function labelHidden(n){ return testOn() && n.blankLabel && !st.chk["l:" + n.id]; }
+function shownLabel(n){ return labelHidden(n) ? "?" : n.label; }
+
+/* ================= SVG icons (drawn from scratch, gram-negative = pink) ================= */
+function wavePath(x0, x1, cy, amp, periods, dy, steps){
+  var d = "", n = steps || 120;
+  for (var i = 0; i <= n; i++){ var x = x0 + (x1 - x0) * i / n, y = cy + (dy || 0) + amp * Math.sin(i / n * periods * 2 * Math.PI); d += (i ? "L" : "M") + x.toFixed(1) + " " + y.toFixed(1); }
+  return d;
+}
+function icon(shape){
+  var f = 'fill="var(--gn-fill)" stroke="var(--gn-edge)" stroke-width="2"', s = '<svg viewBox="0 0 64 44" aria-hidden="true">';
+  function tube(d, w){ return '<path d="' + d + '" fill="none" stroke="var(--gn-edge)" stroke-width="' + (w + 4) + '" stroke-linecap="round"/><path d="' + d + '" fill="none" stroke="var(--gn-fill)" stroke-width="' + w + '" stroke-linecap="round"/>'; }
+  switch (shape){
+    case "rod": s += '<rect x="8" y="14" width="48" height="16" rx="8" ' + f + '/>'; break;
+    case "coccobacillus": s += '<rect x="18" y="11" width="28" height="22" rx="11" ' + f + '/>'; break;
+    case "diplococcus": s += '<path d="M30 9 A13 13 0 1 0 30 35 Q26 22 30 9Z" ' + f + '/><path d="M34 9 A13 13 0 1 1 34 35 Q38 22 34 9Z" ' + f + '/>'; break;
+    case "curved": s += tube("M14 32 Q32 2 50 32", 10); break;
+    case "gullwing": s += tube("M8 30 Q19 8 32 24 Q45 8 56 30", 8); break;
+    case "spiral": s += tube(wavePath(8, 56, 22, 9, 2, 0, 40), 7); break;
+    case "spirochete": s += tube(wavePath(6, 58, 22, 6, 6, 0, 90), 3); break;
+    case "spindle": s += '<path d="M5 22 Q32 6 59 22 Q32 38 5 22Z" ' + f + '/>'; break;
+    case "filament": s += [8, 19, 30, 41].map(function(x){ return '<circle cx="' + x + '" cy="22" r="5.6" ' + f + '/>'; }).join("") + '<circle cx="53.5" cy="22" r="7.2" fill="var(--surface)" stroke="var(--gn-edge)" stroke-width="3"/>'; break;
+    case "budding": s += '<circle cx="25" cy="24" r="14" ' + f + '/><circle cx="45" cy="13" r="7.5" ' + f + '/>'; break;
+    case "intracellular": s += '<ellipse cx="32" cy="22" rx="28" ry="18" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="4 3"/>' + [[22, 17], [30, 26], [39, 18], [44, 27], [26, 29]].map(function(p){ return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3.6" ' + f + '/>'; }).join(""); break;
+    default: s += '<rect x="14" y="13" width="36" height="18" rx="9" ' + f + '/>'; /* generic cell: TODO no shape given in the brief */
+  }
+  return s + "</svg>";
+}
+
+/* ================= diagrams (drawn from scratch) ================= */
+function bilayer(x0, x1, y){
+  var s = "";
+  for (var x = x0 + 7; x < x1; x += 14){
+    s += '<circle class="dg-head" cx="' + x + '" cy="' + (y + 5) + '" r="5"/><circle class="dg-head" cx="' + x + '" cy="' + (y + 25) + '" r="5"/>' +
+      '<path class="dg-tail" d="M' + (x - 1.6) + " " + (y + 10) + " V" + (y + 20) + " M" + (x + 1.6) + " " + (y + 10) + " V" + (y + 20) + '"/>';
+  }
+  return s;
+}
+var DIAGRAMS = {
+  gramwall: function(){
+    var x0 = 16, x1 = 250, s = '<svg viewBox="0 0 520 290" role="img" aria-label="Gram-negative cell wall: LPS sticks out from the outer membrane, then a thin peptidoglycan layer, then the plasma membrane.">';
+    s += '<text class="dg-m" x="' + x0 + '" y="28">Outside the cell</text>';
+    for (var x = x0 + 10; x < x1; x += 22) s += '<path class="dg-lps" d="M' + x + " 80 V60 M" + x + " 66 l-6 -8 M" + x + ' 66 l6 -8"/>';
+    s += bilayer(x0, x1, 80);
+    s += '<rect class="dg-pg" x="' + x0 + '" y="134" width="' + (x1 - x0) + '" height="14" rx="3"/>';
+    for (x = x0 + 8; x < x1; x += 12) s += '<path class="dg-pgl" d="M' + x + ' 136 v10"/>';
+    s += bilayer(x0, x1, 176);
+    s += '<text class="dg-m" x="' + x0 + '" y="250">Inside the cell</text>';
+    [[62, "LPS (endotoxin)"], [95, "Outer membrane"], [141, "Thin peptidoglycan"], [191, "Plasma membrane"]].forEach(function(l){
+      s += '<path class="dg-lead" d="M' + (x1 + 4) + " " + l[0] + ' H268"/><text class="dg-t" x="274" y="' + l[0] + '" dominant-baseline="central">' + l[1] + "</text>";
+    });
+    return {svg: s + "</svg>", cap: "Gram-negative cell wall, outside to inside"};
+  },
+  macconkey: function(){
+    var s = '<svg viewBox="0 0 520 300" role="img" aria-label="Two MacConkey plates. Coliforms grow as pink colonies. Non-coliforms grow as colorless colonies.">', R = rng(7);
+    [[130, true], [390, false]].forEach(function(p){
+      s += '<circle cx="' + p[0] + '" cy="122" r="104" fill="var(--surface-2)" stroke="var(--line)" stroke-width="4"/><circle cx="' + p[0] + '" cy="122" r="96" fill="var(--mac)"/>';
+      for (var k = 0; k < 13; k++){
+        var a = R() * Math.PI * 2, d = Math.sqrt(R()) * 74, r = 6 + R() * 5;
+        s += '<circle cx="' + (p[0] + Math.cos(a) * d).toFixed(1) + '" cy="' + (122 + Math.sin(a) * d).toFixed(1) + '" r="' + r.toFixed(1) + '" ' + (p[1] ? 'fill="var(--col-pink)"' : 'fill="var(--col-clear)" stroke="var(--col-clear-edge)" stroke-width="1.5"') + "/>";
+      }
+      s += '<text class="dg-b" x="' + p[0] + '" y="256" text-anchor="middle">' + (p[1] ? "Coliform" : "Non-coliform") + '</text><text class="dg-t" x="' + p[0] + '" y="284" text-anchor="middle">' + (p[1] ? "lactose +: pink" : "lactose −: colorless") + "</text>";
+    });
+    return {svg: s + "</svg>", cap: "MacConkey agar"};
+  },
+  axial: function(){
+    var d = wavePath(40, 480, 92, 32, 3, 0, 160);
+    var s = '<svg viewBox="0 0 520 290" role="img" aria-label="Spirochete with axial filaments running inside the cell, under the outer membrane.">' +
+      '<path d="' + d + '" fill="none" stroke="var(--gn-edge)" stroke-width="40" stroke-linecap="round"/>' +
+      '<path d="' + d + '" fill="none" stroke="var(--gn-fill)" stroke-width="33" stroke-linecap="round"/>' +
+      '<path d="' + wavePath(40, 480, 92, 32, 3, -7, 160) + '" fill="none" stroke="var(--arrow)" stroke-width="3.5"/>' +
+      '<path d="' + wavePath(40, 480, 92, 32, 3, 7, 160) + '" fill="none" stroke="var(--arrow)" stroke-width="3.5"/>' +
+      '<path d="M24 184 H56" stroke="var(--arrow)" stroke-width="4"/><text class="dg-t" x="66" y="184" dominant-baseline="central">Axial filaments: flagella inside the cell</text>' +
+      '<path d="M24 222 H56" stroke="var(--gn-edge)" stroke-width="8" stroke-linecap="round"/><text class="dg-t" x="66" y="222" dominant-baseline="central">Outer membrane</text>' +
+      '<text class="dg-m" x="24" y="268">Filaments rotate → the whole cell twists</text>';
+    return {svg: s + "</svg>", cap: "Spirochete axial filaments"};
+  },
+  chlamydia: function(){
+    function eb(x, y){ return '<circle cx="' + x + '" cy="' + y + '" r="6" fill="var(--gn-edge)"/>'; }
+    function rb(x, y){ return '<circle cx="' + x + '" cy="' + y + '" r="12" fill="var(--gn-fill)" stroke="var(--gn-edge)" stroke-width="2"/>'; }
+    var boxes = [
+      {x: 260, y: 66, l: ["1. EB enters", "the cell"], ic: function(x, y){ return eb(x - 22, y) + '<path d="M' + (x - 10) + " " + y + " H" + (x + 6) + '" stroke="var(--muted)" stroke-width="2.5"/><path d="M' + (x + 16) + " " + (y - 14) + " V" + (y + 14) + '" stroke="var(--muted)" stroke-width="2.5" stroke-dasharray="4 3"/>' + eb(x + 28, y); }},
+      {x: 432, y: 236, l: ["2. Becomes", "an RB"], ic: function(x, y){ return eb(x - 24, y) + '<path d="M' + (x - 12) + " " + y + " H" + (x + 4) + '" stroke="var(--muted)" stroke-width="2.5"/>' + rb(x + 22, y); }},
+      {x: 260, y: 406, l: ["3. RB", "multiplies"], ic: function(x, y){ return rb(x - 28, y) + rb(x, y) + rb(x + 28, y); }},
+      {x: 88, y: 236, l: ["4. New EBs,", "released"], ic: function(x, y){ return eb(x - 30, y + 2) + eb(x - 12, y - 6) + eb(x + 6, y + 4) + eb(x + 24, y - 4); }}
+    ];
+    var s = '<svg viewBox="0 0 520 470" role="img" aria-label="Chlamydia life cycle in four steps: an elementary body enters the cell, becomes a reticulate body, the reticulate body multiplies, then new elementary bodies form and are released.">' +
+      '<defs><marker id="dgah" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--arrow)"/></marker></defs>';
+    boxes.forEach(function(b){
+      s += '<rect class="dg-box" x="' + (b.x - 85) + '" y="' + (b.y - 56) + '" width="170" height="112" rx="16"/>' + b.ic(b.x, b.y - 24) +
+        '<text class="dg-b" x="' + b.x + '" y="' + (b.y + 14) + '" text-anchor="middle" style="font-size:20px">' + b.l[0] + '</text><text class="dg-t" x="' + b.x + '" y="' + (b.y + 39) + '" text-anchor="middle" style="font-size:20px">' + b.l[1] + "</text>";
+    });
+    [["M350 66 Q432 66 432 172"], ["M432 300 Q432 406 350 406"], ["M170 406 Q88 406 88 300"], ["M88 172 Q88 66 170 66"]].forEach(function(a){ s += '<path class="dg-arrow" d="' + a[0] + '" marker-end="url(#dgah)"/>'; });
+    s += '<text class="dg-m" x="260" y="226" text-anchor="middle" style="font-size:17px">EB = delivery vehicle</text><text class="dg-m" x="260" y="252" text-anchor="middle" style="font-size:17px">RB = factory</text>';
+    return {svg: s + "</svg>", cap: "<i>Chlamydia</i> life cycle"};
+  }
+};
+
+/* ================= tree layout ================= */
+var T = {W: 0, H: 0, s: 1, laid: false};
+var FONT = 17, ROWH = 46, NODEH = 34, GAPX = 40, PAD = 24;
+var measureCtx = document.createElement("canvas").getContext("2d");
+function nodeText(n){ return (n.locked ? "🔒 " : "") + n.label; }
+function textW(n){ measureCtx.font = (n.italic ? "italic " : "") + "700 " + FONT + "px 'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif"; return measureCtx.measureText(nodeText(n)).width; }
+function layout(){
+  var depthW = [], row = 0;
+  (function walk(n, d){
+    n.d = d; n.w = Math.ceil(textW(n)) + 28; depthW[d] = Math.max(depthW[d] || 0, n.w);
+    if (!n.kids.length){ n.y = PAD + row * ROWH + NODEH / 2; row++; }
+    else { n.kids.forEach(function(k){ walk(k, d + 1); }); n.y = (n.kids[0].y + n.kids[n.kids.length - 1].y) / 2; }
+  })(ROOT, 0);
+  var xs = [PAD];
+  for (var d = 1; d < depthW.length; d++) xs[d] = xs[d - 1] + depthW[d - 1] + GAPX;
+  D.tree.forEach(function(n){ n.x = xs[n.d]; });
+  T.W = xs[depthW.length - 1] + depthW[depthW.length - 1] + PAD;
+  T.H = PAD * 2 + (row - 1) * ROWH + NODEH;
+}
+function drawTree(){
+  layout();
+  var svg = $("#tree"), h = '<g class="edges">';
+  svg.setAttribute("viewBox", "0 0 " + T.W + " " + T.H);
+  D.tree.forEach(function(n){
+    if (!n.parent) return;
+    var p = N[n.parent], mx = n.x - GAPX / 2;
+    h += '<path data-e="' + n.id + '" style="--c:' + colorOf(n) + '" d="M' + (p.x + p.w) + " " + p.y + " H" + mx + " V" + n.y + " H" + n.x + '"/>';
+  });
+  h += '</g><g class="nodes">';
+  D.tree.forEach(function(n){
+    var cls = "tn" + (n.italic ? " it" : "") + (n.locked || n.muted ? " off" : "") + (n.kids.length ? "" : " leaf");
+    h += '<g class="' + cls + '" data-node="' + n.id + '" tabindex="0" role="button" style="--c:' + colorOf(n) + '" transform="translate(' + n.x + " " + (n.y - NODEH / 2) + ')">' +
+      '<rect width="' + n.w + '" height="' + NODEH + '" rx="' + (n.kids.length ? 10 : 17) + '"/><text x="' + (n.w / 2) + '" y="' + (NODEH / 2) + '"></text></g>';
+  });
+  svg.innerHTML = h + "</g>";
+  T.laid = true;
+}
+
+/* which nodes stay bright, and which box the camera frames */
+function viewInfo(){
+  var s = stop(), cur = st.org ? ORG[st.org].node : s.node, lit = null, ids;
+  if (!(s.full || st.full)){
+    lit = {};
+    pathTo(cur).forEach(function(n){ lit[n.id] = 1; });
+    (s.focusTree || subtree(s.node)).forEach(function(id){ lit[id] = 1; });
+    if (s.focusTree) s.focusTree.forEach(function(id){ subtree(id).forEach(function(x){ lit[x] = 1; }); });
+    if (s.focusTree) ids = s.focusTree.concat([s.node]);
+    else {
+      var n = N[s.node]; ids = [n.id];
+      if (n.parent) ids.push(n.parent);
+      n.kids.forEach(function(k){ ids.push(k.id); k.kids.forEach(function(g){ ids.push(g.id); }); });
+    }
+    if (st.org) ids.push(ORG[st.org].node);
+  }
+  return {cur: cur, lit: lit, ids: ids};
+}
+function updateTree(animate){
+  if (!T.laid) drawTree();
+  var s = stop(), v = viewInfo(), onPath = {};
+  pathTo(v.cur).forEach(function(n){ onPath[n.id] = 1; });
+  $$("#tree .tn").forEach(function(g){
+    var id = g.getAttribute("data-node"), n = N[id], hid = labelHidden(n) && !s.finale;
+    g.classList.toggle("cur", id === v.cur);
+    g.classList.toggle("path", !!onPath[id]);
+    g.classList.toggle("fade", !!(v.lit && !v.lit[id]));
+    g.classList.toggle("hid", hid);
+    $("text", g).textContent = hid ? "?" : nodeText(n);
+    g.setAttribute("aria-label", (hid ? "Hidden branch name" : n.label) + (n.locked ? ", coming soon" : n.muted ? ", not covered" : ""));
+    g.setAttribute("aria-current", id === v.cur ? "true" : "false");
+  });
+  $$("#tree .edges path").forEach(function(p){
+    var id = p.getAttribute("data-e");
+    p.classList.toggle("on", !!(onPath[id] && onPath[N[id].parent]));
+    p.classList.toggle("fade", !!(v.lit && !v.lit[id]));
+  });
+  $("#fullBtn").textContent = (s.full || st.full) ? (s.full ? "Full tree" : "Zoom to this stop") : "Show full tree";
+  $("#fullBtn").disabled = !!s.full;
+  frame(v, animate);
+}
+
+/* ================= camera: zoom + pan the scrollable tree box ================= */
+var camAnim = 0;
+function frame(v, animate){
+  var box = $("#treebox"), W = box.clientWidth, H = box.clientHeight, b, sc;
+  if (!W || !H) return;
+  if (!v.ids){ b = {x: 0, y: 0, w: T.W, h: T.H}; sc = Math.min(W / T.W, H / T.H); }
+  else {
+    var x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    v.ids.forEach(function(id){ var n = N[id]; x0 = Math.min(x0, n.x); x1 = Math.max(x1, n.x + n.w); y0 = Math.min(y0, n.y - NODEH / 2); y1 = Math.max(y1, n.y + NODEH / 2); });
+    b = {x: x0 - 20, y: y0 - 20, w: x1 - x0 + 40, h: y1 - y0 + 40};
+    var minS = W < 500 ? 0.74 : 0.8;
+    sc = Math.max(minS, Math.min(1.15, Math.min(W / b.w, H / b.h)));
+  }
+  var curN = N[v.cur];
+  var left = b.w * sc <= W ? (b.x + b.w / 2) * sc - W / 2 : Math.min(curN.x * sc - 8, (b.x + b.w) * sc - W);
+  var top = b.h * sc <= H ? (b.y + b.h / 2) * sc - H / 2 : curN.y * sc - H / 2;
+  left = Math.max(0, Math.min(left, T.W * sc - W)); top = Math.max(0, Math.min(top, T.H * sc - H));
+  var s0 = T.s, l0 = box.scrollLeft, t0 = box.scrollTop, svg = $("#tree"), id = ++camAnim;
+  function apply(sv, l, t){ svg.style.width = (T.W * sv) + "px"; svg.style.height = (T.H * sv) + "px"; box.scrollLeft = l; box.scrollTop = t; T.s = sv; }
+  if (!animate || reduced){ apply(sc, left, top); return; }
+  var start = performance.now();
+  (function step(now){
+    if (id !== camAnim) return;
+    var k = ease(Math.min(1, (now - start) / 650));
+    apply(s0 + (sc - s0) * k, l0 + (left - l0) * k, t0 + (top - t0) * k);
+    if (k < 1) requestAnimationFrame(step);
+  })(start);
+}
+(function dragPan(){
+  var box = $("#treebox"), down = null;
+  box.addEventListener("pointerdown", function(e){ if (e.pointerType !== "mouse" || e.button !== 0) return; down = {x: e.clientX, y: e.clientY, l: box.scrollLeft, t: box.scrollTop, moved: false}; });
+  window.addEventListener("pointermove", function(e){
+    if (!down) return;
+    var dx = e.clientX - down.x, dy = e.clientY - down.y;
+    if (!down.moved && Math.abs(dx) + Math.abs(dy) > 5){ down.moved = true; box.classList.add("drag"); camAnim++; }
+    if (down.moved){ box.scrollLeft = down.l - dx; box.scrollTop = down.t - dy; }
+  });
+  window.addEventListener("pointerup", function(){ if (down && down.moved){ T.justDragged = true; setTimeout(function(){ T.justDragged = false; }, 0); } down = null; box.classList.remove("drag"); });
+})();
+
+/* ================= blanks ================= */
+function register(key, info){ KEYS[key] = info; }
+function markCls(key){ if (!st.chk[key]) return ""; return st.ans[key] === KEYS[key].a ? "good" : "bad"; }
+function markIcon(key){ if (!st.chk[key]) return ""; return st.ans[key] === KEYS[key].a ? '<span class="mark" aria-label="correct">✓</span>' : '<span class="mark" aria-label="incorrect">✗</span> <span class="ans">' + esc(KEYS[key].a) + "</span>"; }
+function selectHtml(key, opts, label){
+  var v = st.ans[key], h = '<select class="blank ' + markCls(key) + '" data-key="' + key + '" aria-label="' + esc(label) + '"' + (st.chk[key] ? " disabled" : "") + '><option value="">choose…</option>';
+  opts.forEach(function(o){ h += "<option" + (v === o ? " selected" : "") + ">" + esc(o) + "</option>"; });
+  return h + "</select>";
+}
+function mcHtml(key, opts){
+  var h = '<div class="mc" role="group">', v = st.ans[key], done = st.chk[key], a = KEYS[key].a;
+  opts.forEach(function(o){
+    var c = "mcopt" + (v === o ? " sel" : "") + (done ? (o === a ? " right" : v === o ? " wrong" : "") : "");
+    h += '<button type="button" class="' + c + '" data-mc="' + key + '" data-val="' + esc(o) + '"' + (done ? " disabled" : "") + ">" + esc(o) + "</button>";
+  });
+  return h + "</div>";
+}
+function diseaseOpts(o){
+  var R = rng(hashStr("d" + o.id)), tags = o.disease.tags || [], seen = {}, pool = [];
+  seen[o.disease.short] = 1;
+  shuffle(ALLORGS, R).forEach(function(x){
+    var sh = x.disease && x.disease.short;
+    if (!sh || seen[sh] || (x.disease.tags || []).some(function(t){ return tags.indexOf(t) >= 0; })) return;
+    seen[sh] = 1; pool.push(sh);
+  });
+  return shuffle([o.disease.short].concat(pool.slice(0, 3)), R);
+}
+function treatOpts(o){
+  var R = rng(hashStr("t" + o.id)), drugs = o.treat.drugs || [], seen = {}, pool = [];
+  seen[o.treat.short] = 1;
+  shuffle(ALLORGS, R).forEach(function(x){
+    if (!x.treat || seen[x.treat.short] || (x.treat.drugs || []).some(function(d){ return drugs.indexOf(d) >= 0; })) return;
+    seen[x.treat.short] = 1; pool.push(x.treat.short);
+  });
+  return shuffle([o.treat.short].concat(pool.slice(0, 3)), R);
+}
+
+/* ================= ribbon ================= */
+function crumbHtml(n){
+  if (labelHidden(n) || (testOn() && n.blankLabel)){
+    var key = "l:" + n.id;
+    register(key, {a: n.label, kind: "label", why: "This branch is <b>" + n.label + "</b>" + (n.full ? " (" + n.full + ")" : "") + "."});
+    var opts = shuffle(D.wordBank, rng(hashStr("wb" + n.id)));
+    return '<span class="' + markCls(key) + '" style="--c:' + colorOf(n) + '">' + selectHtml(key, opts, "Branch name") + " " + markIcon(key) + "</span>";
+  }
+  return '<button type="button" data-node="' + n.id + '" class="' + (n.italic ? "it" : "") + '" style="--c:' + colorOf(n) + '">' + esc(n.label) + "</button>";
+}
+function traitChip(n, t, k){
+  if (testOn() && t.blank){
+    var key = "t:" + n.id + ":" + k, b = t.blank;
+    register(key, {a: b.a, kind: "trait", why: "<b>" + n.label + ":</b> " + esc(t.t) + ". " + (b.why || "")});
+    return '<span class="chip blank ' + markCls(key) + (t.strong ? " strong" : "") + '">' + esc(b.pre) + selectHtml(key, b.o, n.label + " trait") + esc(b.post) + " " + markIcon(key) + "</span>";
+  }
+  return '<span class="chip' + (t.strong ? " strong" : "") + '">' + esc(t.t) + "</span>";
+}
+function renderRibbon(){
+  var s = stop(), v = viewInfo(), p = pathTo(v.cur), h = '<div class="rl">Path from the top of the tree</div><nav class="crumbs" aria-label="Path">';
+  p.forEach(function(n, k){ if (k) h += '<span class="sep" aria-hidden="true">→</span>'; h += crumbHtml(n); });
+  h += '</nav><div class="rl">Traits collected along this path</div><div class="tgroups">';
+  var any = false;
+  p.forEach(function(n){
+    var lbl = labelHidden(n) ? "this branch" : (n.italic ? "<i>" + esc(n.label) + "</i>" : esc(n.label));
+    if (n.traits && n.traits.length){
+      any = true;
+      h += '<div class="tg" style="--c:' + colorOf(n) + '"><span class="tgl">From ' + lbl + ":</span>" + n.traits.map(function(t, k){ return traitChip(n, t, k); }).join("") + "</div>";
+    } else if (n.note && n.id === s.node){
+      h += '<div class="tg note" style="--c:' + colorOf(n) + '"><span class="tgl">' + lbl + ":</span> " + esc(n.note) + "</div>";
+    }
+  });
+  if (st.org){
+    var o = ORG[st.org], hide = testOn() && o.ids && o.ids.some(function(it, k){ return it.q && !st.chk["i:" + o.id + ":" + k]; });
+    if (o.only && o.only.length){
+      h += '<div class="tg only"><span class="tgl">' + (o.type === "phylum" ? esc(o.name) : "<i>" + esc(o.name) + "</i>") + " only:</span>" +
+        o.only.map(function(c){ return '<span class="chip">' + (hide ? "?" : esc(c)) + "</span>"; }).join("") + "</div>";
+    }
+  } else if (s.orgs && s.orgs.length){
+    h += '<p class="hint">Tap a card below to add that organism to the path.</p>';
+  }
+  if (!any && !(s.orgs || []).length && !N[v.cur].note) h += '<p class="hint">No traits on this branch yet.</p>';
+  $("#ribbon").innerHTML = h + "</div>";
+}
+
+/* ================= lesson + cards ================= */
+function list(items){ return '<ul class="bul">' + items.map(function(i){ return "<li>" + i + "</li>"; }).join("") + "</ul>"; }
+function more(m){ return m ? (m.h ? '<div class="moreh">' + m.h + "</div>" : "") + list(m.items) : ""; }
+function field(label, html, num){ return '<div><dt><span class="num">' + num + "</span>" + label + "</dt><dd>" + html + "</dd></div>"; }
+function orgCard(o){
+  var c = colorOf(N[o.node]), sel = st.org === o.id, t = testOn();
+  var nm = o.type === "phylum" ? esc(o.name) : "<i>" + esc(o.name) + "</i>" + (o.suffix ? " <small>" + esc(o.suffix) + "</small>" : "");
+  var h = '<article class="org' + (sel ? " on" : "") + '" id="org-' + o.id + '" data-org="' + o.id + '" style="--c:' + c + '">' +
+    '<header data-focus="' + o.id + '" title="Show on the tree">' + icon(o.shape) + "<h3>" + nm + '</h3><button type="button" class="btn small ghost" data-focus="' + o.id + '">' + (sel ? "📍 On the tree" : "Show on tree") + "</button></header>";
+  if (o.type === "phylum") return h + list(o.items) + "</article>";
+  h += "<dl>";
+  var n = 1;
+  if (o.ids){
+    h += field("Key ID results", '<ul class="idlist">' + o.ids.map(function(it, k){
+      if (!(t && it.q)) return "<li>" + it.t + "</li>";
+      var key = "i:" + o.id + ":" + k;
+      register(key, {a: it.a, kind: "id", why: "<b><i>" + esc(o.name) + "</i>, " + esc(it.q) + ":</b> " + it.t});
+      return '<li class="' + markCls(key) + '"><span class="q">' + esc(it.q) + ":</span> " + selectHtml(key, it.o, o.name + " " + it.q) + " " + markIcon(key) + (st.chk[key] ? '<span class="full">' + it.t + "</span>" : "") + "</li>";
+    }).join("") + "</ul>", n++);
+  }
+  if (o.disease){
+    var dh;
+    if (t){
+      var dk = "d:" + o.id;
+      register(dk, {a: o.disease.short, kind: "disease", why: "<b><i>" + esc(o.name) + "</i> disease:</b> " + o.disease.html});
+      dh = mcHtml(dk, diseaseOpts(o)) + (st.chk[dk] ? '<div class="reveal">' + o.disease.html + more(o.disease.more) + "</div>" : "");
+    } else dh = o.disease.html + more(o.disease.more);
+    h += field("Disease", dh, n++);
+  }
+  if (o.spread) h += field(o.spread.label, o.spread.html + more(o.spread.more), n++);
+  if (o.treat){
+    var th;
+    if (t){
+      var tk = "x:" + o.id;
+      register(tk, {a: o.treat.short, kind: "treat", why: "<b><i>" + esc(o.name) + "</i> " + o.treat.label.toLowerCase() + ":</b> " + o.treat.html});
+      th = mcHtml(tk, treatOpts(o)) + (st.chk[tk] ? '<div class="reveal">' + o.treat.html + "</div>" : "");
+    } else th = o.treat.html;
+    h += field(o.treat.label, th, n++);
+  }
+  (o.extra || []).forEach(function(e){ h += field(e.h, list(e.items), n++); });
+  if (o.hook) h += field("Memory hook", '<div class="hook">💡 ' + o.hook + "</div>", n++);
+  return h + "</dl></article>";
+}
+function checkinHtml(s){
+  var c = s.checkin; if (!c) return "";
+  var order = shuffle(c.o.map(function(_, i){ return i; }), rng(hashStr("ci" + s.id))), pick = st.ci[s.n], h = "";
+  h += '<section class="quiz" id="checkin"><div class="qhead"><svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="15" fill="var(--good-soft)"/><path d="M10 17 l5 5 l9 -10" fill="none" stroke="var(--good)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>Check-in</h3><span class="tag">★ quick question</span></div>';
+  h += '<p class="qq">' + c.q + '</p><div class="qopts">';
+  order.forEach(function(i){
+    var cls = "qopt" + (pick != null ? (i === 0 ? " right" : i === pick ? " wrong" : "") : "");
+    h += '<button type="button" class="' + cls + '" data-ci="' + i + '"' + (pick != null ? " disabled" : "") + ">" + c.o[i] + "</button>";
+  });
+  h += "</div>";
+  if (pick != null) h += '<div class="msg qwhy ' + (pick === 0 ? "good" : "bad") + '"><b>' + (pick === 0 ? "Yes!" : "Not quite.") + "</b> " + c.w + "</div>";
+  return h + "</section>";
+}
+function checkbarHtml(keys){
+  if (!keys.length) return "";
+  var done = keys.filter(function(k){ return st.chk[k]; }), right = done.filter(function(k){ return st.ans[k] === KEYS[k].a; });
+  var all = done.length === keys.length, h = '<section class="checkbar" id="checkbar"><h3>✏️ Fill in the blanks, then check</h3>';
+  if (done.length){
+    h += '<div class="msg ' + (right.length === done.length ? "good" : "bad") + '"><b>' + right.length + " of " + done.length + " correct.</b>" + (right.length === done.length ? " Nice work! ✨" : " Here's what to fix:") + "</div>";
+    var wrong = done.filter(function(k){ return st.ans[k] !== KEYS[k].a; });
+    if (wrong.length) h += '<ul class="checklist">' + wrong.map(function(k){ return "<li>" + KEYS[k].why + "</li>"; }).join("") + "</ul>";
+  }
+  h += '<div class="btnrow">' + (all ? "" : '<button class="btn" type="button" data-act="check">Check my answers</button>') +
+    (done.length ? '<button class="btn ghost" type="button" data-act="retry">Try again</button>' : "") + "</div>";
+  return h + "</section>";
+}
+function stepTitle(i){ return i < 0 ? "Start screen" : D.stops[i].title; }
+function renderLesson(){
+  var s = stop(), h = "", c = colorOf(N[s.node]);
+  h += '<header class="mhead"><div class="mbadge" style="--c:' + c + '">' + (s.n + 1) + "</div><div><div class=\"eyebrow\">Stop " + (s.n + 1) + " of " + D.stops.length + "</div><h2>" + s.title + "</h2></div></header>";
+  if (s.lesson) h += '<ul class="lesson">' + s.lesson.map(function(p){ return "<li>" + p + "</li>"; }).join("") + "</ul>";
+  if (s.diagram && DIAGRAMS[s.diagram]){ var dg = DIAGRAMS[s.diagram](); h += '<figure class="figure" style="margin:0">' + dg.svg + "<figcaption>" + dg.cap + "</figcaption></figure>"; }
+  if (s.entericTable) h += '<div><button class="btn ghost" type="button" data-act="table">📋 Open the enteric ID table</button></div>';
+  if (s.orgs && s.orgs.length) h += '<div class="orgs">' + s.orgs.map(orgCard).join("") + "</div>";
+  if (s.finale) h += finaleHtml(s);
+  var keys = Object.keys(KEYS);
+  if (testOn()) h += checkbarHtml(keys);
+  h += checkinHtml(s);
+  h += '<nav class="stepnav" aria-label="Tour navigation">' +
+    '<button type="button" data-act="prev"><small>&larr; Back</small><b>' + stepTitle(s.n - 1) + "</b></button>" +
+    (s.n < LAST ? '<button type="button" class="next" data-act="next"><small>Next &rarr;</small><b>' + stepTitle(s.n + 1) + "</b></button>" : '<button type="button" class="next" data-act="restart"><small>Again? &#8634;</small><b>Start from the beginning</b></button>') + "</nav>";
+  $("#lesson").innerHTML = h;
+}
+function finaleHtml(s){
+  var h = '<ol class="takeaways">' + s.takeaways.map(function(t){ return "<li>" + t + "</li>"; }).join("") + "</ol>";
+  h += '<div class="btnrow"><button class="btn" type="button" data-act="testmode">✏️ Switch to Test mode</button><button class="btn ghost" type="button" data-act="explore">🌳 Explore the tree</button></div>';
+  h += '<div><h3 class="sech">Keep practicing</h3><div class="tiles">';
+  D.games.forEach(function(g){
+    h += g.href ? '<a class="tile" href="' + esc(g.href) + '"><span class="tag">Game</span><b>' + esc(g.title) + "</b></a>"
+                : '<div class="tile soon"><span class="tag">Game · link coming soon</span><b>' + esc(g.title) + "</b></div>";
+  });
+  h += '<div class="tile soon"><span class="tag">Learn · coming soon</span><b>Gram-positive tour</b>Firmicutes and Actinobacteria</div>';
+  return h + "</div></div>";
+}
+
+/* ================= enteric table ================= */
+function renderTable(){
+  var E = D.enteric, h = '<div class="legend"><span style="--c:' + N.coliforms.color + '"><i></i>Coliforms (lactose +)</span><span style="--c:' + N.noncoliforms.color + '"><i></i>Non-coliforms (lactose −)</span><span>' + esc(E.key) + "</span></div>";
+  h += '<div class="tablewrap"><table class="ent"><thead><tr><th scope="col">Organism</th>' + E.cols.map(function(c){ return '<th scope="col">' + c + "</th>"; }).join("") + "</tr></thead><tbody>";
+  E.rows.forEach(function(r){ h += '<tr class="grp" style="--c:' + N[r.group].color + '"><td>' + esc(r.name) + "</td>" + r.v.map(function(x){ return "<td>" + x + "</td>"; }).join("") + "</tr>"; });
+  h += '</tbody></table></div><p style="font-size:16px">' + E.footnote + "</p>";
+  $("#entBody").innerHTML = h;
+}
+
+/* ================= render + navigation ================= */
+function renderAll(animate){
+  KEYS = {};
+  $$(".seg button").forEach(function(b){ b.setAttribute("aria-checked", b.getAttribute("data-mode") === st.mode ? "true" : "false"); });
+  $("#view-start").classList.toggle("active", st.view === "start");
+  $("#view-tour").classList.toggle("active", st.view === "tour");
+  if (st.view !== "tour"){ $("#crumb").textContent = ""; return; }
+  var s = stop();
+  $("#crumb").textContent = "/ " + plain(s.title);
+  $("#count").textContent = "Stop " + (s.n + 1) + " of " + D.stops.length;
+  $("#barFill").style.width = ((s.n + 1) / D.stops.length * 100) + "%";
+  $(".progress [data-act=next]").disabled = s.n === LAST;
+  renderRibbon();
+  renderLesson();
+  updateTree(animate);
+}
+function go(i, opts){
+  opts = opts || {};
+  var wasTour = st.view === "tour";
+  st.view = "tour"; st.i = Math.max(0, Math.min(LAST, i)); st.org = opts.org || null; st.full = !!opts.full;
+  renderAll(wasTour);
+  if (!opts.fromHistory){ try { history.pushState({i: st.i}, "", "#stop-" + (st.i + 1)); } catch (e) {} }
+  if (opts.scroll === "top") window.scrollTo({top: 0, behavior: reduced ? "auto" : "smooth"});
+  if (opts.org && opts.scroll === "card"){ var el = document.getElementById("org-" + opts.org); if (el) el.scrollIntoView({behavior: reduced ? "auto" : "smooth", block: "start"}); }
+  if (!wasTour) window.scrollTo(0, 0);
+}
+function showStart(fromHistory){
+  st.view = "start"; renderAll(false);
+  if (!fromHistory){ try { history.pushState({start: 1}, "", location.pathname + location.search); } catch (e) {} }
+  window.scrollTo(0, 0);
+}
+function openNode(id){
+  var n = N[id];
+  if (n.locked){ toast(n.locked); return; }
+  if (n.muted){ toast(n.muted); return; }
+  var o = OPEN[id]; if (!o) return;
+  if (o.stop === st.i && st.view === "tour"){
+    st.org = o.org || null; st.full = false; renderAll(true);
+    if (o.org){ var el = document.getElementById("org-" + o.org); if (el && window.innerWidth >= 1000) el.scrollIntoView({behavior: reduced ? "auto" : "smooth", block: "start"}); }
+    return;
+  }
+  go(o.stop, {org: o.org, scroll: o.org && window.innerWidth >= 1000 ? "card" : null});
+}
+function setMode(m){ st.mode = m; store(D.id + "-mode", m); renderAll(false); }
+var toastT;
+function toast(msg){ var t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(function(){ t.classList.remove("show"); }, 2600); }
+
+function stopKeys(){ return Object.keys(KEYS); }
+document.addEventListener("click", function(e){
+  var el;
+  if ((el = e.target.closest("#tree .tn"))){ if (T.justDragged) return; openNode(el.getAttribute("data-node")); return; }
+  if ((el = e.target.closest(".crumbs button[data-node]"))){ openNode(el.getAttribute("data-node")); return; }
+  if ((el = e.target.closest("[data-mode]"))){ setMode(el.getAttribute("data-mode")); return; }
+  if ((el = e.target.closest("[data-mc]"))){
+    var key = el.getAttribute("data-mc"); if (st.chk[key]) return;
+    st.ans[key] = el.getAttribute("data-val");
+    $$('[data-mc="' + key + '"]').forEach(function(b){ b.classList.toggle("sel", b === el); });
+    return;
+  }
+  if ((el = e.target.closest("[data-ci]"))){
+    var s = stop(); if (st.ci[s.n] != null) return;
+    st.ci[s.n] = Number(el.getAttribute("data-ci"));
+    $("#checkin").outerHTML = checkinHtml(s);
+    return;
+  }
+  if ((el = e.target.closest("[data-focus]"))){
+    if (e.target.closest("select")) return;
+    var id = el.getAttribute("data-focus");
+    st.org = id; st.full = false;
+    renderAll(true);
+    if (window.innerWidth < 1000) $("#treebox").scrollIntoView({behavior: reduced ? "auto" : "smooth", block: "center"});
+    return;
+  }
+  if ((el = e.target.closest("[data-tab-soon]"))){ toast(el.getAttribute("data-tab-soon")); return; }
+  if (!(el = e.target.closest("[data-act]"))) return;
+  var act = el.getAttribute("data-act");
+  if (act === "start") showStart();
+  else if (act === "begin") go(0, {scroll: "top"});
+  else if (act === "restart") go(0, {scroll: "top"});
+  else if (act === "explore"){ go(st.view === "tour" ? st.i : 0, {full: true}); $("#treebox").scrollIntoView({behavior: reduced ? "auto" : "smooth", block: "center"}); }
+  else if (act === "next") go(st.i + 1, {scroll: "top"});
+  else if (act === "prev"){ if (st.i === 0) showStart(); else go(st.i - 1, {scroll: "top"}); }
+  else if (act === "full"){ st.full = !st.full; updateTree(true); }
+  else if (act === "testmode"){ setMode("test"); go(0, {scroll: "top"}); }
+  else if (act === "table"){ renderTable(); var dl = $("#entDlg"); if (dl.showModal) dl.showModal(); else dl.setAttribute("open", ""); }
+  else if (act === "closeDlg"){ var d2 = $("#entDlg"); if (d2.close) d2.close(); else d2.removeAttribute("open"); }
+  else if (act === "check"){
+    stopKeys().forEach(function(k){ st.chk[k] = true; });
+    renderAll(false);
+    var cb = $("#checkbar"); if (cb) cb.scrollIntoView({behavior: reduced ? "auto" : "smooth", block: "center"});
+  }
+  else if (act === "retry"){ stopKeys().forEach(function(k){ delete st.chk[k]; delete st.ans[k]; }); renderAll(false); }
+});
+document.addEventListener("change", function(e){
+  var s = e.target.closest("select[data-key]"); if (!s) return;
+  st.ans[s.getAttribute("data-key")] = s.value;
+});
+$("#tree").addEventListener("keydown", function(e){
+  var g = e.target.closest(".tn"); if (!g) return;
+  if (e.key === "Enter" || e.key === " "){ e.preventDefault(); openNode(g.getAttribute("data-node")); }
+});
+$("#entDlg").addEventListener("click", function(e){ if (e.target === e.currentTarget) e.currentTarget.close(); });
+window.addEventListener("resize", function(){ if (st.view === "tour") frame(viewInfo(), false); });
+function fromHash(fromHistory){
+  var m = /^#stop-(\d+)$/.exec(location.hash || "");
+  if (m) go(Number(m[1]) - 1, {fromHistory: true});
+  else showStart(fromHistory);
+}
+window.addEventListener("popstate", function(){ fromHash(true); });
+
+/* ================= static text from the data ================= */
+document.title = D.plainTitle;
+$("#brandTxt").textContent = D.brand;
+$("#startEyebrow").textContent = D.eyebrow;
+$("#startTitle").innerHTML = D.title;
+$("#startIntro").textContent = D.intro;
+$("#goals").innerHTML = D.goals.map(function(g){ return "<li><span>" + g + "</span></li>"; }).join("");
+$("#tabs").innerHTML = D.tabs.map(function(t){
+  return t.current ? '<button type="button" role="tab" aria-selected="true" class="on">' + esc(t.label) + "</button>"
+                   : '<button type="button" role="tab" aria-selected="false" class="soon" data-tab-soon="' + esc(t.soon) + '">🔒 ' + esc(t.label) + "</button>";
+}).join("");
+
+drawTree();
+fromHash(true);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ drawTree(); if (st.view === "tour") updateTree(false); });
+})();
+</script>
+</body>
+</html>
