@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BIO 112 Modules</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Course index. Tokens and tile styles match ch9-cloning-a-gene.html and ch11-gram-neg-tour.html. */
+:root{
+  --bg:#f2f5f8; --surface:#ffffff; --surface-2:#e8eef4; --ink:#14223a; --muted:#53657b; --line:#d3dde7;
+  --arrow:#1683cc; --arrow-soft:#dcecf9; --game:#7c5cc4; --game-soft:#ede7fa; --gn-edge:#c2185b;
+  --f-display:'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --f-body:'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
+  --f-mono:'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Menlo, monospace;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
+    --arrow:#4aa9ee; --arrow-soft:#173450; --game:#ad96f2; --game-soft:#2a2547; --gn-edge:#f48fb6;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
+  --arrow:#4aa9ee; --arrow-soft:#173450; --game:#ad96f2; --game-soft:#2a2547; --gn-edge:#f48fb6;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:18px; line-height:1.55}
+.wrap{max-width:1000px; margin:0 auto; padding:28px 16px 60px}
+h1,h2,h3{font-family:var(--f-display); margin:0; letter-spacing:-.01em; text-wrap:balance}
+p{margin:0}
+.eyebrow{font-family:var(--f-mono); font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--arrow); margin-bottom:8px; font-weight:600}
+.hero h1{font-size:clamp(36px,6vw,54px); line-height:1.02; font-weight:800}
+.hero p{color:var(--muted); font-size:19px; margin-top:10px; max-width:52ch}
+section{margin-top:40px}
+.sec-title{display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 12px; margin-bottom:14px; padding-bottom:8px; border-bottom:2px solid var(--line)}
+.sec-title h2{font-size:28px}
+.sec-title p{color:var(--muted); font-size:17px}
+.sub{font:600 13px var(--f-mono); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:16px 0 8px}
+.cards{display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.tile{display:flex; flex-direction:column; gap:4px; background:var(--surface); border:1.5px solid var(--line); border-radius:var(--r); padding:16px; text-decoration:none; color:var(--ink); transition:border-color .15s, transform .15s}
+a.tile:hover{border-color:var(--arrow); transform:translateY(-2px)}
+a.tile:focus-visible{outline:3px solid var(--arrow); outline-offset:2px}
+.tile .t{font-family:var(--f-display); font-weight:700; font-size:21px; line-height:1.2}
+.tile .d{color:var(--muted); font-size:17px}
+.tag{align-self:flex-start; font:600 12.5px var(--f-mono); text-transform:uppercase; letter-spacing:.05em; padding:3px 10px; border-radius:999px; background:var(--arrow-soft); color:var(--arrow)}
+.tag.game{background:var(--game-soft); color:var(--game)}
+.tag.quiz{background:var(--surface-2); color:var(--muted)}
+.tile.soon{background:var(--surface-2); border-style:dashed; color:var(--muted)}
+.tile.soon .tag{background:var(--surface); color:var(--muted)}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="hero">
+    <div class="eyebrow">BIO 112 Microbiology</div>
+    <h1>Course modules 🧫</h1>
+    <p>Teaching modules first, then games, grouped by chapter.</p>
+  </header>
+
+  <section aria-labelledby="sec-start">
+    <div class="sec-title"><h2 id="sec-start">Getting Started</h2><p>Read these before your first class</p></div>
+    <div class="sub">Teaching modules</div>
+    <div class="cards">
+      <a class="tile" href="page0-start-here.html"><span class="tag">Learn</span><span class="t">Start Here</span><span class="d">How the intro module works and where everything is.</span></a>
+      <a class="tile" href="page1-meet-dr-h.html"><span class="tag">Learn</span><span class="t">Meet Dr. H</span><span class="d">Who's teaching you this semester.</span></a>
+      <a class="tile" href="page2-syllabus.html"><span class="tag">Learn</span><span class="t">Syllabus Highlights</span><span class="d">Grading, policies, and course goals, summarized.</span></a>
+      <a class="tile" href="page3-calendar.html"><span class="tag">Learn</span><span class="t">Course Calendar</span><span class="d">The full semester schedule and what's due when.</span></a>
+      <a class="tile" href="page4-how-to-succeed.html"><span class="tag">Learn</span><span class="t">How to Succeed</span><span class="d">What actually works in this class.</span></a>
+      <a class="tile" href="page5-lab-safety.html"><span class="tag">Learn</span><span class="t">Lab Safety</span><span class="d">Everything to know before your first day in lab.</span></a>
+      <a class="tile" href="page6-quiz.html"><span class="tag quiz">Quiz</span><span class="t">Lab Safety Quiz</span><span class="d">Check yourself on the lab safety rules.</span></a>
+    </div>
+  </section>
+
+  <section aria-labelledby="sec-ch9">
+    <div class="sec-title"><h2 id="sec-ch9">Chapter 9</h2><p>Microbial biotechnology</p></div>
+    <div class="sub">Teaching modules</div>
+    <div class="cards">
+      <a class="tile" href="ch9-cloning-a-gene.html"><span class="tag">Learn</span><span class="t">Cloning a Gene</span><span class="d">Follow a gene from one organism to a product you can harvest.</span></a>
+    </div>
+  </section>
+
+  <section aria-labelledby="sec-ch11">
+    <div class="sec-title"><h2 id="sec-ch11">Chapter 11</h2><p>Bacterial diversity</p></div>
+    <div class="sub">Teaching modules</div>
+    <div class="cards">
+      <a class="tile" href="ch11-gram-neg-tour.html"><span class="tag">Learn</span><span class="t">Gram-Negative Family Tree Tour</span><span class="d">Walk the family tree and see why each organism has its ID traits.</span></a>
+      <div class="tile soon" aria-disabled="true"><span class="tag">Learn · coming soon</span><span class="t">Gram-Positive Family Tree Tour</span><span class="d">Firmicutes and Actinobacteria.</span></div>
+    </div>
+    <div class="sub">Games</div>
+    <div class="cards">
+      <!-- TODO: these games aren't in this repo yet. Swap each <div class="tile soon"> for <a class="tile" href="..."> once the link exists. -->
+      <div class="tile soon" aria-disabled="true"><span class="tag game">Game · link coming soon</span><span class="t">Mystery Microbe</span><span class="d">Use lab results to ID an unknown.</span></div>
+      <div class="tile soon" aria-disabled="true"><span class="tag game">Game · link coming soon</span><span class="t">Microbe Match</span><span class="d">Match each microbe to its traits.</span></div>
+      <div class="tile soon" aria-disabled="true"><span class="tag game">Game · link coming soon</span><span class="t">Disease Typing Game</span><span class="d">Name the disease each microbe causes.</span></div>
+    </div>
+  </section>
+</main>
+</body>
+</html>
