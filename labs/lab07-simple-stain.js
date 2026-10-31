@@ -1,12 +1,13 @@
 /* Lab 7: Simple staining. Content from the build brief. */
 VLAB.add({
   n:7, title:"Simple staining",
+    key:["One basic dye: methylene blue for 2 minutes.", "Shows shape, size, and arrangement.", "Two shapes in a pure culture? Pleomorphic bacteria, or free endospores."],
   learn:[
     {h:"What a simple stain does", kind:"facts", items:[
       {t:"Uses [[one|1]] basic dye: [[methylene blue]]."},
       {t:"Shows cell [[shape]], size, and arrangement."}
     ]},
-    {h:"Procedure", kind:"steps", items:[
+    {h:"Procedure", kind:"steps", top:[{type:"strip", steps:[{i:"flame", t:"Heat fixed smear", s:"5 passes"}, {i:"bottle", c:"#2f63c4", t:"Methylene blue", s:"2 minutes"}, {i:"rinse", t:"Rinse", s:"until clear"}, {i:"blot", t:"Blot dry"}, {i:"scope", t:"10x, then 100x", s:"with oil"}]}], items:[
       {t:"Start with a heat fixed smear (5 passes through the flame).", why:"See Lab 6."},
       {t:"Flood with methylene blue for [[2 minutes|2 min|2|two minutes]].", why:"The basic dye sticks to the negatively charged cells."},
       {t:"Rinse until the runoff is [[clear]].", why:"This removes extra dye."},

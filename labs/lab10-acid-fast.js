@@ -4,12 +4,13 @@
   const ms = c => ({type:"field", seed:102, groups:[{shape:"taper", arr:"single", color:c, n:11}]});
   VLAB.add({
     n:10, title:"Acid-fast staining",
+    key:["Mycolic acid makes cells acid-fast (<i>Mycobacterium</i>, <i>Nocardia</i>).", "Kinyoun: concentrated carbolfuchsin, 10 minutes, no heat. Ziehl-Neelsen uses heat.", "Acid-fast = fuchsia. Non-acid-fast = blue."],
     learn:[
       {h:"What makes a cell acid-fast", kind:"facts", items:[
         {t:"[[Mycolic acid]] (a waxy lipid) in the cell wall."},
         {t:"Acid-fast genera: [[Mycobacterium]] and [[Nocardia]]."}
       ]},
-      {h:"Kinyoun method (the one we use)", kind:"steps", items:[
+      {h:"Kinyoun method (the one we use)", kind:"steps", top:[{type:"strip", steps:[{i:"flame", t:"Heat fix", s:"5 passes"}, {i:"bottle", c:"#e0157f", t:"Carbolfuchsin", s:"10 min, NO heat"}, {i:"waste", t:"Rinse", s:"into waste beaker"}, {i:"bottle", c:"#f0d6e2", t:"Acid-alcohol", s:"until no color"}, {i:"bottle", c:"#2f63c4", t:"Methylene blue", s:"30 s, rinse"}, {i:"dry", t:"Air dry", s:"do not blot"}]}], figs:[{type:"svg", name:"stainstrip", wide:true, cap:"What each cell looks like after each step", cols:[["Carbolfuchsin", "10 min"], ["Acid-alcohol", "until clear"], ["Methylene blue", "30 s"]], rows:[{name:"Acid-fast", sub:"M. smegmatis", shape:"taper", colors:["fuchsia", "fuchsia", "fuchsia"]}, {name:"Non-acid-fast", sub:"S. aureus", shape:"coccus", arr:"clusters", colors:["fuchsia", "unstained", "blue"]}]}], items:[
         {t:"Heat fix the smear: [[5|five]] passes through the flame."},
         {t:"Flood with Kinyoun [[carbolfuchsin]] for [[10 minutes|10 min|10]], with [[no heat|no|none]].", why:"Kinyoun carbolfuchsin is more concentrated, so it does not need heat."},
         {t:"Keep the smear covered. Never let it [[dry|dry out]].", why:"A dried smear gives a false positive."},
@@ -19,7 +20,7 @@
         {t:"[[Methylene blue]] for [[30 seconds|30 sec|30]].", why:"Counterstain: non-acid-fast cells turn blue."},
         {t:"Rinse. [[Air dry|air-dry|airdry]]. Do not blot."}
       ]},
-      {h:"Kinyoun vs Ziehl-Neelsen", lead:"Know this one!", kind:"facts", items:[
+      {h:"Kinyoun vs Ziehl-Neelsen", lead:"Know this one!", kind:"facts", figs:[{type:"svg", name:"kinyounzn", wide:true}], items:[
         {t:"Kinyoun carbolfuchsin is [[more concentrated|concentrated]] and needs [[no heat|none|no]]."},
         {t:"[[Ziehl-Neelsen|ziehl neelsen|zn]] uses heat (a hot plate) to drive the carbolfuchsin into the waxy cell wall."}
       ]},

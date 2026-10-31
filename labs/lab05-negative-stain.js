@@ -1,8 +1,9 @@
 /* Lab 5: Negative staining. Content from the build brief. */
 VLAB.add({
   n:5, title:"Negative staining",
+    key:["Nigrosine is an acidic dye: negative, so negative cells repel it.", "The background stains. The cells stay clear.", "No heat fixing. Shows shape and size."],
   learn:[
-    {h:"How dyes work", kind:"facts", items:[
+    {h:"How dyes work", kind:"facts", figs:[{type:"svg", name:"charge", wide:true}], tip:"Opposites attract. Like charges push away.", items:[
       {t:"Dyes have a colored ion called the [[chromophore]]."},
       {t:"Acidic dyes have a [[negative]] chromophore (an anion)."},
       {t:"Basic dyes have a [[positive]] chromophore (a cation)."},
@@ -13,7 +14,7 @@ VLAB.add({
       {t:"Shows cell [[shape]] and size."},
       {t:"Uses [[no heat fixing|no heat fix|no heat|none]]."}
     ]},
-    {h:"Procedure", kind:"steps", figs:[
+    {h:"Procedure", kind:"steps", top:[{type:"strip", steps:[{i:"bottle", c:"#2d2a30", t:"Nigrosine", s:"1 drop"}, {i:"toothpick", t:"Teeth scraping"}, {i:"slide", t:"Spreader slide", s:"push through"}, {i:"flame", t:"Flame spreader edge"}, {i:"dry", t:"Air dry", s:"no heat fix"}, {i:"oil", t:"View under oil"}]}], figs:[
       {type:"field", bg:"dark", seed:52, groups:[{shape:"coccus", arr:"chains", color:"clear", n:4}, {shape:"rod", arr:"single", color:"clear", n:6}], cap:"Clear cells on a dark background"}
     ], items:[
       {t:"Put a drop of [[nigrosine]] near one end of a slide.", why:"Nigrosine is the acidic dye."},
@@ -23,12 +24,12 @@ VLAB.add({
       {t:"Let it [[air dry|airdry|air-dry]] completely.", why:"No heat fixing in this stain."},
       {t:"View under [[oil|oil immersion]].", why:"Use the 100x oil immersion objective to see bacteria."}
     ]},
-    {h:"Shapes", kind:"facts", items:[
+    {h:"Shapes", kind:"facts", figs:[{type:"svg", name:"shapes", wide:true}], items:[
       {t:"[[Coccus|cocci]]: sphere."},
       {t:"[[Bacillus|bacilli]]: rod."},
       {t:"[[Spirillum|spirilla]]: spiral."}
     ]},
-    {h:"Arrangements", kind:"facts", items:[
+    {h:"Arrangements", kind:"facts", figs:[{type:"svg", name:"arrangements", wide:true}], tip:"First ask: spheres or rods? Then ask: how are they grouped?", items:[
       {t:"Diplo = [[pairs|pair|two]]: diplococci, diplobacilli."},
       {t:"Strepto = [[chains|chain]]: streptococci, streptobacilli."},
       {t:"Staphylo = [[clusters|cluster|grape-like clusters]]: staphylococci."},

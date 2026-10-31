@@ -1,14 +1,17 @@
 /* Lab 3: Pond water. Content from the build brief. */
 VLAB.add({
   n:3, title:"Pond water",
+    key:["Protozoa: one cell, has a nucleus, no pigment, usually moving.", "Algae: eukaryotes, green or golden-brown. Cyanobacteria: prokaryotes, blue-green.", "Microscopic invertebrates: many cells, larger, usually fast."],
   learn:[
-    {h:"Four groups and how to tell them apart", kind:"facts", items:[
+    {h:"Four groups and how to tell them apart", kind:"facts", figs:[
+      {type:"svg", name:"pond", kind:"protozoa", cap:"Protozoa: one cell, moving"}, {type:"svg", name:"pond", kind:"algae", cap:"Algae: green, has a nucleus"},
+      {type:"svg", name:"pond", kind:"cyano", cap:"Cyanobacteria: blue-green, no nucleus"}, {type:"svg", name:"pond", kind:"inv", cap:"Invertebrate: many cells"}], items:[
       {t:"<b>Protozoa:</b> [[single-celled|single celled|unicellular]] eukaryotes. Usually unpigmented. Usually moving. Examples: amoebas, paramecia."},
       {t:"<b>Algae:</b> single-celled or colonial/filamentous eukaryotes. [[Photosynthetic]]. Green or golden-brown."},
       {t:"<b>Cyanobacteria:</b> photosynthetic [[prokaryotes|prokaryote|prokaryotic]]. They are bacteria, not algae. Chlorophyll a. Called \"[[blue-green|blue green]].\""},
       {t:"<b>Microscopic invertebrates:</b> [[multicellular]]. Larger and transparent, with visible internal structures. Usually fast moving. Examples: rotifers, daphnia, roundworms."}
     ]},
-    {h:"Features to check", kind:"facts", items:[
+    {h:"Features to check", kind:"facts", tip:"Ask in this order: one cell or many? Pigment? Nucleus? Size and movement?", items:[
       {t:"One cell or [[many cells|many|multicellular]]?"},
       {t:"Pigment? Green or golden-brown points to [[algae]]. Blue-green points to cyanobacteria."},
       {t:"Nucleus? Cyanobacteria are prokaryotes, so they have [[no nucleus|none|no]]."},

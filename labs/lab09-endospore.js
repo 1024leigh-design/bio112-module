@@ -2,13 +2,14 @@
    The sort list comes from the course lecture slides. UV light and filtration are left out on purpose. */
 VLAB.add({
   n:9, title:"Endospore staining",
+    key:["<i>Bacillus</i> and <i>Clostridium</i> make endospores.", "Malachite green on a hot plate (low) for 15 minutes, then safranin.", "Spores = green. Vegetative cells = pink."],
   learn:[
-    {h:"What endospores are", kind:"facts", items:[
+    {h:"What endospores are", kind:"facts", figs:[{type:"svg", name:"sporecell", wide:true}], items:[
       {t:"Dormant, resistant structures made by [[Bacillus]] and [[Clostridium]]."},
       {t:"They resist heat, chemicals, [[drying|desiccation]], and radiation."},
       {t:"The thick spore [[coat]] keeps out normal stains, so [[heat]] is needed to drive the stain in."}
     ]},
-    {h:"Schaeffer-Fulton method (the only one we use)", kind:"steps", items:[
+    {h:"Schaeffer-Fulton method (the only one we use)", kind:"steps", top:[{type:"strip", steps:[{i:"flame", t:"Heat fix", s:"5 passes"}, {i:"hot", t:"Foil on hot plate", s:"LOW"}, {i:"bottle", c:"#2a9d4a", t:"Malachite green", s:"15 min, heating"}, {i:"rinse", t:"Rinse"}, {i:"bottle", c:"#d8456b", t:"Safranin", s:"about 30 s"}, {i:"blot", t:"Rinse, blot"}]}], figs:[{type:"svg", name:"spore", wide:true}], items:[
       {t:"Heat fix the smear: [[5|five]] passes through the flame."},
       {t:"Put the slide on [[foil]] on a hot plate set to [[low]]."},
       {t:"Flood with [[malachite green]]. Keep it heating for [[15 minutes|15 min|15]].", why:"Heat drives the stain through the thick spore coat."},
