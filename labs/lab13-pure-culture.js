@@ -1,8 +1,6 @@
 /* Lab 13: Pure culture techniques. Content from the build brief.
-   TODO (CONFIRM with instructor): how students tell Serratia marcescens apart from Bacillus megaterium on
-   our 37°C plates. Both can look white at 37°C. Do not fill this in until the instructor confirms. */
+   Instructor: students tell the three organisms apart by colony color. */
 (function(){
-  const SERRATIA_TODO = "CONFIRM how students tell <i>Serratia marcescens</i> apart from <i>Bacillus megaterium</i> on our 37°C plates (both can look white at 37°C).";
   VLAB.add({
     n:13, title:"Pure culture techniques",
     learn:[
@@ -11,7 +9,7 @@
         {t:"<b>Mixed culture:</b> [[more than one|2 or more|many]] kind."},
         {t:"<b>Colony:</b> a visible mass of cells grown from [[one cell|one|1|a single cell|1 cell]]."}
       ]},
-      {h:"Our mixed culture", kind:"facts", todo:SERRATIA_TODO, items:[
+      {h:"Our mixed culture", kind:"facts", lead:"Tell the three apart by colony color.", items:[
         {t:"<i>Serratia marcescens</i>: [[red]] at room temperature, [[white]] at 37°C.", why:"It makes its red pigment at room temperature, not at 37°C."},
         {t:"<i>Micrococcus luteus</i>: [[yellow]]."},
         {t:"<i>Bacillus megaterium</i>: [[white]]."}
@@ -48,10 +46,9 @@
           {id:"tstreak", name:"T streak", how:"A T splits the plate into three sections. Flame the loop between sections. Pull from the last section into the next one.", check:"Three sections? Did each section start in the one before it?"},
           {id:"continuous", name:"Continuous", how:"One streak back and forth across the whole plate. Do not flame between areas.", check:"One unbroken streak that covers the plate?"}
         ]},
-      {sim:"pick", title:"Pick an isolated colony", prompt:"Day 2: pick a colony. Day 3: Gram stain your slant and check if it is pure.",
-        todo:SERRATIA_TODO,
+      {sim:"pick", title:"Pick an isolated colony", prompt:"Colors: red = <i>S. marcescens</i>, yellow = <i>M. luteus</i>, white = <i>B. megaterium</i>. Day 2: pick a colony. Day 3: Gram stain your slant and check if it is pure.",
         orgs:{
-          sm:{name:"Serratia marcescens", colony:"white", colonyName:"white", shape:"shortrod", gram:"pink", cells:"short pink rods"},
+          sm:{name:"Serratia marcescens", colony:"#d23b3b", colonyName:"red", shape:"shortrod", gram:"pink", cells:"short pink rods"},
           ml:{name:"Micrococcus luteus", colony:"yellow", colonyName:"yellow", shape:"coccus", gram:"purple", cells:"purple cocci"},
           bm:{name:"Bacillus megaterium", colony:"white", colonyName:"white", shape:"longrod", gram:"purple", cells:"long purple rods"}}}
     ]

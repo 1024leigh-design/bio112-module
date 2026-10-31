@@ -7,7 +7,7 @@
       {h:"Procedure", kind:"steps", items:[
         {t:"Start with a heat fixed smear (5 passes through the flame)."},
         {t:"Crystal violet for [[1 minute|1 min|1|one minute|60 seconds]]. Rinse.", why:"Primary stain: every cell turns purple."},
-        {t:"Gram's [[iodine]] for 1 minute.", why:"Mordant: forms the crystal violet-iodine complex."},
+        {t:"Gram's [[iodine]] for 1 minute. Rinse with water.", why:"Mordant: forms the crystal violet-iodine complex."},
         {t:"[[95% ethanol|95 ethanol|ethanol|alcohol|95% alcohol]] until it runs clear (about 10 to 20 seconds). Rinse.", why:"Decolorizer: gram negative cells lose the crystal violet."},
         {t:"[[Safranin]] for [[20 seconds|20 sec|20]]. Rinse, blot.", why:"Counterstain: the colorless gram negative cells turn pink."}
       ]},
@@ -53,6 +53,7 @@
           {r:"cv", label:"Crystal violet", time:"1 minute", times:["20 seconds", "1 minute", "2 minutes", "10 minutes"], show:{gp:"purple", gn:"purple"}, why:"Primary stain: every cell is purple now.", timeWhy:"Check the protocol: crystal violet stays on for 1 minute."},
           {r:"rinse", label:"Rinse with water", hint:"Rinse off the crystal violet first."},
           {r:"iodine", label:"Gram's iodine", time:"1 minute", times:["20 seconds", "1 minute", "15 minutes"], why:"Mordant: it forms the crystal violet-iodine complex. Cells stay purple.", timeWhy:"Check the protocol: Gram's iodine stays on for 1 minute."},
+          {r:"rinse", label:"Rinse with water", hint:"Rinse off the iodine before you decolorize."},
           {r:"etoh", label:"95% ethanol", time:"Until it runs clear (about 10 to 20 seconds)", times:["Until it runs clear (about 10 to 20 seconds)", "2 minutes", "10 minutes"], show:{gn:"unstained"}, why:"Decolorizer: gram negative cells lose the crystal violet and turn colorless.", timeWhy:"Too long pulls the color out of gram positive cells too. Stop when it runs clear."},
           {r:"rinse", label:"Rinse with water", hint:"Stop the decolorizer with water."},
           {r:"saf", label:"Safranin", time:"20 seconds", times:["20 seconds", "2 minutes", "15 minutes"], show:{gn:"pink"}, why:"Counterstain: colorless gram negative cells turn pink. Gram positive cells stay purple.", timeWhy:"Check the protocol: safranin stays on for 20 seconds."},
