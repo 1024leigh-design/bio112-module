@@ -3,8 +3,9 @@
   const F = (shape, arr, color, seed, cap) => ({type:"field", seed, cap, groups:[{shape, arr, color, n:arr === "clusters" ? 6 : 10}]});
   VLAB.add({
     n:8, title:"Gram staining",
+    key:["Order: crystal violet, iodine, ethanol, safranin.", "Gram positive = purple (thick peptidoglycan). Gram negative = pink (thin peptidoglycan + outer membrane).", "Decolorizing is the step that most often goes wrong."],
     learn:[
-      {h:"Procedure", kind:"steps", items:[
+      {h:"Procedure", kind:"steps", top:[{type:"strip", steps:[{i:"flame", t:"Heat fixed smear", s:"5 passes"}, {i:"bottle", c:"#5a2a98", t:"Crystal violet", s:"1 min, rinse"}, {i:"bottle", c:"#8a5a1a", t:"Gram's iodine", s:"1 min, rinse"}, {i:"bottle", c:"#c9dbee", t:"95% ethanol", s:"until clear, rinse"}, {i:"bottle", c:"#d8456b", t:"Safranin", s:"20 s, rinse"}, {i:"blot", t:"Blot"}]}], items:[
         {t:"Start with a heat fixed smear (5 passes through the flame)."},
         {t:"Crystal violet for [[1 minute|1 min|1|one minute|60 seconds]]. Rinse.", why:"Primary stain: every cell turns purple."},
         {t:"Gram's [[iodine]] for 1 minute. Rinse with water.", why:"Mordant: forms the crystal violet-iodine complex."},
@@ -17,7 +18,7 @@
         {t:"Decolorizer: [[ethanol|95% ethanol|alcohol]]."},
         {t:"Counterstain: [[safranin]]."}
       ]},
-      {h:"Why the colors are different", kind:"facts", items:[
+      {h:"Why the colors are different", kind:"facts", top:[{type:"svg", name:"stainstrip", wide:true, cap:"What each cell looks like after each step", cols:[["Crystal violet", "1 min"], ["Iodine", "1 min"], ["Ethanol", "10 to 20 s"], ["Safranin", "20 s"]], rows:[{name:"Gram positive", sub:"S. aureus", shape:"coccus", arr:"clusters", colors:["purple", "purple", "purple", "purple"]}, {name:"Gram negative", sub:"E. coli", shape:"shortrod", colors:["purple", "purple", "unstained", "pink"]}]}], tip:"The ethanol step is where they split. Gram negative cells go colorless, then safranin turns them pink.", items:[
         {t:"<b>Gram positive:</b> [[thick]] peptidoglycan. Keeps the crystal violet-iodine complex. [[Purple]]."},
         {t:"<b>Gram negative:</b> [[thin]] peptidoglycan plus an [[outer membrane]]. Loses the crystal violet. Picks up safranin. [[Pink]]."},
         {t:"Gram negative cells are harder to kill with many antibiotics and disinfectants. The [[outer membrane]] is a barrier."},

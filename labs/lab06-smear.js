@@ -4,6 +4,7 @@
   const blue = (extra, seed) => Object.assign({type:"field", seed:seed || 61, groups:[{shape:"coccus", arr:"clusters", color:"blue", n:5}]}, extra || {});
   VLAB.add({
     n:6, title:"Smear preparation",
+    key:["Broth: 2 loops, no water. Slant: 2 loops of water, then a little growth.", "Air dry completely. Then heat fix: 5 passes.", "Flame the loop and the tube neck. Hold the cap."],
     learn:[
       {h:"Aseptic rules", kind:"facts", items:[
         {t:"Flame the loop or needle until [[red hot|red-hot|red]]. Let it cool.", why:"Heat kills microbes on the wire. A hot wire would kill your culture."},
@@ -11,13 +12,13 @@
         {t:"Hold the [[cap]]. Never set it down."},
         {t:"Do not touch the tube [[sides|side|walls]]."}
       ]},
-      {h:"Smear from a broth", kind:"steps", items:[
+      {h:"Smear from a broth", kind:"steps", top:[{type:"svg", name:"smears", wide:true}], items:[
         {t:"No [[water]] needed.", why:"The broth is already liquid."},
         {t:"Put [[two|2]] loops of culture into the target circle."},
         {t:"[[Air dry|air-dry|airdry]] completely."},
         {t:"Heat fix: pass the slide through the flame [[5|five]] times."}
       ]},
-      {h:"Smear from a slant", kind:"steps", items:[
+      {h:"Smear from a slant", kind:"steps", figs:[{type:"svg", name:"heatfix", wide:true}], tip:"Broth = no water. Slant = water first. Both = air dry, then 5 passes.", items:[
         {t:"Put [[two|2]] loops of distilled water in the target circle first.", why:"Growth on a slant is solid. It needs water to spread."},
         {t:"Take a [[small|tiny]] amount of culture with the [[needle]]."},
         {t:"Mix it into the [[water]]."},

@@ -98,6 +98,15 @@
     draw();
   };
 
+  /* ---------- a short set of multiple choice questions ---------- */
+  V.sims.quiz = (host, spec) => {
+    let right = 0, done = 0;
+    host.innerHTML = `<div class="score" id="qzScore">Right on the first try: 0 of ${spec.qs.length}</div>` + spec.qs.map((q, i) => `<div class="act" style="margin-top:12px" data-q="${i}"></div>`).join("");
+    spec.qs.forEach((q, i) => { let missed = false; const h = host.querySelector(`[data-q="${i}"]`);
+      V.mc(h, Object.assign({}, q, {q:`${i + 1}. ${q.q}`}), ok => { done++; if (ok && !missed) right++; host.querySelector("#qzScore").textContent = `Right on the first try: ${right} of ${spec.qs.length}`; });
+      h.addEventListener("click", e => { if (e.target.closest(".opt.wrong")) missed = true; }); });
+  };
+
   /* ---------- Lab 1: microscope parts ---------- */
   V.sims.scope = host => {
     const test = V.mode === "test";
@@ -277,44 +286,37 @@
     host.querySelector("#stShow").addEventListener("click", () => {
       ex.innerHTML = `<div class="lbl">Example: ${pat.name}</div><div class="svgbox">${A.plate({extra:example(pat.id)})}</div><div class="msg"><b>Check yourself:</b> ${pat.check}</div>`;
     });
-    /* example drawings: zig(x0,y0,x1,y1,n,amp) is one zigzag streak between two points */
-    function zig(x0, y0, x1, y1, n, amp, c){
-      const dx = x1 - x0, dy = y1 - y0, L = Math.hypot(dx, dy), px = -dy / L, py = dx / L, pts = [];
-      for (let i = 0; i <= n; i++){ const s = i % 2 ? amp : -amp; pts.push([A.f1(x0 + dx * i / n + px * s), A.f1(y0 + dy * i / n + py * s)]); }
-      return `<polyline points="${pts.map(p => p.join(",")).join(" ")}" fill="none" stroke="${c || "#1683cc"}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>`;
-    }
-    const num = (x, y, t) => `<circle cx="${x}" cy="${y}" r="9" fill="#14223a"/><text x="${x}" y="${y + 4.5}" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">${t}</text>`;
-    function example(id){
-      if (id === "quadrant") return zig(32, 92, 92, 32, 10, 12) + zig(84, 36, 166, 92, 10, 11, "#c2185b") + zig(162, 86, 108, 166, 9, 11, "#1f8a55") + zig(114, 160, 46, 128, 8, 10, "#a96c05") + num(52, 52, 1) + num(150, 56, 2) + num(150, 150, 3) + num(60, 150, 4);
-      if (id === "tstreak") return `<path d="M16,92 L184,92 M100,92 L100,184" stroke="#53657b" stroke-width="2" stroke-dasharray="6 4"/>` + zig(36, 64, 164, 64, 12, 18) + zig(60, 70, 60, 168, 9, 18, "#c2185b") + zig(66, 160, 150, 120, 8, 14, "#1f8a55") + num(100, 30, 1) + num(28, 130, 2) + num(170, 140, 3);
-      if (id === "radiant") return `<ellipse cx="100" cy="34" rx="22" ry="10" fill="#1683cc" opacity=".35"/>` + [-58, -36, -14, 8, 30, 52].map(a => { const r = a * Math.PI / 180; return `<line x1="100" y1="40" x2="${A.f1(100 + Math.sin(r) * 140)}" y2="${A.f1(40 + Math.cos(r) * 140)}" stroke="#c2185b" stroke-width="3" stroke-linecap="round"/>`; }).join("");
-      const pts = []; for (let y = 30, k = 0; y <= 170; y += 14, k++){ const h = Math.sqrt(Math.max(0, 80 * 80 - (y - 100) * (y - 100))) - 6; pts.push([k % 2 ? 100 + h : 100 - h, y]); }
-      return `<polyline points="${pts.map(p => p.map(A.f1).join(",")).join(" ")}" fill="none" stroke="#1683cc" stroke-width="3" stroke-linejoin="round"/>`;
-    }
+    const example = id => A.streakEx(id);
     setPat(0);
   };
 
   /* ---------- Lab 13: pick a colony, subculture, Gram stain ---------- */
   V.sims.pick = (host, spec) => {
-    let cols, chosen = null, day = 1;
-    const ORG = spec.orgs;
-    function build(){
-      const R = A.rng(Math.floor(Math.random() * 1e6)); cols = [];
+    let plates, temp = "rt", chosen = null, day = 1;
+    const ORG = spec.orgs, TEMPS = {rt:"Room temperature plate", "37":"37°C plate"};
+    const colorOf = (o, t) => t === "37" && ORG[o].colony37 ? ORG[o].colony37 : ORG[o].colony;
+    const nameOf = (o, t) => t === "37" && ORG[o].colonyName37 ? ORG[o].colonyName37 : ORG[o].colonyName;
+    function layout(seed){
+      const R = A.rng(seed), cols = [];
       // area 1 (top left): crowded, every organism mixed together
       for (let k = 0; k < 46; k++){ const x = 40 + R() * 62, y = 40 + R() * 46; cols.push({x, y, r:3 + R() * 2.4, org:V.pick(Object.keys(ORG), R), crowd:true}); }
-      // later areas: fewer colonies, more space between them; the last area is well isolated
+      // later areas: fewer colonies with more space; the last area is well isolated
       const iso = [[150, 70], [168, 100], [136, 112], [120, 150], [92, 166], [70, 140], [146, 150], [160, 128]];
-      iso.forEach(p => cols.push({x:p[0] + (R() - .5) * 6, y:p[1] + (R() - .5) * 6, r:3.6 + R() * 1.6, org:V.pick(Object.keys(ORG), R), crowd:false}));
-      cols.forEach((c, i) => { c.id = i; c.c = ORG[c.org].colony; });
-      chosen = null; day = 1;
+      const orgs = V.shuffle(Object.keys(ORG).concat(Object.keys(ORG), Object.keys(ORG)), R);
+      iso.forEach((p, k) => cols.push({x:p[0] + (R() - .5) * 6, y:p[1] + (R() - .5) * 6, r:3.6 + R() * 1.6, org:orgs[k], crowd:false}));
+      cols.forEach((c, k) => { c.id = k; });
+      return cols;
     }
+    function build(){ const s0 = Math.floor(Math.random() * 1e6); plates = {rt:layout(s0), "37":layout(s0 + 17)}; chosen = null; day = 1; }
     function plateSVG(){
+      const cols = plates[temp];
       const hits = cols.map(c => `<circle class="part" data-col="${c.id}" cx="${A.f1(c.x)}" cy="${A.f1(c.y)}" r="${A.f1(c.r + (c.crowd ? 1 : 5))}" fill="transparent"/>`).join("");
-      return A.plate({colonies:cols.map(c => Object.assign({}, c, {mark:chosen && chosen.id === c.id})), extra:hits, label:"Day 1 plate after incubation at 37°C"});
+      return A.plate({colonies:cols.map(c => Object.assign({}, c, {c:colorOf(c.org, temp), mark:chosen && chosen.id === c.id})), extra:hits, label:TEMPS[temp]});
     }
     function draw(){
+      const cols = plates[temp];
       let right = "";
-      if (day === 1) right = `<p><b>Day 2:</b> tap one colony to pick with a sterile needle. You will subculture it to a slant.</p>${chosen ? `<div class="msg">You picked a <b>${ORG[chosen.org].colonyName}</b> colony${chosen.crowd ? " from a crowded area" : ""}.</div><div class="btnrow" style="margin-top:10px"><button type="button" class="btn" id="pkGo">Subculture to a slant, then Gram stain (Day 3)</button></div>` : ""}`;
+      if (day === 1) right = `<p><b>Day 2:</b> tap one colony to pick with a sterile needle. You will subculture it to a slant.</p>${chosen ? `<div class="msg">You picked a <b>${nameOf(chosen.org, temp)}</b> colony from the ${TEMPS[temp].toLowerCase().replace("37°c", "37°C")}${chosen.crowd ? ", in a crowded area" : ""}.</div><div class="btnrow" style="margin-top:10px"><button type="button" class="btn" id="pkGo">Subculture to a slant, then Gram stain (Day 3)</button></div>` : ""}`;
       else {
         const orgs = chosen.crowd ? [...new Set(cols.filter(c => c.crowd && Math.hypot(c.x - chosen.x, c.y - chosen.y) < 12).map(c => c.org).concat(chosen.org))] : [chosen.org];
         if (chosen.crowd && orgs.length < 2) orgs.push(Object.keys(ORG).find(k => k !== chosen.org));
@@ -324,12 +326,14 @@
           const pure = orgs.length === 1;
           V.mc(host.querySelector("#pkQ"), {q:"Is your slant a pure culture?", opts:["Yes, pure: one cell type", "No, contaminated: more than one cell type"], a:pure ? 0 : 1, keep:true,
             why:pure ? `One cell type: ${ORG[orgs[0]].cells} (<i>${ORG[orgs[0]].name}</i>). You picked an isolated colony.` : `More than one cell type: ${orgs.map(k => ORG[k].cells).join(" and ")}. Colonies in a crowded area touch each other, so the needle picked up more than one kind of cell. Pick an isolated colony next time.`});
-          host.querySelector("#pkQ").insertAdjacentHTML("afterend", `<div class="btnrow" style="margin-top:10px"><button type="button" class="btn ghost" id="pkNew">New plate</button></div>`);
+          host.querySelector("#pkQ").insertAdjacentHTML("afterend", `<div class="btnrow" style="margin-top:10px"><button type="button" class="btn ghost" id="pkNew">New plates</button></div>`);
           host.querySelector("#pkNew").addEventListener("click", () => { build(); draw(); });
         });
       }
-      host.innerHTML = `<div class="simgrid"><div class="svgbox">${plateSVG()}</div><div>${right}</div></div>`;
-      const svg = host.querySelector("svg");
+      const tabs = day === 1 ? `<div class="btnrow" style="margin-bottom:8px">${Object.keys(TEMPS).map(t => `<button type="button" class="opt ${t === temp ? "sel" : ""}" data-temp="${t}" aria-pressed="${t === temp}">${TEMPS[t]}</button>`).join("")}</div>` : `<div class="lbl">${TEMPS[temp]}</div>`;
+      host.innerHTML = `<div class="simgrid"><div>${tabs}<div class="svgbox">${plateSVG()}</div></div><div>${right}</div></div>`;
+      host.querySelectorAll("[data-temp]").forEach(b => b.addEventListener("click", () => { temp = b.dataset.temp; chosen = null; draw(); }));
+      const svg = host.querySelector(".svgbox svg");
       if (day === 1){
         svg.addEventListener("click", e => { const t = e.target.closest("[data-col]"); if (!t) return; chosen = cols[+t.dataset.col]; draw(); });
         const go = host.querySelector("#pkGo"); if (go) go.addEventListener("click", () => { day = 3; draw(); });

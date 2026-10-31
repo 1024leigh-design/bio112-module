@@ -1,5 +1,5 @@
 /* Virtual Lab core: hub, routing, station tabs, Learn/Test, Mistakes, Problems, Vocab, and the
-   "20 minutes on the clock" activity. Lab content lives in labs/labNN-*.js (one file per lab).
+   "On the clock" timing activity. Lab content lives in labs/labNN-*.js (one file per lab).
    Learn/Test follows the Unit-2 metab.js pattern: Learn shows everything; Test turns key terms into
    typed blanks with Check, Hint, and Move on (Move on reveals the answer). */
 (function(){
@@ -27,10 +27,15 @@
       case "arr": return A.arrangement(spec.shape, spec.arr, spec.color, spec.seed);
       case "microscope": return A.microscope(true);
       case "plasmid": return A.plasmid(A.PLASMID.map(p => p.id));
+      case "svg": return A.figs[spec.name](spec);
+      case "streak": return A.plate({extra:A.streakEx(spec.id), label:spec.cap});
     }
     return "";
   };
-  V.figs = list => list && list.length ? `<div class="fig">${list.map(s => `<figure>${V.fig(s)}${s.cap ? `<figcaption>${s.cap}</figcaption>` : ""}</figure>`).join("")}</div>` : "";
+  V.strip = spec => `<div class="strip" role="list">${spec.steps.map((st, i) => `${i ? '<span class="sarrow" aria-hidden="true">&rarr;</span>' : ""}<div class="sstep" role="listitem">${window.ART.ico(st.i, st.c)}<b>${st.t}</b>${st.s ? `<span>${st.s}</span>` : ""}</div>`).join("")}</div>`;
+  V.figs = list => list && list.length ? `<div class="fig">${list.map(s => s.type === "strip" ? `<figure class="wide">${s.title ? `<figcaption class="ftitle">${s.title}</figcaption>` : ""}${V.strip(s)}</figure>` : `<figure class="${s.wide === "mid" ? "mid" : s.wide ? "wide" : ""}">${V.fig(s)}${s.cap ? `<figcaption>${s.cap}</figcaption>` : ""}</figure>`).join("")}</div>` : "";
+  /* worked examples for the math: {title, steps:[...], answer} */
+  V.examples = list => list && list.length ? list.map(e => `<div class="sol example"><b>Worked example${e.title ? ": " + e.title : ""}</b><ol>${e.steps.map(s => `<li>${s}</li>`).join("")}</ol>${e.answer ? `<p class="exans"><b>Answer:</b> ${e.answer}</p>` : ""}</div>`).join("") : "";
   V.todo = t => `<div class="todo" role="note">TODO for the instructor: ${t}</div>`;
 
   /* ---------- answer matching ---------- */
@@ -102,12 +107,13 @@
       if (!isCur) return `<strong class="term">?</strong>`;
       return `<input class="blank" data-key="${key}" size="${Math.max(4, show.replace(/<[^>]+>/g, "").length + 1)}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Fill in the blank">`; }); };
 
-    let html = test ? `<p class="modetip">Test mode: type the missing word in each box, then tap <b>Check</b>. Stuck? Tap <b>Hint</b> or <b>Move on</b>.</p>` : "";
+    let html = !test && lab.key ? `<div class="keybox"><b>Know these ${lab.key.length} things</b><ol>${lab.key.map(k => `<li>${k}</li>`).join("")}</ol></div>` : "";
+    html += test ? `<p class="modetip">Test mode: type the missing word in each box, then tap <b>Check</b>. Stuck? Tap <b>Hint</b> or <b>Move on</b>.</p>` : "";
     let hiddenFrom = curIdx === -1 ? Infinity : curIdx + 1, pos = 0;
     lab.learn.forEach((sec, si) => {
       const firstPos = pos;
       if (firstPos >= hiddenFrom){ pos += sec.items.length; return; }
-      html += `<section class="lsec"><h2>${sec.h}</h2>${sec.lead ? `<p class="lead">${sec.lead}</p>` : ""}<ol class="litems ${sec.kind === "steps" ? "steps" : "facts"}"${sec.kind === "steps" ? "" : ' role="list"'}>`;
+      html += `<section class="lsec"><h2>${sec.h}</h2>${sec.lead ? `<p class="lead">${sec.lead}</p>` : ""}${sec.top ? V.figs(sec.top) : ""}<ol class="litems ${sec.kind === "steps" ? "steps" : "facts"}"${sec.kind === "steps" ? "" : ' role="list"'}>`;
       sec.items.forEach((it, ii) => {
         const p = pos++;
         if (p >= hiddenFrom) return;
@@ -116,10 +122,11 @@
           ${isCur ? `<div class="checkrow"><button type="button" class="btn small" data-act="check">Check</button><button type="button" class="btn hint small" data-act="hint">Hint</button><button type="button" class="btn ghost small" data-act="moveon">Move on</button></div><div class="fb" id="lfb" aria-live="polite"></div>` : ""}</div></li>`;
       });
       html += `</ol>`;
-      if (pos <= hiddenFrom) html += V.figs(sec.figs) + (sec.todo ? V.todo(sec.todo) : "");
+      if (pos <= hiddenFrom) html += V.figs(sec.figs) + V.examples(sec.examples) + (sec.tip ? `<div class="msg tipbox"><b>Tip:</b> ${sec.tip}</div>` : "") + (sec.todo ? V.todo(sec.todo) : "");
       html += `</section>`;
     });
     if (test && !done) html += `<p class="locked">More steps show up after you finish this one.</p>`;
+    if (done) store.set("vlab-done-" + lab.n, "1");
     if (done) html += `<div class="msg good" style="margin-top:18px"><b>Station complete!</b> You filled in every blank for Lab ${lab.n}.</div><div class="btnrow" style="margin-top:10px"><button type="button" class="btn ghost" data-act="restart">Start over</button></div>`;
     host.innerHTML = html;
 
@@ -235,9 +242,9 @@
     app.innerHTML = `<header class="hero"><div class="eyebrow">BIO 112 Lab · Practicum 1 review</div><h1>Virtual Lab 🔬</h1><p>Walk through Labs 1 to 15. Practice each procedure, see what goes wrong, and solve practice problems.</p></header>
       <div class="modes"><div><b>Learn</b>Every step and answer is shown.</div><div><b>Test</b>Key words become blanks. Type the answer, then tap Check.</div></div>
       <h2 class="sech">Lab stations</h2>
-      <div class="stations">${labs.map(l => `<a class="station" href="#lab${l.n}"><span class="pic">${window.ART.icon(l.n)}</span><span class="snum">Lab ${l.n}</span><span class="t">${l.title}</span><span class="pills">${tagsOf(l).map(k => `<span class="pill ${pill[k][1]}">${pill[k][0]}</span>`).join("")}</span></a>`).join("")}</div>
+      <div class="stations">${labs.map(l => `<a class="station" href="#lab${l.n}"><span class="pic">${window.ART.icon(l.n)}</span><span class="snum">Lab ${l.n}</span><span class="t">${l.title}</span><span class="pills">${tagsOf(l).map(k => `<span class="pill ${pill[k][1]}">${pill[k][0]}</span>`).join("")}${store.get("vlab-done-" + l.n) ? `<span class="pill done">✓ Done</span>` : ""}</span></a>`).join("")}</div>
       <h2 class="sech">Timing practice</h2>
-      <a class="feature" href="#clock"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="34" r="25" fill="var(--surface-2)" stroke="var(--arrow)" stroke-width="4"/><path d="M32 34V19M32 34l10 7" stroke="var(--ink)" stroke-width="4" stroke-linecap="round"/><rect x="26" y="3" width="12" height="6" rx="2" fill="var(--arrow)"/></svg><div><h3>20 minutes on the clock</h3><p>Which procedures fit in a 20 minute lab? Find the slowest step.</p></div></a>`;
+      <a class="feature" href="#clock"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="34" r="25" fill="var(--surface-2)" stroke="var(--arrow)" stroke-width="4"/><path d="M32 34V19M32 34l10 7" stroke="var(--ink)" stroke-width="4" stroke-linecap="round"/><rect x="26" y="3" width="12" height="6" rx="2" fill="var(--arrow)"/></svg><div><h3>On the clock</h3><p>Which procedures fit in 1, 2, or 3 hours? Find the slowest step.</p></div></a>`;
     $("crumb").textContent = "Practicum 1 review";
     document.title = "Virtual Lab";
   }
@@ -251,7 +258,7 @@
     app.innerHTML = `<div class="mhead"><div class="mbadge">${n}</div><div><div class="eyebrow">Lab ${n}</div><h1>${lab.title}</h1></div></div>
       <div class="tabs" role="tablist" aria-label="Station tabs">${tabs.map(([k, t]) => `<button type="button" role="tab" aria-selected="${k === tab}" class="${k === tab ? "on" : ""}" data-tab="${k}">${t}</button>`).join("")}</div>
       <div class="panel" id="tabbody" role="tabpanel"></div>
-      <nav class="stepnav" aria-label="Other stations">${prev ? `<a href="#lab${n - 1}"><small>Previous station</small><b>Lab ${n - 1}: ${prev.title}</b></a>` : `<a href="#"><small>Back to</small><b>Lab Bench</b></a>`}${next ? `<a class="next" href="#lab${n + 1}"><small>Next station</small><b>Lab ${n + 1}: ${next.title}</b></a>` : `<a class="next" href="#clock"><small>Next</small><b>20 minutes on the clock</b></a>`}</nav>`;
+      <nav class="stepnav" aria-label="Other stations">${prev ? `<a href="#lab${n - 1}"><small>Previous station</small><b>Lab ${n - 1}: ${prev.title}</b></a>` : `<a href="#"><small>Back to</small><b>Lab Bench</b></a>`}${next ? `<a class="next" href="#lab${n + 1}"><small>Next station</small><b>Lab ${n + 1}: ${next.title}</b></a>` : `<a class="next" href="#clock"><small>Next</small><b>On the clock</b></a>`}</nav>`;
     app.querySelectorAll("[data-tab]").forEach(b => b.addEventListener("click", () => { location.hash = `lab${n}/${b.dataset.tab}`; }));
     const body = $("tabbody");
     if (tab === "learn") renderLearn(body, lab);
@@ -262,27 +269,36 @@
     document.title = `Lab ${n}: ${lab.title} | Virtual Lab`;
   }
 
-  /* ---------- 20 minutes on the clock ---------- */
+  /* ---------- On the clock ---------- */
   function renderClock(app){
     const C = V.clock;
-    app.innerHTML = `<div class="mhead"><div class="mbadge">⏱</div><div><div class="eyebrow">Lab Bench activity</div><h1>20 minutes on the clock</h1></div></div>
-      <div class="panel"><p class="lead">${C.prompt}</p><div class="msg warn"><b>Remember:</b> ${C.reminder}</div><div id="crows" style="margin-top:14px"></div>${C.todo ? V.todo(C.todo) : ""}</div>
+    let lim = C.limits[0].id;
+    app.innerHTML = `<div class="mhead"><div class="mbadge">⏱</div><div><div class="eyebrow">Lab Bench activity</div><h1>On the clock</h1></div></div>
+      <div class="panel"><p class="lead">${C.prompt}</p><div class="lbl">Time limit</div><div class="btnrow" id="climits">${C.limits.map(l => `<button type="button" class="opt" data-lim="${l.id}">${l.label}</button>`).join("")}</div>
+      <div class="msg warn"><b>Remember:</b> ${C.reminder}</div><div id="crows" style="margin-top:14px"></div>${C.todo ? V.todo(C.todo) : ""}</div>
       <nav class="stepnav"><a href="#lab15"><small>Previous station</small><b>Lab 15: ${V.labs[15] ? V.labs[15].title : ""}</b></a><a class="next" href="#"><small>Back to</small><b>Lab Bench</b></a></nav>`;
     const rows = app.querySelector("#crows");
-    rows.innerHTML = C.items.map((it, i) => `<div class="clockrow"><h3>${it.name}</h3><span class="time">${it.time}</span>
-      <div class="btnrow"><button type="button" class="opt" data-i="${i}" data-v="yes">Fits in 20 minutes</button><button type="button" class="opt" data-i="${i}" data-v="no">Does not fit</button></div><div class="fb" data-fb="${i}"></div><div data-slow="${i}"></div></div>`).join("");
-    rows.querySelectorAll(".opt[data-v]").forEach(b => b.addEventListener("click", () => {
-      const i = +b.dataset.i, it = C.items[i], fb = rows.querySelector(`[data-fb="${i}"]`);
-      rows.querySelectorAll(`.opt[data-i="${i}"]`).forEach(x => x.classList.remove("sel", "right", "wrong"));
-      const said = b.dataset.v === "yes";
-      if (it.fits === null || it.fits === undefined){ b.classList.add("sel"); fb.className = "fb warn"; fb.innerHTML = `Your instructor will confirm this one. <span style="font-weight:400">${it.why}</span>`; }
-      else if (said === it.fits){ b.classList.add("right"); fb.className = "fb good"; fb.innerHTML = `Yes! <span style="font-weight:400">${it.why}</span>`; }
-      else { b.classList.add("wrong"); fb.className = "fb bad"; fb.innerHTML = `Not quite. <span style="font-weight:400">${it.why}</span>`; }
-      const sh = rows.querySelector(`[data-slow="${i}"]`);
-      if (it.slow && !sh.innerHTML){ sh.className = "act"; V.mc(sh, it.slow); }
-    }));
-    $("crumb").textContent = "20 minutes on the clock";
-    document.title = "20 minutes on the clock | Virtual Lab";
+    const pick = (o, k) => (o && typeof o === "object") ? o[k] : o;
+    function draw(){
+      const label = C.limits.find(l => l.id === lim).label;
+      app.querySelectorAll("[data-lim]").forEach(b => { b.classList.toggle("sel", b.dataset.lim === lim); b.setAttribute("aria-pressed", String(b.dataset.lim === lim)); });
+      rows.innerHTML = C.items.map((it, i) => `<div class="clockrow"><h3>${it.name}</h3><span class="time">${it.time}</span>
+        <div class="btnrow"><button type="button" class="opt" data-i="${i}" data-v="yes">Fits in ${label}</button><button type="button" class="opt" data-i="${i}" data-v="no">Does not fit</button></div><div class="fb" data-fb="${i}"></div><div data-slow="${i}"></div></div>`).join("");
+      rows.querySelectorAll(".opt[data-v]").forEach(b => b.addEventListener("click", () => {
+        const i = +b.dataset.i, it = C.items[i], fb = rows.querySelector(`[data-fb="${i}"]`), fits = pick(it.fits, lim), why = pick(it.why, lim);
+        rows.querySelectorAll(`.opt[data-i="${i}"]`).forEach(x => x.classList.remove("sel", "right", "wrong"));
+        const said = b.dataset.v === "yes";
+        if (fits === null || fits === undefined){ b.classList.add("sel"); fb.className = "fb warn"; fb.innerHTML = `Your instructor will confirm this one. <span style="font-weight:400">${why}</span>`; }
+        else if (said === fits){ b.classList.add("right"); fb.className = "fb good"; fb.innerHTML = `Yes! <span style="font-weight:400">${why}</span>`; }
+        else { b.classList.add("wrong"); fb.className = "fb bad"; fb.innerHTML = `Not quite. <span style="font-weight:400">${why}</span>`; }
+        const sh = rows.querySelector(`[data-slow="${i}"]`);
+        if (it.slow && !sh.innerHTML){ sh.className = "act"; V.mc(sh, it.slow); }
+      }));
+    }
+    app.querySelectorAll("[data-lim]").forEach(b => b.addEventListener("click", () => { lim = b.dataset.lim; draw(); }));
+    draw();
+    $("crumb").textContent = "On the clock";
+    document.title = "On the clock | Virtual Lab";
   }
 
   /* ---------- vocab ---------- */

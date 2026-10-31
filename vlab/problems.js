@@ -68,6 +68,15 @@
       hint:"Convert the 10x value to 100x first (divide by 10). Then multiply each measurement by it."};
   };
 
+  P.fullcal = R => {
+    const c = cal(R), u = c.v / 10, k = pick([1, 1.5, 2, 2.5, 3], R);
+    return {q:`Each stage space is <b>${c.s} µm</b>. At 10x, point A to point B is <b>${c.o}</b> ocular spaces and <b>${c.st}</b> stage spaces. Under 100x, a coccus covers <b>${k}</b> ocular spaces. Fill in all three.`,
+      fig:rulerFig(k, "coccus"),
+      fields:[{label:"1. One ocular space at 10x =", ans:c.v, unit:"µm"}, {label:"2. One ocular space at 100x =", ans:r(u), unit:"µm"}, {label:"3. Coccus diameter =", ans:r(k * u), unit:"µm"}],
+      sol:`<ol><li>Stage distance: ${c.st} × ${c.s} µm = <b>${c.st * c.s} µm</b>. Divide by ${c.o} ocular spaces = <b>${c.v} µm</b> at 10x.</li><li>100x: ${c.v} ÷ 10 = <b>${r(u)} µm</b>.</li><li>Coccus: ${k} × ${r(u)} = <b>${r(k * u)} µm</b>.</li></ol>`,
+      hint:"Go in order. Each answer feeds the next one."};
+  };
+
   /* ---------- Lab 5: name the arrangement ---------- */
   const ARR = [
     ["Diplococci", "coccus", "pairs", "cocci in pairs"], ["Diplobacilli", "rod", "pairs", "rods in pairs"],
@@ -122,6 +131,37 @@
       fields:[{kind:"choice", opts:plates.map(p => `Plate ${p.n}`), ans:`Plate ${right.n}`}],
       sol:`<ul>${plates.map(p => `<li><b>Plate ${p.n}:</b> ${p.why}</li>`).join("")}</ul>`,
       hint:"Rule out TNTC plates and plates you cannot count accurately."};
+  };
+  P.sci = R => {
+    const m = pick([1.2, 2.5, 3.4, 4.75, 5.2, 6.8, 8.1, 9.3], R), e = pick([5, 6, 7, 8, 9, 10], R), n = Math.round(m * Math.pow(10, e));
+    if (R() < .5) return {q:`Write <b>${n.toLocaleString("en-US")}</b> in scientific notation.`,
+      fields:[{label:"Answer:", ans:n, show:`${m} x 10^${e}`}], note:"Type it like 3.4 x 10^7 or 3.4e7.",
+      sol:`<ol><li>Put the decimal after the first digit: <b>${m}</b>.</li><li>Count how many places the decimal moved to the left: <b>${e}</b>.</li><li>Answer: <b>${m} × 10<sup>${e}</sup></b>.</li></ol>`,
+      hint:"Move the decimal until one digit is in front of it. Count the moves."};
+    return {q:`Write <b>${m} × 10<sup>${e}</sup></b> as a regular number.`,
+      fields:[{label:"Answer:", ans:n, show:n.toLocaleString("en-US")}], note:"Commas are OK.",
+      sol:`<ol><li>The exponent is ${e}, so move the decimal <b>${e}</b> places to the right.</li><li>Fill empty places with zeros: <b>${n.toLocaleString("en-US")}</b>.</li></ol>`,
+      hint:"A positive exponent means move the decimal to the right."};
+  };
+  P.chain = R => {
+    const opts = [[1, 9], [0.1, 9.9], [0.5, 4.5], [1, 99], [0.2, 1.8]], n = 3 + Math.floor(R() * 2);
+    const tubes = Array.from({length:n}, () => pick(opts, R)), names = "ABCDE".split("");
+    const dfs = tubes.map(([a, w]) => a / (a + w)), tot = dfs.reduce((x, y) => x * y, 1), e = Math.round(-Math.log10(tot));
+    const c = 30 + Math.floor(R() * 160), ul = pick([100, 200], R), ml = ul / 1000, cells = c / (tot * ml);
+    return {q:`A new dilution series:<ul>${tubes.map(([a, w], i) => `<li>Tube ${names[i]}: <b>${a} mL</b> ${i ? `from tube ${names[i - 1]}` : "of culture"} + <b>${w} mL</b> water</li>`).join("")}</ul>You plate <b>${ul} µL</b> from tube ${names[n - 1]} and count <b>${c}</b> colonies.`,
+      fields:[{label:`Total dilution of tube ${names[n - 1]}:`, ans:tot, show:`10^-${e}`}, {label:"cells/mL in the original:", ans:cells, show:V.sci(cells, 3).replace(/<sup>/, "^").replace(/<\/sup>/, "").replace(" × ", " x ")}],
+      note:"Type numbers like 10^-5 or 2.5 x 10^9.",
+      sol:`<ol>${tubes.map(([a, w], i) => `<li>Tube ${names[i]}: ${a} ÷ (${a} + ${w}) = <b>1/${Math.round((a + w) / a)}</b></li>`).join("")}<li>Multiply them: <b>${p10(-e)}</b>.</li><li>${ul} µL = <b>${ml} mL</b>.</li><li>cells/mL = ${c} ÷ (${p10(-e)} × ${ml}) = <b>${V.sci(cells, 3)} cells/mL</b>.</li></ol>`,
+      hint:"Find each tube's dilution factor first (added ÷ total). Then multiply them all."};
+  };
+  P.expected = R => {
+    const m = pick([1.5, 2, 3, 4, 5, 6, 8], R), e = pick([8, 9], R), N = m * Math.pow(10, e), d = pick([5, 6, 7], R), ml = 0.1, col = N * Math.pow(10, -d) * ml;
+    if (col > 300 || col < 5) return P.expected(R);
+    return {q:`A culture has <b>${m} × 10<sup>${e}</sup> cells/mL</b>. You plate <b>100 µL</b> from a tube with a total dilution of <b>${p10(-d)}</b>. About how many colonies should grow?`,
+      fields:[{label:"Colonies:", ans:r(col), tol:.02}],
+      note:col > 200 ? "" : "",
+      sol:`<ol><li>Rearrange: CFUs = cells/mL × total dilution × mL plated.</li><li>100 µL = <b>0.1 mL</b>.</li><li>${m} × 10<sup>${e}</sup> × ${p10(-d)} × 0.1 = <b>${r(col)}</b> colonies.</li>${col > 200 ? "<li>That is more than 200, so this plate would be <b>TNTC</b>.</li>" : ""}</ol>`,
+      hint:"Multiply: cells/mL × total dilution × mL plated."};
   };
   P.cellsml = R => {
     const c = 25 + Math.floor(R() * 170), e = 4 + Math.floor(R() * 5), ul = pick([100, 100, 200, 50], R), ml = ul / 1000;
