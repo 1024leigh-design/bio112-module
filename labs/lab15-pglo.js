@@ -2,35 +2,61 @@
 VLAB.add({
   n:15, title:"Transformation (pGLO)",
   learn:[
-    {tab:"Protocol", h:"Competent cells", banner:"Goal: get the pGLO plasmid into <i>E. coli</i>, then see it glow.", layout:"split", figs:[{type:"svg", name:"cacl2", wide:true}], items:[
+    {tab:"Protocol", banner:"Goal: get the pGLO plasmid into <i>E. coli</i>, then see it glow.", items:[]},
+    {tab:"Protocol", h:"Competent cells", layout:"split", figs:[{type:"svg", name:"cacl2", wide:true}], items:[
       {t:"[[Competent]] cells can take up DNA from their surroundings."},
-      {t:"We made <i>E. coli</i> competent with ice-cold 50 mM [[CaCl2|cacl2|cacl₂|calcium chloride]]."},
-      {t:"Ca<sup>2+</sup> shields the [[negative]] charges on the DNA backbone and the cell membrane, so the plasmid can get close and enter.", why:"Two negative things push each other away. Ca<sup>2+</sup> sits between them."}
+      {t:"We made <i>E. coli</i> competent with ice-cold 50 mM calcium chloride ([[CaCl<sub>2</sub>|cacl2|cacl₂|calcium chloride]])."},
+      {t:"The DNA backbone and the cell membrane are both [[negative|negatively charged]]. Like charges push each other away."},
+      {t:"Calcium ions (Ca<sup>2+</sup>) are [[positive|positively charged|+]]. They coat the cell and shield those negative charges, so the plasmid can get much [[closer|close|near]] to the cell."}
     ]},
-    {tab:"Protocol", h:"Protocol, step by step", kind:"steps", lead:"Tap any <b>What if...?</b> button to see what would happen.", figs:[{type:"svg", name:"heatshock", wide:true, cap:"Temperature at each step (not to scale)"}],
+    {tab:"Protocol", h:"Why it works: collision theory", lead:"For a reaction to happen, two things are needed: the molecules must be close enough to collide, and there must be enough energy.", layout:"cards", cols:"2x", items:[
+      {big:"1. Proximity", ico:{i:"ice"}, t:"Ca<sup>2+</sup> on ice brings the plasmid into close [[proximity|contact]] with the cell."},
+      {big:"2. Energy", ico:{i:"bath", c:"42°C"}, t:"The [[heat shock|heat]] gives the energy that pushes the plasmid in."}
+    ]},
+    {tab:"Protocol", h:"Protocol, step by step", kind:"steps", lead:"Tap any <b>What if...?</b> or <b>Learn more</b> button to dig deeper.", figs:[{type:"svg", name:"heatshock", wide:true, cap:"Temperature at each step (not to scale)"}],
       tip:"Try the whole protocol yourself on the <b>Practice</b> tab: move the liquids, run the heat shock timer, and shine the UV light.",
       items:[
-      {pic:"pg1", t:"Add [[400 µL|400|400ul|400 ul]] of ice-cold 50 mM CaCl<sub>2</sub> to one tube. Transfer one or two colonies into it with a sterile loop. Mix well.", why:"Ice-cold CaCl<sub>2</sub> makes the cells competent.",
-        whatif:[{q:"you skip the CaCl<sub>2</sub>?", a:"The DNA backbone and the cell membrane are both negative, so they push each other away. With no Ca<sup>2+</sup> to shield those charges, the plasmid cannot get close enough to enter. Very few cells take it up."}]},
+      {pic:"pg1", t:"Add [[400 µL|400|400ul|400 ul]] of ice-cold 50 mM calcium chloride (CaCl<sub>2</sub>) to one tube.", why:"Ice-cold CaCl<sub>2</sub> makes the cells competent.",
+        whatif:[{q:"you skip the CaCl<sub>2</sub>?", a:"The DNA backbone and the cell membrane are both negative, so they push each other away. With no positive Ca<sup>2+</sup> to shield those charges, the plasmid cannot get close enough to enter. Very few cells take it up."}]},
+      {pic:"pgcol", t:"Pick [[one|1|a single]] colony to start. Transfer it into the CaCl<sub>2</sub> with a sterile loop and mix well.", why:"One colony = one starting population of cells.",
+        more:[{title:"Learn more: why start from one colony?", html:`<p>A colony grew from <b>one cell</b>, so every cell in it is the same kind. Starting from one colony means you start with a pure culture, and your results come from one population of cells.</p>
+          <p>If you scoop up several colonies, or a crowded area, you could mix in different cells or a contaminant. Then you cannot be sure what grew on your plates.</p>
+          <p><b>More material vs less:</b></p><ul>
+          <li><b>More cells</b> (a big scoop): more cells could take up the plasmid, but big clumps do not mix well into the CaCl<sub>2</sub>. Clumped cells are not evenly exposed, and crowded plates are harder to read.</li>
+          <li><b>Fewer cells</b> (a tiny touch): the cells mix in evenly, but there may be too few cells to give many transformed colonies.</li>
+          <li><b>Other concentrations:</b> labs sometimes use different CaCl<sub>2</sub> concentrations or volumes. Too little Ca<sup>2+</sup> shields fewer charges. Too much can stress the cells. Our protocol uses 50 mM.</li></ul>`}]},
       {pic:"pg2", t:"Split it in half: move [[200 µL|200|200ul|200 ul]] into a second tube. Label the tubes +pGLO and -pGLO.", why:"The -pGLO tube is the control: the same cells, with no plasmid."},
-      {pic:"pg3", t:"Add [[4 µL|4|4ul|4 ul]] of rehydrated pGLO plasmid to the [[+pGLO|pglo|plus pglo|+pglo tube]] tube only.",
-        whatif:[{q:"the -pGLO tube gets plasmid too?", a:"Those cells take up pGLO too, and use its bla gene to make beta-lactamase. They survive on LB/amp, so the -pGLO plate grows. You lose your control: nothing shows that ampicillin kills cells without the plasmid."}]},
-      {pic:"pg4", t:"Keep both tubes on [[ice]] for about 1 hour.", why:"Ca<sup>2+</sup> shields the charges so the plasmid can get close to the cells.", whatif:[{q:"you skip the hour on ice?", a:"The cold keeps the membrane stiff while Ca<sup>2+</sup> shields the charges and the plasmid settles against the cell. Without it, there is no sudden jump from cold to hot, so the heat shock does much less. Fewer cells take up the plasmid."}]},
-      {pic:"pg5", t:"Heat shock at [[42°C|42|42 c]] for [[45 seconds|45|45 sec|45 s]].", why:"Timing is critical.",
-        whatif:[{q:"you heat shock too long?", a:"Heat makes the membrane more fluid. Too long, and the membrane over-solubilizes: it gets too liquid and cannot reform. The cells are damaged or killed, so few or no colonies grow."}, {q:"you heat shock too short?", a:"The membrane does not loosen enough for the plasmid to slip through. Few cells take up the plasmid, so few colonies grow on the ampicillin plates."}]},
-      {pic:"pg6", t:"Back on ice for [[2 to 10|2-10|2 10]] minutes.", why:"Cools the cells back down after the heat shock.", whatif:[{q:"you skip going back on ice?", a:"The cold firms the membrane back up so it closes, trapping the plasmid inside. Without it, the membrane stays loose and fewer cells recover."}]},
-      {pic:"pg7", t:"Add 200 µL [[LB]] broth. Recover at 37°C for [[1 hour|1|1 hr|one hour|60 minutes]].", why:"The cells repair and start making beta-lactamase before they meet ampicillin.",
-        whatif:[{q:"you skip the recovery?", a:"The cells have not repaired their membranes or made beta-lactamase yet. Ampicillin stops cells from building their cell walls, so these weak cells burst. Fewer transformed cells survive."}]},
-      {pic:"pg8", t:"Pipette [[100 µL|100|100ul|100 ul]] onto each plate. Spread with a spreader dipped in isopropanol and flamed.", why:"Each plate answers a different question.",
-        whatif:[{q:"you forget the arabinose plate?", a:"Without arabinose, AraC stays in its blocking shape on the pBAD promoter. RNA polymerase cannot transcribe GFP, so no GFP is made. Transformed colonies grow on LB/amp, but they stay white."}, {q:"you use a tetracycline plate?", a:"Tetracycline stops ribosomes from making proteins. pGLO carries bla for ampicillin resistance, not a tetracycline resistance gene. Nothing grows."}]},
-      {pic:"pg9", t:"Incubate [[inverted|upside down|upside-down]] at 37°C.", why:"Upside down keeps water drops from falling onto the agar.", whatif:[{q:"the plates are right side up?", a:"Water drops form on the lid and fall onto the agar. The drops spread cells around, so colonies run together."}]}
+      {pic:"pg3", t:"Add [[4 µL|4|4ul|4 ul]] of rehydrated pGLO plasmid to the [[+pGLO|pglo|plus pglo|+pglo tube]] tube only.", why:"Only this tube should take up the plasmid.",
+        whatif:[{q:"the -pGLO tube gets plasmid too?", a:"This can happen with a pipetting mistake, like using the same tip for both tubes, or touching the -pGLO tube with a tip that held plasmid. Those cells take up pGLO too and use its bla gene to make beta-lactamase. They survive on LB/amp, so the -pGLO plate grows. You lose your control: nothing shows that ampicillin kills cells without the plasmid."}]},
+      {pic:"pg4", t:"Keep both tubes on [[ice]] for about 1 hour.", why:"Ca<sup>2+</sup> shields the charges so the plasmid can get close: proximity.",
+        whatif:[{q:"you skip the hour on ice?", a:"The cold keeps the membrane stiff while Ca<sup>2+</sup> shields the charges and the plasmid settles against the cell. Without it, there is no sudden jump from cold to hot, so the heat shock does much less. Fewer cells take up the plasmid."}]},
+      {pic:"pg5", t:"Heat shock at [[42°C|42|42 c]] for [[45 seconds|45|45 sec|45 s]].", why:"The heat gives the energy. Timing is critical.",
+        whatif:[{q:"you heat shock too long?", a:"Heat makes the membrane more fluid. Too long, and the membrane over-solubilizes: it gets too liquid and cannot reform. The cells are damaged or killed, so few or no colonies grow. Watch it happen:", sim:"melt"},
+          {q:"you heat shock too short?", a:"The membrane does not loosen enough for the plasmid to slip through. Few cells take up the plasmid, so few colonies grow on the ampicillin plates."}]},
+      {pic:"pg6", t:"Back on ice for [[2 to 10|2-10|2 10]] minutes.", why:"Cools the cells back down after the heat shock.",
+        more:[{title:"Why can it be anywhere from 2 to 10 minutes?", html:`<p>The pGLO protocol has been optimized, and it is a very resilient experiment. It handles a lot of variability.</p><p>Between 2 and 10 minutes on ice, there is really no difference in how many cells survive or how many take up the plasmid. What matters is that the cells get cold again after the heat shock.</p>`}],
+        whatif:[{q:"you skip going back on ice?", a:"The cold firms the membrane back up so it closes, trapping the plasmid inside. Without it, the membrane stays loose and fewer cells recover."}]},
+      {pic:"pg7", t:"Add 200 µL [[LB]] broth. Recover at 37°C for [[1 hour|1|1 hr|one hour|60 minutes]].", why:"The cells repair and make beta-lactamase before they meet ampicillin.",
+        more:[{title:"Learn more: what is happening inside the cell?", html:`<p>LB is food. At 37°C the cells repair their membranes and start using the genes on the plasmid:</p>
+          <div class="flow"><span>bla gene<br>(DNA)</span><i>transcription &rarr;</i><span>mRNA</span><i>translation &rarr;</i><span>beta-lactamase<br>(protein)</span><i>&rarr;</i><span>breaks down<br>ampicillin</span></div>
+          <ul><li><b>Transcription:</b> RNA polymerase copies the bla gene into mRNA.</li><li><b>Translation:</b> ribosomes read the mRNA and build beta-lactamase.</li><li><b>ori</b> lets the plasmid copy itself, so the cell keeps more copies.</li><li>GFP is not made yet: there is no arabinose in the LB.</li></ul>
+          <p>By the time the cells land on ampicillin, they already have beta-lactamase to protect them.</p>`}],
+        whatif:[{q:"you skip the recovery?", a:"The cells have not repaired their membranes or made beta-lactamase yet. Ampicillin stops cells from building their cell walls, so these weak cells burst. Fewer transformed cells survive."},
+          {q:"you add a different amount of LB?", a:"More LB spreads the cells out, so each 100 µL you plate holds fewer cells and you get fewer colonies. Less LB keeps the cells more concentrated, so you get more colonies, and they may crowd together. The cells also need the LB's nutrients to recover."}]},
+      {pic:"pg8", t:"Pipette [[100 µL|100|100ul|100 ul]] onto each plate. Spread with a spreader dipped in isopropanol and flamed.", why:"Dipping and flaming sterilizes the spreader.",
+        after:`<div class="platemap"><div><span class="tubetag" style="background:#c43a2b">-pGLO tube</span>&rarr;<span class="pchip">LB (-amp, -ara)</span><span class="pchip">LB/amp (+amp, -ara)</span></div><div><span class="tubetag" style="background:#1f8a55">+pGLO tube</span>&rarr;<span class="pchip">LB/amp (+amp, -ara)</span><span class="pchip">LB/amp/ara (+amp, +ara)</span></div><p class="lead" style="margin:0">These are the plates we used. Other labs use other combinations: the <b>Plates</b> tab and the Plate predictor cover them all.</p></div>`,
+        whatif:[{q:"you pipette 200 µL instead?", a:"About twice as many cells land on the plate, so expect about twice as many colonies. The extra liquid also takes longer to soak in and can pool, so colonies may run together."},
+          {q:"you pipette 50 µL instead?", a:"About half as many cells land on the plate, so expect about half as many colonies. A small drop is also harder to spread evenly."},
+          {q:"you use a tetracycline plate?", a:"Tetracycline stops ribosomes from making proteins. pGLO carries bla for ampicillin resistance, not a tetracycline resistance gene. Nothing grows."}]},
+      {pic:"pg9", t:"Incubate [[inverted|upside down|upside-down]] at 37°C.", why:"Keeps water drops off the agar.",
+        whatif:[{q:"the plates are right side up?", a:"Water drops form on the lid and fall onto the agar. The drops spread cells around, so colonies run together."}]}
     ]},
     {tab:"Follow the cells", banner:"What happens inside the cells at each step?", kind:"facts", items:[], sim:{sim:"follow", prompt:"Watch a +pGLO cell and a -pGLO cell side by side. Answer each question to move on.", stages:[
-      {id:"cacl2", short:"CaCl₂", title:"In ice-cold CaCl₂", cap:"Ca²⁺ ions surround both cells. The +pGLO tube also has plasmid floating around.",
+      {id:"cacl2", short:"CaCl<sub>2</sub>", title:"In ice-cold calcium chloride (CaCl<sub>2</sub>)", cap:"Positive Ca²⁺ ions surround both cells. The +pGLO tube also has plasmid floating around.",
         q:{q:"Where is the plasmid right now?", opts:["Outside the cell", "Inside the cell", "In both tubes"], a:0, keep:true, why:"It was just added to the +pGLO tube. It has not gotten in yet."}},
-      {id:"ice", short:"Ice", title:"On ice, about 1 hour", cap:"The cold keeps the membrane stiff. Ca²⁺ shields the negative charges, so the plasmid can get close to the membrane.",
+      {id:"ice", short:"Ice", title:"On ice, about 1 hour", cap:"The cold keeps the membrane stiff. Positive Ca²⁺ shields the negative charges, so the plasmid can get close to the membrane. That is proximity.",
         q:{q:"What lets the plasmid get close to the cell?", opts:["Ca²⁺ shields the negative charges", "The heat", "Ampicillin", "Arabinose"], a:0, why:"DNA and the membrane are both negative. Ca²⁺ sits between them."}},
-      {id:"heat", short:"Heat shock", title:"Heat shock: 42°C for 45 seconds", cap:"Heat makes the membrane more fluid for a moment, so some plasmid slips in. Back on ice, the membrane firms up and traps it inside.",
+      {id:"heat", short:"Heat shock", title:"Heat shock: 42°C for 45 seconds", cap:"The heat gives energy: the membrane gets more fluid for a moment, so some plasmid slips in. Back on ice, the membrane firms up and traps it inside.",
         q:{q:"After the heat shock, where is some of the plasmid?", opts:["Inside the cell", "Still all outside", "Destroyed by the heat"], a:0, keep:true, why:"The membrane loosens for a moment. Too long and it gets too liquid to reform, which damages or kills the cells."}},
       {id:"recover", short:"Recovery", title:"Back on ice, then LB at 37°C for 1 hour", cap:"The +pGLO cell uses the bla gene to make beta-lactamase. The -pGLO cell has no plasmid, so it makes none.",
         q:{q:"Which cell can now break down ampicillin?", opts:["The +pGLO cell", "The -pGLO cell", "Both", "Neither"], a:0, keep:true, why:"Only the +pGLO cell has bla, the gene for beta-lactamase."}},
@@ -52,6 +78,14 @@ VLAB.add({
       {big:"LB/amp", fig:{type:"plate"}, t:"<b>-pGLO.</b> Does ampicillin kill cells without the plasmid? Result: [[no growth|none|nothing]]."},
       {big:"LB/amp", fig:{type:"plate", scatter:[[14, 151, "white", 6, 9]]}, t:"<b>+pGLO.</b> Did transformation work? Result: white [[colonies]]."},
       {big:"LB/amp/ara", fig:{type:"plate", uv:true, glow:true, scatter:[[14, 152, "white", 6, 9]]}, t:"<b>+pGLO.</b> Does arabinose switch on GFP? Result: colonies that [[glow]] green under UV."}
+    ]},
+    {tab:"The plates", h:"Controls: tap a card to flip it", lead:"Front: the setup. Back: what it is a control for.", items:[], flips:[
+      {tag:"Positive control", kind:"pos", fig:{type:"plate", lawn:true}, front:"-pGLO cells on LB", q:"Are the cells alive?", back:"Growth (a lawn) shows the cells survived the whole protocol. No growth here means something killed them, like a heat shock that was too long."},
+      {tag:"Negative control", kind:"neg", fig:{type:"plate"}, front:"-pGLO cells on LB/amp", q:"Is the ampicillin good?", back:"No growth shows the ampicillin kills cells without the plasmid. It also checks whether your bacteria have any natural resistance. Colonies here mean bad ampicillin, naturally resistant cells, or contamination."},
+      {tag:"Experimental", kind:"exp", fig:{type:"plate", scatter:[[10, 151, "white", 6, 9]]}, front:"+pGLO cells on LB/amp", q:"Did transformation work?", back:"Only cells that took up pGLO (with bla) can grow. These colonies stay white: with no arabinose, GFP stays off. That makes it the comparison for the arabinose plate."},
+      {tag:"Experimental", kind:"exp", fig:{type:"plate", uv:true, glow:true, scatter:[[10, 152, "white", 6, 9]]}, front:"+pGLO cells on LB/amp/ara", q:"Does arabinose switch on GFP?", back:"Glowing colonies show the plasmid genes are expressed. Compare with LB/amp (+pGLO): same cells, no arabinose, no glow."},
+      {tag:"Other labs", fig:{type:"plate", lawn:true}, front:"+pGLO cells on LB", q:"Did the +pGLO cells survive?", back:"A lawn grows, because nothing kills the cells that did not take up pGLO. It checks that the heat shock did not kill the +pGLO cells."},
+      {tag:"Other labs", fig:{type:"plate", lawn:true}, front:"-pGLO cells on LB/ara", q:"Does arabinose alone make cells glow?", back:"No. Without pGLO there is no GFP gene, so the lawn does not glow under UV."}
     ]},
     {tab:"The plates", h:"What if the plate were different?", layout:"cards", cols:2, tip:"Try every combination in the Plate predictor on the Practice tab.", items:[
       {big:"No ampicillin", t:"Transformed and untransformed cells both grow. So only [[some]] colonies would glow (with arabinose).", whatif:[{q:"+pGLO cells go on LB/ara?", a:"With no ampicillin, nothing kills the cells that did not take up pGLO, so they grow into a lawn. Arabinose switches on GFP, but only cells with pGLO have the GFP gene. Only some of the lawn glows."}]},

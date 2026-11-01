@@ -181,6 +181,35 @@
     requestAnimationFrame(tick);
   };
 
+  /* ================= heat shock too long: the membrane melts ================= */
+  V.sims.melt = host => {
+    host.innerHTML = `<svg viewBox="0 0 600 230" role="img" aria-label="A lipid bilayer gets more fluid in the heat, then too liquid, and falls apart"></svg><div class="btnrow" style="justify-content:center;margin-top:6px"><button type="button" class="btn ghost small">Replay</button></div>`;
+    const svg = host.querySelector("svg"); let t0 = performance.now();
+    host.querySelector("button").addEventListener("click", () => { t0 = performance.now(); });
+    const R = A.rng(41), N = 28, seeds = Array.from({length:N * 2}, () => [R() * 6.28, R() * 2 - 1, R() * 2 - 1]);
+    const leaks = Array.from({length:14}, () => [40 + R() * 520, R()]);
+    const PH = [[0, "On ice: the membrane is stiff.", "#e9f5fb"], [2, "42°C: the membrane gets more fluid. The plasmid slips in.", "#fde7df"], [4.5, "Still too hot: the membrane gets too liquid.", "#fbd3c4"], [6.5, "It cannot reform. The membrane falls apart and the cell dies.", "#f5b8a6"]];
+    function scene(now){
+      const t = reduce ? 8 : ((now - t0) / 1000) % 10, ph = PH.filter(p => t >= p[0]).length - 1;
+      const amp = t < 2 ? .4 : t < 4.5 ? 3 : t < 6.5 ? 3 + (t - 4.5) * 4.5 : 12, spread = t < 6.5 ? 0 : Math.min(1, (t - 6.5) / 2.2);
+      let o = `<rect width="600" height="230" rx="12" fill="${PH[ph][2]}"/>` + T(300, 26, PH[ph][1], {fs:16, c:"#14223a"});
+      if (t >= 2) [70, 300, 530].forEach((x, i) => { o += `<g opacity="${f1(Math.min(1, (t - 2) * 2))}">${A.fire ? A.fire(x, 52, .9) : ""}</g>`; });
+      else [70, 300, 530].forEach(x => { o += A.snow ? A.snow(x, 50, 8) : ""; });
+      for (let row = 0; row < 2; row++) for (let k = 0; k < N; k++){
+        const sd = seeds[row * N + k], x0 = 20 + k * 20, y0 = row ? 170 : 106, dir = row ? 1 : -1;
+        const jx = Math.sin(t * 9 + sd[0]) * amp + sd[1] * spread * 60, jy = Math.cos(t * 7 + sd[0]) * amp * .6 + sd[2] * spread * 70 + dir * spread * 20;
+        const x = x0 + jx, y = y0 + jy, rot = Math.sin(t * 5 + sd[0]) * amp * 3 + spread * sd[1] * 90;
+        o += `<g transform="translate(${f1(x)} ${f1(y)}) rotate(${f1(rot)})"><line x1="-3" y1="0" x2="-3" y2="${-dir * 26}" stroke="#c99a3e" stroke-width="2"/><line x1="3" y1="0" x2="3" y2="${-dir * 26}" stroke="#c99a3e" stroke-width="2"/><circle r="7" fill="#e6b85c" stroke="#b98d3a"/></g>`;
+      }
+      if (t >= 2.4 && t < 4.5){ const k = Math.min(1, (t - 2.4) / 1.6); o += `<circle cx="300" cy="${f1(60 + k * 150)}" r="12" fill="none" stroke="#1683cc" stroke-width="4"/>`; }
+      if (spread > 0) leaks.forEach(([x, r]) => { o += `<circle cx="${f1(x)}" cy="${f1(220 - spread * (40 + r * 150))}" r="4" fill="#a96c05" opacity="${f1(.9 * spread)}"/>`; });
+      o += T(16, 220, "inside the cell", {fs:12, a:"start", w:400, c:"#53657b"}) + T(16, 74, "outside", {fs:12, a:"start", w:400, c:"#53657b"});
+      return o;
+    }
+    const tick = now => { if (!host.isConnected) return; svg.innerHTML = scene(now); requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+  };
+
   /* ================= pGLO bench ================= */
   V.sims.pglobench = (host, spec) => {
     const SPEED = 3; /* heat shock clock runs 3x faster than real time */
@@ -191,10 +220,10 @@
       tubes:{t1:{loc:"rack", vol:0, cells:false, plasmid:false, lb:false, label:"Tube 1"}, t2:{loc:"rack", vol:0, cells:false, plasmid:false, lb:false, label:"Tube 2"}}, plated:{}});
     const both = loc => { S.tubes.t1.loc = loc; S.tubes.t2.loc = loc; };
     const STEPS = [
-      {text:"Set the pipette to <b>400 µL</b>. Move ice-cold CaCl₂ into <b>Tube 1</b>.", done:"400 µL CaCl₂ into Tube 1",
-        acts:[{src:"cacl2", dst:"t1", vol:400, ok:"400 µL of ice-cold CaCl₂ is in Tube 1.", fx:() => { S.tubes.t1.vol = 400; }}]},
-      {text:"Use the <b>loop</b>: move one or two colonies from the <b>starter plate</b> into <b>Tube 1</b>. Mix well.", done:"Colonies mixed into Tube 1",
-        acts:[{src:"start", dst:"t1", ok:"The colonies are mixed in. The cells are now in ice-cold CaCl₂.", fx:() => { S.tubes.t1.cells = true; }}]},
+      {text:"Set the pipette to <b>400 µL</b>. Move ice-cold calcium chloride (CaCl<sub>2</sub>) into <b>Tube 1</b>.", done:"400 µL CaCl<sub>2</sub> into Tube 1",
+        acts:[{src:"cacl2", dst:"t1", vol:400, ok:"400 µL of ice-cold CaCl<sub>2</sub> is in Tube 1.", fx:() => { S.tubes.t1.vol = 400; }}]},
+      {text:"Use the <b>loop</b>: pick <b>one colony</b> from the <b>starter plate</b> to start. Mix it into <b>Tube 1</b>.", done:"One colony mixed into Tube 1",
+        acts:[{src:"start", dst:"t1", ok:"One colony is mixed in. The cells are now in ice-cold CaCl<sub>2</sub>.", fx:() => { S.tubes.t1.cells = true; }}]},
       {text:"Set the pipette to <b>200 µL</b>. Split the cells: move 200 µL from Tube 1 into <b>Tube 2</b>.", done:"Split: 200 µL into Tube 2",
         acts:[{src:"t1", dst:"t2", vol:200, ok:"Each tube now has 200 µL of cells.", fx:() => { S.tubes.t1.vol = 200; S.tubes.t2.vol = 200; S.tubes.t2.cells = true; }}]},
       {text:"Label the tubes.", done:"Labeled +pGLO and -pGLO", button:"Label: Tube 1 = +pGLO, Tube 2 = -pGLO", fx:() => { S.tubes.t1.label = "+pGLO"; S.tubes.t2.label = "-pGLO"; }, ok:"Labeled! Tube 2 (-pGLO) is your control."},
@@ -203,7 +232,7 @@
         oops:{"plasmid>t2":"Stop! That is the <b>-pGLO</b> tube. If it gets plasmid too, you lose your control. Add the plasmid to +pGLO only."}},
       {text:"Move <b>both</b> tubes onto the <b>ice</b>.", done:"Both tubes on ice",
         acts:[{src:"t1", dst:"ice", ok:"+pGLO is on ice.", fx:() => { S.tubes.t1.loc = "ice"; }}, {src:"t2", dst:"ice", ok:"-pGLO is on ice.", fx:() => { S.tubes.t2.loc = "ice"; }}]},
-      {text:"Keep both tubes on ice for about 1 hour.", done:"About 1 hour on ice", button:"⏩ About 1 hour later", ok:"An hour on ice. Ca²⁺ shields the charges so the plasmid can get close to the cells."},
+      {text:"Keep both tubes on ice for about 1 hour.", done:"About 1 hour on ice", button:"⏩ About 1 hour later", ok:"An hour on ice. Positive Ca<sup>2+</sup> shields the negative charges so the plasmid can get close to the cells: proximity."},
       {text:"Heat shock! Move the tubes into the <b>42°C water bath</b>. Take them out at <b>45 seconds</b> by tapping the <b>ice</b>.", done:"Heat shock: 42°C for 45 seconds", heat:true},
       {text:"Keep them on ice for 2 to 10 minutes.", done:"Back on ice for a few minutes", button:"⏩ A few minutes later", ok:"The cells cooled back down."},
       {text:"Set the pipette to <b>200 µL</b>. Add <b>LB broth</b> to <b>each</b> tube.", done:"200 µL LB into each tube",
@@ -218,7 +247,7 @@
       {text:"Let the plates grow.", done:"Incubated", button:"⏩ Incubate", ok:"Growth! Now look under the UV light.", fx:() => { S.grown = true; S.platesIn = false; }},
       {text:"Tap <b>UV light</b> to shine it on the plates. Which plate glows?", done:"Looked under UV", final:true}
     ];
-    const NAMES = {cacl2:"CaCl₂", start:"starter plate", plasmid:"pGLO plasmid", lb:"LB broth", t1:"Tube 1", t2:"Tube 2", ice:"ice", bath:"water bath", incub:"incubator"};
+    const NAMES = {cacl2:"calcium chloride (CaCl<sub>2</sub>)", start:"starter plate", plasmid:"pGLO plasmid", lb:"LB broth", t1:"Tube 1", t2:"Tube 2", ice:"ice", bath:"water bath", incub:"incubator"};
     const nameOf = id => id === "t1" || id === "t2" ? S.tubes[id].label : id[0] === "p" && id.length === 2 ? PL[+id[1]].lab : NAMES[id] || id;
 
     function say(m, c){ S.msg = m; S.cls = c || ""; }
@@ -252,7 +281,7 @@
         const sec = (performance.now() - S.bathT) / 1000 * SPEED; both("ice"); S.bathT = null;
         if (sec < 40){ say(`<b>Too short (${Math.round(sec)} seconds).</b> The membrane did not loosen enough, so few cells take up the plasmid. Try the heat shock again.`, "bad"); return; }
         if (sec > 50){ say(`<b>Too long (${Math.round(sec)} seconds).</b> The membrane got too liquid to reform. The cells are damaged or killed. Try the heat shock again.`, "bad"); return; }
-        say(`<b>${Math.round(sec)} seconds. Nice timing!</b> The membrane loosened just enough for the plasmid to slip in.`, "good"); stepDone(); return;
+        say(`<b>${Math.round(sec)} seconds. Nice timing!</b> The heat gave the energy, and the membrane loosened just enough for the plasmid to slip in.`, "good"); stepDone(); return;
       }
       say("The tubes are in the bath! Tap the <b>ice</b> at 45 seconds.", "warn");
     }
