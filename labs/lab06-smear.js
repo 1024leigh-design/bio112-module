@@ -4,7 +4,6 @@
   const blue = (extra, seed) => Object.assign({type:"field", seed:seed || 61, groups:[{shape:"coccus", arr:"clusters", color:"blue", n:5}]}, extra || {});
   VLAB.add({
     n:6, title:"Smear preparation",
-    key:["Broth: 2 loops, no water. Slant: 2 loops of water, then a little growth.", "Air dry completely. Then heat fix: 5 passes.", "Flame the loop and the tube neck. Hold the cap."],
     learn:[
       {h:"Aseptic rules", kind:"facts", items:[
         {t:"Flame the loop or needle until [[red hot|red-hot|red]]. Let it cool.", why:"Heat kills microbes on the wire. A hot wire would kill your culture."},

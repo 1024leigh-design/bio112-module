@@ -1,7 +1,6 @@
 /* Lab 2: Microscopic measurements. Content from the build brief. */
 VLAB.add({
   n:2, title:"Microscopic measurements",
-    key:["Calibrate the ocular micrometer against the stage micrometer (1 stage space = 10 µm).", "µm per ocular space = (stage spaces × µm per stage space) ÷ ocular spaces.", "100x value = 10x value ÷ 10. Measure cells under 100x."],
   learn:[
     {h:"Why calibrate?", kind:"facts", items:[
       {t:"The ocular micrometer has [[no fixed units|no units|no set units]]."},

@@ -1,7 +1,6 @@
 /* Lab 3: Pond water. Content from the build brief. */
 VLAB.add({
   n:3, title:"Pond water",
-    key:["Protozoa: one cell, has a nucleus, no pigment, usually moving.", "Algae: eukaryotes, green or golden-brown. Cyanobacteria: prokaryotes, blue-green.", "Microscopic invertebrates: many cells, larger, usually fast."],
   learn:[
     {h:"Four groups and how to tell them apart", kind:"facts", figs:[
       {type:"svg", name:"pond", kind:"protozoa", cap:"Protozoa: one cell, moving"}, {type:"svg", name:"pond", kind:"algae", cap:"Algae: green, has a nucleus"},

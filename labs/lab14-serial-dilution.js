@@ -1,7 +1,6 @@
 /* Lab 14: Serial dilution and plate counts. Content from the build brief. */
 VLAB.add({
   n:14, title:"Serial dilution and plate counts",
-    key:["Dilution factor = volume added ÷ total volume. Total dilution = multiply them.", "cells/mL = CFUs ÷ (total dilution × mL plated).", "More than 200 colonies = TNTC. Do not use that plate."],
   learn:[
     {h:"Key ideas", kind:"facts", figs:[{type:"svg", name:"dilplates", wide:true, cap:"Each tube is more dilute, so its plate has fewer colonies."}], items:[
       {t:"A serial dilution dilutes a sample step by step, so some plates have a [[countable]] number of colonies."},

@@ -1,7 +1,6 @@
 /* Lab 4: Bacteria in the environment. Content from the build brief. No blood agar in our lab. */
 VLAB.add({
   n:4, title:"Bacteria in the environment",
-    key:["Mold colonies are often fuzzy or hairy.", "Cloudy broth = bacteria present. Only a plate shows how many types and colonies.", "Count scale: 0, + (1 to 10), ++ (11 to 50), +++ (51 to 100), ++++ (over 100)."],
   learn:[
     {h:"What we did", kind:"facts", top:[{type:"strip", steps:[{i:"plate", t:"TSA plate", s:"exposed to a place"}, {i:"tube", t:"Broth", s:"inoculated with a swab"}, {i:"incub", c:" ", t:"Incubate"}, {i:"count", t:"Read results"}]}], items:[
       {t:"[[TSA]] plates were exposed to different places: lab air, outside air, lips, fingertips, coins, hair, and dust."},

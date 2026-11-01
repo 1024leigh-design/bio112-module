@@ -293,7 +293,7 @@
   /* ---------- Lab 13: pick a colony, subculture, Gram stain ---------- */
   V.sims.pick = (host, spec) => {
     let plates, temp = "rt", chosen = null, day = 1;
-    const ORG = spec.orgs, TEMPS = {rt:"Room temperature plate", "37":"37°C plate"};
+    const ORG = spec.orgs, TWO = Object.keys(ORG).some(k => ORG[k].colony37), TEMPS = TWO ? {rt:"Room temperature plate", "37":"37°C plate"} : {rt:"Your plate (room temperature for 1 day, then 37°C)"};
     const colorOf = (o, t) => t === "37" && ORG[o].colony37 ? ORG[o].colony37 : ORG[o].colony;
     const nameOf = (o, t) => t === "37" && ORG[o].colonyName37 ? ORG[o].colonyName37 : ORG[o].colonyName;
     function layout(seed){
@@ -316,12 +316,12 @@
     function draw(){
       const cols = plates[temp];
       let right = "";
-      if (day === 1) right = `<p><b>Day 2:</b> tap one colony to pick with a sterile needle. You will subculture it to a slant.</p>${chosen ? `<div class="msg">You picked a <b>${nameOf(chosen.org, temp)}</b> colony from the ${TEMPS[temp].toLowerCase().replace("37°c", "37°C")}${chosen.crowd ? ", in a crowded area" : ""}.</div><div class="btnrow" style="margin-top:10px"><button type="button" class="btn" id="pkGo">Subculture to a slant, then Gram stain (Day 3)</button></div>` : ""}`;
+      if (day === 1) right = `<p><b>Pick a colony:</b> tap one colony to pick with a sterile needle. You will subculture it to a slant.</p>${chosen ? `<div class="msg">You picked a <b>${nameOf(chosen.org, temp)}</b> colony${chosen.crowd ? " from a crowded area" : ""}.</div><div class="btnrow" style="margin-top:10px"><button type="button" class="btn" id="pkGo">Subculture to a slant, then Gram stain</button></div>` : ""}`;
       else {
         const orgs = chosen.crowd ? [...new Set(cols.filter(c => c.crowd && Math.hypot(c.x - chosen.x, c.y - chosen.y) < 12).map(c => c.org).concat(chosen.org))] : [chosen.org];
         if (chosen.crowd && orgs.length < 2) orgs.push(Object.keys(ORG).find(k => k !== chosen.org));
         const groups = orgs.map(k => ({shape:ORG[k].shape, arr:"single", color:ORG[k].gram, n:orgs.length > 1 ? 6 : 10}));
-        right = `<p><b>Day 3: Gram stain of your slant</b></p><div class="svgbox" style="max-width:260px">${A.field({seed:chosen.id + 3, groups}, "Gram stain of the slant")}</div><div id="pkQ" style="margin-top:10px"></div>`;
+        right = `<p><b>Gram stain of your slant</b></p><div class="svgbox" style="max-width:260px">${A.field({seed:chosen.id + 3, groups}, "Gram stain of the slant")}</div><div id="pkQ" style="margin-top:10px"></div>`;
         setTimeout(() => {
           const pure = orgs.length === 1;
           V.mc(host.querySelector("#pkQ"), {q:"Is your slant a pure culture?", opts:["Yes, pure: one cell type", "No, contaminated: more than one cell type"], a:pure ? 0 : 1, keep:true,
@@ -330,7 +330,7 @@
           host.querySelector("#pkNew").addEventListener("click", () => { build(); draw(); });
         });
       }
-      const tabs = day === 1 ? `<div class="btnrow" style="margin-bottom:8px">${Object.keys(TEMPS).map(t => `<button type="button" class="opt ${t === temp ? "sel" : ""}" data-temp="${t}" aria-pressed="${t === temp}">${TEMPS[t]}</button>`).join("")}</div>` : `<div class="lbl">${TEMPS[temp]}</div>`;
+      const tabs = day === 1 && TWO ? `<div class="btnrow" style="margin-bottom:8px">${Object.keys(TEMPS).map(t => `<button type="button" class="opt ${t === temp ? "sel" : ""}" data-temp="${t}" aria-pressed="${t === temp}">${TEMPS[t]}</button>`).join("")}</div>` : `<div class="lbl">${TEMPS[temp]}</div>`;
       host.innerHTML = `<div class="simgrid"><div>${tabs}<div class="svgbox">${plateSVG()}</div></div><div>${right}</div></div>`;
       host.querySelectorAll("[data-temp]").forEach(b => b.addEventListener("click", () => { temp = b.dataset.temp; chosen = null; draw(); }));
       const svg = host.querySelector(".svgbox svg");

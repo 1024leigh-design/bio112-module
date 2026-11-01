@@ -3,7 +3,6 @@
   const F = (shape, arr, color, seed, cap) => ({type:"field", seed, cap, groups:[{shape, arr, color, n:arr === "clusters" ? 6 : 10}]});
   VLAB.add({
     n:8, title:"Gram staining",
-    key:["Order: crystal violet, iodine, ethanol, safranin.", "Gram positive = purple (thick peptidoglycan). Gram negative = pink (thin peptidoglycan + outer membrane).", "Decolorizing is the step that most often goes wrong."],
     learn:[
       {h:"Procedure", kind:"steps", top:[{type:"strip", steps:[{i:"flame", t:"Heat fixed smear", s:"5 passes"}, {i:"bottle", c:"#5a2a98", t:"Crystal violet", s:"1 min, rinse"}, {i:"bottle", c:"#8a5a1a", t:"Gram's iodine", s:"1 min, rinse"}, {i:"bottle", c:"#c9dbee", t:"95% ethanol", s:"until clear, rinse"}, {i:"bottle", c:"#d8456b", t:"Safranin", s:"20 s, rinse"}, {i:"blot", t:"Blot"}]}], items:[
         {t:"Start with a heat fixed smear (5 passes through the flame)."},
