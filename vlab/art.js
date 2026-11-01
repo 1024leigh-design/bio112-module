@@ -243,9 +243,9 @@
   A.PLASMID = [
     {id:"ori", a0:200, a1:245, c:"#1683cc"},
     {id:"bla", a0:265, a1:330, c:"#c43a2b"},
-    {id:"araC", a0:20, a1:80, c:"#a96c05"},
-    {id:"pBAD", a0:92, a1:106, c:"#5a2a98"},
-    {id:"GFP", a0:118, a1:180, c:"#1f8a55"}
+    {id:"araC", a0:28, a1:88, c:"#a96c05"},
+    {id:"pBAD", a0:88, a1:104, c:"#5a2a98"},
+    {id:"GFP", a0:104, a1:168, c:"#1f8a55"}
   ];
   A.plasmid = (placed, slotPick) => {
     const cx = 170, cy = 150, R = 86;
