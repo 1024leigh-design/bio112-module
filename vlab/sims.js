@@ -478,9 +478,9 @@
   /* ---------- Lab 15: pGLO plate predictor ---------- */
   V.sims.predictor = (host, spec) => {
     let cells = null, plate = null, g = null, gl = null;
-    const PLATES = ["LB", "LB/amp", "LB/amp/ara", "LB/ara", "LB/tet", "LB/tet/ara"];
+    const PLATES = ["LB", "LB/amp", "LB/amp/ara", "LB/ara", "LB/tet", "LB/tet/ara", "LB/kan", "LB/kan/ara"];
     function answer(){
-      const amp = /amp/.test(plate), tet = /tet/.test(plate), ara = /ara/.test(plate), plus = cells === "+pGLO";
+      const amp = /amp/.test(plate), tet = /tet|kan/.test(plate), ara = /ara/.test(plate), plus = cells === "+pGLO";
       if (tet) return {g:"none", gl:"none", why:spec.why.tet};
       if (!plus) return amp ? {g:"none", gl:"none", why:spec.why.minusAmp} : {g:"lawn", gl:"none", why:spec.why.minusLB};
       if (amp) return ara ? {g:"colonies", gl:"all", why:spec.why.plusAmpAra} : {g:"colonies", gl:"none", why:spec.why.plusAmp};

@@ -301,7 +301,7 @@
   const T = (x, y, s, o) => { o = o || {}; return `<text x="${f1(x)}" y="${f1(y)}" font-size="${o.fs || 13}" font-weight="${o.w || 700}" fill="${o.c || "currentColor"}" text-anchor="${o.a || "middle"}">${s}</text>`; };
   const ar = A.arrow, pl = A.place;
   const ico = (n, a, x, y, sc) => pl(A.ico(n, a), x - 30 * sc, y - 30 * sc, sc);
-  const wrap = (body, label) => `<svg viewBox="0 0 220 150" role="img" aria-label="${A.esc(label)}" style="color:var(--ink)">${body}</svg>`;
+  const wrap = (body, label) => `<svg viewBox="-12 0 248 150" role="img" aria-label="${A.esc(label)}" style="color:var(--ink)">${body}</svg>`;
   /* mini tube: center x, top y */
   const mt = (x, y, o) => { o = o || {}; const lv = o.lv === undefined ? .55 : o.lv;
     return `<path d="M${x - 13},${y + 10} L${x - 13},${y + 62} Q${x},${y + 80} ${x + 13},${y + 62} L${x + 13},${y + 10}" fill="#f4f8fb" stroke="#8b93a3" stroke-width="2"/>`
@@ -336,4 +336,23 @@
   F.pg9 = () => wrap(`<g transform="translate(70 92) scale(1 -1)"><ellipse cx="0" cy="0" rx="44" ry="12" fill="#efdba6" stroke="#aab3c2" stroke-width="2"/><rect x="-46" y="-2" width="92" height="12" fill="#e3e7ee" stroke="#aab3c2" stroke-width="2"/></g>`
     + T(70, 60, "agar side up", {fs:11, w:400}) + `<path d="M28,40 q42,-30 84,0" fill="none" stroke="#1683cc" stroke-width="3"/><path d="M112,40 l-10,-2 l5,9 Z" fill="#1683cc"/>` + T(70, 22, "flip it", {fs:12, c:"#1683cc"})
     + ico("incub", "37°C", 176, 72, 1.3) + T(110, 140, "Upside down at 37°C", {fs:13}), "Incubate the plates upside down at 37 degrees");
+})();
+
+/* Lab 15: which tube goes on which plate (tube on top, its plates below) */
+(function(){
+  const A = window.ART, f1 = A.f1;
+  const T = (x, y, s, o) => { o = o || {}; return `<text x="${f1(x)}" y="${f1(y)}" font-size="${o.fs || 14}" font-weight="${o.w || 700}" fill="${o.c || "currentColor"}" text-anchor="middle">${s}</text>`; };
+  const tube = (x, y, cap, label) => `<path d="M${x - 16},${y + 14} L${x - 16},${y + 78} Q${x},${y + 98} ${x + 16},${y + 78} L${x + 16},${y + 14}" fill="#f4f8fb" stroke="#8b93a3" stroke-width="2"/><path d="M${x - 14.5},${y + 50} L${x - 14.5},${y + 78} Q${x},${y + 95} ${x + 14.5},${y + 78} L${x + 14.5},${y + 50} Z" fill="#efe0b5"/><rect x="${x - 19}" y="${y}" width="38" height="15" rx="4" fill="${cap}"/>` + T(x, y - 8, label, {fs:16, c:cap});
+  const plateAt = (x, y, ara) => `<g transform="translate(${x - 46} ${y}) scale(.46)">${A.plate({agar:ara ? "#f3e2b0" : "#efdba6"}).replace(/^<svg[^>]*>/, "").replace(/<\/svg>$/, "")}</g>`;
+  const arrow = (x1, y1, x2, y2, c) => A.arrow(x1, y1, x2, y2, c, 3);
+  A.figs.platemap = () => {
+    const G = [[120, "#c43a2b", "-pGLO tube", [["LB", "-amp, -ara", false], ["LB/amp", "+amp, -ara", false]]], [360, "#1f8a55", "+pGLO tube", [["LB/amp", "+amp, -ara", false], ["LB/amp/ara", "+amp, +ara", true]]]];
+    let o = "";
+    G.forEach(([cx, col, name, plates]) => {
+      o += `<rect x="${cx - 112}" y="6" width="224" height="318" rx="16" fill="${col}" opacity=".07"/>` + tube(cx, 32, col, name);
+      plates.forEach(([pl, sub, ara], k) => { const px = cx + (k ? 58 : -58);
+        o += arrow(cx + (k ? 10 : -10), 132, px, 172, col) + T(px - (k ? 0 : 0), 158, "100 µL", {fs:11, w:400, c:col}).replace(/x="[^"]*"/, `x="${f1((cx + px) / 2 + (k ? 18 : -18))}"`) + plateAt(px, 178, ara) + T(px, 288, pl, {fs:15}) + T(px, 308, `(${sub})`, {fs:12, w:400}); });
+    });
+    return `<svg viewBox="0 0 480 330" role="img" aria-label="The -pGLO tube goes on LB and LB/amp. The +pGLO tube goes on LB/amp and LB/amp/ara." style="color:var(--ink)">${o}</svg>`;
+  };
 })();
