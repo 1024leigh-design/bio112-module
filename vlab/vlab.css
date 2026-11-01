@@ -316,7 +316,7 @@ dialog::backdrop{background:rgba(10,20,30,.55)}
 .subtabs button.on .n{background:var(--arrow); color:#fff}
 .nexttab{justify-content:flex-end; margin-top:20px}
 .banner{text-align:center; font-family:var(--f-display); font-weight:700; font-size:clamp(21px,3vw,27px); line-height:1.25; max-width:34ch; margin:4px auto 16px; text-wrap:balance}
-.lsplit{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.15fr); gap:18px; align-items:start}
+.lsplit{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.15fr); gap:18px; align-items:center}
 .lsplit .lsfig .fig{margin:0}
 @media (max-width:760px){ .lsplit{grid-template-columns:minmax(0,1fr)} }
 .lcards{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px}
@@ -376,3 +376,42 @@ dialog::backdrop{background:rgba(10,20,30,.55)}
 .rvans{font:800 24px var(--f-display); color:var(--good)}
 .center{text-align:center}
 .rvtry{border:2px solid var(--arrow)}
+
+/* why under a step picture */
+.lpic .picwhy{display:block; text-align:center; font-size:16px; line-height:1.35; color:var(--muted); background:var(--bg); border-radius:10px; padding:6px 8px; margin:4px}
+.lpic .picwhy b{color:var(--ink)}
+/* Learn more panels */
+.learnmore{border:2px solid var(--arrow); background:var(--arrow-soft); color:var(--arrow); border-radius:999px; padding:6px 14px; font-weight:700; font-size:17px; cursor:pointer; text-align:left}
+.learnmore::before{content:"+ "}
+.learnmore.open::before{content:"\2212  "}
+.lma{background:var(--surface); border-left:4px solid var(--arrow); border-radius:0 10px 10px 0; padding:10px 14px; font-size:18px}
+.lma p + p, .lma p + ul, .lma ul + p{margin-top:8px}
+.lma ul{margin:4px 0 0; padding-left:22px}
+.flow{display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:6px; margin:10px 0}
+.flow span{background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:6px 10px; font-weight:700; text-align:center}
+.flow i{font-style:normal; color:var(--arrow); font-weight:700}
+.wsim{margin-top:10px}
+.wsim svg{display:block; width:100%; height:auto; max-width:620px}
+/* plate map under the plating step */
+.platemap{display:grid; gap:8px; margin-top:10px}
+.platemap > div{display:flex; flex-wrap:wrap; align-items:center; gap:6px; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:8px 10px}
+.platemap .tubetag{font-weight:800; color:#fff; border-radius:8px; padding:3px 10px}
+.platemap .pchip{background:var(--bg); border:1px solid var(--line); border-radius:999px; padding:3px 10px; font-weight:700}
+/* flippable control cards */
+.flips{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px}
+.flip{position:relative; min-height:290px; border:0; padding:0; background:none; cursor:pointer; perspective:900px; text-align:center; font-size:18px; color:var(--ink)}
+.fface{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:14px; border-radius:16px; border:2px solid var(--line); background:var(--surface); backface-visibility:hidden; -webkit-backface-visibility:hidden; transition:transform .5s}
+.fback{transform:rotateY(180deg); background:var(--arrow-soft); border-color:var(--arrow)}
+.flip.on .ffront{transform:rotateY(-180deg)}
+.flip.on .fback{transform:rotateY(0)}
+.ffront b{font-family:var(--f-display); font-size:21px; line-height:1.2}
+.fback b{font-family:var(--f-display); font-size:19px}
+.fhint{font-size:15px; color:var(--muted)}
+.ffig{width:110px}
+.ffig svg{width:100%; height:auto; display:block}
+.ftag{font:600 13px var(--f-mono); text-transform:uppercase; letter-spacing:.05em; border-radius:999px; padding:3px 10px; background:var(--surface-2); color:var(--muted)}
+.ftag.pos{background:var(--good-soft); color:var(--good)}
+.ftag.neg{background:var(--bad-soft); color:var(--bad)}
+.ftag.exp{background:var(--arrow-soft); color:var(--arrow)}
+.flip:focus-visible .fface{outline:3px solid var(--arrow)}
+@media (prefers-reduced-motion: reduce){ .fface{transition:none} }

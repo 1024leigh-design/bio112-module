@@ -227,20 +227,38 @@
   };
 
   /* Lab 15 */
+  /* snowflake and flame marks */
+  A.snow = (x, y, s, c) => { s = s || 9; c = c || "#3b8fd1"; return `<g transform="translate(${x} ${y})" stroke="${c}" stroke-width="2" stroke-linecap="round">${[0, 60, 120].map(a => `<line x1="${f1(-s * Math.cos(a * Math.PI / 180))}" y1="${f1(-s * Math.sin(a * Math.PI / 180))}" x2="${f1(s * Math.cos(a * Math.PI / 180))}" y2="${f1(s * Math.sin(a * Math.PI / 180))}"/>`).join("")}</g>`; };
+  A.fire = (x, y, s) => { s = s || 1; return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0,-18 C10,-6 12,2 6,10 C4,4 2,2 0,0 C-2,4 -6,8 -6,12 C-12,6 -10,-6 0,-18 Z" fill="#e4572e"/><path d="M0,-6 C5,0 5,6 2,11 C0,8 -2,8 -3,11 C-5,6 -4,0 0,-6 Z" fill="#f2b134"/></g>`; };
   F.cacl2 = () => {
-    let s = `<rect x="10" y="120" width="420" height="28" rx="6" fill="#f6e7c4"/>${Array.from({length:14}, (_, i) => `<circle cx="${24 + i * 30}" cy="134" r="8" fill="#e6b85c"/>${T(24 + i * 30, 139, "−", {fs:13, c:"#7a2e28"})}`).join("")}${T(220, 168, "Cell membrane (negative)", {fs:14})}`;
-    s += `<path d="M60,30 C120,10 180,50 240,30 C300,10 360,50 410,30" fill="none" stroke="#1683cc" stroke-width="10" stroke-linecap="round"/>${[80, 140, 200, 260, 320, 380].map(x => T(x, 58, "−", {fs:18, c:"#c43a2b"})).join("")}${T(230, 16, "Plasmid DNA backbone (negative)", {fs:14, c:"#1683cc"})}`;
-    s += [70, 130, 190, 250, 310, 370].map(x => `<circle cx="${x + 10}" cy="88" r="13" fill="#1f8a55"/>${T(x + 10, 93, "Ca²⁺", {fs:11, c:"#fff"})}`).join("");
-    return wrap(440, 180, s, "Calcium ions shield the negative charges so the plasmid can get close to the cell");
+    const W = 480;
+    /* plasmid DNA: a thick blue band with its negative charges drawn inside it */
+    let s = `<path id="dnaPath" d="M30,46 C110,16 190,76 260,46 C330,16 400,76 450,46" fill="none" stroke="#1683cc" stroke-width="22" stroke-linecap="round"/>`;
+    [[62, 36], [128, 40], [196, 60], [262, 46], [330, 32], [398, 56]].forEach(([x, y]) => { s += T(x, y + 6, "−", {fs:22, c:"#fff"}); });
+    s += T(240, 14, "Plasmid DNA backbone: negative", {fs:14, c:"#1683cc"});
+    /* Ca2+ ions: positive */
+    [70, 150, 230, 310, 390].forEach(x => { s += `<circle cx="${x}" cy="104" r="17" fill="#1f8a55"/>` + T(x, 102, "Ca", {fs:11, c:"#fff"}) + T(x, 115, "2+", {fs:10, c:"#fff"}); });
+    s += T(462, 92, "Ca²⁺", {fs:14, a:"end", c:"#1f8a55"}) + T(462, 110, "positive", {fs:12, a:"end", w:400, c:"#1f8a55"});
+    /* cell membrane: a lipid bilayer, with negative charges on the outer heads */
+    for (let x = 22; x <= 458; x += 18){
+      s += `<line x1="${x - 3}" y1="150" x2="${x - 3}" y2="170" stroke="#c99a3e" stroke-width="2"/><line x1="${x + 3}" y1="150" x2="${x + 3}" y2="170" stroke="#c99a3e" stroke-width="2"/><circle cx="${x}" cy="146" r="7" fill="#e6b85c" stroke="#b98d3a"/>`;
+      s += `<line x1="${x - 3}" y1="176" x2="${x - 3}" y2="196" stroke="#c99a3e" stroke-width="2"/><line x1="${x + 3}" y1="176" x2="${x + 3}" y2="196" stroke="#c99a3e" stroke-width="2"/><circle cx="${x}" cy="200" r="7" fill="#e6b85c" stroke="#b98d3a"/>`;
+      if ((x - 22) % 36 === 0) s += T(x, 151, "−", {fs:13, c:"#7a2e28"});
+    }
+    s += T(240, 226, "Cell membrane: a lipid bilayer with a negative surface", {fs:14});
+    return wrap(W, 234, s, "Positive calcium ions sit between the negative DNA backbone and the negative lipid bilayer");
   };
+
   F.heatshock = () => {
-    const P = [["On ice", "0°C", 0, "#9fd1f0", "about 1 hour"], ["Heat shock", "42°C", 42, "#e4572e", "45 seconds"], ["Back on ice", "0°C", 0, "#9fd1f0", "2 to 10 min"], ["Recover in LB", "37°C", 37, "#f2a33a", "1 hour"]];
+    const P = [["On ice", "0°C", 0, "#9fd1f0", "about 1 hour", "ice"], ["Heat shock", "42°C", 42, "#e4572e", "45 seconds", "fire"], ["Back on ice", "0°C", 0, "#9fd1f0", "2 to 10 min", "ice"], ["Recover in LB", "37°C", 37, "#f2a33a", "1 hour", ""]];
     const base = 200, w = 132, gap = 14;
-    let s2 = P.map(([name, temp, c, col, time], i) => { const x = 20 + i * (w + gap), h = 34 + c * 3;
+    let s2 = P.map(([name, temp, c, col, time, mark], i) => { const x = 20 + i * (w + gap), h = 34 + c * 3;
       return `<rect x="${x}" y="${base - h}" width="${w}" height="${h}" rx="10" fill="${col}"/>${T(x + w / 2, base - h - 12, temp, {fs:20})}${T(x + w / 2, base - 12, name, {fs:14, c:c ? "#fff" : "#14223a"})}${T(x + w / 2, base + 26, time, {fs:15})}`
+        + (mark === "ice" ? A.snow(x + 20, base - h - 18, 8) + A.snow(x + w - 20, base - h - 18, 8) : mark === "fire" ? A.fire(x + 22, base - h + 26, 1.1) + A.fire(x + w - 22, base - h + 26, 1.1) : "")
         + (i ? arrow(x - gap + 2, base - 20, x - 2, base - 20, "#53657b", 2) : ""); }).join("");
     return wrap(20 + 4 * (w + gap), 236, s2 + `<line x1="10" y1="${base}" x2="${4 * (w + gap) + 14}" y2="${base}" stroke="currentColor" stroke-width="2"/>`, "Temperature at each step: ice, 42 degree heat shock, ice, 37 degree recovery");
   };
+
   F.arac = () => {
     const strand = (y, on) => `<rect x="20" y="${y}" width="120" height="16" rx="4" fill="#a96c05"/>${T(80, y + 12, "araC", {fs:12, c:"#fff"})}<rect x="140" y="${y}" width="40" height="16" fill="#5a2a98"/>${T(160, y + 12, "pBAD", {fs:11, c:"#fff"})}<rect x="180" y="${y}" width="150" height="16" rx="4" fill="${on ? "#1f8a55" : "#9aa7b5"}"/>${T(255, y + 12, "GFP", {fs:12, c:"#fff"})}`;
     let s = T(10, 20, "No arabinose", {fs:15, a:"start"}) + strand(60, false) + `<path d="M140,58 L180,58 L172,38 L148,38 Z" fill="#a96c05"/>${T(160, 32, "AraC blocks", {fs:12, c:"#a96c05"})}`
@@ -295,17 +313,22 @@
   const clock = (x, y, t) => `<circle cx="${x}" cy="${y}" r="20" fill="var(--surface)" stroke="#1683cc" stroke-width="3"/><path d="M${x},${y} L${x},${y - 12} M${x},${y} L${x + 9},${y + 4}" stroke="#14223a" stroke-width="2.5" stroke-linecap="round"/>${T(x, y + 38, t, {fs:13, c:"#1683cc"})}`;
   const bucket = (x, y) => `<path d="M${x - 52},${y} L${x + 52},${y} L${x + 44},${y + 52} L${x - 44},${y + 52} Z" fill="#dff1fb" stroke="#7fb8d9" stroke-width="2"/>${[0, 1, 2, 3].map(i => `<rect x="${x - 38 + i * 20}" y="${y + 26}" width="14" height="14" rx="3" fill="#fff" stroke="#9cc6e4"/>`).join("")}`;
 
-  F.pg1 = () => wrap(ico("bottle", "#9fd1f0", 34, 52, 1.1) + T(34, 104, "ice-cold", {fs:11, w:400}) + T(34, 118, "CaCl₂", {fs:12})
-    + ar(62, 40, 92, 40, "#1683cc", 3) + T(77, 30, "400 µL", {fs:12, c:"#1683cc"}) + mt(110, 20, {cells:true, lv:.6})
-    + pl(A.plate({colonies:A.scatter(6, 3, "white", 7, 10)}), 150, 40, .3) + `<path d="M175,62 Q150,10 126,30" fill="none" stroke="#9aa3b2" stroke-width="2.5"/><circle cx="124" cy="32" r="4" fill="none" stroke="#9aa3b2" stroke-width="2"/>` + T(180, 118, "1 to 2 colonies", {fs:11, w:400}), "400 microliters of CaCl2 plus one or two colonies in one tube");
+  F.pg1 = () => wrap(ico("bottle", "#9fd1f0", 50, 54, 1.25) + A.snow(26, 22, 7) + A.snow(76, 22, 7) + T(50, 112, "ice-cold calcium", {fs:11, w:400}) + T(50, 126, "chloride (CaCl₂)", {fs:11, w:400})
+    + ar(88, 50, 132, 50, "#1683cc", 3) + T(110, 38, "400 µL", {fs:13, c:"#1683cc"}) + mt(160, 24, {lv:.6}) + T(160, 128, "one tube", {fs:12}), "Add 400 microliters of ice-cold calcium chloride to one tube");
+  F.pgcol = () => {
+    const cols = A.scatter(9, 4, "white", 7, 10); cols[0] = Object.assign({}, cols[0], {x:120, y:70, r:11, mark:true});
+    return wrap(pl(A.plate({colonies:cols}), 6, 22, .5) + T(56, 140, "Starter plate", {fs:12})
+      + `<path d="M64,54 Q100,0 150,26" fill="none" stroke="#9aa3b2" stroke-width="2.5"/><circle cx="64" cy="56" r="5" fill="none" stroke="#9aa3b2" stroke-width="2.5"/>` + ar(118, 18, 150, 26, "#1683cc", 2.5)
+      + T(110, 12, "pick ONE colony", {fs:12, c:"#1683cc"}) + mt(176, 30, {cells:true, lv:.6}) + T(176, 140, "mix well", {fs:12}), "Pick one colony with a sterile loop and mix it into the calcium chloride");
+  };
   F.pg2 = () => wrap(mt(55, 26, {cells:true, lv:.35, cap:PLUS, label:"+pGLO"}) + ar(78, 44, 138, 44, "#1683cc", 3) + T(108, 34, "200 µL", {fs:13, c:"#1683cc"}) + mt(160, 26, {cells:true, lv:.35, cap:MINUS, label:"-pGLO"})
     + T(110, 146, "Split in half, then label", {fs:12, w:400}), "Move 200 microliters into a second tube and label them");
   F.pg3 = () => wrap(ico("tube", "#cfe3f7", 34, 50, 1.1) + T(34, 104, "pGLO", {fs:12, c:"#1683cc"}) + ar(60, 44, 92, 44, "#1683cc", 3) + T(76, 34, "4 µL", {fs:13, c:"#1683cc"})
     + mt(115, 26, {cells:true, plasmid:true, lv:.36, cap:PLUS, label:"+pGLO"}) + mt(180, 26, {cells:true, lv:.35, cap:MINUS, label:"-pGLO"}) + T(180, 146, "no plasmid", {fs:11, w:400, c:MINUS}), "Add 4 microliters of plasmid to the +pGLO tube only");
-  F.pg4 = () => wrap(bucket(80, 70) + mt(62, 24, {cells:true, plasmid:true, lv:.36, cap:PLUS}) + mt(98, 24, {cells:true, lv:.35, cap:MINUS}) + bucket(80, 70).replace(/fill="#dff1fb"/, 'fill="#dff1fb" opacity=".75"') + clock(178, 54, "about 1 hour") + T(80, 140, "On ice", {fs:13}), "Both tubes on ice for about 1 hour");
+  F.pg4 = () => wrap(bucket(80, 70) + mt(62, 24, {cells:true, plasmid:true, lv:.36, cap:PLUS}) + mt(98, 24, {cells:true, lv:.35, cap:MINUS}) + bucket(80, 70).replace(/fill="#dff1fb"/, 'fill="#dff1fb" opacity=".75"') + A.snow(22, 30, 9) + A.snow(140, 26, 9) + A.snow(30, 62, 6) + clock(184, 54, "about 1 hour") + T(80, 140, "On ice", {fs:13}), "Both tubes on ice for about 1 hour");
   F.pg5 = () => wrap(`<rect x="18" y="66" width="128" height="62" rx="8" fill="#f8c9b8" stroke="#e4572e" stroke-width="2"/><path d="M18,78 q16,-8 32,0 t32,0 t32,0 t32,0" stroke="#e4572e" stroke-width="2" fill="none"/>`
-    + mt(62, 30, {cells:true, plasmid:true, lv:.36, cap:PLUS}) + mt(100, 30, {cells:true, lv:.35, cap:MINUS}) + `<rect x="18" y="86" width="128" height="42" rx="6" fill="#f8c9b8" opacity=".8"/>` + T(82, 116, "42°C", {fs:18, c:"#b03a1a"}) + clock(184, 58, "45 seconds"), "Heat shock in a 42 degree water bath for 45 seconds");
-  F.pg6 = () => wrap(bucket(80, 70) + mt(62, 24, {cells:true, plasmid:true, lv:.36, cap:PLUS}) + mt(98, 24, {cells:true, lv:.35, cap:MINUS}) + bucket(80, 70).replace(/fill="#dff1fb"/, 'fill="#dff1fb" opacity=".75"') + clock(178, 54, "2 to 10 min") + T(80, 140, "Back on ice", {fs:13}), "Back on ice for 2 to 10 minutes");
+    + mt(62, 30, {cells:true, plasmid:true, lv:.36, cap:PLUS}) + mt(100, 30, {cells:true, lv:.35, cap:MINUS}) + `<rect x="18" y="86" width="128" height="42" rx="6" fill="#f8c9b8" opacity=".8"/>` + T(82, 116, "42°C", {fs:18, c:"#b03a1a"}) + A.fire(30, 50, 1.2) + A.fire(134, 50, 1.2) + A.fire(82, 146, .8) + clock(184, 58, "45 seconds"), "Heat shock in a 42 degree water bath for 45 seconds");
+  F.pg6 = () => wrap(bucket(80, 70) + mt(62, 24, {cells:true, plasmid:true, lv:.36, cap:PLUS}) + mt(98, 24, {cells:true, lv:.35, cap:MINUS}) + bucket(80, 70).replace(/fill="#dff1fb"/, 'fill="#dff1fb" opacity=".75"') + A.snow(22, 30, 9) + A.snow(140, 26, 9) + A.snow(30, 62, 6) + clock(184, 54, "2 to 10 min") + T(80, 140, "Back on ice", {fs:13}), "Back on ice for 2 to 10 minutes");
   F.pg7 = () => wrap(ico("bottle", "#efe0b5", 30, 50, 1.05) + T(30, 102, "LB", {fs:12}) + ar(56, 44, 82, 44, "#a96c05", 3) + T(70, 34, "200 µL", {fs:11, c:"#a96c05"})
     + `<rect x="88" y="16" width="120" height="118" rx="8" fill="#e8ecf2" stroke="#8b93a3" stroke-width="2"/>` + mt(124, 28, {cells:true, plasmid:true, lv:.6, fill:"#efe0b5", cap:PLUS}) + mt(170, 28, {cells:true, lv:.6, fill:"#efe0b5", cap:MINUS}) + T(148, 128, "37°C, 1 hour", {fs:13}), "Add 200 microliters LB, then 37 degrees for 1 hour");
   F.pg8 = () => wrap(ico("pipette", "", 46, 34, 1.1) + T(46, 80, "100 µL", {fs:13, c:"#1683cc"}) + ar(64, 56, 92, 74, "#1683cc", 3)
