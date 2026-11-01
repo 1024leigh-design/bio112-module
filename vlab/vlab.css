@@ -289,11 +289,14 @@ dialog::backdrop{background:rgba(10,20,30,.55)}
 .lico{flex-shrink:0; width:54px; height:54px; background:var(--surface); border:1px solid var(--line); border-radius:12px; display:flex; align-items:center; justify-content:center}
 .lico svg{width:44px; height:44px}
 .wis{display:flex; flex-direction:column; align-items:flex-start; gap:6px; margin-top:8px}
-.whatif{border:2px dashed var(--warn); background:var(--warn-soft); color:var(--warn); border-radius:999px; padding:6px 14px; font-weight:700; font-size:17px; cursor:pointer; text-align:left}
-.whatif::before{content:"? "; }
-.whatif.open{border-style:solid}
-.whatif.open::before{content:"! "}
-.wia{background:var(--surface); border-left:4px solid var(--warn); border-radius:0 10px 10px 0; padding:8px 12px; font-size:18px}
+/* What if + Learn more: quiet text links, so the step itself stands out */
+.whatif, .learnmore{display:block; position:relative; border:0; background:none; color:var(--muted); border-radius:8px; padding:4px 6px 4px 30px; font:600 17px/1.3 var(--f-body, inherit); cursor:pointer; text-align:left; text-decoration:underline; text-decoration-color:var(--line); text-underline-offset:4px}
+.whatif:hover, .learnmore:hover, .whatif.open, .learnmore.open{color:var(--ink); text-decoration-color:currentColor}
+.whatif::before, .learnmore::before{position:absolute; left:2px; top:6px; width:20px; height:20px; box-sizing:border-box; border-radius:50%; border:1.5px solid currentColor; display:flex; align-items:center; justify-content:center; font:700 13px/1 var(--f-mono)}
+.whatif::before{content:"?"}
+.learnmore::before{content:"+"}
+.whatif.open::before, .learnmore.open::before{content:"\2212"}
+.wia{background:var(--surface); border-left:4px solid var(--warn); border-radius:0 10px 10px 0; padding:8px 12px; font-size:18px; margin:0 0 6px}
 .lsim{margin-top:16px; border-width:2px; border-color:var(--arrow)}
 /* animated sims */
 .anim svg{display:block; width:100%; height:auto}
@@ -349,11 +352,24 @@ dialog::backdrop{background:rgba(10,20,30,.55)}
 @media (max-width:640px){ .svgscroll::after, .svgbox.anim::after, .svgbox.bench::after{content:"Swipe to see more \2192"; display:block; text-align:center; font-size:15px; color:var(--muted); padding-top:4px; position:sticky; left:0} }
 
 /* a picture for each protocol step */
-.litems > li.haspic{align-items:center; flex-wrap:wrap}
-.lpic{flex:0 0 300px; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:4px}
+.litems > li.haspic{display:grid; grid-template-columns:300px minmax(0,1fr); grid-template-areas:"pic head" "pic extra"; grid-template-rows:auto 1fr; gap:10px 18px; align-items:start; padding:16px}
+.litems.steps > li.haspic::before{content:none}
+.litems > li.haspic .body{display:contents}
+.lpic{grid-area:pic; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:4px}
 .lpic svg{display:block; width:100%; height:auto}
-.litems > li.haspic .body{flex:1 1 240px}
-@media (max-width:560px){ .lpic{flex-basis:100%} }
+.ihead{grid-area:head; min-width:0}
+.iextra{grid-area:extra; min-width:0}
+.iextra .wis{margin-top:0; padding-top:8px; border-top:1px solid var(--line); gap:2px}
+.stepno{display:none}
+.litems.steps .ihead{display:grid; grid-template-columns:auto minmax(0,1fr); column-gap:12px; align-items:start}
+.litems.steps .ihead .checkrow, .litems.steps .ihead .fb{grid-column:1 / -1}
+.litems.steps .stepno{display:inline-flex; width:38px; height:38px; border-radius:50%; background:var(--arrow); color:#fff; align-items:center; justify-content:center; font:700 19px var(--f-mono); margin-top:1px}
+.litems.steps .stepno::before{content:counter(li)}
+.ihead .itxt{display:block; font-size:21px; line-height:1.45; font-weight:500; color:var(--ink); padding-top:2px}
+.ihead .itxt .term{font-size:22px}
+@media (max-width:640px){
+  .litems > li.haspic{grid-template-columns:minmax(0,1fr); grid-template-areas:"head" "pic" "extra"; padding:12px}
+}
 /* cheat sheet */
 .cheat{border:2px solid var(--gn-edge); border-radius:16px; padding:12px 14px; margin-bottom:16px; background:var(--surface)}
 .cheatt{display:block; font-family:var(--f-display); font-size:21px; margin-bottom:8px; text-align:center}
@@ -385,10 +401,7 @@ dialog::backdrop{background:rgba(10,20,30,.55)}
 .afterfig{margin-top:10px; max-width:520px}
 .afterfig svg{display:block; width:100%; height:auto}
 /* Learn more panels */
-.learnmore{border:2px solid var(--arrow); background:var(--arrow-soft); color:var(--arrow); border-radius:999px; padding:6px 14px; font-weight:700; font-size:17px; cursor:pointer; text-align:left}
-.learnmore::before{content:"+ "}
-.learnmore.open::before{content:"\2212  "}
-.lma{background:var(--surface); border-left:4px solid var(--arrow); border-radius:0 10px 10px 0; padding:10px 14px; font-size:18px}
+.lma{background:var(--surface); border-left:4px solid var(--arrow); border-radius:0 10px 10px 0; padding:10px 14px; font-size:18px; margin:0 0 6px}
 .lma p + p, .lma p + ul, .lma ul + p{margin-top:8px}
 .lma ul{margin:4px 0 0; padding-left:22px}
 .flow{display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:6px; margin:10px 0}
@@ -424,12 +437,20 @@ dialog::backdrop{background:rgba(10,20,30,.55)}
 :root[data-palette="cb1"]{ --good:#0072b2; --good-soft:#d9ecf7; --bad:#d55e00; --bad-soft:#fbe3d2; --warn:#9a6a00; --warn-soft:#fbefcf; --gn-edge:#b8508f; --gn-fill:#e9bcd6; --arrow:#1f5fa8; --arrow-soft:#dde8f5 }
 :root[data-palette="cb2"]{ --good:#00796b; --good-soft:#d6efe9; --bad:#cc3311; --bad-soft:#f8ddd5; --warn:#a63d1f; --warn-soft:#f6e0d6; --gn-edge:#a0306a; --gn-fill:#ebc0d6; --arrow:#1d2f6e; --arrow-soft:#dfe3f2 }
 :root[data-palette="drh"]{
-  --bg:#efe2c6; --surface:#f8efdc; --surface-2:#e6d2aa; --ink:#1f2a44; --muted:#5b4630; --line:#cbb38a;
-  --arrow:#1f7a7a; --arrow-soft:#d4e6da; --good:#2e5d3a; --good-soft:#dbe7cc; --warn:#b5561a; --warn-soft:#f4d9b5;
-  --bad:#9b1b30; --bad-soft:#f1d1c8; --gn-fill:#e8b6a6; --gn-edge:#9b1b30; --todo:#6b4a00; --todo-soft:#f6e3a9; color-scheme:light }
-:root[data-palette="drh"] .seg button[aria-checked="true"]{background:#1f2a44; color:#f8efdc}
-:root[data-palette="drh"] .mbadge{background:#c0581f}
-:root[data-palette="drh"] .pill{background:#d4e6da; color:#1f7a7a}
+  --bg:#dde4bf; --surface:#fbfaef; --surface-2:#ccd6a0; --ink:#1f2a44; --muted:#4a5726; --line:#adb977;
+  --arrow:#5a6e1e; --arrow-soft:#e4ebc6; --good:#2e6b3f; --good-soft:#d6e8d0; --warn:#b5561a; --warn-soft:#f7dfc4;
+  --bad:#9b1b30; --bad-soft:#f3d4d4; --gn-fill:#e6aebb; --gn-edge:#9b1b30; --todo:#7a5a00; --todo-soft:#f3e3a0; color-scheme:light }
+/* Dr. H mode: olive top bar and headings, color in the accents, no greys */
+:root[data-palette="drh"] .topbar{background:#556b2f; border-bottom-color:#3f5020; color:#fbfaef}
+:root[data-palette="drh"] .topbar .brand, :root[data-palette="drh"] .topbar .crumb{color:#fbfaef}
+:root[data-palette="drh"] .topbar .btn.ghost, :root[data-palette="drh"] .topbar .btn:not(.ghost), :root[data-palette="drh"] .topbar .seg{border-color:#3f5020}
+:root[data-palette="drh"] .seg button[aria-checked="true"]{background:#b5561a; color:#fbfaef}
+:root[data-palette="drh"] .tabs button.on{background:#1f7a7a; border-color:#1f7a7a; color:#fbfaef}
+:root[data-palette="drh"] .panel{border:2px solid #adb977}
+:root[data-palette="drh"] .panel h2, :root[data-palette="drh"] .lsec h2{color:#3f5020}
+:root[data-palette="drh"] .mbadge{background:#b5561a}
+:root[data-palette="drh"] .pill{background:#d2ebe6; color:#1f7a7a}
+:root[data-palette="drh"] .subtabs button.on .n{background:#d4a017; color:#1f2a44}
 /* display dialog */
 .dset{border:1px solid var(--line); border-radius:14px; padding:8px 12px 12px; margin:0 0 12px}
 .dset legend{font-family:var(--f-display); font-weight:700; font-size:20px; padding:0 6px}
@@ -444,7 +465,7 @@ dialog::backdrop{background:rgba(10,20,30,.55)}
 .dsw[data-sw="cb1"] i:nth-child(1){background:#0072b2} .dsw[data-sw="cb1"] i:nth-child(2){background:#d55e00} .dsw[data-sw="cb1"] i:nth-child(3){background:#cc79a7} .dsw[data-sw="cb1"] i:nth-child(4){background:#e69f00}
 .dsw[data-sw="cb2"] i:nth-child(1){background:#1d2f6e} .dsw[data-sw="cb2"] i:nth-child(2){background:#00796b} .dsw[data-sw="cb2"] i:nth-child(3){background:#cc3311} .dsw[data-sw="cb2"] i:nth-child(4){background:#a0306a}
 .dsw[data-sw="night"] i:nth-child(1){background:#0d151f} .dsw[data-sw="night"] i:nth-child(2){background:#152232} .dsw[data-sw="night"] i:nth-child(3){background:#4aa9ee} .dsw[data-sw="night"] i:nth-child(4){background:#e7eef7}
-.dsw[data-sw="drh"] i:nth-child(1){background:#1f2a44} .dsw[data-sw="drh"] i:nth-child(2){background:#c0581f} .dsw[data-sw="drh"] i:nth-child(3){background:#9b1b30} .dsw[data-sw="drh"] i:nth-child(4){background:#d4a017}
+.dsw[data-sw="drh"] i:nth-child(1){background:#556b2f} .dsw[data-sw="drh"] i:nth-child(2){background:#b5561a} .dsw[data-sw="drh"] i:nth-child(3){background:#1f7a7a} .dsw[data-sw="drh"] i:nth-child(4){background:#d4a017}
 
 /* ---------- transfer pictures play as a sequence (see the end of figs.js) ---------- */
 svg.seq{cursor:pointer}
@@ -456,4 +477,3 @@ svg.seq{cursor:pointer}
 .seq.play .sq4{animation:sqin .5s ease calc(var(--d, 0s) + 3.3s) both}
 @keyframes sqin{from{opacity:0}to{opacity:1}}
 @keyframes sqmove{0%{opacity:0; transform:translate(0,0)} 12%{opacity:1; transform:translate(0,0)} 85%{opacity:1; transform:translate(var(--dx),var(--dy))} 100%{opacity:0; transform:translate(var(--dx),var(--dy))}}
-.replaybtn{display:block; margin:2px auto 0; border:0; background:none; color:var(--arrow); font-weight:700; font-size:15px; cursor:pointer; padding:2px 8px}

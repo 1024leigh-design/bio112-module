@@ -49,11 +49,11 @@ VLAB.add({
         whatif:[{q:"the plates are right side up?", a:"Water drops form on the lid and fall onto the agar. The drops spread cells around, so colonies run together. Moisture also leaves the agar this way, so the agar and the bacteria on it can dry out."}]}
     ]},
     {tab:"Follow the cells", banner:"What happens inside the cells at each step?", kind:"facts", items:[], sim:{sim:"follow", prompt:"Watch a +pGLO cell and a -pGLO cell side by side. Answer each question to move on.", stages:[
-      {id:"cacl2", short:"CaCl<sub>2</sub>", title:"In ice-cold calcium chloride (CaCl<sub>2</sub>)", cap:"Positive Ca²⁺ ions surround both cells. The +pGLO tube also has plasmid floating around.",
+      {id:"cacl2", short:"CaCl<sub>2</sub>", title:"In ice-cold calcium chloride (CaCl<sub>2</sub>)", cap:"The membrane has negative charges on the outside. Positive Ca²⁺ ions move in and stick to them. The +pGLO tube also has plasmid floating around.",
         q:{q:"Where is the plasmid right now?", opts:["Outside the cell", "Inside the cell", "In both tubes"], a:0, keep:true, why:"It was just added to the +pGLO tube. It has not gotten in yet."}},
       {id:"ice", short:"Ice", title:"On ice, about 1 hour", cap:"The cold keeps the membrane stiff. Positive Ca²⁺ shields the negative charges, so the plasmid can get close to the membrane. That is proximity.",
         q:{q:"What lets the plasmid get close to the cell?", opts:["Ca²⁺ shields the negative charges", "The heat", "Ampicillin", "Arabinose"], a:0, why:"DNA and the membrane are both negative. Ca²⁺ sits between them."}},
-      {id:"heat", short:"Heat shock", title:"Heat shock: 42°C for 45 seconds", cap:"The heat gives energy: the membrane gets more fluid for a moment, so some plasmid slips in. Back on ice, the membrane firms up and traps it inside.",
+      {id:"heat", short:"Heat shock", title:"Heat shock: 42°C for 45 seconds", cap:"The heat gives energy: the membrane gets more fluid and small gaps open for a moment, so some plasmid slips in. Back on ice, the membrane firms up and traps it inside.",
         q:{q:"After the heat shock, where is some of the plasmid?", opts:["Inside the cell", "Still all outside", "Destroyed by the heat"], a:0, keep:true, why:"The membrane loosens for a moment. Too long and it gets too liquid to reform, which damages or kills the cells."}},
       {id:"recover", short:"Recovery", title:"Back on ice, then LB at 37°C for 1 hour", cap:"The +pGLO cell uses the bla gene to make beta-lactamase. The -pGLO cell has no plasmid, so it makes none.",
         q:{q:"Which cell can now break down ampicillin?", opts:["The +pGLO cell", "The -pGLO cell", "Both", "Neither"], a:0, keep:true, why:"Only the +pGLO cell has bla, the gene for beta-lactamase."}},

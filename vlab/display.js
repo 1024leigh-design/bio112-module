@@ -10,7 +10,7 @@
     ["cb1", "Color-blind safe: red-green", "For red-green color blindness. Greens become blue, reds become orange."],
     ["cb2", "Color-blind safe: blue-yellow", "For blue-yellow color blindness. Blues get darker, yellows become red-orange."],
     ["night", "Night mode", "Dark background, easy on the eyes."],
-    ["drh", "Dr. H mode", "Warm tan, navy, burnt orange, cranberry, olive, teal, forest green, and mustard. No greys."]];
+    ["drh", "Dr. H mode", "Olive green with navy, burnt orange, cranberry, teal, forest green, and mustard. No greys."]];
   const D = window.VDISPLAY = {
     PALETTES,
     palette: get("vlab-palette") || "default",
@@ -54,7 +54,7 @@
       else if (s > .15 && inR(h, 38, 70)) out = hslToHex(12, Math.max(s, .7), Math.min(l, .55)); /* yellows to red-orange */
       else if (s > .15 && inR(h, 255, 300)) out = hslToHex(318, s, Math.max(.15, l * .8));       /* violets to dark magenta */
     } else if (p === "drh"){
-      if (s < .14){ if (l < .97 && l > .03) out = hslToHex(34, .32, l); }               /* no greys: warm them up */
+      if (s < .14){ if (l < .97 && l > .03) out = hslToHex(72, .26, l); }               /* no greys: tint them olive */
       else { let best = DRH[0], bd = 999; DRH.forEach(c => { const d = Math.min(Math.abs(h - c[0]), 360 - Math.abs(h - c[0])); if (d < bd){ bd = d; best = c; } });
         out = hslToHex(best[0], Math.max(best[1] * .75, Math.min(s, best[1] + .2)), l); }
     }

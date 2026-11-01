@@ -33,44 +33,97 @@
       <div class="btnrow" style="margin-top:12px"><button type="button" class="btn ghost" id="fcBack">Back</button><button type="button" class="btn ghost" id="fcReplay">Replay</button><button type="button" class="btn" id="fcNext">Next</button></div>`;
     const svg = host.querySelector("#fcSvg");
     let tStage = performance.now();
-    const pos = [[-60, -66], [70, -60], [-20, 64], [96, 46]];
+    /* the cell: a stadium shape; u runs 0 to 1 clockwise from the top center, off is the distance outside the middle of the membrane */
+    const CW = 112, CH = 56, CY = 158, HS = CW - CH, ARC = Math.PI * CH, PER = 4 * HS + 2 * ARC;
+    const at = (cx, u, off) => { let d = ((u % 1) + 1) % 1 * PER;
+      if (d < HS) return {x:cx + d, y:CY - CH - off, nx:0, ny:-1}; d -= HS;
+      if (d < ARC){ const th = -Math.PI / 2 + d / CH; return {x:cx + HS + Math.cos(th) * (CH + off), y:CY + Math.sin(th) * (CH + off), nx:Math.cos(th), ny:Math.sin(th)}; } d -= ARC;
+      if (d < 2 * HS) return {x:cx + HS - d, y:CY + CH + off, nx:0, ny:1}; d -= 2 * HS;
+      if (d < ARC){ const th = Math.PI / 2 + d / CH; return {x:cx - HS + Math.cos(th) * (CH + off), y:CY + Math.sin(th) * (CH + off), nx:Math.cos(th), ny:Math.sin(th)}; } d -= ARC;
+      return {x:cx - HS + d, y:CY - CH - off, nx:0, ny:-1}; };
+    const near = (u, g) => { const d = Math.abs(u - g.u) % 1; return Math.min(d, 1 - d) < g.w / 2; };
+    /* lipid bilayer: two rows of phosphate heads with the fatty-acid tails in between. gaps: [{u, w}] where the membrane has opened */
+    const memo = new Map();
+    function membrane(cx, o){
+      const key = cx + "|" + (o.dead ? "d" : "") + f1(o.green || 0) + "|" + (o.gaps || []).map(g => f1(g.u) + ":" + f1(g.w * 1000)).join(",");
+      if (memo.has(key)) return memo.get(key);
+      const gaps = (o.gaps || []).filter(g => g.w > .002);
+      const head = o.dead ? "#9a9a9a" : "#d08a3c", tail = o.dead ? "#e0e0e0" : "#f2dca6";
+      const fill = o.dead ? "#d4d4d4" : o.green ? `rgba(110,230,140,${f1((0.3 + 0.6 * o.green) * 100) / 100})` : "#fdf5e3";
+      const path = `M${cx},${CY - CH} H${cx + HS} A${CH},${CH} 0 0 1 ${cx + HS},${CY + CH} H${cx - HS} A${CH},${CH} 0 0 1 ${cx - HS},${CY - CH} Z`;
+      let dash = "";
+      if (gaps.length){ const iv = [];
+        gaps.forEach(g => { const lo = g.u - g.w / 2, hi = g.u + g.w / 2; if (lo < 0){ iv.push([lo + 1, 1], [0, hi]); } else if (hi > 1){ iv.push([lo, 1], [0, hi - 1]); } else iv.push([lo, hi]); });
+        iv.sort((p, q) => p[0] - q[0]); let pos = 0; const parts = [];
+        iv.forEach(([lo, hi]) => { parts.push(Math.max(0, lo - pos), hi - Math.max(lo, pos)); pos = hi; });
+        parts.push(Math.max(0, 1 - pos), 1); dash = ` stroke-dasharray="${parts.map(x => f1(x * 10000) / 10000).join(" ")}"`; }
+      let o2 = `<path d="${path}" fill="${fill}"/><path d="${path}" fill="none" stroke="${tail}" stroke-width="13" pathLength="1"${dash}/>`;
+      const n = 66;
+      for (let i = 0; i < n; i++){ const u = (i + .5) / n; if (gaps.some(g => near(u, g))) continue;
+        [6.5, -6.5].forEach(off => { const p = at(cx, u, off), q = at(cx, u, off * .25); o2 += `<line x1="${f1(p.x)}" y1="${f1(p.y)}" x2="${f1(q.x)}" y2="${f1(q.y)}" stroke="${head}" stroke-width="1.2" opacity=".55"/><circle cx="${f1(p.x)}" cy="${f1(p.y)}" r="3.3" fill="${head}"/>`; }); }
+      if (o.dead) o2 += `<path d="M${cx - 30},${CY - 22} l60,44 M${cx + 30},${CY - 22} l-60,44" stroke="#c43a2b" stroke-width="6" stroke-linecap="round"/>`;
+      if (memo.size > 400) memo.clear();
+      memo.set(key, o2); return o2;
+    }
+    const ion = (x, y) => `<circle cx="${f1(x)}" cy="${f1(y)}" r="9.5" fill="#1f8a55"/><text x="${f1(x)}" y="${f1(y + 2.8)}" font-size="8" font-weight="700" fill="#fff" text-anchor="middle">Ca²⁺</text>`;
+    const dna = (x, y) => plasmid(x, y) + `<text x="${f1(x)}" y="${f1(y + 4)}" font-size="12" font-weight="700" fill="#1683cc" text-anchor="middle">−</text>`;
+    const minus = (x, y) => `<text x="${f1(x)}" y="${f1(y + 4)}" font-size="13" font-weight="700" fill="#7a4a12" text-anchor="middle">−</text>`;
+    const SITES = [0, .3, .5, .8], ENTER = [0, .5];
+    const CA = SITES.flatMap(u => [u - .042, u + .042]).concat([.15, .4, .65, .92]);
+    const box = (x, y, v) => ({x:clamp(x, v.x0, v.x1), y:clamp(y, 58, 246)});
     function scene(t){
       const s = ST[k].id, a = ease(t / 1.6);
       const dark = s === "uv";
       let o = `<rect width="640" height="300" rx="14" fill="${dark ? "#120f2a" : s === "heat" ? "#fde7df" : s === "plate" ? "#f6efd9" : "#e9f5fb"}"/>`;
-      o += T(160, 26, "+pGLO tube", {fs:16, c:dark ? "#fff" : "#1f8a55"}) + T(480, 26, "-pGLO tube", {fs:16, c:dark ? "#fff" : "#c43a2b"});
       [160, 480].forEach((cx, side) => {
-        const cy = 160, plus = side === 0;
+        const plus = side === 0, col = plus ? "#1f8a55" : "#c43a2b", v = {x0:cx - 128, x1:cx + 128};
+        /* each tube is its own box, so it is clear these cells are in different tubes */
+        o += `<rect x="${cx - 152}" y="8" width="304" height="284" rx="14" fill="${dark ? "#1b1840" : "#fff"}" opacity="${dark ? 1 : .6}" stroke="${dark ? "#3b3773" : col}" stroke-width="2" stroke-opacity=".5"/>`;
+        o += T(cx, 34, plus ? "+pGLO tube" : "-pGLO tube", {fs:16, c:dark ? "#fff" : col});
         if (s === "uv"){
-          if (plus) for (let i = 0; i < 7; i++){ const x = cx - 54 + (i % 4) * 36, y = cy - 20 + Math.floor(i / 4) * 40; o += `<circle cx="${x}" cy="${y}" r="${f1(26 * (.6 + .4 * a))}" fill="#6dff95" opacity="${f1(.25 * a * 100) / 100}"/><circle cx="${x}" cy="${y}" r="15" fill="${a > .3 ? "#8dffad" : "#4c4a72"}"/>`; }
-          else o += T(cx, cy, "No colony", {fs:18, c:"#fff"});
+          if (plus) for (let i = 0; i < 7; i++){ const x = cx - 54 + (i % 4) * 36, y = CY - 20 + Math.floor(i / 4) * 40; o += `<circle cx="${x}" cy="${y}" r="${f1(26 * (.6 + .4 * a))}" fill="#6dff95" opacity="${f1(.25 * a * 100) / 100}"/><circle cx="${x}" cy="${y}" r="15" fill="${a > .3 ? "#8dffad" : "#4c4a72"}"/>`; }
+          else o += T(cx, CY, "No colony", {fs:18, c:"#fff"});
           o += T(cx, 276, plus ? "Glowing colony" : "Nothing grew", {fs:15, c:"#fff"});
           return;
         }
         const dead = !plus && s === "plate" && a > .7;
         const green = plus && s === "plate" ? ease((t - 1.6) / 1.4) : 0;
-        o += cellShape(cx, cy, {dead, green:green || 0});
-        if (["cacl2", "ice", "heat"].includes(s)) for (let i = 0; i < 8; i++){ const ang = i / 8 * 6.28 + t * .3, r = s === "cacl2" ? 112 : 96; o += ca(cx + Math.cos(ang) * r, cy + Math.sin(ang) * r * .7); }
+        const open = s === "heat" ? ease(t / .9) : 0;
+        o += membrane(cx, {dead, green, gaps:ENTER.map(u => ({u, w:open * 34 / PER}))});
+        /* Ca2+ drifts in and lands on the negative charges on the outside of the membrane */
+        if (["cacl2", "ice", "heat"].includes(s)) CA.forEach((u, i) => {
+          const p = at(cx, u, 19), m = at(cx, u, 12);
+          const land = s === "cacl2" ? ease((t - .2 - i * .1) / 1.1) : 1;
+          if (land < 1) o += minus(m.x, m.y);
+          const st = box(p.x + p.nx * 70 + (i % 3 - 1) * 14, p.y + p.ny * 70, v);
+          o += ion(lerp(st.x, p.x, land), lerp(st.y, p.y, land));
+        });
         if (plus){
-          pos.forEach((p, i) => {
-            let x = cx + p[0] * 1.6, y = cy + p[1] * 1.3 + Math.sin(t * 2 + i) * 4;
-            if (s === "ice"){ x = lerp(x, cx + p[0] * 1.05, a); y = lerp(y, cy + (p[1] > 0 ? 44 : -44), a); }
-            if (s === "heat"){ const inside = i < 2; x = cx + p[0] * (inside ? lerp(1.05, .5, a) : 1.05); y = cy + (p[1] > 0 ? (inside ? lerp(44, 14, a) : 44) : (inside ? lerp(-44, -14, a) : -44)); }
-            if (["recover", "plate"].includes(s)){ if (i > 1) return; x = cx + p[0] * .5; y = cy + (p[1] > 0 ? 14 : -14); }
-            o += plasmid(x, y);
+          SITES.forEach((u, i) => {
+            const stuck = at(cx, u, 29), fl = at(cx, u, 80), free = box(fl.x + (i % 2 ? 1 : -1) * (fl.nx ? 10 : 58), fl.y, v);
+            const bob = Math.sin(t * 1.6 + i * 1.7) * 3;
+            let x = free.x, y = free.y + bob;
+            if (s === "ice"){ x = lerp(free.x, stuck.x, a); y = lerp(free.y + bob, stuck.y, a); }
+            if (s === "heat"){ x = stuck.x; y = stuck.y;
+              if (ENTER.includes(u)){ const into = at(cx, u, -34), go = ease((t - .7) / 1.5); x = lerp(stuck.x, into.x, go); y = lerp(stuck.y, into.y, go); } }
+            if (["recover", "plate"].includes(s)){ if (!ENTER.includes(u)) return; const into = at(cx, u, -34); x = into.x; y = into.y; }
+            o += dna(x, y);
           });
-          if (s === "recover" || s === "plate") for (let i = 0; i < (s === "recover" ? Math.floor(clamp(t * 2, 0, 5)) : 5); i++) o += enzyme(cx - 50 + i * 22, cy + 26);
-          if (s === "plate") for (let i = 0; i < Math.floor(clamp((t - 1.6) * 3, 0, 5)); i++) o += gfp(cx - 46 + i * 23, cy - 22, 1);
+          if (s === "recover" || s === "plate") for (let i = 0; i < (s === "recover" ? Math.floor(clamp(t * 2, 0, 5)) : 5); i++) o += enzyme(cx - 66 + i * 30, CY + 2);
+          if (s === "plate") [-80, -54, -28, 28, 54, 80].slice(0, Math.floor(clamp((t - 1.6) * 4, 0, 6))).forEach(dx => { o += gfp(cx + dx, CY - 26, 1); });
         }
         if (s === "plate"){
-          for (let i = 0; i < 4; i++){ const ang = -2.6 + i * .5, r = lerp(140, plus ? 92 : 80, a); const x = cx + Math.cos(ang) * r, y = cy + Math.sin(ang) * r * .75; o += amp(x, y, plus && a > .9); }
-          if (plus) for (let i = 0; i < 3; i++) o += arab(cx + 70 + i * 16 - a * 30, 252 - a * 40, 8);
-          o += T(cx, 280, plus ? (green > .5 ? "Survives, makes GFP" : "Breaking down ampicillin") : (dead ? "Killed by ampicillin" : "No protection"), {fs:14, c:plus ? "#1f8a55" : "#c43a2b"});
+          [.08, .18, .62, .72].forEach((u, i) => { const st = at(cx, u, 70), en = at(cx, u, plus ? 20 : -22); o += amp(lerp(st.x, en.x, a), lerp(st.y, en.y, a), plus && a > .9); });
+          if (plus) for (let i = 0; i < 3; i++) o += arab(lerp(cx + 70 + i * 18, cx + 44 + i * 16, a), lerp(262, CY + 30, a), 8);
+          o += T(cx, 280, plus ? (green > .5 ? "Survives, makes GFP" : "Breaking down ampicillin") : (dead ? "Killed by ampicillin" : "No protection"), {fs:14, c:col});
         }
-        if (s === "recover") o += T(cx, 280, plus ? "Making beta-lactamase" : "No plasmid, no beta-lactamase", {fs:14, c:plus ? "#a96c05" : "#53657b"});
-        if (s === "heat") o += T(320, 286, "42°C for 45 seconds", {fs:16, c:"#c43a2b"});
+        const lab = {cacl2:"Ca²⁺ sticks to the membrane", ice:plus ? "Ca²⁺ holds the plasmid close" : "Ca²⁺ on the membrane, no plasmid",
+          heat:plus ? "Membrane opens, plasmid slips in" : "Membrane opens, nothing to take in", recover:plus ? "Making beta-lactamase" : "No plasmid, no beta-lactamase"}[s];
+        if (s === "heat") o += T(cx, 54, "42°C water bath", {fs:13, c:"#c43a2b", w:600});
+        if (lab) o += T(cx, 280, lab, {fs:14, c:s === "recover" && plus ? "#a96c05" : col});
       });
-      return o + `<g transform="translate(560 220)">${s === "plate" ? `<polygon points="0,-6 7,6 -7,6" fill="#c43a2b"/>${T(14, 5, "amp", {fs:11, a:"start"})}` : ""}</g>`;
+      if (s === "plate") o += `<g transform="translate(572 28)"><polygon points="0,-6 7,6 -7,6" fill="#c43a2b"/>${T(12, 5, "amp", {fs:11, a:"start"})}</g>`;
+      return o;
     }
     function draw(){
       host.querySelector("#fcBar").innerHTML = ST.map((s, i) => `<span class="${i === k ? "on" : answered[i] ? "done" : ""}">${i + 1}. ${s.short}</span>`).join("");
@@ -85,7 +138,11 @@
     host.querySelector("#fcNext").addEventListener("click", () => { if (k === ST.length - 1){ k = 0; answered = {}; } else k++; draw(); });
     host.querySelector("#fcBack").addEventListener("click", () => { if (k > 0){ k--; draw(); } });
     host.querySelector("#fcReplay").addEventListener("click", () => { tStage = performance.now(); });
-    const tick = now => { if (!host.isConnected) return; svg.innerHTML = scene(RM() ? 99 : (now - tStage) / 1000); requestAnimationFrame(tick); };
+    let still = "";
+    const tick = now => { if (!host.isConnected) return; const t = RM() ? 99 : (now - tStage) / 1000, key = k + "|" + tStage;
+      /* the cacl2 and ice stages keep a gentle bob; the others hold still once they finish */
+      if (t < 4.5 || ["cacl2"].includes(ST[k].id) || still !== key){ svg.innerHTML = scene(t); if (t >= 4.5) still = key; }
+      requestAnimationFrame(tick); };
     draw(); requestAnimationFrame(tick);
   };
 
