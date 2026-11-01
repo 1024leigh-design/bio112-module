@@ -250,9 +250,9 @@
       }
       if (dst === "ice" || src === "ice"){
         const sec = (performance.now() - S.bathT) / 1000 * SPEED; both("ice"); S.bathT = null;
-        if (sec < 40){ say(`<b>Too short (${Math.round(sec)} seconds).</b> Few cells take up the plasmid. Try the heat shock again.`, "bad"); return; }
-        if (sec > 50){ say(`<b>Too long (${Math.round(sec)} seconds).</b> The cells are damaged or killed. Try the heat shock again.`, "bad"); return; }
-        say(`<b>${Math.round(sec)} seconds. Nice timing!</b> The quick heat shock helps the plasmid get into the cells.`, "good"); stepDone(); return;
+        if (sec < 40){ say(`<b>Too short (${Math.round(sec)} seconds).</b> The membrane did not loosen enough, so few cells take up the plasmid. Try the heat shock again.`, "bad"); return; }
+        if (sec > 50){ say(`<b>Too long (${Math.round(sec)} seconds).</b> The membrane got too liquid to reform. The cells are damaged or killed. Try the heat shock again.`, "bad"); return; }
+        say(`<b>${Math.round(sec)} seconds. Nice timing!</b> The membrane loosened just enough for the plasmid to slip in.`, "good"); stepDone(); return;
       }
       say("The tubes are in the bath! Tap the <b>ice</b> at 45 seconds.", "warn");
     }
@@ -333,7 +333,7 @@
       const src = S.sel; S.sel = null; act(src, id); draw();
     }
     const tick = () => { if (!host.isConnected) return; const el = host.querySelector("#pbTimer"); if (el && S.bathT){ const sec = (performance.now() - S.bathT) / 1000 * SPEED; el.textContent = Math.floor(sec) + " s";
-        if (sec > 75){ both("ice"); S.bathT = null; say("<b>Too long (75 seconds).</b> The cells are damaged or killed. Try the heat shock again.", "bad"); draw(); } }
+        if (sec > 75){ both("ice"); S.bathT = null; say("<b>Too long (75 seconds).</b> The membrane got too liquid to reform. The cells are damaged or killed. Try the heat shock again.", "bad"); draw(); } }
       requestAnimationFrame(tick); };
     S = fresh(); say("Tap an item, then tap where it goes. You can also drag it.", ""); draw(); requestAnimationFrame(tick);
   };
