@@ -207,7 +207,7 @@
       return o;
     }
     const tick = now => { if (!host.isConnected) return; svg.innerHTML = scene(now); requestAnimationFrame(tick); };
-    requestAnimationFrame(tick);
+    svg.innerHTML = scene(performance.now()); requestAnimationFrame(tick);
   };
 
   /* ================= pGLO bench ================= */

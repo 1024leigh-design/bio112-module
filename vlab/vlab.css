@@ -349,7 +349,7 @@ dialog::backdrop{background:rgba(10,20,30,.55)}
 
 /* a picture for each protocol step */
 .litems > li.haspic{align-items:center; flex-wrap:wrap}
-.lpic{flex:0 0 220px; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:4px}
+.lpic{flex:0 0 300px; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:4px}
 .lpic svg{display:block; width:100%; height:auto}
 .litems > li.haspic .body{flex:1 1 240px}
 @media (max-width:560px){ .lpic{flex-basis:100%} }
@@ -378,8 +378,11 @@ dialog::backdrop{background:rgba(10,20,30,.55)}
 .rvtry{border:2px solid var(--arrow)}
 
 /* why under a step picture */
-.lpic .picwhy{display:block; text-align:center; font-size:16px; line-height:1.35; color:var(--muted); background:var(--bg); border-radius:10px; padding:6px 8px; margin:4px}
-.lpic .picwhy b{color:var(--ink)}
+.lpic .picwhy{display:block; text-align:left; font-size:17px; line-height:1.35; color:var(--ink); background:var(--warn-soft); border-left:5px solid var(--warn); border-radius:0 10px 10px 0; padding:8px 10px; margin:6px 4px 4px}
+.lpic .picwhy b, .why b{display:inline-block; font:700 13px var(--f-mono); letter-spacing:.06em; text-transform:uppercase; color:#fff; background:var(--warn); border-radius:999px; padding:1px 8px; margin-right:6px; vertical-align:2px}
+.why{background:var(--warn-soft); border-left:5px solid var(--warn); border-radius:0 10px 10px 0; padding:6px 10px; margin-top:8px; color:var(--ink)}
+.afterfig{margin-top:10px; max-width:520px}
+.afterfig svg{display:block; width:100%; height:auto}
 /* Learn more panels */
 .learnmore{border:2px solid var(--arrow); background:var(--arrow-soft); color:var(--arrow); border-radius:999px; padding:6px 14px; font-weight:700; font-size:17px; cursor:pointer; text-align:left}
 .learnmore::before{content:"+ "}
