@@ -307,3 +307,42 @@ dialog::backdrop{background:rgba(10,20,30,.55)}
 .bench [data-obj].pulse{animation:benchpulse 1s ease-in-out infinite}
 @keyframes benchpulse{50%{opacity:.35}}
 .timerbig{font:700 26px var(--f-mono)}
+
+/* Learn sub-tabs and layouts */
+.subtabs{display:flex; flex-wrap:wrap; gap:6px; margin:-4px 0 18px; padding:6px; background:var(--surface-2); border-radius:16px}
+.subtabs button{display:flex; align-items:center; gap:8px; border:0; background:transparent; border-radius:12px; padding:9px 14px; font-weight:700; font-size:17px; cursor:pointer; color:var(--muted)}
+.subtabs button .n{width:24px; height:24px; border-radius:50%; background:var(--line); color:var(--ink); display:inline-flex; align-items:center; justify-content:center; font:700 13px var(--f-mono)}
+.subtabs button.on{background:var(--surface); color:var(--ink); box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.subtabs button.on .n{background:var(--arrow); color:#fff}
+.nexttab{justify-content:flex-end; margin-top:20px}
+.banner{text-align:center; font-family:var(--f-display); font-weight:700; font-size:clamp(21px,3vw,27px); line-height:1.25; max-width:34ch; margin:4px auto 16px; text-wrap:balance}
+.lsplit{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.15fr); gap:18px; align-items:start}
+.lsplit .lsfig .fig{margin:0}
+@media (max-width:760px){ .lsplit{grid-template-columns:minmax(0,1fr)} }
+.lcards{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px}
+.lcards.c2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.lcard{background:var(--bg); border:1px solid var(--line); border-radius:16px; padding:14px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:8px}
+.lcard.cur{outline:2.5px solid var(--arrow); background:var(--surface)}
+.lcard .lcfig{width:100%; max-width:170px}
+.lcard .lcfig svg{width:100%; height:auto; display:block}
+.lcard .wis{align-items:center}
+.lcard .checkrow{justify-content:center}
+.big{display:block; font-family:var(--f-display); font-weight:800; font-size:24px; line-height:1.15; margin-bottom:4px}
+/* color-coded equations */
+.eqwrap{display:flex; flex-direction:column; align-items:center; gap:10px; margin-top:12px}
+.eqwrap svg{width:100%; max-width:680px; height:auto; display:block}
+.eqctrl{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; align-items:center}
+.switch{display:inline-flex; align-items:center; gap:8px; font-weight:700; cursor:pointer}
+.switch input{width:20px; height:20px; accent-color:var(--arrow)}
+.tubepick{display:flex; flex-wrap:wrap; gap:6px; justify-content:center}
+.tubepick .opt{min-width:56px; text-align:center; font-weight:700}
+.result{font-family:var(--f-display); font-weight:800; font-size:clamp(24px,4vw,34px); text-align:center}
+
+/* wide diagrams stay readable on phones: they scroll inside their own box */
+.svgscroll{width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch}
+.svgscroll svg{min-width:600px}
+.fig figure.scroll{overflow-x:auto; max-width:100%}
+.fig figure.scroll svg{min-width:600px}
+.svgbox.anim, .svgbox.bench{overflow-x:auto}
+.svgbox.anim svg, .svgbox.bench svg{min-width:600px}
+@media (max-width:640px){ .svgscroll::after, .svgbox.anim::after, .svgbox.bench::after{content:"Swipe to see more \2192"; display:block; text-align:center; font-size:15px; color:var(--muted); padding-top:4px; position:sticky; left:0} }
