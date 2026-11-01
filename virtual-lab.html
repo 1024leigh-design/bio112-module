@@ -6,7 +6,7 @@
 <title>Virtual Lab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;600&display=swap">
-<link rel="stylesheet" href="vlab/vlab.css?v=8">
+<link rel="stylesheet" href="vlab/vlab.css?v=9">
 </head>
 <body>
 <div class="wrap">
@@ -22,6 +22,7 @@
       <button type="button" role="radio" data-mode="test" aria-checked="false">Test</button>
     </div>
     <button type="button" class="homebtn" id="vocabBtn">Vocab</button>
+    <button type="button" class="homebtn" id="displayBtn" aria-label="Display options: colors and animations">&#127912;<span class="long"> Display</span></button>
     <a class="homebtn" href="index.html" aria-label="All BIO 112 modules">&#9776;<span class="long"> All modules</span></a>
   </div>
 </header>
@@ -35,36 +36,41 @@
     <dl class="vlist" id="vocabList"></dl>
   </div>
 </dialog>
+<dialog id="displayDlg" aria-labelledby="displayTitle">
+  <div class="dlghead"><h2 id="displayTitle">Display</h2><button type="button" class="btn ghost small" id="displayClose">Done</button></div>
+  <div class="dlgbody" id="displayBody"></div>
+</dialog>
 <dialog id="reviewDlg" aria-labelledby="reviewTitle">
   <div class="dlghead"><h2 id="reviewTitle">Review</h2><button type="button" class="btn ghost small" id="reviewClose">Close</button></div>
   <div class="dlgbody" id="reviewBody"></div>
 </dialog>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="vlab/art.js?v=8"></script>
-<script src="vlab/figs.js?v=8"></script>
-<script src="vlab/core.js?v=8"></script>
-<script src="vlab/sims.js?v=8"></script>
-<script src="vlab/problems.js?v=8"></script>
-<script src="vlab/pglo.js?v=8"></script>
-<script src="vlab/dilution.js?v=8"></script>
-<script src="labs/lab01-microscope.js?v=8"></script>
-<script src="labs/lab02-measurement.js?v=8"></script>
-<script src="labs/lab03-pond-water.js?v=8"></script>
-<script src="labs/lab04-environment.js?v=8"></script>
-<script src="labs/lab05-negative-stain.js?v=8"></script>
-<script src="labs/lab06-smear.js?v=8"></script>
-<script src="labs/lab07-simple-stain.js?v=8"></script>
-<script src="labs/lab08-gram.js?v=8"></script>
-<script src="labs/lab09-endospore.js?v=8"></script>
-<script src="labs/lab10-acid-fast.js?v=8"></script>
-<script src="labs/lab11-motility.js?v=8"></script>
-<script src="labs/lab12-broth-culture.js?v=8"></script>
-<script src="labs/lab13-pure-culture.js?v=8"></script>
-<script src="labs/lab14-serial-dilution.js?v=8"></script>
-<script src="labs/lab15-pglo.js?v=8"></script>
-<script src="labs/vocab.js?v=8"></script>
-<script src="labs/clock.js?v=8"></script>
+<script src="vlab/display.js?v=9"></script>
+<script src="vlab/art.js?v=9"></script>
+<script src="vlab/figs.js?v=9"></script>
+<script src="vlab/core.js?v=9"></script>
+<script src="vlab/sims.js?v=9"></script>
+<script src="vlab/problems.js?v=9"></script>
+<script src="vlab/pglo.js?v=9"></script>
+<script src="vlab/dilution.js?v=9"></script>
+<script src="labs/lab01-microscope.js?v=9"></script>
+<script src="labs/lab02-measurement.js?v=9"></script>
+<script src="labs/lab03-pond-water.js?v=9"></script>
+<script src="labs/lab04-environment.js?v=9"></script>
+<script src="labs/lab05-negative-stain.js?v=9"></script>
+<script src="labs/lab06-smear.js?v=9"></script>
+<script src="labs/lab07-simple-stain.js?v=9"></script>
+<script src="labs/lab08-gram.js?v=9"></script>
+<script src="labs/lab09-endospore.js?v=9"></script>
+<script src="labs/lab10-acid-fast.js?v=9"></script>
+<script src="labs/lab11-motility.js?v=9"></script>
+<script src="labs/lab12-broth-culture.js?v=9"></script>
+<script src="labs/lab13-pure-culture.js?v=9"></script>
+<script src="labs/lab14-serial-dilution.js?v=9"></script>
+<script src="labs/lab15-pglo.js?v=9"></script>
+<script src="labs/vocab.js?v=9"></script>
+<script src="labs/clock.js?v=9"></script>
 <script>VLAB.boot();</script>
 </body>
 </html>

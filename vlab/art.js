@@ -149,7 +149,7 @@
     (spec.colonies || []).forEach(c => {
       const glow = uv && c.glow;
       const fill = uv ? (glow ? "#8dffad" : "#4c4a72") : col(c.c || "white");
-      if (glow) inner += `<circle cx="${f1(c.x)}" cy="${f1(c.y)}" r="${f1(c.r * 2)}" fill="#6dff95" opacity=".25"/>`;
+      if (glow) inner += `<circle class="m-pulse" style="animation-delay:-${f1((c.x * 7 + c.y) % 18 / 10)}s" cx="${f1(c.x)}" cy="${f1(c.y)}" r="${f1(c.r * 2)}" fill="#6dff95" opacity=".25"/>`;
       inner += `<circle cx="${f1(c.x)}" cy="${f1(c.y)}" r="${f1(c.r)}" fill="${fill}" stroke="${uv ? "none" : "rgba(0,0,0,.22)"}" stroke-width=".8"${c.id !== undefined ? ` data-col="${c.id}"` : ""}/>`;
       if (c.mark) inner += `<circle cx="${f1(c.x)}" cy="${f1(c.y)}" r="${f1(c.r + 2.6)}" fill="none" stroke="#1683cc" stroke-width="2"/>`;
     });
@@ -248,19 +248,25 @@
     {id:"GFP", a0:118, a1:180, c:"#1f8a55"}
   ];
   A.plasmid = (placed, slotPick) => {
-    const cx = 170, cy = 150, r = 92;
+    const cx = 170, cy = 150, R = 86;
     const pt = (a, rr) => [cx + Math.cos((a - 90) * Math.PI / 180) * rr, cy + Math.sin((a - 90) * Math.PI / 180) * rr];
-    let s = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#9aa7b5" stroke-width="10"/>`;
+    const arc = (a0, a1, rr) => { const [x0, y0] = pt(a0, rr), [x1, y1] = pt(a1, rr); return `M${f1(x0)},${f1(y0)} A${rr},${rr} 0 ${a1 - a0 > 180 ? 1 : 0} 1 ${f1(x1)},${f1(y1)}`; };
+    /* double-stranded DNA: two strands with "rungs" between them */
+    let s = `<circle cx="${cx}" cy="${cy}" r="${R + 7}" fill="none" stroke="#7d8da1" stroke-width="2.5"/><circle cx="${cx}" cy="${cy}" r="${R - 7}" fill="none" stroke="#7d8da1" stroke-width="2.5"/>`;
+    for (let a = 0; a < 360; a += 6){ const [x0, y0] = pt(a, R - 6), [x1, y1] = pt(a, R + 6); s += `<line x1="${f1(x0)}" y1="${f1(y0)}" x2="${f1(x1)}" y2="${f1(y1)}" stroke="#b9c3cf" stroke-width="1.5"/>`; }
+    const DIR = {ori:0, bla:1, araC:-1, pBAD:0, GFP:1};
     A.PLASMID.forEach((p, i) => {
-      const [x0, y0] = pt(p.a0, r), [x1, y1] = pt(p.a1, r), large = p.a1 - p.a0 > 180 ? 1 : 0;
-      s += `<path d="M${f1(x0)},${f1(y0)} A${r},${r} 0 ${large} 1 ${f1(x1)},${f1(y1)}" fill="none" stroke="${p.c}" stroke-width="16"/>`;
-      const mid = (p.a0 + p.a1) / 2, [lx, ly] = pt(mid, r + 40), [ix, iy] = pt(mid, r + 12);
+      s += `<path d="${arc(p.a0, p.a1, R)}" fill="none" stroke="${p.c}" stroke-width="16" stroke-linecap="butt"/>`;
+      const d = DIR[p.id];
+      if (d){ const a = d > 0 ? p.a1 : p.a0, t = (a - 90) * Math.PI / 180, [x, y] = pt(a, R), tx = -Math.sin(t) * d, ty = Math.cos(t) * d, nx = Math.cos(t), ny = Math.sin(t);
+        s += `<path d="M${f1(x + nx * 13)},${f1(y + ny * 13)} L${f1(x + tx * 14)},${f1(y + ty * 14)} L${f1(x - nx * 13)},${f1(y - ny * 13)} Z" fill="${p.c}"/>`; }
+      const mid = (p.a0 + p.a1) / 2, [lx, ly] = pt(mid, R + 46), [ix, iy] = pt(mid, R + 10);
       s += `<line x1="${f1(ix)}" y1="${f1(iy)}" x2="${f1(lx)}" y2="${f1(ly)}" stroke="${p.c}" stroke-width="1.6"/>`;
       const got = placed && placed[i];
-      s += `<g class="part" data-slot="${i}"><rect x="${f1(lx - 34)}" y="${f1(ly - 15)}" width="68" height="30" rx="15" fill="${got ? p.c : "var(--surface)"}" stroke="${p.c}" stroke-width="2.5" ${slotPick === i ? 'stroke-dasharray="5 3"' : ""}/>
+      s += `<g class="part" data-slot="${i}"><rect x="${f1(lx - 36)}" y="${f1(ly - 15)}" width="72" height="30" rx="15" fill="${got ? p.c : "var(--surface)"}" stroke="${p.c}" stroke-width="2.5" ${slotPick === i ? 'stroke-dasharray="5 3"' : ""}/>
         <text x="${f1(lx)}" y="${f1(ly + 5)}" font-size="15" font-weight="700" text-anchor="middle" fill="${got ? "#fff" : p.c}">${got ? esc(got) : (i + 1)}</text></g>`;
     });
-    s += `<text x="${cx}" y="${cy + 6}" font-size="20" font-weight="700" text-anchor="middle" fill="currentColor">pGLO</text>`;
+    s += `<text x="${cx}" y="${cy + 2}" font-size="22" font-weight="800" text-anchor="middle" fill="currentColor">pGLO</text><text x="${cx}" y="${cy + 22}" font-size="13" text-anchor="middle" fill="currentColor">plasmid (circular DNA)</text>`;
     return `<svg viewBox="0 0 340 300" role="img" aria-label="pGLO plasmid map" style="color:var(--ink)">${s}</svg>`;
   };
 

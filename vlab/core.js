@@ -362,6 +362,7 @@
     document.querySelectorAll(".seg [data-mode]").forEach(b => b.setAttribute("aria-checked", String(b.dataset.mode === m)));
     document.body.classList.toggle("testing", m === "test");
   }
+  V.rerender = () => render(true);
   V.boot = () => {
     setMode(store.get("vlab-mode") === "test" ? "test" : "learn");
     document.querySelectorAll(".seg [data-mode]").forEach(b => b.addEventListener("click", () => {
