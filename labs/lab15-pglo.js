@@ -2,12 +2,12 @@
 VLAB.add({
   n:15, title:"Transformation (pGLO)",
   learn:[
-    {h:"Competent cells", kind:"facts", figs:[{type:"svg", name:"cacl2", wide:true}], items:[
+    {tab:"Protocol", h:"Competent cells", banner:"Goal: get the pGLO plasmid into <i>E. coli</i>, then see it glow.", layout:"split", figs:[{type:"svg", name:"cacl2", wide:true}], items:[
       {t:"[[Competent]] cells can take up DNA from their surroundings."},
       {t:"We made <i>E. coli</i> competent with ice-cold 50 mM [[CaCl2|cacl2|cacl₂|calcium chloride]]."},
       {t:"Ca<sup>2+</sup> shields the [[negative]] charges on the DNA backbone and the cell membrane, so the plasmid can get close and enter.", why:"Two negative things push each other away. Ca<sup>2+</sup> sits between them."}
     ]},
-    {h:"Protocol, step by step", kind:"steps", lead:"Tap any <b>What if...?</b> button to see what would happen.", figs:[{type:"svg", name:"heatshock", wide:true, cap:"Temperature at each step (not to scale)"}],
+    {tab:"Protocol", h:"Protocol, step by step", kind:"steps", lead:"Tap any <b>What if...?</b> button to see what would happen.", figs:[{type:"svg", name:"heatshock", wide:true, cap:"Temperature at each step (not to scale)"}],
       tip:"Try the whole protocol yourself on the <b>Practice</b> tab: move the liquids, run the heat shock timer, and shine the UV light.",
       items:[
       {ico:{i:"bottle", c:"#9fd1f0"}, t:"Add [[400 µL|400|400ul|400 ul]] of ice-cold 50 mM CaCl<sub>2</sub> to one tube. Transfer one or two colonies into it with a sterile loop. Mix well.", why:"Ice-cold CaCl<sub>2</sub> makes the cells competent.",
@@ -25,7 +25,7 @@ VLAB.add({
         whatif:[{q:"you forget the arabinose plate?", a:"Transformed colonies still grow on LB/amp, but they stay white. Without arabinose, AraC blocks GFP."}, {q:"you use a tetracycline plate?", a:"Nothing grows. pGLO only carries ampicillin resistance."}]},
       {ico:{i:"incub", c:"37°C"}, t:"Incubate [[inverted|upside down|upside-down]] at 37°C.", why:"Upside down keeps water drops from falling onto the agar."}
     ]},
-    {h:"Follow the cells", kind:"facts", items:[], sim:{sim:"follow", prompt:"Watch a +pGLO cell and a -pGLO cell side by side. Answer each question to move on.", stages:[
+    {tab:"Follow the cells", banner:"What happens inside the cells at each step?", kind:"facts", items:[], sim:{sim:"follow", prompt:"Watch a +pGLO cell and a -pGLO cell side by side. Answer each question to move on.", stages:[
       {id:"cacl2", short:"CaCl₂", title:"In ice-cold CaCl₂", cap:"Ca²⁺ ions surround both cells. The +pGLO tube also has plasmid floating around.",
         q:{q:"Where is the plasmid right now?", opts:["Outside the cell", "Inside the cell", "In both tubes"], a:0, keep:true, why:"It was just added to the +pGLO tube. It has not gotten in yet."}},
       {id:"ice", short:"Ice", title:"On ice, about 1 hour", cap:"Ca²⁺ shields the negative charges, so the plasmid can get close to the membrane.",
@@ -39,24 +39,24 @@ VLAB.add({
       {id:"uv", short:"UV light", title:"Under the UV light", cap:"The +pGLO cell grew into a colony that glows green. The -pGLO side has no colony.",
         q:{q:"What makes the colony glow?", opts:["GFP, switched on by arabinose", "Ampicillin", "Beta-lactamase", "Ca²⁺"], a:0, why:"Arabinose switches on GFP. GFP glows green under UV light."}}
     ]}},
-    {h:"Why four plates?", kind:"facts", top:[{type:"svg", name:"pgloplates", wide:true}], items:[
-      {t:"<b>LB, -pGLO:</b> are the cells alive? Result: a [[lawn|a lawn]], white."},
-      {t:"<b>LB/amp, -pGLO:</b> does ampicillin kill cells without the plasmid? Result: [[no growth|none|nothing]]."},
-      {t:"<b>LB/amp, +pGLO:</b> did transformation work? Result: white [[colonies]]."},
-      {t:"<b>LB/amp/ara, +pGLO:</b> does arabinose switch on GFP? Result: colonies that [[glow]] green under UV."}
+    {tab:"The plates", banner:"Four plates. Each one answers one question.", layout:"cards", items:[
+      {big:"LB", fig:{type:"plate", lawn:true}, t:"<b>-pGLO.</b> Are the cells alive? Result: a [[lawn|a lawn]], white."},
+      {big:"LB/amp", fig:{type:"plate"}, t:"<b>-pGLO.</b> Does ampicillin kill cells without the plasmid? Result: [[no growth|none|nothing]]."},
+      {big:"LB/amp", fig:{type:"plate", scatter:[[14, 151, "white", 6, 9]]}, t:"<b>+pGLO.</b> Did transformation work? Result: white [[colonies]]."},
+      {big:"LB/amp/ara", fig:{type:"plate", uv:true, glow:true, scatter:[[14, 152, "white", 6, 9]]}, t:"<b>+pGLO.</b> Does arabinose switch on GFP? Result: colonies that [[glow]] green under UV."}
     ]},
-    {h:"What if the plate were different?", kind:"facts", tip:"Try every combination in the Plate predictor on the Practice tab.", items:[
-      {t:"On a plate <b>without</b> ampicillin, transformed and untransformed cells both grow. So only [[some]] colonies would glow (with arabinose)."},
-      {t:"pGLO only carries [[ampicillin|amp]] resistance. On a plate with a different antibiotic (like tetracycline), cells with pGLO do not grow."}
+    {tab:"The plates", h:"What if the plate were different?", layout:"cards", cols:2, tip:"Try every combination in the Plate predictor on the Practice tab.", items:[
+      {big:"No ampicillin", t:"Transformed and untransformed cells both grow. So only [[some]] colonies would glow (with arabinose).", whatif:[{q:"+pGLO cells go on LB/ara?", a:"A lawn grows, and only some of it glows: the cells that took up pGLO."}]},
+      {big:"Tetracycline", t:"pGLO only carries [[ampicillin|amp]] resistance. On a plate with a different antibiotic, cells with pGLO do not grow.", whatif:[{q:"+pGLO cells go on LB/tet?", a:"Nothing grows. bla protects against ampicillin, not tetracycline."}]}
     ]},
-    {h:"Parts of the pGLO plasmid", kind:"facts", figs:[{type:"plasmid", wide:"mid", cap:"pGLO plasmid map (simplified)"}], items:[
+    {tab:"Plasmid + GFP", h:"Parts of the pGLO plasmid", layout:"split", figs:[{type:"plasmid", wide:true, cap:"pGLO plasmid map (simplified)"}], items:[
       {t:"[[ori]]: copies the plasmid."},
       {t:"[[bla]]: makes beta-lactamase, an enzyme that breaks down ampicillin. This gives ampicillin resistance."},
       {t:"[[GFP]]: green fluorescent protein. It glows green under UV light."},
       {t:"[[araC]]: regulates GFP."},
       {t:"[[pBAD]] promoter: where RNA polymerase starts transcribing GFP."}
     ]},
-    {h:"How GFP is switched on", kind:"facts", sim:{sim:"arac", prompt:"Switch between the two buttons and watch.",
+    {tab:"Plasmid + GFP", h:"How GFP is switched on", banner:"No arabinose: GFP off. Arabinose: GFP on.", kind:"facts", sim:{sim:"arac", prompt:"Switch between the two buttons and watch.",
       offCap:"<b>No arabinose:</b> AraC sits on the promoter like a stop sign. RNA polymerase cannot get through. <b>GFP OFF.</b>",
       onCap:"<b>With arabinose:</b> arabinose binds AraC, and AraC changes shape. RNA polymerase transcribes GFP. <b>GFP ON.</b>"}, items:[
       {t:"Without [[arabinose]], AraC blocks transcription of GFP."},
@@ -64,7 +64,7 @@ VLAB.add({
       {t:"Primary selection: [[ampicillin|amp]]. Only transformed cells grow."},
       {t:"Secondary selection: arabinose/GFP. [[Glowing|glow|glowing green]] confirms the plasmid genes are expressed."}
     ]},
-    {h:"Fluorescence", kind:"steps", sim:{sim:"glow", prompt:"Turn on the UV light. Watch one GFP molecule up close.",
+    {tab:"Glow", h:"Fluorescence", banner:"GFP takes in UV light and gives off green light.", kind:"steps", sim:{sim:"glow", prompt:"Turn on the UV light. Watch one GFP molecule up close.",
       off:"Under normal light, the colonies look white. Tap <b>Turn on the UV light</b>.",
       c0:"The UV lamp shines on the plate.", c1:"<b>Excitation:</b> an electron in GFP absorbs UV light and jumps to a higher energy level.",
       c2:"It loses some energy as vibration.", c3:"<b>Emission:</b> the electron drops back down and releases green light. Less energy, so a longer wavelength.",

@@ -33,7 +33,7 @@
     return "";
   };
   V.strip = spec => `<div class="strip" role="list">${spec.steps.map((st, i) => `${i ? '<span class="sarrow" aria-hidden="true">&rarr;</span>' : ""}<div class="sstep" role="listitem">${window.ART.ico(st.i, st.c)}<b>${st.t}</b>${st.s ? `<span>${st.s}</span>` : ""}</div>`).join("")}</div>`;
-  V.figs = list => list && list.length ? `<div class="fig">${list.map(s => s.type === "strip" ? `<figure class="wide">${s.title ? `<figcaption class="ftitle">${s.title}</figcaption>` : ""}${V.strip(s)}</figure>` : `<figure class="${s.wide === "mid" ? "mid" : s.wide ? "wide" : ""}">${V.fig(s)}${s.cap ? `<figcaption>${s.cap}</figcaption>` : ""}</figure>`).join("")}</div>` : "";
+  V.figs = list => list && list.length ? `<div class="fig">${list.map(s => s.type === "strip" ? `<figure class="wide">${s.title ? `<figcaption class="ftitle">${s.title}</figcaption>` : ""}${V.strip(s)}</figure>` : `<figure class="${s.wide === "mid" ? "mid" : s.wide ? "wide" : ""}${s.scroll ? " scroll" : ""}">${V.fig(s)}${s.cap ? `<figcaption>${s.cap}</figcaption>` : ""}</figure>`).join("")}</div>` : "";
   /* worked examples for the math: {title, steps:[...], answer} */
   V.examples = list => list && list.length ? list.map(e => `<div class="sol example"><b>Worked example${e.title ? ": " + e.title : ""}</b><ol>${e.steps.map(s => `<li>${s}</li>`).join("")}</ol>${e.answer ? `<p class="exans"><b>Answer:</b> ${e.answer}</p>` : ""}</div>`).join("") : "";
   V.todo = t => `<div class="todo" role="note">TODO for the instructor: ${t}</div>`;
@@ -94,40 +94,56 @@
     return out;
   }
   const BLANK = /\[\[([^\]]+)\]\]/g;
+  const learnTab = {};   // per lab: the open Learn sub-tab
   function renderLearn(host, lab){
     const test = V.mode === "test";
     const st = testState[lab.n] || (testState[lab.n] = {res:{}});
-    const all = learnItems(lab);
+    const tabs = [...new Set(lab.learn.map(s => s.tab).filter(Boolean))];
+    if (tabs.length && !tabs.includes(learnTab[lab.n])) learnTab[lab.n] = tabs[0];
+    const curTab = learnTab[lab.n];
+    const visible = sec => !tabs.length || sec.tab === curTab;
     const blanksOf = (it, si, ii) => { const out = []; let m, k = 0; BLANK.lastIndex = 0; while ((m = BLANK.exec(it.t))){ out.push({key:`${si}.${ii}.${k++}`, alts:m[1].split("|")}); } return out; };
-    const curIdx = test ? all.findIndex(x => blanksOf(x.it, x.si, x.ii).some(b => !st.res[b.key])) : -1;
-    const done = test && curIdx === -1;
+    const everything = learnItems(lab), all = everything.filter(x => visible(lab.learn[x.si]));
+    const open = x => blanksOf(x.it, x.si, x.ii).some(b => !st.res[b.key]);
+    const curIdx = test ? all.findIndex(open) : -1;
+    const done = test && curIdx === -1, allDone = test && !everything.some(open);
     const fill = (t, si, ii, isCur) => { let k = 0; return t.replace(BLANK, (m, inner) => {
       const key = `${si}.${ii}.${k++}`, alts = inner.split("|"), show = alts[0];
       if (!test || st.res[key]) return `<strong class="term ${test ? st.res[key] : ""}">${show}</strong>`;
       if (!isCur) return `<strong class="term">?</strong>`;
       return `<input class="blank" data-key="${key}" size="${Math.max(4, show.replace(/<[^>]+>/g, "").length + 1)}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Fill in the blank">`; }); };
+    const checkRow = `<div class="checkrow"><button type="button" class="btn small" data-act="check">Check</button><button type="button" class="btn hint small" data-act="hint">Hint</button><button type="button" class="btn ghost small" data-act="moveon">Move on</button></div><div class="fb" id="lfb" aria-live="polite"></div>`;
+    const itemBody = (it, si, ii, isCur) => `${it.big ? `<span class="big">${it.big}</span>` : ""}${fill(it.t, si, ii, isCur)}${it.why ? `<span class="why"><b>Why:</b> ${it.why}</span>` : ""}${it.whatif ? `<div class="wis">${it.whatif.map(w => `<button type="button" class="whatif" aria-expanded="false">What if ${w.q}</button><div class="wia" hidden>${w.a}</div>`).join("")}</div>` : ""}${isCur ? checkRow : ""}`;
 
-    let html = test ? `<p class="modetip">Test mode: type the missing word in each box, then tap <b>Check</b>. Stuck? Tap <b>Hint</b> or <b>Move on</b>.</p>` : "";
-    let hiddenFrom = curIdx === -1 ? Infinity : curIdx + 1, pos = 0;
+    let html = tabs.length ? `<div class="subtabs" role="tablist" aria-label="Learn sections">${tabs.map((t, k) => `<button type="button" role="tab" aria-selected="${t === curTab}" class="${t === curTab ? "on" : ""}" data-ltab="${t}"><span class="n">${k + 1}</span>${t}</button>`).join("")}</div>` : "";
+    html += test ? `<p class="modetip">Test mode: type the missing word in each box, then tap <b>Check</b>. Stuck? Tap <b>Hint</b> or <b>Move on</b>.</p>` : "";
+    const visIndex = new Map(all.map((x, k) => [x.si + "." + x.ii, k]));
+    let hiddenFrom = curIdx === -1 ? Infinity : curIdx + 1;
     lab.learn.forEach((sec, si) => {
-      const firstPos = pos;
-      if (firstPos >= hiddenFrom){ pos += sec.items.length; return; }
-      html += `<section class="lsec"><h2>${sec.h}</h2>${sec.lead ? `<p class="lead">${sec.lead}</p>` : ""}${sec.top ? V.figs(sec.top) : ""}${sec.items.length ? `<ol class="litems ${sec.kind === "steps" ? "steps" : "facts"}"${sec.kind === "steps" ? "" : ' role="list"'}>` : ""}`;
-      sec.items.forEach((it, ii) => {
-        const p = pos++;
-        if (p >= hiddenFrom) return;
-        const isCur = p === curIdx;
-        html += `<li class="${isCur ? "cur" : ""}${it.ico ? " hasico" : ""}">${it.ico ? `<span class="lico">${window.ART.ico(it.ico.i, it.ico.c)}</span>` : ""}<div class="body">${fill(it.t, si, ii, isCur)}${it.why ? `<span class="why"><b>Why:</b> ${it.why}</span>` : ""}${it.whatif ? `<div class="wis">${it.whatif.map(w => `<button type="button" class="whatif" aria-expanded="false">What if ${w.q}</button><div class="wia" hidden>${w.a}</div>`).join("")}</div>` : ""}
-          ${isCur ? `<div class="checkrow"><button type="button" class="btn small" data-act="check">Check</button><button type="button" class="btn hint small" data-act="hint">Hint</button><button type="button" class="btn ghost small" data-act="moveon">Move on</button></div><div class="fb" id="lfb" aria-live="polite"></div>` : ""}</div></li>`;
-      });
-      if (sec.items.length) html += `</ol>`;
-      if (pos <= hiddenFrom) html += V.figs(sec.figs) + (sec.sim ? `<div class="act lsim" data-lsim="${si}">${sec.sim.title ? `<h2>${sec.sim.title}</h2>` : ""}${sec.sim.prompt ? `<p class="lead">${sec.sim.prompt}</p>` : ""}<div data-lsimhost></div></div>` : "") + V.examples(sec.examples) + (sec.tip ? `<div class="msg tipbox"><b>Tip:</b> ${sec.tip}</div>` : "") + (sec.todo ? V.todo(sec.todo) : "");
-      html += `</section>`;
+      if (!visible(sec)) return;
+      const first = sec.items.length ? visIndex.get(si + ".0") : null;
+      if (first !== null && first >= hiddenFrom) return;
+      const shown = sec.items.map((it, ii) => ({it, ii, p:visIndex.get(si + "." + ii)})).filter(x => x.p < hiddenFrom);
+      const whole = shown.length === sec.items.length;
+      let list = "";
+      if (sec.layout === "cards") list = `<div class="lcards${sec.cols ? " c" + sec.cols : ""}">${shown.map(({it, ii, p}) => `<div class="lcard ${p === curIdx ? "cur" : ""}">${it.fig ? `<div class="lcfig">${V.fig(it.fig)}</div>` : ""}${it.ico ? `<span class="lico">${window.ART.ico(it.ico.i, it.ico.c)}</span>` : ""}<div class="body">${itemBody(it, si, ii, p === curIdx)}</div></div>`).join("")}</div>`;
+      else if (shown.length) list = `<ol class="litems ${sec.kind === "steps" ? "steps" : "facts"}">${shown.map(({it, ii, p}) => `<li class="${p === curIdx ? "cur" : ""}${it.ico ? " hasico" : ""}">${it.ico ? `<span class="lico">${window.ART.ico(it.ico.i, it.ico.c)}</span>` : ""}<div class="body">${itemBody(it, si, ii, p === curIdx)}</div></li>`).join("")}</ol>`;
+      const figs = whole ? V.figs(sec.figs) : "";
+      const sim = whole && sec.sim ? `<div class="act lsim" data-lsim="${si}">${sec.sim.title ? `<h2>${sec.sim.title}</h2>` : ""}${sec.sim.prompt ? `<p class="lead">${sec.sim.prompt}</p>` : ""}<div data-lsimhost></div></div>` : "";
+      html += `<section class="lsec">${sec.h ? `<h2>${sec.h}</h2>` : ""}${sec.banner ? `<p class="banner">${sec.banner}</p>` : ""}${sec.lead ? `<p class="lead">${sec.lead}</p>` : ""}${sec.top ? V.figs(sec.top) : ""}`;
+      html += sec.layout === "split" && figs ? `<div class="lsplit"><div class="lsfig">${figs}</div><div>${list}</div></div>` : list + figs;
+      html += sim + (whole ? V.examples(sec.examples) + (sec.tip ? `<div class="msg tipbox"><b>Tip:</b> ${sec.tip}</div>` : "") + (sec.todo ? V.todo(sec.todo) : "") : "") + `</section>`;
     });
-    if (test && !done) html += `<p class="locked">More steps show up after you finish this one.</p>`;
-    if (done) store.set("vlab-done-" + lab.n, "1");
-    if (done) html += `<div class="msg good" style="margin-top:18px"><b>Station complete!</b> You filled in every blank for Lab ${lab.n}.</div><div class="btnrow" style="margin-top:10px"><button type="button" class="btn ghost" data-act="restart">Start over</button></div>`;
+    if (test && !done) html += `<p class="locked">More shows up after you finish this one.</p>`;
+    if (allDone) store.set("vlab-done-" + lab.n, "1");
+    let nextTab = tabs[tabs.indexOf(curTab) + 1];
+    if (done && !allDone){ const ci = tabs.indexOf(curTab); nextTab = tabs.slice(ci + 1).concat(tabs.slice(0, ci)).find(t => everything.some(x => lab.learn[x.si].tab === t && open(x))) || nextTab; }
+    if (done && !allDone && nextTab) html += `<div class="msg good" style="margin-top:18px"><b>This part is done!</b></div><div class="btnrow" style="margin-top:10px"><button type="button" class="btn" data-ltab="${nextTab}">Next: ${nextTab} &rarr;</button></div>`;
+    else if (done && !allDone) html += `<div class="msg good" style="margin-top:18px"><b>This part is done!</b> Some other parts still have blanks. Use the tabs above.</div>`;
+    else if (allDone) html += `<div class="msg good" style="margin-top:18px"><b>Station complete!</b> You filled in every blank for Lab ${lab.n}.</div><div class="btnrow" style="margin-top:10px"><button type="button" class="btn ghost" data-act="restart">Start over</button></div>`;
+    else if (!test && nextTab) html += `<div class="btnrow nexttab"><button type="button" class="btn" data-ltab="${nextTab}">Next: ${nextTab} &rarr;</button></div>`;
     host.innerHTML = html;
+    host.querySelectorAll("[data-ltab]").forEach(b => b.addEventListener("click", () => { learnTab[lab.n] = b.dataset.ltab; renderLearn(host, lab); host.scrollIntoView({block:"start"}); window.scrollBy(0, -80); }));
     host.querySelectorAll(".whatif").forEach(b => b.addEventListener("click", () => {
       const a = b.nextElementSibling, open = a.hidden; a.hidden = !open; b.setAttribute("aria-expanded", String(open)); b.classList.toggle("open", open); }));
     host.querySelectorAll("[data-lsim]").forEach(el => { const sp = lab.learn[+el.dataset.lsim].sim; V.sims[sp.sim](el.querySelector("[data-lsimhost]"), sp); });
@@ -137,7 +153,7 @@
     const keyAlts = key => { const x = all.find(a => key.startsWith(`${a.si}.${a.ii}.`)); return blanksOf(x.it, x.si, x.ii).find(b => b.key === key).alts; };
     const advance = msg => { renderLearn(host, lab); const f = host.querySelector("#lfb"); const nxt = host.querySelector("input.blank");
       if (f && msg) { f.className = "fb good"; f.textContent = msg; }
-      if (nxt) nxt.focus({preventScroll:false}); else if (!host.querySelector(".cur")) V.toast("Lab " + lab.n + " station complete!"); };
+      if (nxt) nxt.focus({preventScroll:false}); else if (!host.querySelector(".cur")) V.toast(host.querySelector("[data-act=restart]") ? "Lab " + lab.n + " station complete!" : "This part is done!"); };
     function check(){
       let wrong = 0, empty = 0;
       inputs().forEach(inp => { if (!inp.value.trim()){ empty++; wrong++; return; }

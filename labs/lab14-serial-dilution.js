@@ -2,43 +2,41 @@
 VLAB.add({
   n:14, title:"Serial dilution and plate counts",
   learn:[
-    {h:"Key ideas", kind:"facts", figs:[{type:"svg", name:"dilplates", wide:true, cap:"Each tube is more dilute, so its plate has fewer colonies."}], items:[
-      {t:"A serial dilution dilutes a sample step by step, so some plates have a [[countable]] number of colonies."},
-      {t:"CFU = [[colony forming unit|colony-forming unit]]. One colony started from one live cell (or clump)."},
-      {t:"Dilution factor for one tube = volume added ÷ [[total volume]]."},
-      {t:"Total dilution = [[multiply|multiplying|multiply the dilution factors]] the dilution factors of each tube."},
-      {t:"cells/mL in the original = CFUs ÷ (total dilution × [[volume plated|volume]] in mL)."},
-      {t:"µL to mL: divide by [[1000|1,000]]. So 100 µL = [[0.1|.1]] mL."}
+    /* ---------- tab 1 ---------- */
+    {tab:"The tubes", banner:"Dilute step by step until one plate has a countable number of colonies.", top:[{type:"svg", name:"dilseries", wide:true, scroll:true}],
+      layout:"cards", cols:2, items:[
+      {big:"Tubes A and B", ico:{i:"tube", c:"#f0e2b4"}, t:"[[9.9]] mL sterile water + [[0.1|.1]] mL. Each is a [[1/100]] dilution.", why:"Tube A gets culture. Tube B gets 0.1 mL from tube A."},
+      {big:"Tubes C to F", ico:{i:"tube", c:"#f3e9c7"}, t:"[[9]] mL sterile water + [[1]] mL from the previous tube. Each is a [[1/10]] dilution."},
+      {big:"Plate", ico:{i:"pipette"}, t:"[[100 µL|100|100ul|100 ul]] (0.1 mL) from each tube with a micropipette. Spread with a spreader dipped in [[isopropanol|isopropyl alcohol|alcohol]] and flamed."},
+      {big:"Incubate", ico:{i:"incub", c:"37°C"}, t:"Incubate the plates at [[37°C|37|37 c]]."}
     ]},
-    {h:"Our protocol (6 tubes, A to F, <i>E. coli</i> broth culture)", kind:"steps", top:[{type:"svg", name:"dilseries", wide:true}], items:[
-      {t:"Tubes A and B: [[9.9]] mL sterile water + [[0.1|.1]] mL. Tube A gets 0.1 mL of the original culture. Tube B gets 0.1 mL from tube A.", why:"0.1 ÷ 10 = 1/100. Each is a 1/100 dilution."},
-      {t:"Tubes C to F: [[9]] mL sterile water + [[1]] mL from the previous tube.", why:"1 ÷ 10 = 1/10. Each is a 1/10 dilution."},
-      {t:"Plate [[100 µL|100|100ul|100 ul]] (0.1 mL) from each tube with a [[micropipette|pipette]]."},
-      {t:"Spread with a spreader dipped in [[isopropanol|isopropyl alcohol|alcohol]] and flamed between plates."},
-      {t:"Incubate at [[37°C|37|37 c]]."}
-    ]},
-    {h:"How to do the math", kind:"facts", lead:"Five skills. Learn them in this order.",
-      examples:[
-        {title:"1. Dilution factor for one tube", steps:["Tube A gets <b>0.1 mL</b> of culture plus <b>9.9 mL</b> of water.", "Total volume = 0.1 + 9.9 = <b>10 mL</b>. (Always add what you put in!)", "Dilution factor = volume added ÷ total volume = 0.1 ÷ 10 = <b>1/100</b>."], answer:"1/100, which is the same as 10<sup>-2</sup>"},
-        {title:"2. Total dilution", steps:["Multiply the dilution factors, tube by tube.", "Tube B: 1/100 × 1/100 = <b>1/10,000 = 10<sup>-4</sup></b>.", "Shortcut: add the exponents. 10<sup>-2</sup> × 10<sup>-2</sup> = 10<sup>-2 + -2</sup> = 10<sup>-4</sup>.", "Tube C: 10<sup>-4</sup> × 10<sup>-1</sup> = <b>10<sup>-5</sup></b>. Each 1/10 tube adds one more -1."], answer:"A = 10<sup>-2</sup>, B = 10<sup>-4</sup>, C = 10<sup>-5</sup>, D = 10<sup>-6</sup>, E = 10<sup>-7</sup>, F = 10<sup>-8</sup>"},
-        {title:"3. µL to mL", steps:["There are 1000 µL in 1 mL.", "Divide µL by 1000: 100 µL ÷ 1000 = <b>0.1 mL</b>."], answer:"100 µL = 0.1 mL"},
-        {title:"4. Pick the plate", steps:["Plate D: more than 200 colonies. That is TNTC. Skip it.", "Plate E: <b>52</b> separate colonies. Use this one."], answer:"Use plate E (52 colonies, total dilution 10<sup>-7</sup>)"},
-        {title:"5. cells/mL in the original culture", steps:["Write the formula: cells/mL = CFUs ÷ (total dilution × mL plated).", "Plug in: 52 ÷ (10<sup>-7</sup> × 0.1).", "Multiply the bottom first: 10<sup>-7</sup> × 0.1 = <b>10<sup>-8</sup></b>.", "Dividing by 10<sup>-8</sup> is the same as multiplying by 10<sup>8</sup>: 52 × 10<sup>8</sup>.", "Scientific notation: move the decimal one place left and add 1 to the exponent: <b>5.2 × 10<sup>9</sup></b>."], answer:"5.2 × 10<sup>9</sup> cells/mL"}],
-      tip:"Do not forget the units! The final answer is in <b>cells/mL</b>.",
-      items:[
+    {tab:"The tubes", h:"Where does the dilution factor come from?", layout:"split", figs:[{type:"svg", name:"dfone", a:0.1, w:9.9, cap:"Tube A or B"}, {type:"svg", name:"dfone", a:1, w:9, c:"#c2185b", cap:"Tubes C to F"}], items:[
       {t:"Dilution factor = volume added ÷ [[total volume|total]]."},
-      {t:"Total dilution = [[multiply|multiplying]] every tube's dilution factor."},
-      {t:"cells/mL = CFUs ÷ (total dilution × [[mL plated|volume plated|ml]])."}
+      {t:"Total volume = volume added + the [[water]].", why:"0.1 mL + 9.9 mL = 10 mL, not 9.9 mL."}
     ]},
-    {h:"Total dilutions", kind:"facts", items:[
-      {t:"A = 10<sup>-2</sup>. B = [[10<sup>-4</sup>|10^-4|10-4|1/10000|0.0001]]."},
-      {t:"C = 10<sup>-5</sup>. D = [[10<sup>-6</sup>|10^-6|10-6|1/1000000|0.000001]]."},
-      {t:"E = 10<sup>-7</sup>. F = [[10<sup>-8</sup>|10^-8|10-8|1/100000000|0.00000001]]."}
+    /* ---------- tab 2 ---------- */
+    {tab:"Total dilution", banner:"Multiply the dilution factor of every tube along the way.", items:[
+      {t:"Total dilution = [[multiply|multiplying]] the dilution factors of each tube."}
+    ], sim:{sim:"dilchain", prompt:"Pick a tube. Tap <b>Next step</b> to see where each number comes from."}, tip:"Powers of 10? Add the exponents. 10<sup>-2</sup> × 10<sup>-2</sup> × 10<sup>-1</sup> = 10<sup>-5</sup>."},
+    /* ---------- tab 3 ---------- */
+    {tab:"Count + CFU", banner:"cells/mL = CFUs ÷ (total dilution × mL plated)", layout:"cards", items:[
+      {big:"CFU", t:"[[Colony forming unit|colony-forming unit]]. One colony started from one live cell (or clump)."},
+      {big:"&gt; 200", t:"More than [[200]] colonies = TNTC. Write \"&gt;200\" or \"TNTC\". Do [[not]] use that plate."},
+      {big:"µL to mL", t:"Divide by [[1000|1,000]]. So 100 µL = [[0.1|.1]] mL."}
+    ], sim:{sim:"cfucalc", prompt:"Pick a tube to plate. Then tap <b>Next step</b> to build the equation. Each color shows where a number comes from."}},
+    /* ---------- tab 4 ---------- */
+    {tab:"Common mistakes", banner:"Why might a plate give a different estimate?", lead:"Tap each <b>What if...?</b> to check yourself.", layout:"cards", cols:2, items:[
+      {big:"Merged colonies", ico:{i:"count"}, t:"Colonies [[merged|merge]] or were too crowded to count.", whatif:[{q:"two colonies merge?", a:"They look like one colony. You count too few, so your estimate is too low."}]},
+      {big:"Pipetting error", ico:{i:"pipette"}, t:"A [[pipetting|pipette]] error.", whatif:[{q:"you move 0.2 mL instead of 0.1 mL?", a:"About twice as many cells go into the next tube. Every plate after it has more colonies than it should."}]},
+      {big:"Clumped cells", ico:{i:"plate"}, t:"Cells [[clumped|clump]] together.", whatif:[{q:"cells stay in clumps?", a:"A whole clump makes just one colony. You count too few, so your estimate is too low."}]},
+      {big:"Not mixed", ico:{i:"tube", c:"#e3d29a"}, t:"Not [[mixed|mixing]] well between tubes.", whatif:[{q:"you skip mixing before a transfer?", a:"The cells are not spread evenly, so the 1 mL you move can carry too many or too few cells."}]},
+      {big:"Contamination", ico:{i:"flame"}, t:"[[Contamination|contaminated]].", whatif:[{q:"a plate gets contaminated?", a:"Extra colonies grow that did not come from your culture, so your count is too high."}]}
     ]},
-    {h:"Counting", kind:"facts", items:[
-      {t:"More than [[200]] colonies = TNTC (too numerous to count)."},
-      {t:"Write \"&gt;200\" or \"TNTC\". Do [[not]] use that plate for the calculation."},
-      {t:"Reasons a plate gives a different estimate: colonies merged or too crowded to count, [[pipetting|pipette]] error, cells clumped, not mixed well between tubes, contamination."}
+    {tab:"Common mistakes", h:"Math mistakes to watch for", layout:"cards", cols:2, items:[
+      {big:"Forgot µL to mL", t:"Always change µL to mL before you divide.", whatif:[{q:"you use 100 instead of 0.1?", a:"Your answer comes out 1000 times too small."}]},
+      {big:"Added instead of multiplied", t:"Multiply dilution factors. Never add them.", whatif:[{q:"you add 1/100 + 1/100?", a:"You get 2/100. The right total is 1/100 × 1/100 = 1/10,000."}]},
+      {big:"Wrong total volume", t:"Total volume = added + water.", whatif:[{q:"you use 9.9 mL as the total?", a:"The total is 0.1 + 9.9 = 10 mL, so the factor is 1/100."}]},
+      {big:"Used a TNTC plate", t:"Pick a plate you can count.", whatif:[{q:"you use a plate with more than 200 colonies?", a:"You cannot count it accurately. Use a plate with 200 or fewer colonies."}]}
     ]}
   ],
   practice:[
