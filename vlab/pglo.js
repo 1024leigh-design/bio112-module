@@ -4,10 +4,10 @@
   const V = window.VLAB, A = window.ART, f1 = A.f1;
   const lerp = (a, b, k) => a + (b - a) * k, clamp = (v, a, b) => Math.max(a, Math.min(b, v)), ease = k => { k = clamp(k, 0, 1); return k * k * (3 - 2 * k); };
   const T = (x, y, s, o) => { o = o || {}; return `<text x="${f1(x)}" y="${f1(y)}" font-size="${o.fs || 15}" font-weight="${o.w || 700}" fill="${o.c || "currentColor"}" text-anchor="${o.a || "middle"}">${s}</text>`; };
-  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const RM = () => window.VDISPLAY ? window.VDISPLAY.reduced() : !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   function loop(host, svg, draw){
     const t0 = performance.now();
-    const tick = now => { if (!host.isConnected) return; svg.innerHTML = draw(reduce ? 99 : (now - t0) / 1000); requestAnimationFrame(tick); };
+    const tick = now => { if (!host.isConnected) return; svg.innerHTML = draw(RM() ? 99 : (now - t0) / 1000); requestAnimationFrame(tick); };
     requestAnimationFrame(tick);
   }
 
@@ -85,7 +85,7 @@
     host.querySelector("#fcNext").addEventListener("click", () => { if (k === ST.length - 1){ k = 0; answered = {}; } else k++; draw(); });
     host.querySelector("#fcBack").addEventListener("click", () => { if (k > 0){ k--; draw(); } });
     host.querySelector("#fcReplay").addEventListener("click", () => { tStage = performance.now(); });
-    const tick = now => { if (!host.isConnected) return; svg.innerHTML = scene(reduce ? 99 : (now - tStage) / 1000); requestAnimationFrame(tick); };
+    const tick = now => { if (!host.isConnected) return; svg.innerHTML = scene(RM() ? 99 : (now - tStage) / 1000); requestAnimationFrame(tick); };
     draw(); requestAnimationFrame(tick);
   };
 
@@ -93,7 +93,7 @@
   V.sims.arac = (host, spec) => {
     let on = false, tOn = 0;
     host.innerHTML = `<div class="btnrow"><button type="button" class="opt sel" data-ara="0" aria-pressed="true">No arabinose</button><button type="button" class="opt" data-ara="1" aria-pressed="false">Add arabinose</button></div>
-      <div class="svgbox anim" style="margin-top:10px"><svg viewBox="0 0 640 270" role="img" aria-label="AraC, RNA polymerase, and the GFP gene"></svg></div><p class="msg" id="acCap"></p>`;
+      <div class="svgbox anim" style="margin-top:10px"><svg viewBox="0 24 640 206" role="img" aria-label="AraC, RNA polymerase, and the GFP gene"></svg></div><p class="msg" id="acCap"></p>`;
     const svg = host.querySelector("svg"), cap = host.querySelector("#acCap");
     const setCap = () => { cap.className = "msg " + (on ? "good" : ""); cap.innerHTML = on ? spec.onCap : spec.offCap; };
     host.querySelectorAll("[data-ara]").forEach(b => b.addEventListener("click", () => { on = b.dataset.ara === "1"; tOn = performance.now();
@@ -101,18 +101,18 @@
     setCap();
     const t0 = performance.now();
     function scene(now){
-      const t = (now - t0) / 1000, ts = reduce ? 99 : (now - tOn) / 1000, y = 200;
-      let o = `<rect width="640" height="270" rx="14" fill="var(--surface)"/>`;
+      const t = (now - t0) / 1000, ts = RM() ? 99 : (now - tOn) / 1000, y = 172;
+      let o = `<rect y="24" width="640" height="206" rx="14" fill="var(--surface)"/>`;
       o += `<rect x="30" y="${y}" width="170" height="26" rx="6" fill="#a96c05"/>${T(115, y + 18, "araC gene", {fs:14, c:"#fff"})}<rect x="200" y="${y}" width="70" height="26" fill="#5a2a98"/>${T(235, y + 18, "pBAD", {fs:13, c:"#fff"})}<rect x="270" y="${y}" width="340" height="26" rx="6" fill="${on && ts > 2.2 ? "#1f8a55" : "#9aa7b5"}"/>${T(440, y + 18, "GFP gene", {fs:14, c:"#fff"})}`;
       if (!on){
         o += `<g transform="translate(235 ${y - 34})"><polygon points="-22,-9 -9,-22 9,-22 22,-9 22,9 9,22 -9,22 -22,9" fill="#c43a2b" stroke="#fff" stroke-width="2"/>${T(0, 5, "STOP", {fs:11, c:"#fff"})}</g>${T(235, y - 64, "AraC", {fs:14, c:"#c43a2b"})}`;
         const ph = (t % 2.4) / 2.4, x = ph < .5 ? lerp(90, 178, ease(ph * 2)) : lerp(178, 90, ease((ph - .5) * 2));
         o += `<ellipse cx="${f1(x)}" cy="${y - 22}" rx="34" ry="20" fill="#3f7bd1"/>${T(x, y - 17, "RNA pol", {fs:12, c:"#fff"})}`;
         if (ph > .42 && ph < .58) o += T(205, y - 50, "blocked!", {fs:14, c:"#c43a2b"});
-        o += T(500, 60, "GFP OFF", {fs:22, c:"#53657b"});
+        o += T(500, 70, "GFP OFF", {fs:22, c:"#53657b"});
       } else {
         const drop = ease(ts / 1.2), morph = ease((ts - 1.1) / .7);
-        for (let i = 0; i < 3; i++) o += arab(lerp(150 + i * 60, 222 + i * 9, drop), lerp(40, y - 44, drop), 10);
+        for (let i = 0; i < 3; i++) o += arab(lerp(150 + i * 60, 222 + i * 9, drop), lerp(44, y - 44, drop), 10);
         const ax = 235, ay = y - 34 - morph * 16;
         o += morph < .5 ? `<g transform="translate(${ax} ${ay})"><polygon points="-22,-9 -9,-22 9,-22 22,-9 22,9 9,22 -9,22 -22,9" fill="#c43a2b"/>${T(0, 5, "STOP", {fs:11, c:"#fff"})}</g>`
           : `<g transform="translate(${ax} ${ay})"><circle r="24" fill="#1f8a55"/>${T(0, 5, "GO", {fs:13, c:"#fff"})}</g>`;
@@ -122,8 +122,8 @@
           o += `<line x1="270" y1="${y - 6}" x2="${f1(Math.max(270, x - 30))}" y2="${y - 6}" stroke="#c2185b" stroke-width="4" stroke-dasharray="7 4"/>`;
           o += `<ellipse cx="${f1(x)}" cy="${y - 22}" rx="34" ry="20" fill="#3f7bd1"/>${T(x, y - 17, "RNA pol", {fs:12, c:"#fff"})}`;
           const made = Math.min(8, Math.floor((ts - 1.9) / 1.1));
-          for (let i = 0; i < made; i++) o += gfp(330 + (i % 4) * 70, 70 + Math.floor(i / 4) * 44 + Math.sin(t * 2 + i) * 3, 1 + .25 * Math.sin(t * 3 + i));
-          o += T(570, 48, "GFP ON", {fs:22, c:"#1f8a55"});
+          for (let i = 0; i < made; i++) o += gfp(330 + (i % 4) * 70, 58 + Math.floor(i / 4) * 40 + Math.sin(t * 2 + i) * 3, 1 + .25 * Math.sin(t * 3 + i));
+          o += T(586, 50, "GFP ON", {fs:20, c:"#1f8a55"});
         } else o += `<ellipse cx="160" cy="${y - 22}" rx="34" ry="20" fill="#3f7bd1"/>${T(160, y - 17, "RNA pol", {fs:12, c:"#fff"})}`;
       }
       return o;
@@ -149,7 +149,7 @@
       for (let i = 0; i <= n * prog; i++){ const s = i / n, w = Math.sin(s * waves * 6.283) * 6; pts.push(`${f1(x1 + ux * L * s - uy * w)},${f1(y1 + uy * L * s + ux * w)}`); }
       return pts.length > 1 ? `<polyline points="${pts.join(" ")}" fill="none" stroke="${col}" stroke-width="3"/>` : ""; };
     function scene(now){
-      const t = reduce ? 99 : (now - tOn) / 1000;
+      const t = RM() ? 99 : (now - tOn) / 1000;
       const ph = !on ? -1 : t < 1 ? 0 : t < 2.2 ? 1 : t < 3 ? 2 : t < 4.2 ? 3 : 4;
       if (ph !== lastPh){ lastPh = ph;
         host.querySelector("#glSteps").innerHTML = steps.map((s, i) => `<span class="${i === ph ? "on" : i < ph ? "done" : ""}">${s}</span>`).join("");
@@ -174,7 +174,7 @@
       if (ph === 4){ eY = gy; const r = ((t - 4.2) % 2.4) / 2.4; o += squig(zx + 20, 300, ex - 8, gy, 9, "#9b6bff", ease(r * 2.5)); o += squig(ex + 10, 180, zx + 370, 150, 4, "#2fd35a", ease((r - .35) * 2.5)); }
       if (ph >= 1) o += `<line x1="${ex}" y1="${gy}" x2="${ex}" y2="${f1(eY)}" stroke="#9b6bff" stroke-width="2" stroke-dasharray="4 4" opacity=".6"/>`;
       o += `<circle cx="${f1(eX)}" cy="${f1(eY)}" r="11" fill="#f2b134" stroke="#a8760f" stroke-width="2"/>${T(eX, eY + 4, "e⁻", {fs:11, c:"#3b2a00"})}`;
-      o += T(zx + 192, 296, "UV in: short wavelength, more energy. Green out: longer wavelength, less energy.", {fs:11, w:400, c:zc});
+      o += T(zx + 192, 58, "UV in: short wavelength, more energy.", {fs:12, w:400, c:zc}) + T(zx + 192, 73, "Green out: longer wavelength, less energy.", {fs:12, w:400, c:zc});
       return o;
     }
     const tick = now => { if (!host.isConnected) return; svg.innerHTML = scene(now); requestAnimationFrame(tick); };
@@ -190,7 +190,7 @@
     const leaks = Array.from({length:14}, () => [40 + R() * 520, R()]);
     const PH = [[0, "On ice: the membrane is stiff.", "#e9f5fb"], [2, "42°C: the membrane gets more fluid. The plasmid slips in.", "#fde7df"], [4.5, "Still too hot: the membrane gets too liquid.", "#fbd3c4"], [6.5, "It cannot reform. The membrane falls apart and the cell dies.", "#f5b8a6"]];
     function scene(now){
-      const t = reduce ? 8 : ((now - t0) / 1000) % 10, ph = PH.filter(p => t >= p[0]).length - 1;
+      const t = RM() ? 8 : ((now - t0) / 1000) % 10, ph = PH.filter(p => t >= p[0]).length - 1;
       const amp = t < 2 ? .4 : t < 4.5 ? 3 : t < 6.5 ? 3 + (t - 4.5) * 4.5 : 12, spread = t < 6.5 ? 0 : Math.min(1, (t - 6.5) / 2.2);
       let o = `<rect width="600" height="230" rx="12" fill="${PH[ph][2]}"/>` + T(300, 26, PH[ph][1], {fs:16, c:"#14223a"});
       if (t >= 2) [70, 300, 530].forEach((x, i) => { o += `<g opacity="${f1(Math.min(1, (t - 2) * 2))}">${A.fire ? A.fire(x, 52, .9) : ""}</g>`; });

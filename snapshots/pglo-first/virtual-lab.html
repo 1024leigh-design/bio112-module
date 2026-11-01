@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Virtual Lab (first version snapshot)</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="vlab/vlab.css">
+</head>
+<body>
+<div style="background:#14223a;color:#fff;text-align:center;font:700 16px system-ui,sans-serif;padding:8px 12px">Saved snapshot of the very first version (Oct 31, 2026), before any instructor feedback. This copy never changes. <a href="../../virtual-lab.html#lab15" style="color:#9fd1f0">See the current version</a></div>
+<div class="wrap">
+<header class="topbar">
+  <a class="brand" href="#" aria-label="Lab Bench: all 15 stations">
+    <svg viewBox="0 0 26 26" aria-hidden="true"><path d="M9 3h8M10 3v7l-6 11a2 2 0 0 0 2 3h14a2 2 0 0 0 2-3l-6-11V3" fill="none" stroke="var(--arrow)" stroke-width="2" stroke-linejoin="round"/><path d="M6.5 17h13l2 4.5a1 1 0 0 1-1 1.5H5.5a1 1 0 0 1-1-1.5Z" fill="var(--gn-edge)" opacity=".75"/></svg>
+    <span>Lab Bench</span>
+  </a>
+  <span class="crumb" id="crumb"></span>
+  <div class="topright">
+    <div class="seg" role="radiogroup" aria-label="Mode">
+      <button type="button" role="radio" data-mode="learn" aria-checked="true">Learn</button>
+      <button type="button" role="radio" data-mode="test" aria-checked="false">Test</button>
+    </div>
+    <button type="button" class="homebtn" id="vocabBtn">Vocab</button>
+    <a class="homebtn" href="../../virtual-lab.html#lab15" aria-label="All BIO 112 modules">&#9776;<span class="long"> All modules</span></a>
+  </div>
+</header>
+<main id="app"></main>
+</div>
+
+<dialog id="vocabDlg" aria-labelledby="vocabTitle">
+  <div class="dlghead"><h2 id="vocabTitle">Vocab</h2><button type="button" class="btn ghost small" id="vocabClose">Close</button></div>
+  <div class="dlgbody">
+    <label class="vsearch"><span>Find a word</span><input type="search" id="vocabFind" autocomplete="off"></label>
+    <dl class="vlist" id="vocabList"></dl>
+  </div>
+</dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="vlab/art.js"></script>
+<script src="vlab/core.js"></script>
+<script src="vlab/sims.js"></script>
+<script src="vlab/problems.js"></script>
+<script src="labs/lab01-microscope.js"></script>
+<script src="labs/lab02-measurement.js"></script>
+<script src="labs/lab03-pond-water.js"></script>
+<script src="labs/lab04-environment.js"></script>
+<script src="labs/lab05-negative-stain.js"></script>
+<script src="labs/lab06-smear.js"></script>
+<script src="labs/lab07-simple-stain.js"></script>
+<script src="labs/lab08-gram.js"></script>
+<script src="labs/lab09-endospore.js"></script>
+<script src="labs/lab10-acid-fast.js"></script>
+<script src="labs/lab11-motility.js"></script>
+<script src="labs/lab12-broth-culture.js"></script>
+<script src="labs/lab13-pure-culture.js"></script>
+<script src="labs/lab14-serial-dilution.js"></script>
+<script src="labs/lab15-pglo.js"></script>
+<script src="labs/vocab.js"></script>
+<script src="labs/clock.js"></script>
+<script>VLAB.boot();</script>
+</body>
+</html>
