@@ -3,23 +3,29 @@ VLAB.add({
   n:14, title:"Serial dilution and plate counts",
   learn:[
     /* ---------- tab 1 ---------- */
-    {tab:"The tubes", banner:"Dilute step by step until one plate has a countable number of colonies.", top:[{type:"svg", name:"dilseries", wide:true, scroll:true}],
-      layout:"cards", cols:2, items:[
-      {big:"Tubes A and B", ico:{i:"tube", c:"#f0e2b4"}, t:"[[9.9]] mL sterile water + [[0.1|.1]] mL. Each is a [[1/100]] dilution.", why:"Tube A gets culture. Tube B gets 0.1 mL from tube A."},
-      {big:"Tubes C to F", ico:{i:"tube", c:"#f3e9c7"}, t:"[[9]] mL sterile water + [[1]] mL from the previous tube. Each is a [[1/10]] dilution."},
-      {big:"Plate", ico:{i:"pipette"}, t:"[[100 µL|100|100ul|100 ul]] (0.1 mL) from each tube with a micropipette. Spread with a spreader dipped in [[isopropanol|isopropyl alcohol|alcohol]] and flamed."},
+    {tab:"The tubes", banner:"Dilute step by step until a plate has a countable number of colonies.", top:[{type:"svg", name:"dilseries", wide:true, scroll:true}],
+      lead:"Six tubes, one transfer at a time. Mix each tube well before you move liquid out of it.", kind:"steps", items:[
+      {pic:{name:"xfer", from:"Culture", to:"A", add:0.1, water:9.9, c:"#1683cc", cloudy:true}, t:"<b>Culture to A:</b> move [[0.1|.1]] mL of the original culture into tube A, which has [[9.9]] mL of sterile water.", why:"0.1 ÷ (0.1 + 9.9) = 0.1 ÷ 10 = 1/100. Tube A is a 1/100 dilution of the culture."},
+      {pic:{name:"xfer", from:"Tube A", to:"B", add:0.1, water:9.9, c:"#c2185b", cloudy:true}, t:"<b>A to B:</b> mix tube A. Move 0.1 mL from tube A into tube B, which has 9.9 mL of sterile water. Tube B is a [[1/100]] dilution of tube A.", why:"Same volumes as tube A: 0.1 ÷ 10 = 1/100."},
+      {pic:{name:"xfer", from:"Tube B", to:"C", add:1, water:9, c:"#1f8a55", cloudy:true}, t:"<b>B to C:</b> mix tube B. Move [[1]] mL from tube B into tube C, which has [[9]] mL of sterile water.", why:"1 ÷ (1 + 9) = 1 ÷ 10 = 1/10. Tube C is a 1/10 dilution of tube B."},
+      {pic:{name:"xfer", from:"Tube C", to:"D", add:1, water:9, c:"#a96c05"}, t:"<b>C to D:</b> mix tube C. Move 1 mL from tube C into tube D, which has 9 mL of sterile water. Tube D is a [[1/10]] dilution of tube C.", why:"1 ÷ 10 = 1/10."},
+      {pic:{name:"xfer", from:"Tube D", to:"E", add:1, water:9, c:"#5a2a98"}, t:"<b>D to E:</b> mix tube D. Move 1 mL from tube D into tube E, which has 9 mL of sterile water.", why:"1 ÷ 10 = 1/10 again."},
+      {pic:{name:"xfer", from:"Tube E", to:"F", add:1, water:9, c:"#e4572e"}, t:"<b>E to F:</b> mix tube E. Move 1 mL from tube E into tube F, which has 9 mL of sterile water.", why:"1 ÷ 10 = 1/10 again."}
+    ]},
+    {tab:"The tubes", h:"Then plate and incubate", layout:"cards", cols:2, items:[
+      {big:"Plate", ico:{i:"pipette"}, t:"Plate [[100 µL|100|100ul|100 ul]] (0.1 mL) from each tube with a micropipette. Spread with a spreader dipped in [[isopropanol|isopropyl alcohol|alcohol]] and flamed between plates."},
       {big:"Incubate", ico:{i:"incub", c:"37°C"}, t:"Incubate the plates at [[37°C|37|37 c]]."}
     ]},
-    {tab:"The tubes", h:"Where does the dilution factor come from?", layout:"split", figs:[{type:"svg", name:"dfone", a:0.1, w:9.9, cap:"Tube A or B"}, {type:"svg", name:"dfone", a:1, w:9, c:"#c2185b", cap:"Tubes C to F"}], items:[
+    {tab:"The tubes", h:"Where does the dilution factor come from?", review:"exp", figs:[{type:"svg", name:"dfone", a:0.1, w:9.9, wide:"mid", cap:"Tubes A and B"}, {type:"svg", name:"dfone", a:1, w:9, c:"#c2185b", wide:"mid", cap:"Tubes C, D, E, and F"}], items:[
       {t:"Dilution factor = volume added ÷ [[total volume|total]]."},
       {t:"Total volume = volume added + the [[water]].", why:"0.1 mL + 9.9 mL = 10 mL, not 9.9 mL."}
     ]},
     /* ---------- tab 2 ---------- */
-    {tab:"Total dilution", banner:"Multiply the dilution factor of every tube along the way.", items:[
+    {tab:"Total dilution", banner:"Multiply the dilution factor of every tube along the way.", review:"exp", items:[
       {t:"Total dilution = [[multiply|multiplying]] the dilution factors of each tube."}
     ], sim:{sim:"dilchain", prompt:"Pick a tube. Tap <b>Next step</b> to see where each number comes from."}, tip:"Powers of 10? Add the exponents. 10<sup>-2</sup> × 10<sup>-2</sup> × 10<sup>-1</sup> = 10<sup>-5</sup>."},
     /* ---------- tab 3 ---------- */
-    {tab:"Count + CFU", banner:"cells/mL = CFUs ÷ (total dilution × mL plated)", layout:"cards", items:[
+    {tab:"Count + CFU", banner:"cells/mL = CFUs ÷ (total dilution × mL plated)", review:"exp", layout:"cards", items:[
       {big:"CFU", t:"[[Colony forming unit|colony-forming unit]]. One colony started from one live cell (or clump)."},
       {big:"&gt; 200", t:"More than [[200]] colonies = TNTC. Write \"&gt;200\" or \"TNTC\". Do [[not]] use that plate."},
       {big:"µL to mL", t:"Divide by [[1000|1,000]]. So 100 µL = [[0.1|.1]] mL."}

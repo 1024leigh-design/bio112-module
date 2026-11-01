@@ -222,8 +222,8 @@
     return wrap(660, 224, s, "Serial dilution tubes A to F with volumes, dilution factors, and total dilutions");
   };
   F.dilplates = () => {
-    const P = [["C", 10, "TNTC"], ["D", 300, "TNTC (>200)"], ["E", 52, "52: count it"], ["F", 5, "5"]];
-    return wrap(520, 170, P.map(([n, c, l], i) => place(A.plate({colonies:c === 10 ? A.scatter(400, 3, "white", 1.4, 2.2) : A.scatter(c, 20 + i, "white", 2.5, 4)}), 10 + i * 128, 0, .55) + T(65 + i * 128, 132, "Plate " + n, {fs:15}) + T(65 + i * 128, 154, l, {fs:13, w:400, c:i === 2 ? "#1f8a55" : "currentColor"})).join(""), "Plates C to F: crowded plates are TNTC");
+    const P = [["B", 10, "TNTC"], ["C", 10, "TNTC (>200)"], ["D", 156, "156: countable"], ["E", 16, "16: countable"]];
+    return wrap(520, 170, P.map(([n, c, l], i) => place(A.plate({colonies:c === 10 ? A.scatter(400, 3, "white", 1.4, 2.2) : A.scatter(c, 20 + i, "white", 2.5, 4)}), 10 + i * 128, 0, .55) + T(65 + i * 128, 132, "Plate " + n, {fs:15}) + T(65 + i * 128, 154, l, {fs:13, w:400, c:i >= 2 ? "#1f8a55" : "currentColor"})).join(""), "Plates C to F: crowded plates are TNTC");
   };
 
   /* Lab 15 */
