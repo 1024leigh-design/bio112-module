@@ -276,3 +276,41 @@
     return `<polyline points="${pts.map(p => p.map(f1).join(",")).join(" ")}" fill="none" stroke="#1683cc" stroke-width="3" stroke-linejoin="round"/>`;
   };
 })();
+
+/* Lab 15: one picture per protocol step (bigger than the step icons) */
+(function(){
+  const A = window.ART, f1 = A.f1, F = A.figs;
+  const T = (x, y, s, o) => { o = o || {}; return `<text x="${f1(x)}" y="${f1(y)}" font-size="${o.fs || 13}" font-weight="${o.w || 700}" fill="${o.c || "currentColor"}" text-anchor="${o.a || "middle"}">${s}</text>`; };
+  const ar = A.arrow, pl = A.place;
+  const ico = (n, a, x, y, sc) => pl(A.ico(n, a), x - 30 * sc, y - 30 * sc, sc);
+  const wrap = (body, label) => `<svg viewBox="0 0 220 150" role="img" aria-label="${A.esc(label)}" style="color:var(--ink)">${body}</svg>`;
+  /* mini tube: center x, top y */
+  const mt = (x, y, o) => { o = o || {}; const lv = o.lv === undefined ? .55 : o.lv;
+    return `<path d="M${x - 13},${y + 10} L${x - 13},${y + 62} Q${x},${y + 80} ${x + 13},${y + 62} L${x + 13},${y + 10}" fill="#f4f8fb" stroke="#8b93a3" stroke-width="2"/>`
+      + (lv ? `<path d="M${x - 11.5},${f1(y + 72 - 60 * lv)} L${x - 11.5},${y + 62} Q${x},${y + 78} ${x + 11.5},${y + 62} L${x + 11.5},${f1(y + 72 - 60 * lv)} Z" fill="${o.fill || "#dff1fb"}"/>` : "")
+      + (o.cells ? `<path d="M${x - 11.5},${f1(y + 72 - 60 * lv)} L${x - 11.5},${y + 62} Q${x},${y + 78} ${x + 11.5},${y + 62} L${x + 11.5},${f1(y + 72 - 60 * lv)} Z" fill="#d9c58f" opacity=".5"/>` : "")
+      + (o.plasmid ? `<circle cx="${x - 4}" cy="${y + 54}" r="4" fill="none" stroke="#1683cc" stroke-width="2"/><circle cx="${x + 5}" cy="${y + 62}" r="4" fill="none" stroke="#1683cc" stroke-width="2"/>` : "")
+      + `<rect x="${x - 15}" y="${y}" width="30" height="11" rx="3" fill="${o.cap || "#8b93a3"}"/>` + (o.label ? T(x, y + 96, o.label, {fs:12, c:o.cap || "currentColor"}) : ""); };
+  const PLUS = "#1f8a55", MINUS = "#c43a2b";
+  const clock = (x, y, t) => `<circle cx="${x}" cy="${y}" r="20" fill="var(--surface)" stroke="#1683cc" stroke-width="3"/><path d="M${x},${y} L${x},${y - 12} M${x},${y} L${x + 9},${y + 4}" stroke="#14223a" stroke-width="2.5" stroke-linecap="round"/>${T(x, y + 38, t, {fs:13, c:"#1683cc"})}`;
+  const bucket = (x, y) => `<path d="M${x - 52},${y} L${x + 52},${y} L${x + 44},${y + 52} L${x - 44},${y + 52} Z" fill="#dff1fb" stroke="#7fb8d9" stroke-width="2"/>${[0, 1, 2, 3].map(i => `<rect x="${x - 38 + i * 20}" y="${y + 26}" width="14" height="14" rx="3" fill="#fff" stroke="#9cc6e4"/>`).join("")}`;
+
+  F.pg1 = () => wrap(ico("bottle", "#9fd1f0", 34, 52, 1.1) + T(34, 104, "ice-cold", {fs:11, w:400}) + T(34, 118, "CaCl₂", {fs:12})
+    + ar(62, 40, 92, 40, "#1683cc", 3) + T(77, 30, "400 µL", {fs:12, c:"#1683cc"}) + mt(110, 20, {cells:true, lv:.6})
+    + pl(A.plate({colonies:A.scatter(6, 3, "white", 7, 10)}), 150, 40, .3) + `<path d="M175,62 Q150,10 126,30" fill="none" stroke="#9aa3b2" stroke-width="2.5"/><circle cx="124" cy="32" r="4" fill="none" stroke="#9aa3b2" stroke-width="2"/>` + T(180, 118, "1 to 2 colonies", {fs:11, w:400}), "400 microliters of CaCl2 plus one or two colonies in one tube");
+  F.pg2 = () => wrap(mt(55, 26, {cells:true, lv:.35, cap:PLUS, label:"+pGLO"}) + ar(78, 44, 138, 44, "#1683cc", 3) + T(108, 34, "200 µL", {fs:13, c:"#1683cc"}) + mt(160, 26, {cells:true, lv:.35, cap:MINUS, label:"-pGLO"})
+    + T(110, 146, "Split in half, then label", {fs:12, w:400}), "Move 200 microliters into a second tube and label them");
+  F.pg3 = () => wrap(ico("tube", "#cfe3f7", 34, 50, 1.1) + T(34, 104, "pGLO", {fs:12, c:"#1683cc"}) + ar(60, 44, 92, 44, "#1683cc", 3) + T(76, 34, "4 µL", {fs:13, c:"#1683cc"})
+    + mt(115, 26, {cells:true, plasmid:true, lv:.36, cap:PLUS, label:"+pGLO"}) + mt(180, 26, {cells:true, lv:.35, cap:MINUS, label:"-pGLO"}) + T(180, 146, "no plasmid", {fs:11, w:400, c:MINUS}), "Add 4 microliters of plasmid to the +pGLO tube only");
+  F.pg4 = () => wrap(bucket(80, 70) + mt(62, 24, {cells:true, plasmid:true, lv:.36, cap:PLUS}) + mt(98, 24, {cells:true, lv:.35, cap:MINUS}) + bucket(80, 70).replace(/fill="#dff1fb"/, 'fill="#dff1fb" opacity=".75"') + clock(178, 54, "about 1 hour") + T(80, 140, "On ice", {fs:13}), "Both tubes on ice for about 1 hour");
+  F.pg5 = () => wrap(`<rect x="18" y="66" width="128" height="62" rx="8" fill="#f8c9b8" stroke="#e4572e" stroke-width="2"/><path d="M18,78 q16,-8 32,0 t32,0 t32,0 t32,0" stroke="#e4572e" stroke-width="2" fill="none"/>`
+    + mt(62, 30, {cells:true, plasmid:true, lv:.36, cap:PLUS}) + mt(100, 30, {cells:true, lv:.35, cap:MINUS}) + `<rect x="18" y="86" width="128" height="42" rx="6" fill="#f8c9b8" opacity=".8"/>` + T(82, 116, "42°C", {fs:18, c:"#b03a1a"}) + clock(184, 58, "45 seconds"), "Heat shock in a 42 degree water bath for 45 seconds");
+  F.pg6 = () => wrap(bucket(80, 70) + mt(62, 24, {cells:true, plasmid:true, lv:.36, cap:PLUS}) + mt(98, 24, {cells:true, lv:.35, cap:MINUS}) + bucket(80, 70).replace(/fill="#dff1fb"/, 'fill="#dff1fb" opacity=".75"') + clock(178, 54, "2 to 10 min") + T(80, 140, "Back on ice", {fs:13}), "Back on ice for 2 to 10 minutes");
+  F.pg7 = () => wrap(ico("bottle", "#efe0b5", 30, 50, 1.05) + T(30, 102, "LB", {fs:12}) + ar(56, 44, 82, 44, "#a96c05", 3) + T(70, 34, "200 µL", {fs:11, c:"#a96c05"})
+    + `<rect x="88" y="16" width="120" height="118" rx="8" fill="#e8ecf2" stroke="#8b93a3" stroke-width="2"/>` + mt(124, 28, {cells:true, plasmid:true, lv:.6, fill:"#efe0b5", cap:PLUS}) + mt(170, 28, {cells:true, lv:.6, fill:"#efe0b5", cap:MINUS}) + T(148, 128, "37°C, 1 hour", {fs:13}), "Add 200 microliters LB, then 37 degrees for 1 hour");
+  F.pg8 = () => wrap(ico("pipette", "", 46, 34, 1.1) + T(46, 80, "100 µL", {fs:13, c:"#1683cc"}) + ar(64, 56, 92, 74, "#1683cc", 3)
+    + pl(A.plate({}), 90, 50, .45) + `<path d="M178,30 L178,92 L150,92" fill="none" stroke="#8b93a3" stroke-width="6" stroke-linecap="round"/>` + T(180, 20, "spreader", {fs:11, w:400}) + T(135, 146, "Each tube onto its plates", {fs:12, w:400}), "Pipette 100 microliters onto each plate and spread");
+  F.pg9 = () => wrap(`<g transform="translate(70 92) scale(1 -1)"><ellipse cx="0" cy="0" rx="44" ry="12" fill="#efdba6" stroke="#aab3c2" stroke-width="2"/><rect x="-46" y="-2" width="92" height="12" fill="#e3e7ee" stroke="#aab3c2" stroke-width="2"/></g>`
+    + T(70, 60, "agar side up", {fs:11, w:400}) + `<path d="M28,40 q42,-30 84,0" fill="none" stroke="#1683cc" stroke-width="3"/><path d="M112,40 l-10,-2 l5,9 Z" fill="#1683cc"/>` + T(70, 22, "flip it", {fs:12, c:"#1683cc"})
+    + ico("incub", "37°C", 176, 72, 1.3) + T(110, 140, "Upside down at 37°C", {fs:13}), "Incubate the plates upside down at 37 degrees");
+})();

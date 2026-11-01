@@ -346,3 +346,19 @@ dialog::backdrop{background:rgba(10,20,30,.55)}
 .svgbox.anim, .svgbox.bench{overflow-x:auto}
 .svgbox.anim svg, .svgbox.bench svg{min-width:600px}
 @media (max-width:640px){ .svgscroll::after, .svgbox.anim::after, .svgbox.bench::after{content:"Swipe to see more \2192"; display:block; text-align:center; font-size:15px; color:var(--muted); padding-top:4px; position:sticky; left:0} }
+
+/* a picture for each protocol step */
+.litems > li.haspic{align-items:center; flex-wrap:wrap}
+.lpic{flex:0 0 220px; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:4px}
+.lpic svg{display:block; width:100%; height:auto}
+.litems > li.haspic .body{flex:1 1 240px}
+@media (max-width:560px){ .lpic{flex-basis:100%} }
+/* cheat sheet */
+.cheat{border:2px solid var(--gn-edge); border-radius:16px; padding:12px 14px; margin-bottom:16px; background:var(--surface)}
+.cheatt{display:block; font-family:var(--f-display); font-size:21px; margin-bottom:8px; text-align:center}
+.cheat dl{margin:0; display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:8px}
+.cheat dl > div{display:flex; gap:10px; align-items:center; background:var(--bg); border-radius:12px; padding:8px 10px}
+.cheat dt{flex-shrink:0; min-width:86px; text-align:center; font:700 17px var(--f-mono); background:var(--surface-2); border-radius:8px; padding:4px 8px}
+.cheat dd{margin:0}
+.lcards.c2x{grid-template-columns:repeat(2,minmax(0,1fr))}
+.lcards.c2x .lcard .lcfig{max-width:200px}
