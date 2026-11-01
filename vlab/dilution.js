@@ -42,7 +42,7 @@
       let o = tubeAt(40, 38, true, .42) + T(40, 150, "Culture", {fs:12});
       tubes.forEach((t, i) => { const x = X(i), on = i <= k, shown = i < step;
         o += `<g opacity="${on ? 1 : .3}">` + tubeAt(x, 38, i < 3, .42);
-        o += `<path d="M${X(i - 1) + 14},34 Q${(X(i - 1) + x) / 2},4 ${x - 14},34" fill="none" stroke="#53657b" stroke-width="2"/><path d="M${x - 14},34 l-9,-4 l3,9 Z" fill="#53657b"/>`;
+        o += A.curve(X(i - 1) + 14, 34, (X(i - 1) + x) / 2, 4, x - 14, 34, "#53657b", 2);
         o += T((X(i - 1) + x) / 2, 14, t[0] + " mL", {fs:12, c:"#53657b"}) + T(x, 34, NAMES[i], {fs:16});
         o += T(x, 140, t[1] + " mL water", {fs:11, w:400});
         o += `<rect x="${x - 34}" y="152" width="68" height="28" rx="14" fill="${on && shown ? COL[i] : "var(--surface-2)"}" stroke="${on ? COL[i] : "#9aa7b5"}" stroke-width="2"/>` + T(x, 171, on && shown ? "1/" + den(t) : "?", {fs:14, c:on && shown ? "#fff" : on ? COL[i] : "#9aa7b5"});
@@ -176,7 +176,7 @@
   A.figs.dfone = sp => {
     const a = sp.a, w = sp.w, tt = +(a + w).toFixed(2), d = Math.round(tt / a), C = sp.c || "#1683cc";
     let o = tubeAt(50, 20, true, .38) + T(50, 120, `${a} mL`, {fs:15, c:C}) + T(50, 138, "added", {fs:12, w:400});
-    o += `<path d="M70,50 Q110,20 150,50" fill="none" stroke="${C}" stroke-width="3"/><path d="M150,50 l-10,-3 l4,9 Z" fill="${C}"/>`;
+    o += A.curve(70, 50, 110, 20, 150, 50, C);
     o += tubeAt(175, 20, false, .38) + T(175, 120, `${w} mL`, {fs:15, c:"#53657b"}) + T(175, 138, "water", {fs:12, w:400});
     o += T(255, 76, "=", {fs:24}) + T(330, 66, `${tt} mL`, {fs:18}) + T(330, 88, "total", {fs:13, w:400});
     o += T(150, 186, `${a}`, {fs:22, c:C}) + `<line x1="118" y1="196" x2="182" y2="196" stroke="currentColor" stroke-width="2.5"/>` + T(150, 220, `${tt}`, {fs:22});
@@ -188,7 +188,7 @@
   A.figs.xfer = sp => {
     const d = Math.round((sp.add + sp.water) / sp.add), C = sp.c || "#1683cc", g = A.seqG, mover = A.seqMover;
     let o = g("sq1", tubeAt(42, 26, true, .4) + T(42, 132, sp.from, {fs:13}) + tubeAt(150, 26, false, .4) + T(150, 132, `Tube ${sp.to}`, {fs:14}) + T(150, 148, `${sp.water} mL water`, {fs:11, w:400}));
-    o += g("sq2", `<path d="M62,40 Q100,6 138,40" fill="none" stroke="${C}" stroke-width="3"/><path d="M138,40 l-10,-3 l4,9 Z" fill="${C}"/>` + T(100, 20, `${sp.add} mL`, {fs:14, c:C}));
+    o += g("sq2", A.curve(60, 40, 112, 6, 150, 22, C) + T(100, 12, `${sp.add} mL`, {fs:14, c:C}));
     o += mover(42, 40, 150, 46, "#d9c58f") + g("sq3", `<rect x="139" y="${sp.cloudy ? 70 : 74}" width="22" height="${sp.cloudy ? 40 : 36}" rx="3" fill="#e3d29a" opacity=".55"/>`);
     o += g("sq4", `<rect x="186" y="62" width="64" height="34" rx="17" fill="${C}"/>` + T(218, 85, `1/${d}`, {fs:16, c:"#fff"}));
     return `<svg class="seq" viewBox="0 0 260 156" role="img" aria-label="Move ${sp.add} mL from ${sp.from} into tube ${sp.to}" style="color:var(--ink)">${o}</svg>`;
