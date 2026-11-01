@@ -62,7 +62,7 @@ VLAB.add({
       {id:"uv", short:"UV light", title:"Under the UV light", cap:"The +pGLO cell grew into a colony that glows green. The -pGLO side has no colony.",
         q:{q:"What makes the colony glow?", opts:["GFP, switched on by arabinose", "Ampicillin", "Beta-lactamase", "Ca²⁺"], a:0, why:"Arabinose switches on GFP. GFP glows green under UV light."}}
     ]}},
-    {tab:"The plates", banner:"Four plates. Each one answers one question.", layout:"cards", cols:"2x", cheatTitle:"Plate code cheat sheet", cheat:[
+    {tab:"The plates", banner:"Four plates: two controls and two experimental. Each one answers one question.", layout:"cards", cols:"2x", cheatTitle:"Plate code cheat sheet", cheat:[
       ["LB", "The nutrient agar: food for the bacteria. Every plate has it. (LB = lysogeny broth, also called Luria-Bertani.)"],
       ["amp", "Ampicillin, an antibiotic. It kills cells that do not have the bla gene."],
       ["ara", "Arabinose, a sugar. It switches on the GFP gene."],
@@ -71,22 +71,20 @@ VLAB.add({
       ["-pGLO", "Cells from the control tube. No plasmid.", "#c43a2b"],
       ["UV", "Ultraviolet light. It makes GFP glow green."],
       ["lawn", "Growth that covers the whole plate, not separate colonies."]], items:[
-      {big:"LB", fig:{type:"plate", lawn:true}, t:"<b>-pGLO.</b> Are the cells alive? Result: a [[lawn|a lawn]], white."},
-      {big:"LB/amp", fig:{type:"plate"}, t:"<b>-pGLO.</b> Does ampicillin kill cells without the plasmid? Result: [[no growth|none|nothing]]."},
-      {big:"LB/amp", fig:{type:"plate", scatter:[[14, 151, "white", 6, 9]]}, t:"<b>+pGLO.</b> Did transformation work? Result: white [[colonies]]."},
-      {big:"LB/amp/ara", fig:{type:"plate", uv:true, glow:true, scatter:[[14, 152, "white", 6, 9]]}, t:"<b>+pGLO.</b> Does arabinose switch on GFP? Result: colonies that [[glow]] green under UV."}
     ]},
-    {tab:"The plates", h:"Controls: tap a card to flip it", lead:"Front: the setup. Back: what it is a control for.", items:[], flips:[
-      {tag:"Positive control", kind:"pos", fig:{type:"plate", lawn:true}, front:"-pGLO cells on LB", q:"Are the cells alive?", back:"Growth (a lawn) shows the cells survived the whole protocol. No growth here means something killed them, like a heat shock that was too long."},
-      {tag:"Negative control", kind:"neg", fig:{type:"plate"}, front:"-pGLO cells on LB/amp", q:"Is the ampicillin good?", back:"No growth shows the ampicillin kills cells without the plasmid. It also checks whether your bacteria have any natural resistance. Colonies here mean bad ampicillin, naturally resistant cells, or contamination."},
-      {tag:"Experimental", kind:"exp", fig:{type:"plate", scatter:[[10, 151, "white", 6, 9]]}, front:"+pGLO cells on LB/amp", q:"Did transformation work?", back:"Only cells that took up pGLO (with bla) can grow. These colonies stay white: with no arabinose, GFP stays off. That makes it the comparison for the arabinose plate."},
-      {tag:"Experimental", kind:"exp", fig:{type:"plate", uv:true, glow:true, scatter:[[10, 152, "white", 6, 9]]}, front:"+pGLO cells on LB/amp/ara", q:"Does arabinose switch on GFP?", back:"Glowing colonies show the plasmid genes are expressed. Compare with LB/amp (+pGLO): same cells, no arabinose, no glow."},
-      {tag:"Other labs", fig:{type:"plate", lawn:true}, front:"+pGLO cells on LB", q:"Did the +pGLO cells survive?", back:"A lawn grows, because nothing kills the cells that did not take up pGLO. It checks that the heat shock did not kill the +pGLO cells."},
-      {tag:"Other labs", fig:{type:"plate", lawn:true}, front:"-pGLO cells on LB/ara", q:"Does arabinose alone make cells glow?", back:"No. Without pGLO there is no GFP gene, so the lawn does not glow under UV."}
+    {tab:"The plates", h:"Controls", lead:"Both controls use -pGLO cells (no plasmid). They check the cells and the ampicillin.", layout:"cards", cols:"2x", items:[
+      {tag:"Positive control", kind:"pos", big:"LB", fig:{type:"plate", lawn:true}, t:"<b>-pGLO cells.</b> Are the cells alive? Result: a [[lawn|a lawn]].", why:"Growth shows the cells survived the protocol. No growth means something killed them, like a heat shock that was too long."},
+      {tag:"Negative control", kind:"neg", big:"LB/amp", fig:{type:"plate"}, t:"<b>-pGLO cells.</b> Does ampicillin kill cells without the plasmid? Result: [[no growth|none|nothing]].", why:"Colonies here mean bad ampicillin, naturally resistant cells, or contamination."}
     ]},
-    {tab:"The plates", h:"What if the plate were different?", layout:"cards", cols:2, tip:"Try every combination in the Plate predictor on the Practice tab.", items:[
-      {big:"No ampicillin", t:"Transformed and untransformed cells both grow. So only [[some]] colonies would glow (with arabinose).", whatif:[{q:"+pGLO cells go on LB/ara?", a:"With no ampicillin, nothing kills the cells that did not take up pGLO, so they grow into a lawn. Arabinose switches on GFP, but only cells with pGLO have the GFP gene. Only some of the lawn glows."}]},
-      {big:"Tetracycline or kanamycin", t:"pGLO only carries [[ampicillin|amp]] resistance. On a plate with a different antibiotic, cells with pGLO do not grow.", whatif:[{q:"+pGLO cells go on LB/tet or LB/kan?", a:"Tetracycline and kanamycin both stop ribosomes from making proteins. bla only protects against ampicillin, so nothing grows. The primary selection factor has to match a resistance gene on the plasmid: ampicillin needs bla, kanamycin needs a kanamycin resistance gene (like kanR), and tetracycline needs a tetracycline resistance gene (like tetR). Other labs use kanamycin, chloramphenicol, or tetracycline, each with its own matching gene."}]}
+    {tab:"The plates", h:"Experimental group", lead:"Both use +pGLO cells. They test what the plasmid does.", layout:"cards", cols:"2x", items:[
+      {tag:"Experimental", kind:"exp", big:"LB/amp", fig:{type:"plate", scatter:[[14, 151, "white", 6, 9]]}, t:"<b>+pGLO cells.</b> Did transformation work? Result: white [[colonies]].", why:"Only cells that took up pGLO (with bla) survive ampicillin. They stay white: no arabinose, so GFP stays off."},
+      {tag:"Experimental", kind:"exp", big:"LB/amp/ara", fig:{type:"plate", uv:true, glow:true, scatter:[[14, 152, "white", 6, 9]]}, t:"<b>+pGLO cells.</b> Does arabinose switch on GFP? Result: colonies that [[glow]] green under UV.", why:"Same cells as the LB/amp plate. Arabinose is the only difference, and only these colonies glow."}
+    ]},
+    {tab:"The plates", h:"What if the cells went on a different plate?", layout:"cards", cols:"2x", tip:"Try every combination in the Plate predictor on the Practice tab.", items:[
+      {big:"+pGLO cells on LB?", fig:{type:"plate", lawn:true}, t:"No ampicillin, so nothing kills the cells that missed the plasmid. You get a [[lawn|a lawn]]. No arabinose, so it does not glow."},
+      {big:"+pGLO cells on LB/ara?", fig:{type:"plate", lawn:true, uv:true, glow:true, scatter:[[6, 77, "white", 5, 7]]}, t:"A lawn grows. Only cells that took up pGLO have the GFP gene, so only [[some|part]] of the lawn glows."},
+      {big:"-pGLO cells on LB/ara?", fig:{type:"plate", lawn:true, uv:true}, t:"A lawn grows, but it does [[not]] glow. No plasmid means no GFP gene, and arabinose alone cannot make GFP."},
+      {big:"+pGLO cells on LB/tet or LB/kan?", fig:{type:"plate"}, t:"[[No growth|nothing|none]]. pGLO only carries [[ampicillin|amp]] resistance (the bla gene).", whatif:[{q:"the plasmid had a different resistance gene?", a:"Tetracycline and kanamycin both stop ribosomes from making proteins. bla only protects against ampicillin. The selection antibiotic has to match a resistance gene on the plasmid: kanamycin needs a kanamycin resistance gene (like kanR), and tetracycline needs a tetracycline resistance gene (like tetR). Other labs use kanamycin, chloramphenicol, or tetracycline, each with its own matching gene."}]}
     ]},
     {tab:"Plasmid + GFP", h:"Parts of the pGLO plasmid", layout:"split", figs:[{type:"plasmid", wide:true, cap:"pGLO plasmid map (simplified)"}], items:[
       {t:"[[ori]]: copies the plasmid."},
@@ -95,13 +93,13 @@ VLAB.add({
       {t:"[[araC]]: regulates GFP."},
       {t:"[[pBAD]] promoter: where RNA polymerase starts transcribing GFP."}
     ]},
-    {tab:"Plasmid + GFP", h:"How GFP is switched on", banner:"No arabinose: GFP off. Arabinose: GFP on.", kind:"facts", sim:{sim:"arac", prompt:"Switch between the two buttons and watch.",
+    {tab:"Plasmid + GFP", h:"How GFP is switched on", layout:"cards", cols:"4", sim:{sim:"arac", prompt:"Switch between the two buttons and watch.",
       offCap:"<b>No arabinose:</b> AraC sits on the promoter like a stop sign. RNA polymerase cannot get through. <b>GFP OFF.</b>",
       onCap:"<b>With arabinose:</b> arabinose binds AraC, and AraC changes shape. RNA polymerase transcribes GFP. <b>GFP ON.</b>"}, items:[
-      {t:"Without [[arabinose]], AraC blocks transcription of GFP."},
-      {t:"With arabinose, AraC changes [[shape]], and RNA polymerase transcribes GFP."},
-      {t:"Primary selection: [[ampicillin|amp]]. Only transformed cells grow."},
-      {t:"Secondary selection: arabinose/GFP. [[Glowing|glow|glowing green]] confirms the plasmid genes are expressed."}
+      {big:"Without arabinose", accent:"bad", t:"AraC blocks RNA polymerase. GFP stays [[off]]."},
+      {big:"With arabinose", accent:"good", t:"Arabinose binds AraC, and AraC changes [[shape]]. RNA polymerase transcribes GFP."},
+      {big:"Primary selection", accent:"warn", t:"[[Ampicillin|amp]]. Only transformed cells grow."},
+      {big:"Secondary selection", accent:"arrow", t:"Arabinose/GFP. [[Glowing|glow|glowing green]] confirms the plasmid genes are expressed."}
     ]},
     {tab:"Glow", h:"Fluorescence", banner:"GFP takes in UV light and gives off green light.", kind:"steps", sim:{sim:"glow", prompt:"Turn on the UV light. Watch one GFP molecule up close.",
       off:"Under normal light, the colonies look white. Tap <b>Turn on the UV light</b>.",
@@ -161,12 +159,6 @@ VLAB.add({
         {label:"bla", job:"Beta-lactamase: ampicillin resistance."},
         {label:"araC", job:"Regulates GFP."},
         {label:"pBAD promoter", job:"Where RNA polymerase starts transcribing GFP."},
-        {label:"GFP", job:"Green fluorescent protein."}]},
-    {sim:"energy", title:"Fluorescence energy diagram", prompt:"Put each arrow in the right box.",
-      up:"&uarr; Electron absorbs light and jumps up", down:"&darr; Electron drops down and releases light",
-      upWhy:"<b>Excitation:</b> the electron absorbs light and jumps to a higher energy level.",
-      downWhy:"<b>Emission:</b> after losing some energy as vibration, the electron drops back down and releases light.",
-      q:{q:"Compared with the light absorbed, the emitted light has:", opts:["Less energy and a longer wavelength", "More energy and a shorter wavelength", "Less energy and a shorter wavelength", "The same energy and wavelength"], a:0,
-        why:"Some energy is lost as vibration, so the emitted light has less energy and a longer wavelength."}}
+        {label:"GFP", job:"Green fluorescent protein."}]}
   ]
 });
