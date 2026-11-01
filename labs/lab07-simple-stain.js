@@ -1,7 +1,6 @@
 /* Lab 7: Simple staining. Content from the build brief. */
 VLAB.add({
   n:7, title:"Simple staining",
-    key:["One basic dye: methylene blue for 2 minutes.", "Shows shape, size, and arrangement.", "Two shapes in a pure culture? Pleomorphic bacteria, or free endospores."],
   learn:[
     {h:"What a simple stain does", kind:"facts", items:[
       {t:"Uses [[one|1]] basic dye: [[methylene blue]]."},

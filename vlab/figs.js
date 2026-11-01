@@ -202,8 +202,11 @@
 
   /* Lab 13 */
   F.rt37 = () => {
-    const R = A.rng(13), mk = red => { const c = []; for (let i = 0; i < 18; i++){ const a = R() * 6.28, rr = Math.sqrt(R()) * 70; const k = i % 3; c.push({x:100 + Math.cos(a) * rr, y:100 + Math.sin(a) * rr, r:6, c:k === 0 ? (red ? "#d23b3b" : "white") : k === 1 ? "yellow" : "white"}); } return c; };
-    return wrap(440, 230, place(A.plate({colonies:mk(true)}), 10, 0, .95) + place(A.plate({colonies:mk(false)}), 240, 0, .95) + T(105, 218, "Room temperature", {fs:15}) + T(335, 218, "37°C", {fs:15}), "Room temperature plate and 37°C plate");
+    const R = A.rng(13), cols = [];
+    for (let i = 0; i < 18; i++){ const a = R() * 6.28, rr = Math.sqrt(R()) * 70, k = i % 3; cols.push({x:100 + Math.cos(a) * rr, y:100 + Math.sin(a) * rr, r:6, c:k === 0 ? "#d23b3b" : k === 1 ? "yellow" : "white"}); }
+    return wrap(470, 230, place(A.plate({colonies:cols}), 10, 0, .95) + place(A.ico("incub", "RT"), 230, 50, 1.2) + arrow(310, 86, 352, 86, "#1683cc", 4) + place(A.ico("incub", "37°C"), 360, 50, 1.2)
+      + T(105, 218, "One plate", {fs:15}) + T(266, 140, "Room temp", {fs:14}) + T(266, 160, "1 day", {fs:13, w:400}) + T(396, 140, "Then 37°C", {fs:14})
+      + T(330, 196, "Red = S. marcescens", {fs:13, c:"#c9302c"}) + T(330, 214, "Yellow = M. luteus, white = B. megaterium", {fs:12, w:400}), "One plate at room temperature for a day, then 37 degrees");
   };
   F.streaks = () => ["quadrant", "radiant", "tstreak", "continuous"].map(id => ({id, svg:A.plate({extra:A.streakEx(id)})}));
 
@@ -231,12 +234,12 @@
     return wrap(440, 180, s, "Calcium ions shield the negative charges so the plasmid can get close to the cell");
   };
   F.heatshock = () => {
-    const x = t => 60 + t * 3.4, y = c => 180 - c * 3.4;
-    let s = `<line x1="60" y1="20" x2="60" y2="182" stroke="currentColor" stroke-width="2"/><line x1="60" y1="182" x2="440" y2="182" stroke="currentColor" stroke-width="2"/>`;
-    s += `<line x1="56" y1="${y(42)}" x2="440" y2="${y(42)}" stroke="#c43a2b" stroke-dasharray="4 4" opacity=".6"/>${T(52, y(42) + 5, "42°C", {fs:13, a:"end", c:"#c43a2b"})}${T(52, y(0) + 5, "0°C", {fs:13, a:"end", c:"#1683cc"})}`;
-    s += `<path d="M${x(0)},${y(1)} L${x(60)},${y(1)} L${x(61)},${y(42)} L${x(64)},${y(42)} L${x(65)},${y(1)} L${x(80)},${y(1)} L${x(81)},${y(37)} L${x(110)},${y(37)}" fill="none" stroke="#5a2a98" stroke-width="4" stroke-linejoin="round"/>`;
-    s += T(x(30), y(1) - 12, "On ice, about 1 hour", {fs:13}) + T(x(63), y(42) - 12, "45 s", {fs:14, c:"#c43a2b"}) + T(x(72), y(1) - 12, "ice", {fs:13}) + T(x(96), y(37) - 12, "37°C, 1 hour", {fs:13});
-    return wrap(450, 200, s + T(250, 198, "Time (not to scale)", {fs:12, w:400}), "Temperature during the pGLO protocol: ice, 42 degree heat shock, ice, 37 degree recovery");
+    const P = [["On ice", "0°C", 0, "#9fd1f0", "about 1 hour"], ["Heat shock", "42°C", 42, "#e4572e", "45 seconds"], ["Back on ice", "0°C", 0, "#9fd1f0", "2 to 10 min"], ["Recover in LB", "37°C", 37, "#f2a33a", "1 hour"]];
+    const base = 200, w = 132, gap = 14;
+    let s2 = P.map(([name, temp, c, col, time], i) => { const x = 20 + i * (w + gap), h = 34 + c * 3;
+      return `<rect x="${x}" y="${base - h}" width="${w}" height="${h}" rx="10" fill="${col}"/>${T(x + w / 2, base - h - 12, temp, {fs:20})}${T(x + w / 2, base - 12, name, {fs:14, c:c ? "#fff" : "#14223a"})}${T(x + w / 2, base + 26, time, {fs:15})}`
+        + (i ? arrow(x - gap + 2, base - 20, x - 2, base - 20, "#53657b", 2) : ""); }).join("");
+    return wrap(20 + 4 * (w + gap), 236, s2 + `<line x1="10" y1="${base}" x2="${4 * (w + gap) + 14}" y2="${base}" stroke="currentColor" stroke-width="2"/>`, "Temperature at each step: ice, 42 degree heat shock, ice, 37 degree recovery");
   };
   F.arac = () => {
     const strand = (y, on) => `<rect x="20" y="${y}" width="120" height="16" rx="4" fill="#a96c05"/>${T(80, y + 12, "araC", {fs:12, c:"#fff"})}<rect x="140" y="${y}" width="40" height="16" fill="#5a2a98"/>${T(160, y + 12, "pBAD", {fs:11, c:"#fff"})}<rect x="180" y="${y}" width="150" height="16" rx="4" fill="${on ? "#1f8a55" : "#9aa7b5"}"/>${T(255, y + 12, "GFP", {fs:12, c:"#fff"})}`;

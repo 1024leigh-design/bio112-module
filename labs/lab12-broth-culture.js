@@ -1,7 +1,6 @@
 /* Lab 12: Making a broth culture. Content from the build brief. */
 VLAB.add({
   n:12, title:"Making a broth culture",
-    key:["Label the tube first.", "Flame loop, flame necks, 1 loop into sterile broth, flame necks, cap, flame loop.", "Incubate in the \"Incubate\" rack."],
   learn:[
     {h:"Procedure", kind:"steps", top:[{type:"strip", steps:[{i:"label", t:"Label first"}, {i:"loop", t:"Flame loop", s:"let it cool"}, {i:"flame", t:"Flame both necks"}, {i:"slant", t:"1 loop", s:"from slant or broth"}, {i:"tube", t:"Mix into broth"}, {i:"flame", t:"Flame necks, cap", s:"flame loop"}, {i:"incub", c:" ", t:"\"Incubate\" rack"}]}], figs:[{type:"svg", name:"transfer", wide:true}], items:[
       {t:"[[Label]] the tube before you inoculate."},

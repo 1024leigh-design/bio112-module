@@ -2,7 +2,6 @@
    The sort list comes from the course lecture slides. UV light and filtration are left out on purpose. */
 VLAB.add({
   n:9, title:"Endospore staining",
-    key:["<i>Bacillus</i> and <i>Clostridium</i> make endospores.", "Malachite green on a hot plate (low) for 15 minutes, then safranin.", "Spores = green. Vegetative cells = pink."],
   learn:[
     {h:"What endospores are", kind:"facts", figs:[{type:"svg", name:"sporecell", wide:true}], items:[
       {t:"Dormant, resistant structures made by [[Bacillus]] and [[Clostridium]]."},

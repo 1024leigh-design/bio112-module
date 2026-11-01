@@ -1,7 +1,6 @@
 /* Lab 5: Negative staining. Content from the build brief. */
 VLAB.add({
   n:5, title:"Negative staining",
-    key:["Nigrosine is an acidic dye: negative, so negative cells repel it.", "The background stains. The cells stay clear.", "No heat fixing. Shows shape and size."],
   learn:[
     {h:"How dyes work", kind:"facts", figs:[{type:"svg", name:"charge", wide:true}], tip:"Opposites attract. Like charges push away.", items:[
       {t:"Dyes have a colored ion called the [[chromophore]]."},

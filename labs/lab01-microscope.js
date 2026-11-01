@@ -2,7 +2,6 @@
    [[answer|other accepted answers]] marks a Test mode blank. */
 VLAB.add({
   n:1, title:"Brightfield microscopy",
-    key:["Total magnification = ocular × objective. 10x × 100x = 1000x.", "Find it on 10x. Swing past 4x, add oil, click in 100x. Fine focus only.", "The image is upside down and reversed. It moves the opposite way from the slide."],
   learn:[
     {h:"Parts of the microscope", kind:"facts", figs:[{type:"microscope", wide:"mid", cap:"Tap the Practice tab to explore each part."}], items:[
       {t:"The [[ocular|eyepiece|ocular lens]] (eyepiece) magnifies [[10x|10]]."},

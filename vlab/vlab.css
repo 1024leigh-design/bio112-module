@@ -281,7 +281,29 @@ dialog::backdrop{background:rgba(10,20,30,.55)}
 }
 @media (prefers-reduced-motion: reduce){ *{transition:none!important; animation:none!important} }
 
-.keybox{background:var(--arrow-soft); border:2px solid var(--arrow); border-radius:16px; padding:12px 16px; margin-bottom:18px}
-.keybox b{font-family:var(--f-display); font-size:21px}
-.keybox ol{margin:6px 0 0; padding-left:24px; display:flex; flex-direction:column; gap:4px}
 .pill.done{background:var(--good); color:#fff}
+
+/* step icons + "What if?" reveals */
+.litems > li.hasico{align-items:center}
+.lico{flex-shrink:0; width:54px; height:54px; background:var(--surface); border:1px solid var(--line); border-radius:12px; display:flex; align-items:center; justify-content:center}
+.lico svg{width:44px; height:44px}
+.wis{display:flex; flex-direction:column; align-items:flex-start; gap:6px; margin-top:8px}
+.whatif{border:2px dashed var(--warn); background:var(--warn-soft); color:var(--warn); border-radius:999px; padding:6px 14px; font-weight:700; font-size:17px; cursor:pointer; text-align:left}
+.whatif::before{content:"? "; }
+.whatif.open{border-style:solid}
+.whatif.open::before{content:"! "}
+.wia{background:var(--surface); border-left:4px solid var(--warn); border-radius:0 10px 10px 0; padding:8px 12px; font-size:18px}
+.lsim{margin-top:16px; border-width:2px; border-color:var(--arrow)}
+/* animated sims */
+.anim svg{display:block; width:100%; height:auto}
+.stagebar{display:flex; flex-wrap:wrap; gap:6px; margin:10px 0}
+.stagebar span{font:600 14px var(--f-mono); padding:4px 10px; border-radius:999px; background:var(--surface-2); color:var(--muted)}
+.stagebar span.on{background:var(--arrow); color:#fff}
+.stagebar span.done{background:var(--good-soft); color:var(--good)}
+.vols{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
+.bench svg{touch-action:none; user-select:none; -webkit-user-select:none}
+.bench [data-obj]{cursor:pointer}
+.bench [data-obj].sel > *{filter:drop-shadow(0 0 5px #f2b134)}
+.bench [data-obj].pulse{animation:benchpulse 1s ease-in-out infinite}
+@keyframes benchpulse{50%{opacity:.35}}
+.timerbig{font:700 26px var(--f-mono)}

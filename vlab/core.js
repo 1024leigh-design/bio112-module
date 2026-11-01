@@ -107,28 +107,30 @@
       if (!isCur) return `<strong class="term">?</strong>`;
       return `<input class="blank" data-key="${key}" size="${Math.max(4, show.replace(/<[^>]+>/g, "").length + 1)}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Fill in the blank">`; }); };
 
-    let html = !test && lab.key ? `<div class="keybox"><b>Know these ${lab.key.length} things</b><ol>${lab.key.map(k => `<li>${k}</li>`).join("")}</ol></div>` : "";
-    html += test ? `<p class="modetip">Test mode: type the missing word in each box, then tap <b>Check</b>. Stuck? Tap <b>Hint</b> or <b>Move on</b>.</p>` : "";
+    let html = test ? `<p class="modetip">Test mode: type the missing word in each box, then tap <b>Check</b>. Stuck? Tap <b>Hint</b> or <b>Move on</b>.</p>` : "";
     let hiddenFrom = curIdx === -1 ? Infinity : curIdx + 1, pos = 0;
     lab.learn.forEach((sec, si) => {
       const firstPos = pos;
       if (firstPos >= hiddenFrom){ pos += sec.items.length; return; }
-      html += `<section class="lsec"><h2>${sec.h}</h2>${sec.lead ? `<p class="lead">${sec.lead}</p>` : ""}${sec.top ? V.figs(sec.top) : ""}<ol class="litems ${sec.kind === "steps" ? "steps" : "facts"}"${sec.kind === "steps" ? "" : ' role="list"'}>`;
+      html += `<section class="lsec"><h2>${sec.h}</h2>${sec.lead ? `<p class="lead">${sec.lead}</p>` : ""}${sec.top ? V.figs(sec.top) : ""}${sec.items.length ? `<ol class="litems ${sec.kind === "steps" ? "steps" : "facts"}"${sec.kind === "steps" ? "" : ' role="list"'}>` : ""}`;
       sec.items.forEach((it, ii) => {
         const p = pos++;
         if (p >= hiddenFrom) return;
         const isCur = p === curIdx;
-        html += `<li class="${isCur ? "cur" : ""}"><div class="body">${fill(it.t, si, ii, isCur)}${it.why ? `<span class="why"><b>Why:</b> ${it.why}</span>` : ""}
+        html += `<li class="${isCur ? "cur" : ""}${it.ico ? " hasico" : ""}">${it.ico ? `<span class="lico">${window.ART.ico(it.ico.i, it.ico.c)}</span>` : ""}<div class="body">${fill(it.t, si, ii, isCur)}${it.why ? `<span class="why"><b>Why:</b> ${it.why}</span>` : ""}${it.whatif ? `<div class="wis">${it.whatif.map(w => `<button type="button" class="whatif" aria-expanded="false">What if ${w.q}</button><div class="wia" hidden>${w.a}</div>`).join("")}</div>` : ""}
           ${isCur ? `<div class="checkrow"><button type="button" class="btn small" data-act="check">Check</button><button type="button" class="btn hint small" data-act="hint">Hint</button><button type="button" class="btn ghost small" data-act="moveon">Move on</button></div><div class="fb" id="lfb" aria-live="polite"></div>` : ""}</div></li>`;
       });
-      html += `</ol>`;
-      if (pos <= hiddenFrom) html += V.figs(sec.figs) + V.examples(sec.examples) + (sec.tip ? `<div class="msg tipbox"><b>Tip:</b> ${sec.tip}</div>` : "") + (sec.todo ? V.todo(sec.todo) : "");
+      if (sec.items.length) html += `</ol>`;
+      if (pos <= hiddenFrom) html += V.figs(sec.figs) + (sec.sim ? `<div class="act lsim" data-lsim="${si}">${sec.sim.title ? `<h2>${sec.sim.title}</h2>` : ""}${sec.sim.prompt ? `<p class="lead">${sec.sim.prompt}</p>` : ""}<div data-lsimhost></div></div>` : "") + V.examples(sec.examples) + (sec.tip ? `<div class="msg tipbox"><b>Tip:</b> ${sec.tip}</div>` : "") + (sec.todo ? V.todo(sec.todo) : "");
       html += `</section>`;
     });
     if (test && !done) html += `<p class="locked">More steps show up after you finish this one.</p>`;
     if (done) store.set("vlab-done-" + lab.n, "1");
     if (done) html += `<div class="msg good" style="margin-top:18px"><b>Station complete!</b> You filled in every blank for Lab ${lab.n}.</div><div class="btnrow" style="margin-top:10px"><button type="button" class="btn ghost" data-act="restart">Start over</button></div>`;
     host.innerHTML = html;
+    host.querySelectorAll(".whatif").forEach(b => b.addEventListener("click", () => {
+      const a = b.nextElementSibling, open = a.hidden; a.hidden = !open; b.setAttribute("aria-expanded", String(open)); b.classList.toggle("open", open); }));
+    host.querySelectorAll("[data-lsim]").forEach(el => { const sp = lab.learn[+el.dataset.lsim].sim; V.sims[sp.sim](el.querySelector("[data-lsimhost]"), sp); });
 
     const fb = host.querySelector("#lfb");
     const inputs = () => [...host.querySelectorAll("input.blank")];

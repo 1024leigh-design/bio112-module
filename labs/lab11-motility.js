@@ -1,7 +1,6 @@
 /* Lab 11: Motility. Content from the build brief. */
 VLAB.add({
   n:11, title:"Motility",
-    key:["Stab 2/3 of the way down the center. 37°C for at least 2 days.", "Tetrazolium turns red where bacteria grow.", "Sharp red line = nonmotile. Cloudy red spread = motile."],
   learn:[
     {h:"The medium", kind:"facts", items:[
       {t:"[[Semisolid|semi-solid]] medium with [[tetrazolium]] salt."},

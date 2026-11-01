@@ -4,7 +4,6 @@
   const ms = c => ({type:"field", seed:102, groups:[{shape:"taper", arr:"single", color:c, n:11}]});
   VLAB.add({
     n:10, title:"Acid-fast staining",
-    key:["Mycolic acid makes cells acid-fast (<i>Mycobacterium</i>, <i>Nocardia</i>).", "Kinyoun: concentrated carbolfuchsin, 10 minutes, no heat. Ziehl-Neelsen uses heat.", "Acid-fast = fuchsia. Non-acid-fast = blue."],
     learn:[
       {h:"What makes a cell acid-fast", kind:"facts", items:[
         {t:"[[Mycolic acid]] (a waxy lipid) in the cell wall."},
