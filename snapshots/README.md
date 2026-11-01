@@ -4,3 +4,5 @@ Frozen copies of the Virtual Lab for before-and-after demos. They are not linked
 
 - `pglo-before/` is the Virtual Lab as it was live on Nov 1, 2026 (commit b819dc2), before round 8 of the Lab 15 edits.
   Open `pglo-before/virtual-lab.html#lab15`.
+- `pglo-first/` is the very first version of the Virtual Lab (Oct 31, 2026, commit c734067), before any instructor feedback.
+  Open `pglo-first/virtual-lab.html#lab15`.
