@@ -186,11 +186,11 @@
   };
   /* one transfer: from one tube into the next */
   A.figs.xfer = sp => {
-    const d = Math.round((sp.add + sp.water) / sp.add), C = sp.c || "#1683cc";
-    let o = tubeAt(42, 26, true, .4) + T(42, 132, sp.from, {fs:13});
-    o += `<path d="M62,40 Q100,6 138,40" fill="none" stroke="${C}" stroke-width="3"/><path d="M138,40 l-10,-3 l4,9 Z" fill="${C}"/>` + T(100, 20, `${sp.add} mL`, {fs:14, c:C});
-    o += tubeAt(150, 26, sp.cloudy, .4) + T(150, 132, `Tube ${sp.to}`, {fs:14}) + T(150, 148, `${sp.water} mL water`, {fs:11, w:400});
-    o += `<rect x="186" y="62" width="64" height="34" rx="17" fill="${C}"/>` + T(218, 85, `1/${d}`, {fs:16, c:"#fff"});
-    return `<svg viewBox="0 0 260 156" role="img" aria-label="Move ${sp.add} mL from ${sp.from} into tube ${sp.to}" style="color:var(--ink)">${o}</svg>`;
+    const d = Math.round((sp.add + sp.water) / sp.add), C = sp.c || "#1683cc", g = A.seqG, mover = A.seqMover;
+    let o = g("sq1", tubeAt(42, 26, true, .4) + T(42, 132, sp.from, {fs:13}) + tubeAt(150, 26, false, .4) + T(150, 132, `Tube ${sp.to}`, {fs:14}) + T(150, 148, `${sp.water} mL water`, {fs:11, w:400}));
+    o += g("sq2", `<path d="M62,40 Q100,6 138,40" fill="none" stroke="${C}" stroke-width="3"/><path d="M138,40 l-10,-3 l4,9 Z" fill="${C}"/>` + T(100, 20, `${sp.add} mL`, {fs:14, c:C}));
+    o += mover(42, 40, 150, 46, "#d9c58f") + g("sq3", `<rect x="139" y="${sp.cloudy ? 70 : 74}" width="22" height="${sp.cloudy ? 40 : 36}" rx="3" fill="#e3d29a" opacity=".55"/>`);
+    o += g("sq4", `<rect x="186" y="62" width="64" height="34" rx="17" fill="${C}"/>` + T(218, 85, `1/${d}`, {fs:16, c:"#fff"}));
+    return `<svg class="seq" viewBox="0 0 260 156" role="img" aria-label="Move ${sp.add} mL from ${sp.from} into tube ${sp.to}" style="color:var(--ink)">${o}</svg>`;
   };
 })();

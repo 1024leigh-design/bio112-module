@@ -7,11 +7,8 @@ VLAB.add({
       {t:"[[Competent]] cells can take up DNA from their surroundings."},
       {t:"We made <i>E. coli</i> competent with ice-cold 50 mM calcium chloride ([[CaCl<sub>2</sub>|cacl2|cacl₂|calcium chloride]])."},
       {t:"The DNA backbone and the cell membrane are both [[negative|negatively charged]]. Like charges push each other away."},
-      {t:"Calcium ions (Ca<sup>2+</sup>) are [[positive|positively charged|+]]. They coat the cell and shield those negative charges, so the plasmid can get much [[closer|close|near]] to the cell."}
-    ]},
-    {tab:"Protocol", h:"Why it works: collision theory", lead:"For a reaction to happen, two things are needed: the molecules must be close enough to collide, and there must be enough energy.", layout:"cards", cols:"2x", items:[
-      {big:"1. Proximity", ico:{i:"ice"}, t:"Ca<sup>2+</sup> on ice brings the plasmid into close [[proximity|contact]] with the cell."},
-      {big:"2. Energy", ico:{i:"bath", c:"42°C"}, t:"The [[heat shock|heat]] gives the energy that pushes the plasmid in."}
+      {t:"Calcium ions (Ca<sup>2+</sup>) are [[positive|positively charged|+]]. They coat the cell and shield those negative charges, so the plasmid can get much [[closer|close|near]] to the cell."},
+      {t:"<b>Collision theory:</b> a reaction needs [[proximity|closeness]] and [[energy]]. Ca<sup>2+</sup> on ice gives proximity. The heat shock gives energy."}
     ]},
     {tab:"Protocol", h:"Protocol, step by step", kind:"steps", lead:"Tap any <b>What if...?</b> or <b>Learn more</b> button to dig deeper.", figs:[{type:"svg", name:"heatshock", wide:true, cap:"Temperature at each step (not to scale)"}],
       tip:"Try the whole protocol yourself on the <b>Practice</b> tab: move the liquids, run the heat shock timer, and shine the UV light.",

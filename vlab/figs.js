@@ -9,8 +9,6 @@
   const place = (svg, x, y, sc) => `<g transform="translate(${x} ${y}) scale(${sc})">${inner(svg)}</g>`;
   const wrap = (w, h, body, label) => `<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(label || "Diagram")}" style="color:var(--ink)">${body}</svg>`;
   A.arrow = arrow; A.place = place;
-  /* a little drop that travels along an arrow, over and over */
-  A.drop = (x1, y1, x2, y2, c, delay) => `<circle class="m-drop" style="--dx:${f1(x2 - x1)}px;--dy:${f1(y2 - y1)}px;animation-delay:${delay || 0}s" cx="${f1(x1)}" cy="${f1(y1)}" r="4.5" fill="${c || "#1683cc"}"/>`;
 
   /* ---------------- icons for step strips (60 x 60) ---------------- */
   const ICO = {
@@ -230,14 +228,14 @@
 
   /* Lab 15 */
   /* snowflake and flame marks */
-  A.snow = (x, y, s, c) => { s = s || 9; c = c || "#3b8fd1"; return `<g transform="translate(${x} ${y})"><g class="m-snow" style="animation-delay:-${f1((x * 13 + y) % 30 / 10)}s" stroke="${c}" stroke-width="2" stroke-linecap="round">${[0, 60, 120].map(a => `<line x1="${f1(-s * Math.cos(a * Math.PI / 180))}" y1="${f1(-s * Math.sin(a * Math.PI / 180))}" x2="${f1(s * Math.cos(a * Math.PI / 180))}" y2="${f1(s * Math.sin(a * Math.PI / 180))}"/>`).join("")}</g></g>`; };
-  A.fire = (x, y, s) => { s = s || 1; return `<g transform="translate(${x} ${y}) scale(${s})"><g class="m-flick" style="animation-delay:-${f1((x * 7) % 9 / 10)}s"><path d="M0,-18 C10,-6 12,2 6,10 C4,4 2,2 0,0 C-2,4 -6,8 -6,12 C-12,6 -10,-6 0,-18 Z" fill="#e4572e"/><path d="M0,-6 C5,0 5,6 2,11 C0,8 -2,8 -3,11 C-5,6 -4,0 0,-6 Z" fill="#f2b134"/></g></g>`; };
+  A.snow = (x, y, s, c) => { s = s || 9; c = c || "#3b8fd1"; return `<g transform="translate(${x} ${y})"><g stroke="${c}" stroke-width="2" stroke-linecap="round">${[0, 60, 120].map(a => `<line x1="${f1(-s * Math.cos(a * Math.PI / 180))}" y1="${f1(-s * Math.sin(a * Math.PI / 180))}" x2="${f1(s * Math.cos(a * Math.PI / 180))}" y2="${f1(s * Math.sin(a * Math.PI / 180))}"/>`).join("")}</g></g>`; };
+  A.fire = (x, y, s) => { s = s || 1; return `<g transform="translate(${x} ${y}) scale(${s})"><g><path d="M0,-18 C10,-6 12,2 6,10 C4,4 2,2 0,0 C-2,4 -6,8 -6,12 C-12,6 -10,-6 0,-18 Z" fill="#e4572e"/><path d="M0,-6 C5,0 5,6 2,11 C0,8 -2,8 -3,11 C-5,6 -4,0 0,-6 Z" fill="#f2b134"/></g></g>`; };
   F.cacl2 = () => {
     const cx = 120, cy = 66, r = 40;
     let pl = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#1683cc" stroke-width="18"/><circle cx="${cx}" cy="${cy}" r="${r + 9}" fill="none" stroke="#0f5f96" stroke-width="2"/><circle cx="${cx}" cy="${cy}" r="${r - 9}" fill="none" stroke="#0f5f96" stroke-width="2"/>`;
     for (let k = 0; k < 8; k++){ const a = k * Math.PI / 4; pl += T(f1(cx + Math.cos(a) * r), f1(cy + Math.sin(a) * r + 6), "−", {fs:18, c:"#fff"}); }
-    let s2 = `<g class="m-approach">${pl}</g>` + T(186, 46, "Plasmid DNA", {fs:15, a:"start", c:"#1683cc"}) + T(186, 66, "a circle of DNA with", {fs:13, a:"start", w:400}) + T(186, 84, "a negative backbone", {fs:13, a:"start", w:400});
-    [60, 140, 220, 300, 380].forEach((x, k) => { s2 += `<g class="m-bob" style="animation-delay:-${k * .4}s"><circle cx="${x}" cy="140" r="17" fill="#1f8a55"/>${T(x, 138, "Ca", {fs:11, c:"#fff"})}${T(x, 151, "2+", {fs:10, c:"#fff"})}</g>`; });
+    let s2 = `<g>${pl}</g>` + T(186, 46, "Plasmid DNA", {fs:15, a:"start", c:"#1683cc"}) + T(186, 66, "a circle of DNA with", {fs:13, a:"start", w:400}) + T(186, 84, "a negative backbone", {fs:13, a:"start", w:400});
+    [60, 140, 220, 300, 380].forEach((x, k) => { s2 += `<g><circle cx="${x}" cy="140" r="17" fill="#1f8a55"/>${T(x, 138, "Ca", {fs:11, c:"#fff"})}${T(x, 151, "2+", {fs:10, c:"#fff"})}</g>`; });
     s2 += T(470, 128, "Ca²⁺", {fs:15, a:"end", c:"#1f8a55"}) + T(470, 146, "positive", {fs:13, a:"end", w:400, c:"#1f8a55"});
     for (let x = 22; x <= 458; x += 18){
       s2 += `<line x1="${x - 3}" y1="182" x2="${x - 3}" y2="202" stroke="#c99a3e" stroke-width="2"/><line x1="${x + 3}" y1="182" x2="${x + 3}" y2="202" stroke="#c99a3e" stroke-width="2"/><circle cx="${x}" cy="178" r="7" fill="#e6b85c" stroke="#b98d3a"/>`;
@@ -254,7 +252,7 @@
       return `<rect x="${x}" y="${base - h}" width="${w}" height="${h}" rx="10" fill="${col}"/>${T(x + w / 2, base - h - 12, temp, {fs:20})}${T(x + w / 2, base - 12, name, {fs:14, c:c ? "#fff" : "#14223a"})}${T(x + w / 2, base + 26, time, {fs:15})}`
         + (mark === "ice" ? A.snow(x + 20, base - h - 18, 8) + A.snow(x + w - 20, base - h - 18, 8) : mark === "fire" ? A.fire(x + 22, base - h + 26, 1.1) + A.fire(x + w - 22, base - h + 26, 1.1) : "")
         + (i ? arrow(x - gap + 2, base - 20, x - 2, base - 20, "#53657b", 2) : ""); }).join("");
-    return wrap(20 + 4 * (w + gap), 236, s2 + `<line x1="10" y1="${base}" x2="${4 * (w + gap) + 14}" y2="${base}" stroke="currentColor" stroke-width="2"/><circle class="m-travel" style="--dx:${4 * (w + gap) - 20}px" cx="20" cy="${base}" r="7" fill="#5a2a98"/>`, "Temperature at each step: ice, 42 degree heat shock, ice, 37 degree recovery");
+    return wrap(20 + 4 * (w + gap), 236, s2 + `<line x1="10" y1="${base}" x2="${4 * (w + gap) + 14}" y2="${base}" stroke="currentColor" stroke-width="2"/>`, "Temperature at each step: ice, 42 degree heat shock, ice, 37 degree recovery");
   };
 
   F.arac = () => {
@@ -308,29 +306,13 @@
       + (o.plasmid ? `<circle cx="${x - 4}" cy="${y + 54}" r="4" fill="none" stroke="#1683cc" stroke-width="2"/><circle cx="${x + 5}" cy="${y + 62}" r="4" fill="none" stroke="#1683cc" stroke-width="2"/>` : "")
       + `<rect x="${x - 15}" y="${y}" width="30" height="11" rx="3" fill="${o.cap || "#8b93a3"}"/>` + (o.label ? T(x, y + 96, o.label, {fs:12, c:o.cap || "currentColor"}) : ""); };
   const PLUS = "#1f8a55", MINUS = "#c43a2b";
-  const clock = (x, y, t) => `<circle cx="${x}" cy="${y}" r="20" fill="var(--surface)" stroke="#1683cc" stroke-width="3"/><path d="M${x},${y} L${x + 8},${y + 4}" stroke="#14223a" stroke-width="2.5" stroke-linecap="round"/><g class="m-spin"><circle cx="${x}" cy="${y}" r="13" fill="none"/><path d="M${x},${y} L${x},${y - 13}" stroke="#14223a" stroke-width="2.5" stroke-linecap="round"/></g>${T(x, y + 38, t, {fs:13, c:"#1683cc"})}`;
+  const clock = (x, y, t) => `<circle cx="${x}" cy="${y}" r="20" fill="var(--surface)" stroke="#1683cc" stroke-width="3"/><path d="M${x},${y} L${x + 8},${y + 4}" stroke="#14223a" stroke-width="2.5" stroke-linecap="round"/><path d="M${x},${y} L${x},${y - 13}" stroke="#14223a" stroke-width="2.5" stroke-linecap="round"/>${T(x, y + 38, t, {fs:13, c:"#1683cc"})}`;
   const bucket = (x, y) => `<path d="M${x - 52},${y} L${x + 52},${y} L${x + 44},${y + 52} L${x - 44},${y + 52} Z" fill="#dff1fb" stroke="#7fb8d9" stroke-width="2"/>${[0, 1, 2, 3].map(i => `<rect x="${x - 38 + i * 20}" y="${y + 26}" width="14" height="14" rx="3" fill="#fff" stroke="#9cc6e4"/>`).join("")}`;
 
-  F.pg1 = () => wrap(ico("bottle", "#9fd1f0", 50, 54, 1.25) + A.snow(26, 22, 7) + A.snow(76, 22, 7) + T(50, 112, "ice-cold calcium", {fs:11, w:400}) + T(50, 126, "chloride (CaCl₂)", {fs:11, w:400})
-    + ar(88, 50, 132, 50, "#1683cc", 3) + T(110, 38, "400 µL", {fs:13, c:"#1683cc"}) + A.drop(90, 50, 128, 50, "#9fd1f0") + mt(160, 24, {lv:.6}) + T(160, 128, "one tube", {fs:12}), "Add 400 microliters of ice-cold calcium chloride to one tube");
-  F.pgcol = () => {
-    const cols = A.scatter(9, 4, "white", 7, 10); cols[0] = Object.assign({}, cols[0], {x:120, y:70, r:11, mark:true});
-    return wrap(pl(A.plate({colonies:cols}), 6, 22, .5) + T(56, 140, "Starter plate", {fs:12})
-      + `<path d="M64,54 Q100,0 150,26" fill="none" stroke="#9aa3b2" stroke-width="2.5"/><circle cx="64" cy="56" r="5" fill="none" stroke="#9aa3b2" stroke-width="2.5"/>` + ar(118, 18, 150, 26, "#1683cc", 2.5) + A.drop(70, 50, 150, 34, "#fbfaf3")
-      + T(110, 12, "pick ONE colony", {fs:12, c:"#1683cc"}) + mt(176, 30, {cells:true, lv:.6}) + T(176, 140, "mix well", {fs:12}), "Pick one colony with a sterile loop and mix it into the calcium chloride");
-  };
-  F.pg2 = () => wrap(mt(55, 26, {cells:true, lv:.35, cap:PLUS, label:"+pGLO"}) + ar(78, 44, 138, 44, "#1683cc", 3) + T(108, 34, "200 µL", {fs:13, c:"#1683cc"}) + A.drop(80, 44, 134, 44, "#d9c58f") + mt(160, 26, {cells:true, lv:.35, cap:MINUS, label:"-pGLO"})
-    + T(110, 146, "Split in half, then label", {fs:12, w:400}), "Move 200 microliters into a second tube and label them");
-  F.pg3 = () => wrap(ico("tube", "#cfe3f7", 34, 50, 1.1) + T(34, 104, "pGLO", {fs:12, c:"#1683cc"}) + ar(60, 44, 92, 44, "#1683cc", 3) + T(76, 34, "4 µL", {fs:13, c:"#1683cc"}) + A.drop(62, 44, 88, 44, "#1683cc")
-    + mt(115, 26, {cells:true, plasmid:true, lv:.36, cap:PLUS, label:"+pGLO"}) + mt(180, 26, {cells:true, lv:.35, cap:MINUS, label:"-pGLO"}) + T(180, 146, "no plasmid", {fs:11, w:400, c:MINUS}), "Add 4 microliters of plasmid to the +pGLO tube only");
   F.pg4 = () => wrap(bucket(80, 70) + mt(62, 24, {cells:true, plasmid:true, lv:.36, cap:PLUS}) + mt(98, 24, {cells:true, lv:.35, cap:MINUS}) + bucket(80, 70).replace(/fill="#dff1fb"/, 'fill="#dff1fb" opacity=".75"') + A.snow(22, 30, 9) + A.snow(140, 26, 9) + A.snow(30, 62, 6) + clock(184, 54, "about 1 hour") + T(80, 140, "On ice", {fs:13}), "Both tubes on ice for about 1 hour");
   F.pg5 = () => wrap(`<rect x="18" y="66" width="128" height="62" rx="8" fill="#f8c9b8" stroke="#e4572e" stroke-width="2"/><path d="M18,78 q16,-8 32,0 t32,0 t32,0 t32,0" stroke="#e4572e" stroke-width="2" fill="none"/>`
     + mt(62, 30, {cells:true, plasmid:true, lv:.36, cap:PLUS}) + mt(100, 30, {cells:true, lv:.35, cap:MINUS}) + `<rect x="18" y="86" width="128" height="42" rx="6" fill="#f8c9b8" opacity=".8"/>` + T(82, 116, "42°C", {fs:18, c:"#b03a1a"}) + A.fire(30, 50, 1.2) + A.fire(134, 50, 1.2) + A.fire(82, 146, .8) + clock(184, 58, "45 seconds"), "Heat shock in a 42 degree water bath for 45 seconds");
   F.pg6 = () => wrap(bucket(80, 70) + mt(62, 24, {cells:true, plasmid:true, lv:.36, cap:PLUS}) + mt(98, 24, {cells:true, lv:.35, cap:MINUS}) + bucket(80, 70).replace(/fill="#dff1fb"/, 'fill="#dff1fb" opacity=".75"') + A.snow(22, 30, 9) + A.snow(140, 26, 9) + A.snow(30, 62, 6) + clock(184, 54, "2 to 10 min") + T(80, 140, "Back on ice", {fs:13}), "Back on ice for 2 to 10 minutes");
-  F.pg7 = () => wrap(ico("bottle", "#efe0b5", 30, 50, 1.05) + T(30, 102, "LB", {fs:12}) + ar(56, 44, 82, 44, "#a96c05", 3) + T(70, 34, "200 µL", {fs:11, c:"#a96c05"}) + A.drop(58, 44, 78, 44, "#efe0b5")
-    + `<rect x="88" y="16" width="120" height="118" rx="8" fill="#e8ecf2" stroke="#8b93a3" stroke-width="2"/>` + mt(124, 28, {cells:true, plasmid:true, lv:.6, fill:"#efe0b5", cap:PLUS}) + mt(170, 28, {cells:true, lv:.6, fill:"#efe0b5", cap:MINUS}) + T(148, 128, "37°C, 1 hour", {fs:13}), "Add 200 microliters LB, then 37 degrees for 1 hour");
-  F.pg8 = () => wrap(ico("pipette", "", 46, 34, 1.1) + T(46, 80, "100 µL", {fs:13, c:"#1683cc"}) + ar(64, 56, 92, 74, "#1683cc", 3) + A.drop(64, 56, 88, 72, "#d9c58f")
-    + pl(A.plate({}), 90, 50, .45) + `<g class="m-swing"><path d="M178,30 L178,92 L150,92" fill="none" stroke="#8b93a3" stroke-width="6" stroke-linecap="round"/></g>` + T(180, 20, "spreader", {fs:11, w:400}) + T(135, 146, "Each tube onto its plates", {fs:12, w:400}), "Pipette 100 microliters onto each plate and spread");
   F.pg9 = () => wrap(`<g transform="translate(70 92) scale(1 -1)"><ellipse cx="0" cy="0" rx="44" ry="12" fill="#efdba6" stroke="#aab3c2" stroke-width="2"/><rect x="-46" y="-2" width="92" height="12" fill="#e3e7ee" stroke="#aab3c2" stroke-width="2"/></g>`
     + T(70, 60, "agar side up", {fs:11, w:400}) + `<path d="M28,40 q42,-30 84,0" fill="none" stroke="#1683cc" stroke-width="3"/><path d="M112,40 l-10,-2 l5,9 Z" fill="#1683cc"/>` + T(70, 22, "flip it", {fs:12, c:"#1683cc"})
     + ico("incub", "37°C", 176, 72, 1.3) + T(110, 140, "Upside down at 37°C", {fs:13}), "Incubate the plates upside down at 37 degrees");
@@ -343,14 +325,86 @@
   const tube = (x, y, cap, label) => `<path d="M${x - 16},${y + 14} L${x - 16},${y + 78} Q${x},${y + 98} ${x + 16},${y + 78} L${x + 16},${y + 14}" fill="#f4f8fb" stroke="#8b93a3" stroke-width="2"/><path d="M${x - 14.5},${y + 50} L${x - 14.5},${y + 78} Q${x},${y + 95} ${x + 14.5},${y + 78} L${x + 14.5},${y + 50} Z" fill="#efe0b5"/><rect x="${x - 19}" y="${y}" width="38" height="15" rx="4" fill="${cap}"/>` + T(x, y - 8, label, {fs:16, c:cap});
   const plateAt = (x, y, ara) => `<g transform="translate(${x - 46} ${y}) scale(.46)">${A.plate({agar:ara ? "#f3e2b0" : "#efdba6"}).replace(/^<svg[^>]*>/, "").replace(/<\/svg>$/, "")}</g>`;
   const arrow = (x1, y1, x2, y2, c) => A.arrow(x1, y1, x2, y2, c, 3);
-  A.figs.platemap = () => {
-    const G = [[120, "#c43a2b", "-pGLO tube", [["LB", "-amp, -ara", false], ["LB/amp", "+amp, -ara", false]]], [360, "#1f8a55", "+pGLO tube", [["LB/amp", "+amp, -ara", false], ["LB/amp/ara", "+amp, +ara", true]]]];
-    let o = "";
-    G.forEach(([cx, col, name, plates], g) => {
-      o += `<rect x="${cx - 114}" y="6" width="228" height="362" rx="16" fill="${col}" opacity=".07"/>` + tube(cx, 40, col, name) + T(cx + 26, 96, "100 µL", {fs:12, w:400, c:col}).replace('text-anchor="middle"', 'text-anchor="start"') + T(cx + 26, 112, "to each", {fs:12, w:400, c:col}).replace('text-anchor="middle"', 'text-anchor="start"');
-      plates.forEach(([pl, sub, ara], k) => { const px = cx + (k ? 56 : -56);
-        o += arrow(cx + (k ? 8 : -8), 146, px, 190, col) + A.drop(cx + (k ? 8 : -8), 146, px, 186, col, g * .5 + k * .9) + plateAt(px, 196, ara) + T(px, 322, pl, {fs:15}) + T(px, 344, `(${sub})`, {fs:12, w:400}); });
-    });
-    return `<svg viewBox="0 0 480 374" role="img" aria-label="The -pGLO tube goes on LB and LB/amp. The +pGLO tube goes on LB/amp and LB/amp/ara." style="color:var(--ink)">${o}</svg>`;
+})();
+
+/* Transfer pictures that play as a sequence: the source, then the arrow, then a pipette carries the
+   liquid across, then the liquid arrives in the next tube, then the labels. Each picture plays once when
+   it scrolls into view (tap it to replay). With Animations off, the finished picture shows right away.
+   Parts: sq1 source, sq2 arrow, sm mover, sq3 arrival, sq4 labels. A --d style delays a whole group. */
+(function(){
+  const A = window.ART, f1 = A.f1, F = A.figs;
+  const T = (x, y, s, o) => { o = o || {}; return `<text x="${f1(x)}" y="${f1(y)}" font-size="${o.fs || 13}" font-weight="${o.w || 700}" fill="${o.c || "currentColor"}" text-anchor="${o.a || "middle"}">${s}</text>`; };
+  const ico = (n, a, x, y, sc) => A.place(A.ico(n, a), x - 30 * sc, y - 30 * sc, sc);
+  const PLUS = "#1f8a55", MINUS = "#c43a2b";
+  const svg = (w, h, body, label, x0) => `<svg class="seq" viewBox="${x0 || 0} 0 ${w} ${h}" role="img" aria-label="${A.esc(label)}" style="color:var(--ink)">${body}</svg>`;
+  const g = (cls, body, d) => `<g class="${cls}"${d ? ` style="--d:${d}s"` : ""}>${body}</g>`;
+  const arrow = (x1, y1, x2, y2, c) => A.arrow(x1, y1, x2, y2, c, 3);
+  /* a tube: outline, plus liquid that can "fill" on its own */
+  function tube(x, y, o){
+    o = o || {}; const lv = o.lv === undefined ? .55 : o.lv, top = f1(y + 72 - 60 * lv);
+    const liquid = lv ? `<path d="M${x - 11.5},${top} L${x - 11.5},${y + 62} Q${x},${y + 78} ${x + 11.5},${y + 62} L${x + 11.5},${top} Z" fill="${o.fill || "#dff1fb"}"/>` + (o.cells ? `<path d="M${x - 11.5},${top} L${x - 11.5},${y + 62} Q${x},${y + 78} ${x + 11.5},${y + 62} L${x + 11.5},${top} Z" fill="#d9c58f" opacity=".5"/>` : "") : "";
+    const plas = o.plasmid ? `<circle cx="${x - 4}" cy="${y + 54}" r="4" fill="none" stroke="#1683cc" stroke-width="2"/><circle cx="${x + 5}" cy="${y + 62}" r="4" fill="none" stroke="#1683cc" stroke-width="2"/>` : "";
+    const glass = `<path d="M${x - 13},${y + 10} L${x - 13},${y + 62} Q${x},${y + 80} ${x + 13},${y + 62} L${x + 13},${y + 10}" fill="#f4f8fb" stroke="#8b93a3" stroke-width="2"/>`;
+    const cap = `<rect x="${x - 15}" y="${y}" width="30" height="11" rx="3" fill="${o.cap || "#8b93a3"}"/>`;
+    return o.split ? {glass:glass + cap, liquid, plas} : glass + liquid + plas + cap;
+  }
+  /* the mover: a micropipette (or a loop) carrying liquid from (x1, y1) to (x2, y2); the tip sits on the point */
+  function mover(x1, y1, x2, y2, c, kind, d){
+    const body = kind === "loop"
+      ? `<line x1="${x1 + 26}" y1="${y1 - 30}" x2="${x1 + 4}" y2="${y1 - 4}" stroke="#7d8594" stroke-width="3"/><circle cx="${x1}" cy="${y1}" r="5" fill="none" stroke="#7d8594" stroke-width="2.5"/><circle cx="${x1}" cy="${y1}" r="3" fill="${c}"/>`
+      : `<rect x="${x1 - 6}" y="${y1 - 44}" width="12" height="7" rx="2" fill="#3f4cc0"/><rect x="${x1 - 8}" y="${y1 - 38}" width="16" height="24" rx="5" fill="#e8ecf2" stroke="#8b93a3" stroke-width="1.5"/><path d="M${x1 - 5},${y1 - 14} L${x1 + 5},${y1 - 14} L${x1 + 1.5},${y1} L${x1 - 1.5},${y1} Z" fill="#f4f8fb" stroke="#8b93a3" stroke-width="1.2"/><path d="M${x1 - 3},${y1 - 7} L${x1 + 3},${y1 - 7} L${x1 + 1.5},${y1} L${x1 - 1.5},${y1} Z" fill="${c}"/>`;
+    return `<g class="sm" style="--dx:${f1(x2 - x1)}px;--dy:${f1(y2 - y1)}px${d ? `;--d:${d}s` : ""}">${body}</g>`;
+  }
+
+  F.pg1 = () => {
+    const t = tube(172, 26, {lv:.6, split:true});
+    return svg(248, 150, g("sq1", ico("bottle", "#9fd1f0", 50, 54, 1.25) + A.snow(26, 22, 7) + A.snow(76, 22, 7) + T(50, 112, "ice-cold calcium", {fs:11, w:400}) + T(50, 126, "chloride (CaCl₂)", {fs:11, w:400}) + t.glass)
+      + g("sq2", arrow(84, 50, 140, 50, "#1683cc") + T(112, 38, "400 µL", {fs:13, c:"#1683cc"})) + mover(64, 34, 172, 30, "#9fd1f0")
+      + g("sq3", t.liquid) + g("sq4", T(172, 126, "one tube", {fs:12})), "Add 400 microliters of ice-cold calcium chloride to one tube", -12);
   };
+  F.pgcol = () => {
+    const cols = A.scatter(9, 4, "white", 7, 10); cols[0] = Object.assign({}, cols[0], {x:120, y:70, r:11, mark:true});
+    const t = tube(180, 30, {cells:true, lv:.6, split:true});
+    return svg(248, 150, g("sq1", A.place(A.plate({colonies:cols}), 6, 22, .5) + T(56, 140, "Starter plate", {fs:12}) + tube(180, 30, {lv:.6, fill:"#dff1fb"}))
+      + g("sq2", `<path d="M68,52 Q118,0 166,24" fill="none" stroke="#1683cc" stroke-width="2.5" stroke-dasharray="5 4"/><path d="M166,24 l-11,-3 l5,10 Z" fill="#1683cc"/>` + T(112, 12, "pick ONE colony", {fs:12, c:"#1683cc"}))
+      + mover(66, 57, 180, 40, "#fbfaf3", "loop") + g("sq3", t.liquid) + g("sq4", T(180, 140, "mix well", {fs:12})), "Pick one colony with a sterile loop and mix it into the calcium chloride", -12);
+  };
+  F.pg2 = () => {
+    const t = tube(160, 26, {cells:true, lv:.35, cap:MINUS, split:true});
+    return svg(248, 150, g("sq1", tube(55, 26, {cells:true, lv:.35, cap:PLUS}) + T(55, 122, "+pGLO", {fs:12, c:PLUS}))
+      + g("sq2", arrow(78, 44, 136, 44, "#1683cc") + T(107, 34, "200 µL", {fs:13, c:"#1683cc"})) + mover(55, 40, 160, 30, "#d9c58f")
+      + g("sq3", t.glass + t.liquid) + g("sq4", T(160, 122, "-pGLO", {fs:12, c:MINUS}) + T(107, 146, "Split in half, then label", {fs:12, w:400})), "Move 200 microliters into a second tube and label them", -12);
+  };
+  F.pg3 = () => svg(248, 150, g("sq1", ico("tube", "#cfe3f7", 34, 50, 1.1) + T(34, 104, "pGLO", {fs:12, c:"#1683cc"}) + tube(115, 26, {cells:true, lv:.36, cap:PLUS}) + T(115, 122, "+pGLO", {fs:12, c:PLUS}) + tube(180, 26, {cells:true, lv:.35, cap:MINUS}) + T(180, 122, "-pGLO", {fs:12, c:MINUS}))
+      + g("sq2", arrow(58, 44, 94, 44, "#1683cc") + T(76, 34, "4 µL", {fs:13, c:"#1683cc"})) + mover(34, 34, 115, 32, "#1683cc")
+      + g("sq3", `<circle cx="111" cy="80" r="4" fill="none" stroke="#1683cc" stroke-width="2"/><circle cx="120" cy="88" r="4" fill="none" stroke="#1683cc" stroke-width="2"/>`) + g("sq4", T(180, 146, "no plasmid", {fs:11, w:400, c:MINUS})), "Add 4 microliters of plasmid to the +pGLO tube only", -12);
+  F.pg7 = () => {
+    const a = tube(124, 28, {cells:true, plasmid:true, lv:.6, fill:"#efe0b5", cap:PLUS, split:true}), b = tube(170, 28, {cells:true, lv:.6, fill:"#efe0b5", cap:MINUS, split:true});
+    return svg(248, 150, g("sq1", ico("bottle", "#efe0b5", 30, 50, 1.05) + T(30, 102, "LB", {fs:12}) + `<rect x="88" y="16" width="120" height="118" rx="8" fill="#e8ecf2" stroke="#8b93a3" stroke-width="2"/>` + a.glass + b.glass)
+      + g("sq2", arrow(54, 44, 92, 44, "#a96c05") + T(72, 34, "200 µL", {fs:11, c:"#a96c05"})) + mover(30, 26, 124, 34, "#efe0b5")
+      + g("sq3", a.liquid + a.plas + b.liquid) + g("sq4", T(148, 128, "37°C, 1 hour", {fs:13})), "Add 200 microliters LB, then 37 degrees for 1 hour", -12);
+  };
+  F.pg8 = () => svg(248, 150, g("sq1", tube(40, 22, {cells:true, lv:.6, fill:"#efe0b5"}) + T(40, 118, "each tube", {fs:12}) + A.place(A.plate({}), 96, 46, .45))
+      + g("sq2", arrow(60, 40, 104, 58, "#1683cc") + T(86, 30, "100 µL", {fs:13, c:"#1683cc"})) + mover(40, 30, 140, 84, "#d9c58f")
+      + g("sq3", `<ellipse cx="140" cy="91" rx="12" ry="7" fill="#d9c58f" opacity=".85"/>`)
+      + g("sq4", `<path d="M200,40 L200,96 L168,96" fill="none" stroke="#8b93a3" stroke-width="6" stroke-linecap="round"/>` + T(204, 30, "spreader", {fs:11, w:400}) + T(140, 146, "Spread it, then onto the next plate", {fs:11, w:400})), "Pipette 100 microliters onto each plate and spread", -12);
+
+  /* step 9: which tube goes on which plate */
+  const plateAt = (x, y, ara) => `<g transform="translate(${x - 46} ${y}) scale(.46)">${A.plate({agar:ara ? "#f3e2b0" : "#efdba6"}).replace(/^<svg[^>]*>/, "").replace(/<\/svg>$/, "")}</g>`;
+  const bigTube = (x, y, cap, label) => `<path d="M${x - 16},${y + 14} L${x - 16},${y + 78} Q${x},${y + 98} ${x + 16},${y + 78} L${x + 16},${y + 14}" fill="#f4f8fb" stroke="#8b93a3" stroke-width="2"/><path d="M${x - 14.5},${y + 50} L${x - 14.5},${y + 78} Q${x},${y + 95} ${x + 14.5},${y + 78} L${x + 14.5},${y + 50} Z" fill="#efe0b5"/><rect x="${x - 19}" y="${y}" width="38" height="15" rx="4" fill="${cap}"/>` + T(x, y - 8, label, {fs:16, c:cap});
+  F.platemap = () => {
+    const G = [[120, MINUS, "-pGLO tube", [["LB", "-amp, -ara", false], ["LB/amp", "+amp, -ara", false]]], [360, PLUS, "+pGLO tube", [["LB/amp", "+amp, -ara", false], ["LB/amp/ara", "+amp, +ara", true]]]];
+    let o = "";
+    G.forEach(([cx, col, name, plates], gi) => {
+      const d = gi * 3.4;
+      o += `<rect x="${cx - 114}" y="6" width="228" height="362" rx="16" fill="${col}" opacity=".07"/>`;
+      o += g("sq1", bigTube(cx, 40, col, name) + T(cx + 26, 96, "100 µL", {fs:12, w:400, c:col, a:"start"}) + T(cx + 26, 112, "to each", {fs:12, w:400, c:col, a:"start"}), d);
+      o += g("sq2", plates.map((_, k) => arrow(cx + (k ? 8 : -8), 146, cx + (k ? 56 : -56), 190, col)).join(""), d);
+      plates.forEach(([pl, sub, ara], k) => { const px = cx + (k ? 56 : -56);
+        o += mover(cx, 112, px, 236, "#efe0b5", "", d + k * .25) + g("sq3", plateAt(px, 196, ara) + `<ellipse cx="${px}" cy="242" rx="10" ry="6" fill="#d9c58f" opacity=".85"/>`, d + k * .25) + g("sq4", T(px, 322, pl, {fs:15}) + T(px, 344, `(${sub})`, {fs:12, w:400}), d); });
+    });
+    return `<svg class="seq" viewBox="0 0 480 374" role="img" aria-label="The -pGLO tube goes on LB and LB/amp. The +pGLO tube goes on LB/amp and LB/amp/ara." style="color:var(--ink)">${o}</svg>`;
+  };
+  /* the plates in the plate map sit under the tube, so the plates appear before the mover arrives */
+  A.seqTube = tube; A.seqMover = mover; A.seqG = g;
 })();
