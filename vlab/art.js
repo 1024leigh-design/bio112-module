@@ -149,7 +149,7 @@
     (spec.colonies || []).forEach(c => {
       const glow = uv && c.glow;
       const fill = uv ? (glow ? "#8dffad" : "#4c4a72") : col(c.c || "white");
-      if (glow) inner += `<circle class="m-pulse" style="animation-delay:-${f1((c.x * 7 + c.y) % 18 / 10)}s" cx="${f1(c.x)}" cy="${f1(c.y)}" r="${f1(c.r * 2)}" fill="#6dff95" opacity=".25"/>`;
+      if (glow) inner += `<circle cx="${f1(c.x)}" cy="${f1(c.y)}" r="${f1(c.r * 2)}" fill="#6dff95" opacity=".25"/>`;
       inner += `<circle cx="${f1(c.x)}" cy="${f1(c.y)}" r="${f1(c.r)}" fill="${fill}" stroke="${uv ? "none" : "rgba(0,0,0,.22)"}" stroke-width=".8"${c.id !== undefined ? ` data-col="${c.id}"` : ""}/>`;
       if (c.mark) inner += `<circle cx="${f1(c.x)}" cy="${f1(c.y)}" r="${f1(c.r + 2.6)}" fill="none" stroke="#1683cc" stroke-width="2"/>`;
     });

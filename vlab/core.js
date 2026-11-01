@@ -371,6 +371,13 @@
       V.toast(b.dataset.mode === "test" ? "Test mode: fill in the blanks." : "Learn mode: everything is shown.");
     }));
     setupVocab();
+    /* transfer pictures: play once when they scroll into view; tap (or Replay) to play again */
+    const playSeq = el => { if (window.VDISPLAY && window.VDISPLAY.reduced()) return; el.classList.remove("play"); void el.getBoundingClientRect(); el.classList.add("play"); };
+    const io = "IntersectionObserver" in window ? new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting){ io.unobserve(e.target); playSeq(e.target); } }), {threshold:.55}) : null;
+    const armSeq = rootEl => { if (!rootEl || !rootEl.querySelectorAll) return; rootEl.querySelectorAll("svg.seq:not([data-armed])").forEach(el => {
+      el.setAttribute("data-armed", "1"); if (io) io.observe(el); el.addEventListener("click", () => playSeq(el));
+      if (!(window.VDISPLAY && window.VDISPLAY.reduced())){ const b = document.createElement("button"); b.type = "button"; b.className = "replaybtn"; b.textContent = "\u21bb Replay"; b.addEventListener("click", () => playSeq(el)); el.insertAdjacentElement("afterend", b); } }); };
+    new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => { if (n.nodeType === 1) armSeq(n.matches && n.matches("svg.seq") ? n.parentNode : n); }))).observe(document.body, {childList:true, subtree:true});
     document.addEventListener("click", e => { const b = e.target.closest("[data-review]"); if (b) V.openReview(b.dataset.review); });
     $("reviewClose").addEventListener("click", () => $("reviewDlg").close());
     $("reviewDlg").addEventListener("click", e => { if (e.target.id === "reviewDlg") $("reviewDlg").close(); });
