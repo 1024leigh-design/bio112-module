@@ -348,7 +348,7 @@
     let step = 1, N0, counts, chosen = null, marks;
     const totals = []; T.reduce((acc, t, i) => { const d = acc * t.add / (t.water + t.add); totals[i] = d; return d; }, 1);
     const fmt = d => `10<sup>${Math.round(Math.log10(d))}</sup>`;
-    function newCulture(){ N0 = (2.1 + Math.random() * 7.6) * 1e9; counts = totals.map(d => Math.round(N0 * d * 0.1)); marks = {}; chosen = null; }
+    function newCulture(){ N0 = V.newCulture ? V.newCulture() : 1.5e9; counts = totals.map(d => Math.round(N0 * d * 0.1)); marks = {}; chosen = null; }
     newCulture();
     function draw(){
       let h = `<div class="lbl">Step ${step} of 4</div>`;

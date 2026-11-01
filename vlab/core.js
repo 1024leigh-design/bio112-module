@@ -8,7 +8,7 @@
   const TABS = [["learn", "Learn"], ["practice", "Practice the procedure"], ["mistakes", "Mistakes"], ["problems", "Problems"]];
 
   const V = window.VLAB = {
-    labs:{}, sims:{}, problems:{}, vocab:[], clock:null, mode:"learn", esc,
+    labs:{}, sims:{}, problems:{}, reviews:{}, vocab:[], clock:null, mode:"learn", esc,
     add(lab){ this.labs[lab.n] = lab; },
     shuffle(a, R){ a = a.slice(); R = R || Math.random; for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(R() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; },
     pick(a, R){ return a[Math.floor((R || Math.random)() * a.length)]; },
@@ -127,10 +127,10 @@
       const whole = shown.length === sec.items.length;
       let list = "";
       if (sec.layout === "cards") list = `<div class="lcards${sec.cols ? " c" + sec.cols : ""}">${shown.map(({it, ii, p}) => `<div class="lcard ${p === curIdx ? "cur" : ""}">${it.fig ? `<div class="lcfig">${V.fig(it.fig)}</div>` : ""}${it.ico ? `<span class="lico">${window.ART.ico(it.ico.i, it.ico.c)}</span>` : ""}<div class="body">${itemBody(it, si, ii, p === curIdx)}</div></div>`).join("")}</div>`;
-      else if (shown.length) list = `<ol class="litems ${sec.kind === "steps" ? "steps" : "facts"}">${shown.map(({it, ii, p}) => `<li class="${p === curIdx ? "cur" : ""}${it.pic ? " haspic" : it.ico ? " hasico" : ""}">${it.pic ? `<span class="lpic">${window.ART.figs[it.pic]({})}</span>` : it.ico ? `<span class="lico">${window.ART.ico(it.ico.i, it.ico.c)}</span>` : ""}<div class="body">${itemBody(it, si, ii, p === curIdx)}</div></li>`).join("")}</ol>`;
+      else if (shown.length) list = `<ol class="litems ${sec.kind === "steps" ? "steps" : "facts"}">${shown.map(({it, ii, p}) => `<li class="${p === curIdx ? "cur" : ""}${it.pic ? " haspic" : it.ico ? " hasico" : ""}">${it.pic ? `<span class="lpic">${typeof it.pic === "string" ? window.ART.figs[it.pic]({}) : window.ART.figs[it.pic.name](it.pic)}</span>` : it.ico ? `<span class="lico">${window.ART.ico(it.ico.i, it.ico.c)}</span>` : ""}<div class="body">${itemBody(it, si, ii, p === curIdx)}</div></li>`).join("")}</ol>`;
       const figs = whole ? V.figs(sec.figs) : "";
       const sim = whole && sec.sim ? `<div class="act lsim" data-lsim="${si}">${sec.sim.title ? `<h2>${sec.sim.title}</h2>` : ""}${sec.sim.prompt ? `<p class="lead">${sec.sim.prompt}</p>` : ""}<div data-lsimhost></div></div>` : "";
-      html += `<section class="lsec">${sec.h ? `<h2>${sec.h}</h2>` : ""}${sec.banner ? `<p class="banner">${sec.banner}</p>` : ""}${sec.lead ? `<p class="lead">${sec.lead}</p>` : ""}${sec.cheat ? `<div class="cheat"><b class="cheatt">${sec.cheatTitle || "Cheat sheet"}</b><dl>${sec.cheat.map(c => `<div><dt style="${c[2] ? `background:${c[2]};color:#fff` : ""}">${c[0]}</dt><dd>${c[1]}</dd></div>`).join("")}</dl></div>` : ""}${sec.top ? V.figs(sec.top) : ""}`;
+      html += `<section class="lsec">${sec.h ? `<h2>${sec.h}</h2>` : ""}${sec.banner ? `<p class="banner">${sec.banner}</p>` : ""}${sec.review ? `<div class="btnrow reviewrow"><button type="button" class="btn ghost small" data-review="${sec.review}">${V.reviews[sec.review] ? V.reviews[sec.review].title : "Review"}</button></div>` : ""}${sec.lead ? `<p class="lead">${sec.lead}</p>` : ""}${sec.cheat ? `<div class="cheat"><b class="cheatt">${sec.cheatTitle || "Cheat sheet"}</b><dl>${sec.cheat.map(c => `<div><dt style="${c[2] ? `background:${c[2]};color:#fff` : ""}">${c[0]}</dt><dd>${c[1]}</dd></div>`).join("")}</dl></div>` : ""}${sec.top ? V.figs(sec.top) : ""}`;
       html += sec.layout === "split" && figs ? `<div class="lsplit"><div class="lsfig">${figs}</div><div>${list}</div></div>` : list + figs;
       html += sim + (whole ? V.examples(sec.examples) + (sec.tip ? `<div class="msg tipbox"><b>Tip:</b> ${sec.tip}</div>` : "") + (sec.todo ? V.todo(sec.todo) : "") : "") + `</section>`;
     });
@@ -331,6 +331,13 @@
     find.addEventListener("input", draw);
   }
 
+  /* ---------- review pop-ups (like the exponent review) ---------- */
+  V.openReview = key => {
+    const R = V.reviews[key], dlg = $("reviewDlg"); if (!R) return;
+    $("reviewTitle").textContent = R.title; const body = $("reviewBody"); body.innerHTML = R.html; if (R.init) R.init(body);
+    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", ""); body.scrollTop = 0;
+  };
+
   /* ---------- routing + mode ---------- */
   function parse(){
     const h = location.hash.replace(/^#/, "");
@@ -360,6 +367,9 @@
       V.toast(b.dataset.mode === "test" ? "Test mode: fill in the blanks." : "Learn mode: everything is shown.");
     }));
     setupVocab();
+    document.addEventListener("click", e => { const b = e.target.closest("[data-review]"); if (b) V.openReview(b.dataset.review); });
+    $("reviewClose").addEventListener("click", () => $("reviewDlg").close());
+    $("reviewDlg").addEventListener("click", e => { if (e.target.id === "reviewDlg") $("reviewDlg").close(); });
     window.addEventListener("hashchange", () => render(false));
     render(false);
   };
