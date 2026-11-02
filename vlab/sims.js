@@ -228,7 +228,7 @@
         <div class="inrow"><label for="mh">µm per ocular space at 100x:</label><input id="mh" class="num" inputmode="decimal"></div>
         <div class="btnrow"><button type="button" class="btn" id="mmCheck">Check</button><button type="button" class="btn ghost" id="mmMove">Move on</button></div><div class="fb"></div><div class="sol" hidden></div></div></div>`;
       const ans = {mo:pair[1], ms:pair[0], mv:v10, mh:v10 / 10};
-      const sol = `<ol><li>Count the spaces from A to B: <b>${pair[1]}</b> ocular spaces and <b>${pair[0]}</b> stage spaces.</li><li>Stage distance = ${pair[0]} × 10 µm = <b>${pair[0] * 10} µm</b>.</li><li>µm per ocular space at 10x = ${pair[0] * 10} µm ÷ ${pair[1]} = <b>${+v10.toFixed(3)} µm</b>.</li><li>At 100x: ${+v10.toFixed(3)} ÷ 10 = <b>${+(v10 / 10).toFixed(4)} µm</b>.</li></ol>`;
+      const sol = `<ol><li>Count the spaces from A to B: <b>${pair[1]}</b> ocular spaces and <b>${pair[0]}</b> stage spaces.</li><li>Stage distance: $$${pair[0]} \\times 10\\ \\mu\\text{m} = ${pair[0] * 10}\\ \\mu\\text{m}$$</li><li>At 10x: $$\\frac{${pair[0] * 10}\\ \\mu\\text{m}}{${pair[1]}\\text{ spaces}} = ${+v10.toFixed(3)}\\ \\mu\\text{m}\\text{ per space}$$</li><li>At 100x: $$\\frac{${+v10.toFixed(3)}\\ \\mu\\text{m}}{10} = ${+(v10 / 10).toFixed(4)}\\ \\mu\\text{m}$$</li></ol>`;
       const fb = q.querySelector(".fb"), sb = q.querySelector(".sol");
       q.querySelector("#mmCheck").addEventListener("click", () => {
         let bad = 0; Object.keys(ans).forEach(k => { const inp = q.querySelector("#" + k), v = V.parseNum(inp.value), ok = Math.abs(v - ans[k]) <= Math.abs(ans[k]) * .011; inp.classList.toggle("ok", ok); inp.classList.toggle("no", !ok); if (!ok) bad++; });
@@ -430,7 +430,7 @@
       if (!svg._wired){ svg._wired = true; svg.addEventListener("click", e => { const t = e.target.closest("[data-k]"); if (!t) return; const k = +t.dataset.k; if (marks[k]) delete marks[k]; else marks[k] = 1; host.querySelector(".bigplate").innerHTML = plateFor(chosen, true); host.querySelector("#dlN").textContent = Object.keys(marks).length; wire4(); }); }
       const cBtn = host.querySelector("#dlCheck"); if (cBtn._wired) return; cBtn._wired = true;
       const m = host.querySelector("#dlMsg"), sol = host.querySelector("#dlSol"), d = totals[chosen], n = counts[chosen];
-      const solution = c => `<b>Worked solution</b><ol><li>Colonies counted: <b>${c}</b> CFU on plate ${T[chosen].name}.</li><li>Total dilution of tube ${T[chosen].name}: <b>${fmt(d)}</b>.</li><li>Volume plated: 100 µL = <b>0.1 mL</b>.</li><li>cells/mL = ${c} ÷ (${fmt(d)} × 0.1 mL) = <b>${V.sci(c / (d * .1))} cells/mL</b>.</li></ol>`;
+      const solution = c => `<b>Worked solution</b><ol><li>Colonies counted: <b>${c}</b> CFU on plate ${T[chosen].name}.</li><li>Total dilution of tube ${T[chosen].name}: <b>${fmt(d)}</b>.</li><li>Volume plated: 100 µL = <b>0.1 mL</b>.</li><li>$$\\text{cells/mL} = \\frac{${c}}{10^{${Math.round(Math.log10(d))}} \\times 0.1} = ${V.sci(c / (d * .1)).replace(" × ", " \\times ").replace("<sup>", "^{").replace("</sup>", "}")}\\text{ cells/mL}$$</li></ol>`;
       cBtn.addEventListener("click", () => {
         const c = V.parseNum(host.querySelector("#dlC").value), cells = V.parseNum(host.querySelector("#dlCells").value);
         if (!isFinite(c)){ msg(m, "Type how many colonies you counted.", "warn"); return; }
