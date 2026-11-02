@@ -89,10 +89,19 @@
     host.innerHTML = `<div class="eqctrl"><span><b>Plate from tube:</b></span><div class="tubepick" id="cfPick"></div></div>
       <div class="eqctrl" style="margin-top:8px">${challengeUI("cfCh")}<button type="button" class="btn ghost small" id="cfNew">New culture</button>${reviewBtn}</div>
       <div class="eqwrap"><div class="svgscroll"><svg id="cfSvg" viewBox="0 0 680 330" role="img" aria-label="Plate, tube, and pipette feeding the cells per mL equation"></svg></div>
-      <div class="result" id="cfRes"></div><div class="msg" id="cfCap" style="width:100%"></div>
+      <div class="msg dilhow" id="cfDil" hidden></div><div class="result" id="cfRes"></div><div class="msg" id="cfCap" style="width:100%"></div>
       <div class="eqctrl"><button type="button" class="btn" id="cfNext">Next step</button><button type="button" class="btn ghost" id="cfAll">Show all</button><button type="button" class="btn ghost" id="cfReset">Start over</button></div></div>`;
     const svg = host.querySelector("#cfSvg"), cap = host.querySelector("#cfCap"), res = host.querySelector("#cfRes");
     const C1 = "#c2185b", C2 = "#1683cc", C3 = "#a96c05";
+    /* the "how was the total dilution factor calculated?" panel */
+    const dilBox = host.querySelector("#cfDil");
+    const dilHow = () => { const used = tubes.slice(0, k + 1), big = used.reduce((a, t) => a * den(t), 1), e = p10(big);
+      return `<b>How we got the total dilution factor of tube ${NAMES[k]}</b><br>Multiply the dilution factor of every tube from A to ${NAMES[k]}:`
+        + M(`${used.map(t => fr(1, tnum(den(t)))).join(" \\times ")} = ${fr(1, tnum(big))}${e !== null ? ` = 10^{-${e}}` : ""}`)
+        + `Each fraction is one tube's dilution factor: volume added over total volume. See the <b>Dilution factors</b> tab.`; };
+    const toggleDil = () => { dilBox.hidden = !dilBox.hidden; if (!dilBox.hidden){ dilBox.innerHTML = dilHow(); dilBox.scrollIntoView({block:"nearest"}); } };
+    host.addEventListener("click", e => { if (e.target.closest("[data-dil]")) toggleDil(); });
+    host.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target.closest && e.target.closest("g[data-dil]")){ e.preventDefault(); toggleDil(); } });
     const XP = 200, XT = 400, XV = 560; /* plate, tube, pipette columns: each number lands straight below its picture */
     const posCache = {};
     function plateFor(n, key){
@@ -103,12 +112,15 @@
     function draw(){
       host.querySelector("#cfPick").innerHTML = NAMES.map((n, i) => `<button type="button" class="opt ${i === k ? "sel" : ""}" data-k="${i}" aria-pressed="${i === k}">${n}</button>`).join("");
       host.querySelectorAll("#cfPick [data-k]").forEach(b => b.addEventListener("click", () => { k = +b.dataset.k; step = 0; draw(); }));
+      if (!dilBox.hidden) dilBox.innerHTML = dilHow();
       const tt = tubes.reduce((acc, t, i) => { acc.push((i ? acc[i - 1] : 1) / den(t)); return acc; }, [])[k];
       const ml = ul / 1000, n = Math.round(N0 * tt * ml), tntc = n > 200, none = n < 1;
       let o = `<g transform="translate(${XP - 62} 4) scale(.62)">${plateFor(n, k + ":" + n).replace(/^<svg[^>]*>/, "").replace(/<\/svg>$/, "")}</g>`;
-      o += T(XP, 148, `Plate ${NAMES[k]}`, {fs:15, c:C1}) + T(XP, 168, tntc ? "TNTC (more than 200)" : `${n} colonies`, {fs:15, c:C1});
-      o += tubeAt(XT, 12, true, .5) + T(XT, 148, `Tube ${NAMES[k]}`, {fs:15, c:C2}) + `<text x="${XT}" y="168" font-size="15" font-weight="700" fill="${C2}" text-anchor="middle">total ${dilSVG(tt, 15)}</text>`;
-      o += `<g transform="translate(${XV - 51} 20) scale(1.7)">${A.ico("pipette").replace(/^<svg[^>]*>/, "").replace(/<\/svg>$/, "")}</g>` + T(XV, 148, `Plated ${ul} µL`, {fs:15, c:C3}) + T(XV, 168, `= ${ml} mL`, {fs:15, c:C3});
+      o += T(XP, 146, `Plate ${NAMES[k]}`, {fs:15, c:C1}) + T(XP, 165, tntc ? "TNTC (more than 200)" : `${n} colonies`, {fs:15, c:C1}) + (tntc ? "" : T(XP, 183, "= the CFUs", {fs:13, w:400, c:C1}));
+      /* tap the total dilution factor to see how it was calculated */
+      o += tubeAt(XT, 12, true, .5) + `<g data-dil="1" class="dillink" role="button" tabindex="0" aria-label="Show how the total dilution factor was calculated"><rect x="${XT - 84}" y="132" width="168" height="58" rx="10" fill="${C2}" opacity=".08"/>`
+        + T(XT, 146, `Tube ${NAMES[k]}: total`, {fs:14, c:C2}) + T(XT, 164, "dilution factor", {fs:14, c:C2}) + `<text x="${XT}" y="184" font-size="15" font-weight="700" fill="${C2}" text-anchor="middle" text-decoration="underline">${dilSVG(tt, 15)} (tap me)</text></g>`;
+      o += `<g transform="translate(${XV - 51} 20) scale(1.7)">${A.ico("pipette").replace(/^<svg[^>]*>/, "").replace(/<\/svg>$/, "")}</g>` + T(XV, 146, "Put on the plate", {fs:14, c:C3}) + T(XV, 164, "before incubating", {fs:14, c:C3}) + T(XV, 183, `${ul} µL = ${ml} mL`, {fs:14, c:C3});
       if (tntc || none){ svg.innerHTML = o + T(340, 250, tntc ? "Too many to count. Pick a more dilute tube." : "No colonies to count. Pick a less dilute tube.", {fs:18, c:"#c43a2b"});
         res.innerHTML = ""; cap.innerHTML = tntc ? `<b>Plate ${NAMES[k]} is TNTC.</b> It has more than 200 colonies, so they run together and cannot be counted accurately. Write "TNTC" and do not use it. Try a tube further down the series.` : `<b>Plate ${NAMES[k]} has no colonies.</b> There is nothing to count. Try a tube earlier in the series.`;
         host.querySelector("#cfNext").disabled = true; return; }
@@ -116,11 +128,11 @@
       /* cells/mL = CFUs ÷ ( total dilution × mL plated ) */
       const ey = 250;
       o += T(XP - 70, ey, "cells/mL =", {fs:19, a:"end"});
-      if (step >= 1) o += down(XP, 176, ey - 26, C1) + T(XP, ey, String(n), {fs:26, c:C1}); else o += slot(XP, ey, 64);
+      if (step >= 1) o += down(XP, 192, ey - 26, C1) + T(XP, ey, String(n), {fs:26, c:C1}); else o += slot(XP, ey, 64);
       o += T(XP + 62, ey, "÷", {fs:24}) + T(XT - 66, ey, "(", {fs:30, w:400});
-      if (step >= 2) o += down(XT, 176, ey - 26, C2) + `<text x="${XT}" y="${ey}" font-size="24" font-weight="700" fill="${C2}" text-anchor="middle">${dilSVG(tt, 24)}</text>`; else o += slot(XT, ey, 70);
+      if (step >= 2) o += down(XT, 194, ey - 26, C2) + `<text x="${XT}" y="${ey}" font-size="24" font-weight="700" fill="${C2}" text-anchor="middle">${dilSVG(tt, 24)}</text>`; else o += slot(XT, ey, 70);
       o += T((XT + XV) / 2, ey, "×", {fs:22});
-      if (step >= 3) o += down(XV, 176, ey - 26, C3) + T(XV, ey, `${ml} mL`, {fs:22, c:C3}); else o += slot(XV, ey, 80);
+      if (step >= 3) o += down(XV, 192, ey - 26, C3) + T(XV, ey, `${ml} mL`, {fs:22, c:C3}); else o += slot(XV, ey, 80);
       o += T(XV + 58, ey, ")", {fs:30, w:400});
       if (step >= 4){ o += `<path d="M${XT - 60},${ey + 14} Q${(XT + XV) / 2},${ey + 34} ${XV + 52},${ey + 14}" fill="none" stroke="#53657b" stroke-width="2"/>`;
         o += `<text x="${(XT + XV) / 2}" y="${ey + 58}" font-size="18" font-weight="700" fill="#53657b" text-anchor="middle">${dilSVG(tt, 18)} × ${ml} = ${dilSVG(tt * ml, 18)}</text>`; }
@@ -137,8 +149,8 @@
       cap.innerHTML = [
         `Plate ${NAMES[k]} has ${n} colonies, so you can count it. Tap <b>Next step</b> to build the equation one number at a time.`,
         `<b style="color:${C1}">Step 1: the colonies (CFUs) come first.</b> You counted <b>${n}</b> colonies on plate ${NAMES[k]}. Each colony grew from one live cell (or clump).`,
-        `<b style="color:${C2}">Step 2: the total dilution of tube ${NAMES[k]}.</b> It is <b>${m(tdil(tt))}</b>. (See the Total dilution tab.) The cells in tube ${NAMES[k]} are ${fmt(Math.round(1 / tt))} times more dilute than the original culture.`,
-        `<b style="color:${C3}">Step 3: the volume you plated, in mL.</b> ${M(`${fr(`${ul}\\ \\mu\\text{L}`, "1000")} = ${ml}\\text{ mL}`)}${mlE !== null ? `As a power of 10, ${m(`${ml} = 10^{-${mlE}}`)}.` : ""}`,
+        `<b style="color:${C2}">Step 2: the total dilution factor of tube ${NAMES[k]}.</b> It is <b>${m(tdil(tt))}</b>. <button type="button" class="linkbtn" data-dil="1">How was this calculated?</button> The cells in tube ${NAMES[k]} are ${fmt(Math.round(1 / tt))} times more dilute than the original culture.`,
+        `<b style="color:${C3}">Step 3: the volume you put on the plate before incubating, in mL.</b> ${M(`${fr(`${ul}\\ \\mu\\text{L}`, "1000")} = ${ml}\\text{ mL}`)}${mlE !== null ? `As a power of 10, ${m(`${ml} = 10^{-${mlE}}`)}.` : ""}`,
         `<b>Step 4: multiply the two numbers on the bottom first.</b> ${M(`${col(C2, tdil(tt))} \\times ${col(C3, ml)} = ${tdil(tt * ml)}`)}${eb !== null && mlE !== null ? `Add the exponents: ${m(`-${p10(1 / tt)} + (-${mlE}) = -${eb}`)}.` : ""}`,
         fifth][step];
     }
@@ -182,15 +194,25 @@
   /* ================= pictures ================= */
   /* one tube: where the dilution factor comes from */
   A.figs.dfone = sp => {
-    const a = sp.a, w = sp.w, tt = +(a + w).toFixed(2), d = Math.round(tt / a), C = sp.c || "#1683cc";
-    let o = tubeAt(50, 20, true, .38) + T(50, 120, `${a} mL`, {fs:15, c:C}) + T(50, 138, "added", {fs:12, w:400});
-    o += A.curve(70, 50, 110, 20, 150, 50, C);
-    o += tubeAt(175, 20, false, .38) + T(175, 120, `${w} mL`, {fs:15, c:"#53657b"}) + T(175, 138, "water", {fs:12, w:400});
-    o += T(255, 76, "=", {fs:24}) + T(330, 66, `${tt} mL`, {fs:18}) + T(330, 88, "total", {fs:13, w:400});
-    o += T(150, 186, `${a}`, {fs:22, c:C}) + `<line x1="118" y1="196" x2="182" y2="196" stroke="currentColor" stroke-width="2.5"/>` + T(150, 220, `${tt}`, {fs:22});
-    o += T(225, 206, "=", {fs:24}) + T(300, 210, `1/${d}`, {fs:30, c:"#1f8a55"});
-    o += `<path d="M50,146 Q60,170 112,182" fill="none" stroke="${C}" stroke-width="2" stroke-dasharray="4 3"/><path d="M330,96 Q330,180 186,214" fill="none" stroke="#53657b" stroke-width="2" stroke-dasharray="4 3"/>`;
-    return `<svg viewBox="0 0 400 236" role="img" aria-label="${a} mL into ${w} mL water gives a 1/${d} dilution" style="color:var(--ink)">${o}</svg>`;
+    const a = sp.a, w = sp.w, tt = +(a + w).toFixed(2), d = Math.round(tt / a), C = sp.c || "#1683cc", from = sp.from || "Tube A", to = sp.to || "Tube B";
+    let o = tubeAt(56, 34, true, .4) + T(56, 146, from, {fs:15});
+    o += A.curve(76, 46, 128, 4, 182, 40, C) + T(128, 16, `${a} mL`, {fs:16, c:C});
+    o += tubeAt(196, 34, false, .4) + T(196, 146, to, {fs:15}) + T(196, 164, `already has ${w} mL water`, {fs:12, w:400});
+    o += T(330, 70, `${to} now holds`, {fs:13, w:400}) + T(330, 96, `${a} + ${w} = ${tt} mL`, {fs:17});
+    o += T(110, 222, `Dilution factor of ${to.replace("Tube ", "tube ")} =`, {fs:15, a:"middle"});
+    o += T(256, 208, `${a}`, {fs:20, c:C}) + `<line x1="228" y1="216" x2="284" y2="216" stroke="currentColor" stroke-width="2.5"/>` + T(256, 238, `${tt}`, {fs:20});
+    o += T(304, 224, "=", {fs:22}) + T(322, 228, `1/${d}`, {fs:26, c:"#1f8a55", a:"start"});
+    return `<svg viewBox="0 0 420 250" role="img" aria-label="${a} mL from ${from} goes into ${to}, which has ${w} mL water. The dilution factor is 1/${d}." style="color:var(--ink)">${o}</svg>`;
+  };
+  /* plating: every tube in its own column, its plate right below it */
+  A.figs.platecols = () => {
+    const g = A.seqG, X = i => 58 + i * 116;
+    let t = "", ar = "", dr = "";
+    NAMES.forEach((n, i) => { const x = X(i);
+      t += tubeAt(x, 34, i < 3, .42) + T(x, 152, `Tube ${n}`, {fs:16}) + `<g transform="translate(${x - 50} 198) scale(.5)">${A.plate({}).replace(/^<svg[^>]*>/, "").replace(/<\/svg>$/, "")}</g>` + T(x, 318, `Plate ${n}`, {fs:16});
+      ar += A.arrow(x, 162, x, 202, "#1683cc", 3);
+      dr += `<ellipse cx="${x}" cy="248" rx="13" ry="8" fill="#d9c58f" opacity=".9"/>`; });
+    return `<svg class="seq" viewBox="0 0 700 328" role="img" aria-label="100 microliters from each tube, A to F, goes onto its own plate" style="color:var(--ink)">${g("sq1", t)}${g("sq2", ar + T(350, 18, "100 µL (0.1 mL) from each tube onto its own plate", {fs:16, c:"#1683cc"}))}${g("sq3", dr)}</svg>`;
   };
   /* one transfer: from one tube into the next */
   A.figs.xfer = sp => {
