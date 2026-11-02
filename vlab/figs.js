@@ -251,7 +251,7 @@
     return wrap(480, 266, s2, "A circular plasmid with a negative backbone moves toward the negative membrane; positive calcium ions shield the charges");
   };
   F.heatshock = () => {
-    const P = [["On ice", "0°C", 0, "#9fd1f0", "about 1 hour", "ice"], ["Heat shock", "42°C", 42, "#e4572e", "45 seconds", "fire"], ["Back on ice", "0°C", 0, "#9fd1f0", "2 to 10 min", "ice"], ["Recover in LB", "37°C", 37, "#f2a33a", "1 hour", ""]];
+    const P = [["On ice", "0°C", 0, "#9fd1f0", "about 1 hour", "ice"], ["Heat shock", "42°C", 42, "#e4572e", "45 s (max 50)", "fire"], ["Back on ice", "0°C", 0, "#9fd1f0", "2 to 10 min", "ice"], ["Recover in LB", "37°C", 37, "#f2a33a", "1 hour", ""]];
     const base = 200, w = 132, gap = 14;
     let s2 = P.map(([name, temp, c, col, time, mark], i) => { const x = 20 + i * (w + gap), h = 34 + c * 3;
       return `<rect x="${x}" y="${base - h}" width="${w}" height="${h}" rx="10" fill="${col}"/>${T(x + w / 2, base - h - 12, temp, {fs:20})}${T(x + w / 2, base - 12, name, {fs:14, c:c ? "#fff" : "#14223a"})}${T(x + w / 2, base + 26, time, {fs:15})}`
@@ -331,7 +331,7 @@
       + mt(66, 32, {cells:true, plasmid:true, lv:.36, cap:PLUS}) + mt(112, 32, {cells:true, lv:.35, cap:MINUS})
       + `<path d="M17,92 q18,-7 36,0 t36,0 t36,0 t36,0 L161,143 L17,143 Z" fill="#f6b8a2" opacity=".85"/>`
       + `<rect x="60" y="114" width="58" height="24" rx="6" fill="#7a2410"/>` + T(89, 132, "42°C", {fs:16, c:"#fff"})
-      + waves(22) + waves(140) + clock(220, 70, "45 seconds") + T(89, 162, "Water bath", {fs:14}), "Heat shock in a 42 degree water bath for 45 seconds");
+      + waves(22) + waves(140) + clock(220, 70, "45 sec, max 50") + T(89, 162, "Water bath", {fs:14}), "Heat shock in a 42 degree water bath for 45 seconds, 50 seconds at most");
   };
   F.pg9 = () => wrap(`<g transform="translate(70 92) scale(1 -1)"><ellipse cx="0" cy="0" rx="44" ry="12" fill="#efdba6" stroke="#aab3c2" stroke-width="2"/><rect x="-46" y="-2" width="92" height="12" fill="#e3e7ee" stroke="#aab3c2" stroke-width="2"/></g>`
     + T(70, 60, "agar side up", {fs:11, w:400}) + A.curve(28, 40, 70, 10, 112, 40, "#1683cc") + T(70, 22, "flip it", {fs:12, c:"#1683cc"})
@@ -379,8 +379,8 @@
   F.pg1 = () => {
     const t = tube(172, 26, {lv:.6, split:true});
     return svg(248, 150, g("sq1", ico("bottle", "#9fd1f0", 50, 54, 1.25) + A.snow(26, 22, 7) + A.snow(76, 22, 7) + T(50, 112, "ice-cold calcium", {fs:11, w:400}) + T(50, 126, "chloride (CaCl₂)", {fs:11, w:400}) + t.glass)
-      + g("sq2", arrow(84, 50, 140, 50, "#1683cc") + T(112, 38, "400 µL", {fs:13, c:"#1683cc"})) + mover(64, 34, 172, 30, "#9fd1f0")
-      + g("sq3", t.liquid) + g("sq4", T(172, 126, "one tube", {fs:12})), "Add 400 microliters of ice-cold calcium chloride to one tube", -12);
+      + g("sq2", arrow(84, 50, 140, 50, "#1683cc") + T(112, 38, "500 µL", {fs:13, c:"#1683cc"})) + mover(64, 34, 172, 30, "#9fd1f0")
+      + g("sq3", t.liquid) + g("sq4", T(172, 126, "one tube", {fs:12})), "Add 500 microliters of ice-cold calcium chloride to one tube", -12);
   };
   F.pgcol = () => {
     const cols = A.scatter(9, 4, "white", 7, 10); cols[0] = Object.assign({}, cols[0], {x:120, y:70, r:11, mark:true});
@@ -392,8 +392,8 @@
   F.pg2 = () => {
     const t = tube(160, 26, {cells:true, lv:.35, cap:MINUS, split:true});
     return svg(248, 150, g("sq1", tube(55, 26, {cells:true, lv:.35, cap:PLUS}) + T(55, 122, "+pGLO", {fs:12, c:PLUS}))
-      + g("sq2", arrow(78, 44, 136, 44, "#1683cc") + T(107, 34, "200 µL", {fs:13, c:"#1683cc"})) + mover(55, 40, 160, 30, "#d9c58f")
-      + g("sq3", t.glass + t.liquid) + g("sq4", T(160, 122, "-pGLO", {fs:12, c:MINUS}) + T(107, 146, "Split in half, then label", {fs:12, w:400})), "Move 200 microliters into a second tube and label them", -12);
+      + g("sq2", arrow(78, 44, 136, 44, "#1683cc") + T(107, 34, "250 µL", {fs:13, c:"#1683cc"})) + mover(55, 40, 160, 30, "#d9c58f")
+      + g("sq3", t.glass + t.liquid) + g("sq4", T(160, 122, "-pGLO", {fs:12, c:MINUS}) + T(107, 146, "Split in half, then label", {fs:12, w:400})), "Move 250 microliters into a second tube and label them", -12);
   };
   F.pg3 = () => svg(248, 150, g("sq1", ico("tube", "#cfe3f7", 34, 50, 1.1) + T(34, 104, "pGLO", {fs:12, c:"#1683cc"}) + tube(115, 26, {cells:true, lv:.36, cap:PLUS}) + T(115, 122, "+pGLO", {fs:12, c:PLUS}) + tube(180, 26, {cells:true, lv:.35, cap:MINUS}) + T(180, 122, "-pGLO", {fs:12, c:MINUS}))
       + g("sq2", arrow(58, 44, 94, 44, "#1683cc") + T(76, 34, "4 µL", {fs:13, c:"#1683cc"})) + mover(34, 34, 115, 32, "#1683cc")

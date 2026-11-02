@@ -270,30 +270,30 @@
   /* ================= pGLO bench ================= */
   V.sims.pglobench = (host, spec) => {
     const SPEED = 3; /* heat shock clock runs 3x faster than real time */
-    const VOLS = [4, 100, 200, 400];
+    const VOLS = [4, 100, 200, 250, 500];
     const PL = [{name:"LB", tube:"t2", lab:"LB (-pGLO)"}, {name:"LB/amp", tube:"t2", lab:"LB/amp (-pGLO)"}, {name:"LB/amp", tube:"t1", lab:"LB/amp (+pGLO)"}, {name:"LB/amp/ara", tube:"t1", lab:"LB/amp/ara (+pGLO)"}];
     let S;
     const fresh = () => ({k:0, got:{}, vol:null, sel:null, uv:false, grown:false, platesIn:false, bathT:null, log:[], msg:"", cls:"",
       tubes:{t1:{loc:"rack", vol:0, cells:false, plasmid:false, lb:false, label:"Tube 1"}, t2:{loc:"rack", vol:0, cells:false, plasmid:false, lb:false, label:"Tube 2"}}, plated:{}});
     const both = loc => { S.tubes.t1.loc = loc; S.tubes.t2.loc = loc; };
     const STEPS = [
-      {text:"Set the pipette to <b>400 µL</b>. Move ice-cold calcium chloride (CaCl<sub>2</sub>) into <b>Tube 1</b>.", done:"400 µL CaCl<sub>2</sub> into Tube 1",
-        acts:[{src:"cacl2", dst:"t1", vol:400, ok:"400 µL of ice-cold CaCl<sub>2</sub> is in Tube 1.", fx:() => { S.tubes.t1.vol = 400; }}]},
+      {text:"Set the pipette to <b>500 µL</b>. Move ice-cold calcium chloride (CaCl<sub>2</sub>) into <b>Tube 1</b>.", done:"500 µL CaCl<sub>2</sub> into Tube 1",
+        acts:[{src:"cacl2", dst:"t1", vol:500, ok:"500 µL of ice-cold CaCl<sub>2</sub> is in Tube 1.", fx:() => { S.tubes.t1.vol = 500; }}]},
       {text:"Use the <b>loop</b>: pick <b>one colony</b> from the <b>starter plate</b> to start. Mix it into <b>Tube 1</b>.", done:"One colony mixed into Tube 1",
         acts:[{src:"start", dst:"t1", ok:"One colony is mixed in. The cells are now in ice-cold CaCl<sub>2</sub>.", fx:() => { S.tubes.t1.cells = true; }}]},
-      {text:"Set the pipette to <b>200 µL</b>. Split the cells: move 200 µL from Tube 1 into <b>Tube 2</b>.", done:"Split: 200 µL into Tube 2",
-        acts:[{src:"t1", dst:"t2", vol:200, ok:"Each tube now has 200 µL of cells.", fx:() => { S.tubes.t1.vol = 200; S.tubes.t2.vol = 200; S.tubes.t2.cells = true; }}]},
+      {text:"Set the pipette to <b>250 µL</b>. Split the cells: move 250 µL from Tube 1 into <b>Tube 2</b>.", done:"Split: 250 µL into Tube 2",
+        acts:[{src:"t1", dst:"t2", vol:250, ok:"Each tube now has 250 µL of cells.", fx:() => { S.tubes.t1.vol = 250; S.tubes.t2.vol = 250; S.tubes.t2.cells = true; }}]},
       {text:"Label the tubes.", done:"Labeled +pGLO and -pGLO", button:"Label: Tube 1 = +pGLO, Tube 2 = -pGLO", fx:() => { S.tubes.t1.label = "+pGLO"; S.tubes.t2.label = "-pGLO"; }, ok:"Labeled! Tube 2 (-pGLO) is your control."},
       {text:"Set the pipette to <b>4 µL</b>. Add pGLO plasmid to the <b>+pGLO</b> tube only.", done:"4 µL pGLO into +pGLO",
-        acts:[{src:"plasmid", dst:"t1", vol:4, ok:"The plasmid is in the +pGLO tube.", fx:() => { S.tubes.t1.plasmid = true; S.tubes.t1.vol = 204; }}],
+        acts:[{src:"plasmid", dst:"t1", vol:4, ok:"The plasmid is in the +pGLO tube.", fx:() => { S.tubes.t1.plasmid = true; S.tubes.t1.vol = 254; }}],
         oops:{"plasmid>t2":"Stop! That is the <b>-pGLO</b> tube. If it gets plasmid too, you lose your control. Add the plasmid to +pGLO only."}},
       {text:"Move <b>both</b> tubes onto the <b>ice</b>.", done:"Both tubes on ice",
         acts:[{src:"t1", dst:"ice", ok:"+pGLO is on ice.", fx:() => { S.tubes.t1.loc = "ice"; }}, {src:"t2", dst:"ice", ok:"-pGLO is on ice.", fx:() => { S.tubes.t2.loc = "ice"; }}]},
       {text:"Keep both tubes on ice for about 1 hour.", done:"About 1 hour on ice", button:"⏩ About 1 hour later", ok:"An hour on ice. Positive Ca<sup>2+</sup> shields the negative charges so the plasmid can get close to the cells: proximity."},
-      {text:"Heat shock! Move the tubes into the <b>42°C water bath</b>. Take them out at <b>45 seconds</b> by tapping the <b>ice</b>.", done:"Heat shock: 42°C for 45 seconds", heat:true},
+      {text:"Heat shock! Move the tubes into the <b>42°C water bath</b>. Take them out at <b>45 seconds</b> (never past 50) by tapping the <b>ice</b>.", done:"Heat shock: 42°C for 45 seconds", heat:true},
       {text:"Keep them on ice for 2 to 10 minutes.", done:"Back on ice for a few minutes", button:"⏩ A few minutes later", ok:"The cells cooled back down."},
       {text:"Set the pipette to <b>200 µL</b>. Add <b>LB broth</b> to <b>each</b> tube.", done:"200 µL LB into each tube",
-        acts:[{src:"lb", dst:"t1", vol:200, ok:"LB is in +pGLO (404 µL total).", fx:() => { S.tubes.t1.lb = true; S.tubes.t1.vol = 404; }}, {src:"lb", dst:"t2", vol:200, ok:"LB is in -pGLO (400 µL total).", fx:() => { S.tubes.t2.lb = true; S.tubes.t2.vol = 400; }}]},
+        acts:[{src:"lb", dst:"t1", vol:200, ok:"LB is in +pGLO (454 µL total).", fx:() => { S.tubes.t1.lb = true; S.tubes.t1.vol = 454; }}, {src:"lb", dst:"t2", vol:200, ok:"LB is in -pGLO (450 µL total).", fx:() => { S.tubes.t2.lb = true; S.tubes.t2.vol = 450; }}]},
       {text:"Move both tubes into the <b>37°C incubator</b> to recover.", done:"Tubes in the 37°C incubator",
         acts:[{src:"t1", dst:"incub", ok:"+pGLO is recovering.", fx:() => { S.tubes.t1.loc = "incub"; }}, {src:"t2", dst:"incub", ok:"-pGLO is recovering.", fx:() => { S.tubes.t2.loc = "incub"; }}]},
       {text:"Recover at 37°C for 1 hour.", done:"Recovered 1 hour", button:"⏩ 1 hour later", ok:"The cells repaired and started making beta-lactamase before they meet ampicillin."},
@@ -331,16 +331,16 @@
     function heatAct(src, dst){
       const inBath = S.tubes.t1.loc === "bath";
       if (!inBath){
-        if ((src === "t1" || src === "t2") && dst === "bath"){ both("bath"); S.bathT = performance.now(); say("Both tubes are in the 42°C bath. Watch the timer. Tap the <b>ice</b> at 45 seconds!", ""); return; }
+        if ((src === "t1" || src === "t2") && dst === "bath"){ both("bath"); S.bathT = performance.now(); say("Both tubes are in the 42°C bath. Watch the timer. Tap the <b>ice</b> at 45 seconds (50 at most)!", ""); return; }
         say("Move the tubes into the <b>42°C water bath</b> (tap a tube, then the bath).", "bad"); return;
       }
       if (dst === "ice" || src === "ice"){
         const sec = (performance.now() - S.bathT) / 1000 * SPEED; both("ice"); S.bathT = null;
         if (sec < 40){ say(`<b>Too short (${Math.round(sec)} seconds).</b> The membrane did not loosen enough, so few cells take up the plasmid. Try the heat shock again.`, "bad"); return; }
-        if (sec > 50){ say(`<b>Too long (${Math.round(sec)} seconds).</b> The membrane got too liquid to reform. The cells are damaged or killed. Try the heat shock again.`, "bad"); return; }
+        if (sec > 50){ say(`<b>Too long (${Math.round(sec)} seconds).</b> 50 seconds is the most. The membrane got too liquid to reform. The cells are damaged or killed. Try the heat shock again.`, "bad"); return; }
         say(`<b>${Math.round(sec)} seconds. Nice timing!</b> The heat gave the energy, and the membrane loosened just enough for the plasmid to slip in.`, "good"); stepDone(); return;
       }
-      say("The tubes are in the bath! Tap the <b>ice</b> at 45 seconds.", "warn");
+      say("The tubes are in the bath! Tap the <b>ice</b> at 45 seconds, and never past 50.", "warn");
     }
     function hintText(){ const st = STEPS[S.k]; if (!st) return ""; if (st.button) return `Tap the <b>${st.button}</b> button.`; if (st.heat) return "Tap a tube, then the water bath.";
       const a = st.acts.find((_, j) => !S.got[j]); return a ? `Tap <b>${a.src === "p*" ? "a plate" : nameOf(a.src)}</b>, then <b>${nameOf(a.dst)}</b>${a.vol ? `, with the pipette at ${a.vol} µL` : ""}.` : ""; }
