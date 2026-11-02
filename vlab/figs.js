@@ -215,14 +215,16 @@
 
   /* Lab 14 */
   F.dilseries = () => {
+    /* each arrow starts at one tube and lands in the next one, with the volume moved written on it */
     const tubes = [["A", "9.9 mL", "0.1 mL", "1/100", "10⁻²"], ["B", "9.9 mL", "0.1 mL", "1/100", "10⁻⁴"], ["C", "9 mL", "1 mL", "1/10", "10⁻⁵"], ["D", "9 mL", "1 mL", "1/10", "10⁻⁶"], ["E", "9 mL", "1 mL", "1/10", "10⁻⁷"], ["F", "9 mL", "1 mL", "1/10", "10⁻⁸"]];
-    let s = place(A.tube({kind:"broth", medium:"#e3d29a", cloudy:"#d8c37f"}), 0, 40, .55) + T(22, 172, "Culture", {fs:12});
-    tubes.forEach((t, i) => { const x = 80 + i * 96;
-      s += place(A.tube({kind:"broth", medium:"#f3e9c7", cloudy:i < 3 ? "#e3d29a" : ""}), x, 40, .55) + T(x + 22, 34, t[0], {fs:18});
-      s += arrow(x - 40, 26, x + 6, 50, "#1683cc", 2.5) + T(x - 18, 18, t[2], {fs:12, c:"#1683cc"});
-      s += T(x + 22, 172, t[1] + " water", {fs:11, w:400}) + T(x + 22, 192, t[3], {fs:14, c:"#c2185b"}) + T(x + 22, 214, t[4], {fs:16, c:"#1f8a55"}); });
-    s += T(4, 192, "Factor:", {fs:12, a:"start", c:"#c2185b"}) + T(4, 214, "Total:", {fs:12, a:"start", c:"#1f8a55"});
-    return wrap(660, 224, s, "Serial dilution tubes A to F with volumes, dilution factors, and total dilutions");
+    const X = i => i < 0 ? 40 : 130 + i * 94, top = 70;
+    let s = place(A.tube({kind:"broth", medium:"#e3d29a", cloudy:"#d8c37f"}), X(-1) - 22, top, .55) + T(X(-1), top + 134, "Culture", {fs:15});
+    tubes.forEach((t, i) => { const x = X(i), px = X(i - 1);
+      s += place(A.tube({kind:"broth", medium:"#f3e9c7", cloudy:i < 3 ? "#e3d29a" : ""}), x - 22, top, .55) + T(x, top + 134, "Tube " + t[0], {fs:15});
+      s += A.curve(px + 8, top + 2, (px + x) / 2, top - 58, x - 8, top - 2, "#1683cc", 2.5) + T((px + x) / 2, top - 40, t[2], {fs:13, c:"#1683cc"});
+      s += T(x, top + 152, t[1] + " water", {fs:12, w:400}) + T(x, top + 176, t[3], {fs:15, c:"#c2185b"}) + T(x, top + 200, t[4], {fs:16, c:"#1f8a55"}); });
+    s += T(4, top + 176, "Factor:", {fs:12, a:"start", c:"#c2185b"}) + T(4, top + 200, "Total:", {fs:12, a:"start", c:"#1f8a55"});
+    return wrap(700, 278, s, "Serial dilution: 0.1 mL of culture into tube A, 0.1 mL from A into B, then 1 mL from each tube into the next for C to F");
   };
   F.dilplates = () => {
     const P = [["B", 10, "TNTC"], ["C", 10, "TNTC (>200)"], ["D", 156, "156: countable"], ["E", 16, "16: countable"]];

@@ -492,3 +492,14 @@ svg.seq{cursor:pointer}
 .why .katex-display, .picwhy .katex-display{margin:.35em 0 .1em}
 .rvmath{text-align:center}
 .banner .katex-display > .katex{font-size:1.02em}
+/* tap the total dilution factor in the CFU calculator */
+.dillink{cursor:pointer}
+.dillink:hover rect, .dillink:focus rect{opacity:.18}
+.linkbtn{border:0; background:none; padding:0 2px; color:var(--arrow); font:inherit; font-weight:700; text-decoration:underline; text-underline-offset:3px; cursor:pointer}
+.dilhow{width:100%; border-left:5px solid var(--arrow)}
+.afterfig.wide{max-width:760px}
+.lcards.c5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.lcards.c5 .big{font-size:19px}
+@media (max-width:900px){ .lcards.c5{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (max-width:620px){ .lcards.c5{grid-template-columns:repeat(2,minmax(0,1fr))} }
+.dillink:focus{outline:none} .dillink:focus-visible rect{opacity:.25; stroke:currentColor}
