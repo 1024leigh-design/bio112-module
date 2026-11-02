@@ -5,12 +5,12 @@ VLAB.add({
     /* ---------- tab 1 ---------- */
     {tab:"The tubes", banner:"Dilute step by step until a plate has a countable number of colonies.", top:[{type:"svg", name:"dilseries", wide:true, scroll:true}],
       lead:"Six tubes, one transfer at a time. Mix each tube well before you move liquid out of it.", kind:"steps", items:[
-      {pic:{name:"xfer", from:"Culture", to:"A", add:0.1, water:9.9, c:"#1683cc", cloudy:true}, t:"<b>Culture to A:</b> move [[0.1|.1]] mL of the original culture into tube A, which has [[9.9]] mL of sterile water.", why:"0.1 ÷ (0.1 + 9.9) = 0.1 ÷ 10 = 1/100. Tube A is a 1/100 dilution of the culture."},
-      {pic:{name:"xfer", from:"Tube A", to:"B", add:0.1, water:9.9, c:"#c2185b", cloudy:true}, t:"<b>A to B:</b> mix tube A. Move 0.1 mL from tube A into tube B, which has 9.9 mL of sterile water. Tube B is a [[1/100]] dilution of tube A.", why:"Same volumes as tube A: 0.1 ÷ 10 = 1/100."},
-      {pic:{name:"xfer", from:"Tube B", to:"C", add:1, water:9, c:"#1f8a55", cloudy:true}, t:"<b>B to C:</b> mix tube B. Move [[1]] mL from tube B into tube C, which has [[9]] mL of sterile water.", why:"1 ÷ (1 + 9) = 1 ÷ 10 = 1/10. Tube C is a 1/10 dilution of tube B."},
-      {pic:{name:"xfer", from:"Tube C", to:"D", add:1, water:9, c:"#a96c05"}, t:"<b>C to D:</b> mix tube C. Move 1 mL from tube C into tube D, which has 9 mL of sterile water. Tube D is a [[1/10]] dilution of tube C.", why:"1 ÷ 10 = 1/10."},
-      {pic:{name:"xfer", from:"Tube D", to:"E", add:1, water:9, c:"#5a2a98"}, t:"<b>D to E:</b> mix tube D. Move 1 mL from tube D into tube E, which has 9 mL of sterile water.", why:"1 ÷ 10 = 1/10 again."},
-      {pic:{name:"xfer", from:"Tube E", to:"F", add:1, water:9, c:"#e4572e"}, t:"<b>E to F:</b> mix tube E. Move 1 mL from tube E into tube F, which has 9 mL of sterile water.", why:"1 ÷ 10 = 1/10 again."}
+      {pic:{name:"xfer", from:"Culture", to:"A", add:0.1, water:9.9, c:"#1683cc", cloudy:true}, t:"<b>Culture to A:</b> move [[0.1|.1]] mL of the original culture into tube A, which has [[9.9]] mL of sterile water.", why:"Tube A is a 1/100 dilution of the culture. $$\\frac{0.1}{0.1 + 9.9} = \\frac{0.1}{10} = \\frac{1}{100}$$"},
+      {pic:{name:"xfer", from:"Tube A", to:"B", add:0.1, water:9.9, c:"#c2185b", cloudy:true}, t:"<b>A to B:</b> mix tube A. Move 0.1 mL from tube A into tube B, which has 9.9 mL of sterile water. Tube B is a [[1/100]] dilution of tube A.", why:"Same volumes as tube A. $$\\frac{0.1}{10} = \\frac{1}{100}$$"},
+      {pic:{name:"xfer", from:"Tube B", to:"C", add:1, water:9, c:"#1f8a55", cloudy:true}, t:"<b>B to C:</b> mix tube B. Move [[1]] mL from tube B into tube C, which has [[9]] mL of sterile water.", why:"Tube C is a 1/10 dilution of tube B. $$\\frac{1}{1 + 9} = \\frac{1}{10}$$"},
+      {pic:{name:"xfer", from:"Tube C", to:"D", add:1, water:9, c:"#a96c05"}, t:"<b>C to D:</b> mix tube C. Move 1 mL from tube C into tube D, which has 9 mL of sterile water. Tube D is a [[1/10]] dilution of tube C.", why:"Same volumes as tube C. $$\\frac{1}{1 + 9} = \\frac{1}{10}$$"},
+      {pic:{name:"xfer", from:"Tube D", to:"E", add:1, water:9, c:"#5a2a98"}, t:"<b>D to E:</b> mix tube D. Move 1 mL from tube D into tube E, which has 9 mL of sterile water.", why:"Same volumes again. $$\\frac{1}{1 + 9} = \\frac{1}{10}$$"},
+      {pic:{name:"xfer", from:"Tube E", to:"F", add:1, water:9, c:"#e4572e"}, t:"<b>E to F:</b> mix tube E. Move 1 mL from tube E into tube F, which has 9 mL of sterile water.", why:"Same volumes again. $$\\frac{1}{1 + 9} = \\frac{1}{10}$$"}
     ]},
     {tab:"The tubes", h:"Then plate and incubate", layout:"cards", cols:2, items:[
       {big:"Plate", ico:{i:"pipette"}, t:"Plate [[100 µL|100|100ul|100 ul]] (0.1 mL) from each tube with a micropipette. Spread with a spreader dipped in [[isopropanol|isopropyl alcohol|alcohol]] and flamed between plates."},
@@ -18,14 +18,14 @@ VLAB.add({
     ]},
     {tab:"The tubes", h:"Where does the dilution factor come from?", review:"exp", figs:[{type:"svg", name:"dfone", a:0.1, w:9.9, wide:"mid", cap:"Tubes A and B"}, {type:"svg", name:"dfone", a:1, w:9, c:"#c2185b", wide:"mid", cap:"Tubes C, D, E, and F"}], items:[
       {t:"Dilution factor = volume added ÷ [[total volume|total]]."},
-      {t:"Total volume = volume added + the [[water]].", why:"0.1 mL + 9.9 mL = 10 mL, not 9.9 mL."}
+      {t:"Total volume = volume added + the [[water]].", why:"$$0.1 \\text{ mL} + 9.9 \\text{ mL} = 10 \\text{ mL}$$ The total is 10 mL, not 9.9 mL."}
     ]},
     /* ---------- tab 2 ---------- */
     {tab:"Total dilution", banner:"Multiply the dilution factor of every tube along the way.", review:"exp", items:[
       {t:"Total dilution = [[multiply|multiplying]] the dilution factors of each tube."}
-    ], sim:{sim:"dilchain", prompt:"Pick a tube. Tap <b>Next step</b> to see where each number comes from."}, tip:"Powers of 10? Add the exponents. 10<sup>-2</sup> × 10<sup>-2</sup> × 10<sup>-1</sup> = 10<sup>-5</sup>."},
+    ], sim:{sim:"dilchain", prompt:"Pick a tube. Tap <b>Next step</b> to see where each number comes from."}, tip:"Powers of 10? Add the exponents. $$10^{-2} \\times 10^{-2} \\times 10^{-1} = 10^{-2 + (-2) + (-1)} = 10^{-5}$$"},
     /* ---------- tab 3 ---------- */
-    {tab:"Count + CFU", banner:"cells/mL = CFUs ÷ (total dilution × mL plated)", review:"exp", layout:"cards", items:[
+    {tab:"Count + CFU", banner:"$$\\text{cells/mL} = \\frac{\\text{CFUs}}{\\text{total dilution} \\times \\text{mL plated}}$$", review:"exp", layout:"cards", items:[
       {big:"CFU", t:"[[Colony forming unit|colony-forming unit]]. One colony started from one live cell (or clump)."},
       {big:"&gt; 200", t:"More than [[200]] colonies = TNTC. Write \"&gt;200\" or \"TNTC\". Do [[not]] use that plate."},
       {big:"µL to mL", t:"Divide by [[1000|1,000]]. So 100 µL = [[0.1|.1]] mL."}
@@ -39,9 +39,9 @@ VLAB.add({
       {big:"Contamination", ico:{i:"flame"}, t:"[[Contamination|contaminated]].", whatif:[{q:"a plate gets contaminated?", a:"Extra colonies grow that did not come from your culture, so your count is too high."}]}
     ]},
     {tab:"Common mistakes", h:"Math mistakes to watch for", layout:"cards", cols:2, items:[
-      {big:"Forgot µL to mL", t:"Always change µL to mL before you divide.", whatif:[{q:"you use 100 instead of 0.1?", a:"Your answer comes out 1000 times too small."}]},
-      {big:"Added instead of multiplied", t:"Multiply dilution factors. Never add them.", whatif:[{q:"you add 1/100 + 1/100?", a:"You get 2/100. The right total is 1/100 × 1/100 = 1/10,000."}]},
-      {big:"Wrong total volume", t:"Total volume = added + water.", whatif:[{q:"you use 9.9 mL as the total?", a:"The total is 0.1 + 9.9 = 10 mL, so the factor is 1/100."}]},
+      {big:"Forgot µL to mL", t:"Always change µL to mL before you divide.", whatif:[{q:"you use 100 instead of 0.1?", a:"Your answer comes out 1000 times too small. Change units first: $$\\frac{100\\ \\mu\\text{L}}{1000} = 0.1 \\text{ mL}$$"}]},
+      {big:"Added instead of multiplied", t:"Multiply dilution factors. Never add them.", whatif:[{q:"you add 1/100 + 1/100?", a:"You get 2/100. Multiply instead: $$\\frac{1}{100} \\times \\frac{1}{100} = \\frac{1}{10{,}000}$$"}]},
+      {big:"Wrong total volume", t:"Total volume = added + water.", whatif:[{q:"you use 9.9 mL as the total?", a:"The total is 10 mL, not 9.9 mL: $$\\frac{0.1}{0.1 + 9.9} = \\frac{0.1}{10} = \\frac{1}{100}$$"}]},
       {big:"Used a TNTC plate", t:"Pick a plate you can count.", whatif:[{q:"you use a plate with more than 200 colonies?", a:"You cannot count it accurately. Use a plate with 200 or fewer colonies."}]}
     ]}
   ],

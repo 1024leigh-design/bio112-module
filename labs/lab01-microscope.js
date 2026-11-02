@@ -15,8 +15,8 @@ VLAB.add({
     {h:"Total magnification", kind:"facts", figs:[{type:"svg", name:"mag", wide:true}],
       tip:"Always <b>multiply</b>. Never add. Write the x after the number: 400x.",
       examples:[
-        {title:"find the total", steps:["Read the ocular: <b>15x</b>.", "Read the objective: <b>40x</b>.", "Multiply: 15 × 40 = <b>600</b>."], answer:"600x"},
-        {title:"work backward", steps:["The total is <b>1000x</b>. The ocular is <b>10x</b>.", "Objective = total ÷ ocular.", "1000 ÷ 10 = <b>100</b>."], answer:"The 100x oil immersion objective"}],
+        {title:"find the total", steps:["Read the ocular: <b>15x</b>.", "Read the objective: <b>40x</b>.", "Multiply: $$15 \\times 40 = 600$$"], answer:"600x"},
+        {title:"work backward", steps:["The total is <b>1000x</b>. The ocular is <b>10x</b>.", "Divide the total by the ocular.", "$$\\text{objective} = \\frac{\\text{total}}{\\text{ocular}} = \\frac{1000}{10} = 100$$"], answer:"The 100x oil immersion objective"}],
       items:[
       {t:"Total magnification = [[ocular|eyepiece]] × [[objective]]."},
       {t:"With the 10x ocular: 4x objective = [[40x|40]]. 10x = [[100x|100]]. 40x = [[400x|400]]. 100x = [[1000x|1000|1,000x|1,000]]."}

@@ -484,3 +484,11 @@ svg.seq{cursor:pointer}
 .seq.play .sq4{animation:sqin .5s ease calc(var(--d, 0s) + 3.3s) both}
 @keyframes sqin{from{opacity:0}to{opacity:1}}
 @keyframes sqmove{0%{opacity:0; transform:translate(0,0)} 12%{opacity:1; transform:translate(0,0)} 85%{opacity:1; transform:translate(var(--dx),var(--dy))} 100%{opacity:0; transform:translate(var(--dx),var(--dy))}}
+
+/* typeset math (KaTeX, see vlab/math.js) */
+.katex{font-size:1.18em}
+.katex-display{margin:.5em 0; padding:2px 0; overflow-x:auto; overflow-y:hidden}
+.katex-display > .katex{font-size:1.22em}
+.why .katex-display, .picwhy .katex-display{margin:.35em 0 .1em}
+.rvmath{text-align:center}
+.banner .katex-display > .katex{font-size:1.02em}

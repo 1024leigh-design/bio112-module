@@ -14,7 +14,13 @@
   const p10 = n => { const e = Math.log10(n); return Math.abs(e - Math.round(e)) < 1e-9 ? Math.round(e) : null; };
   const supSVG = (base, e, fs) => `${base}<tspan dy="${f1(-fs * .45)}" font-size="${f1(fs * .7)}">${e}</tspan><tspan dy="${f1(fs * .45)}"> </tspan>`;
   const dilSVG = (d, fs) => { const e = p10(1 / d); return e !== null ? supSVG("10", -e, fs) : `1/${fmt(Math.round(1 / d))}`; };
-  const dilHTML = d => { const e = p10(1 / d); return e !== null ? `10<sup>${-e}</sup>` : `1/${fmt(Math.round(1 / d))}`; };
+  /* typeset math (see vlab/math.js): $...$ inside a sentence, $$...$$ on its own line */
+  const tnum = n => fmt(n).replace(/,/g, "{,}");
+  const fr = (a, b) => `\\frac{${a}}{${b}}`;
+  const tdil = d => { const e = p10(1 / d); return e !== null ? `10^{${-e}}` : fr(1, tnum(Math.round(1 / d))); };
+  const tsci = (x, sig) => { const e = Math.floor(Math.log10(Math.abs(x))), m = +(x / Math.pow(10, e)).toFixed(sig === undefined ? 2 : sig); return e >= -2 && e <= 4 ? tnum(+x.toPrecision(4)) : `${m} \\times 10^{${e}}`; };
+  const col = (c, x) => `\\textcolor{${c}}{${x}}`;
+  const M = x => `$$${x}$$`, m = x => `$${x}$`;
   /* a straight down arrow, ending just above y2 */
   const down = (x, y1, y2, c) => `<line x1="${f1(x)}" y1="${f1(y1)}" x2="${f1(x)}" y2="${f1(y2 - 9)}" stroke="${c}" stroke-width="2.5" stroke-dasharray="5 4"/><path d="M${f1(x)},${f1(y2)} l-6,-10 l12,0 Z" fill="${c}"/>`;
   const slot = (x, y, w) => `<rect x="${f1(x - w / 2)}" y="${f1(y - 24)}" width="${w}" height="32" rx="8" fill="none" stroke="#9aa7b5" stroke-dasharray="4 3"/>`;
@@ -57,13 +63,14 @@
       if (step === 0) c = `To reach <b>tube ${NAMES[k]}</b>, the cells go through <b>${n}</b> tube${n > 1 ? "s" : ""}: ${NAMES.slice(0, n).join(", ")}. Each tube dilutes them again. Tap <b>Next step</b> to find each tube's dilution factor.`;
       else if (step <= n){ const i = step - 1, t = tubes[i], from = i ? `tube ${NAMES[i - 1]}` : "the original culture";
         c = `<b style="color:${COL[i]}">Tube ${NAMES[i]}:</b> you moved <b>${t[0]} mL</b> from ${from} into <b>${t[1]} mL</b> of sterile water.<br>
-          Total volume = ${t[0]} + ${t[1]} = <b>${tot(t)} mL</b>.<br>
-          Dilution factor = volume added ÷ total volume = ${t[0]} ÷ ${tot(t)} = <b>1/${den(t)}</b>.<br>
+          ${M(`\\text{total volume} = ${t[0]} + ${t[1]} = ${tot(t)}\\text{ mL}`)}
+          ${M(`\\text{dilution factor} = ${fr("\\text{volume added}", "\\text{total volume}")} = ${fr(t[0], tot(t))} = ${fr(1, tnum(den(t)))}`)}
           So the cells in tube ${NAMES[i]} are <b>${den(t)} times</b> more dilute than in ${from}.`; }
       else { const d = tubes.slice(0, n).map(den), es = d.map(p10), allP = es.every(e => e !== null), big = Math.round(1 / tt[k]);
-        c = `<b>Multiply all ${n} dilution factors.</b><br>Multiply the bottoms: ${d.join(" × ")} = <b>${fmt(big)}</b>. So the total dilution is <b>1/${fmt(big)}</b>.<br>` +
-          (allP ? `${fmt(big)} is a 1 followed by <b>${es.reduce((a, b) => a + b, 0)} zeros</b>, so 1/${fmt(big)} = <b>10<sup>-${es.reduce((a, b) => a + b, 0)}</sup></b>.<br>Shortcut: add the exponents. ${es.map(e => `10<sup>-${e}</sup>`).join(" × ")}: ${es.map(e => "-" + e).join(" + ")} = <b>-${es.reduce((a, b) => a + b, 0)}</b>.`
-                : `This is not a power of 10, so you can leave it as 1/${fmt(big)}, or write it as ${V.sci(1 / big, 2)}.`); }
+        const sum = es.reduce((a, b) => a + b, 0);
+        c = `<b>Multiply all ${n} dilution factors.</b> ${M(d.map(x => fr(1, tnum(x))).join(" \\times ") + ` = ${fr(1, tnum(big))}`)}` +
+          (allP ? `${fmt(big)} is a 1 followed by <b>${sum} zeros</b>, so ${M(`${fr(1, tnum(big))} = 10^{-${sum}}`)}<b>Shortcut:</b> add the exponents. ${M(`${es.map(e => `10^{-${e}}`).join(" \\times ")} = 10^{${es.map((e, j) => j ? `(-${e})` : `-${e}`).join(" + ")}} = 10^{-${sum}}`)}`
+                : `This is not a power of 10, so you can leave it as ${m(fr(1, tnum(big)))} or write it as ${m(tsci(1 / big, 2))}.`); }
       cap.innerHTML = c;
       host.querySelector("#dcNext").disabled = step > n;
     }
@@ -119,19 +126,20 @@
         o += `<text x="${(XT + XV) / 2}" y="${ey + 58}" font-size="18" font-weight="700" fill="#53657b" text-anchor="middle">${dilSVG(tt, 18)} × ${ml} = ${dilSVG(tt * ml, 18)}</text>`; }
       svg.innerHTML = o;
       const ans = n / (tt * ml), eb = p10(1 / (tt * ml)), mlE = p10(1 / ml);
-      res.innerHTML = step >= 5 ? `= ${V.sci(ans, 2)} cells/mL` : "";
-      let fifth = `<b>Divide:</b> ${n} ÷ ${dilHTML(tt * ml)}.`;
+      res.innerHTML = step >= 5 ? m(`= ${tsci(ans, 2)}\\text{ cells/mL}`) : "";
+      const lhs = `\\text{cells/mL} = ${fr(col(C1, n), `${col(C2, tdil(tt))} \\times ${col(C3, ml)}`)} = ${fr(n, tdil(tt * ml))}`;
+      let fifth = `<b>Divide.</b> ${M(lhs)}`;
       if (eb !== null){ const s5 = sciSteps(n, eb);
-        fifth += `<br>Dividing by 10<sup>-${eb}</sup> is the same as multiplying by 10<sup>${eb}</sup>: ${n} × 10<sup>${eb}</sup> = ${fmt(Math.round(ans))}.<br>`
-          + (s5.digits ? `Scientific notation: move the decimal <b>${s5.digits}</b> place${s5.digits > 1 ? "s" : ""} left (${n} becomes ${s5.m}) and add ${s5.digits} to the exponent (${eb} + ${s5.digits} = ${s5.E}).<br>` : "")
-          + `Answer: <b>${V.sci(ans, 2)} cells/mL</b>. Do not forget the units!`; }
-      else fifth += ` Answer: <b>${V.sci(ans, 2)} cells/mL</b>. Do not forget the units!`;
+        fifth += `Dividing by ${m(`10^{-${eb}}`)} is the same as multiplying by ${m(`10^{${eb}}`)}: ${M(`${n} \\times 10^{${eb}} = ${tnum(Math.round(ans))}`)}`
+          + (s5.digits ? `Scientific notation: move the decimal <b>${s5.digits}</b> place${s5.digits > 1 ? "s" : ""} left (${n} becomes ${s5.m}) and add ${s5.digits} to the exponent: ${M(`${n} \\times 10^{${eb}} = ${s5.m} \\times 10^{${s5.E}}`)}` : "")
+          + `Answer: <b>${m(`${tsci(ans, 2)}\\text{ cells/mL}`)}</b>. Do not forget the units!`; }
+      else fifth += `Answer: <b>${m(`${tsci(ans, 2)}\\text{ cells/mL}`)}</b>. Do not forget the units!`;
       cap.innerHTML = [
         `Plate ${NAMES[k]} has ${n} colonies, so you can count it. Tap <b>Next step</b> to build the equation one number at a time.`,
         `<b style="color:${C1}">Step 1: the colonies (CFUs) come first.</b> You counted <b>${n}</b> colonies on plate ${NAMES[k]}. Each colony grew from one live cell (or clump).`,
-        `<b style="color:${C2}">Step 2: the total dilution of tube ${NAMES[k]}.</b> It is <b>${dilHTML(tt)}</b>. (See the Total dilution tab.) The cells in tube ${NAMES[k]} are ${fmt(Math.round(1 / tt))} times more dilute than the original culture.`,
-        `<b style="color:${C3}">Step 3: the volume you plated, in mL.</b> ${ul} µL ÷ 1000 = <b>${ml} mL</b>.${mlE !== null ? ` As a power of 10, ${ml} = 10<sup>-${mlE}</sup>.` : ""}`,
-        `<b>Step 4: multiply the two numbers inside the parentheses first.</b> ${dilHTML(tt)} × ${ml} = <b>${dilHTML(tt * ml)}</b>.${eb !== null && mlE !== null ? ` Add the exponents: -${p10(1 / tt)} + -${mlE} = -${eb}.` : ""}`,
+        `<b style="color:${C2}">Step 2: the total dilution of tube ${NAMES[k]}.</b> It is <b>${m(tdil(tt))}</b>. (See the Total dilution tab.) The cells in tube ${NAMES[k]} are ${fmt(Math.round(1 / tt))} times more dilute than the original culture.`,
+        `<b style="color:${C3}">Step 3: the volume you plated, in mL.</b> ${M(`${fr(`${ul}\\ \\mu\\text{L}`, "1000")} = ${ml}\\text{ mL}`)}${mlE !== null ? `As a power of 10, ${m(`${ml} = 10^{-${mlE}}`)}.` : ""}`,
+        `<b>Step 4: multiply the two numbers on the bottom first.</b> ${M(`${col(C2, tdil(tt))} \\times ${col(C3, ml)} = ${tdil(tt * ml)}`)}${eb !== null && mlE !== null ? `Add the exponents: ${m(`-${p10(1 / tt)} + (-${mlE}) = -${eb}`)}.` : ""}`,
         fifth][step];
     }
     host.querySelector("#cfNext").addEventListener("click", () => { step++; draw(); });
@@ -149,18 +157,18 @@
   V.reviews.exp = {title:"Exponent review", html:`
     <div class="rv"><h3>1. Powers of 10: count the zeros</h3>
       <div class="rvgrid">${[["10", 1], ["100", 2], ["1,000", 3], ["10,000", 4]].map(([s, e]) => `<div><span class="rvbig">${zeros(s)}</span><span>${e} zero${e > 1 ? "s" : ""}</span><span class="rvans">10<sup>${e}</sup></span></div>`).join("")}</div>
-      <p>The exponent is the number of zeros after the 1. So 100 = 10<sup>2</sup>.</p></div>
+      <p>The exponent is the number of zeros after the 1. So $100 = 10^{2}$.</p></div>
     <div class="rv"><h3>2. "One over" = a negative exponent</h3>
       <div class="rvgrid">${[["1/10", 1], ["1/100", 2], ["1/1,000", 3], ["1/10,000", 4]].map(([s, e]) => `<div><span class="rvbig">${zeros(s)}</span><span>${e} zero${e > 1 ? "s" : ""}</span><span class="rvans">10<sup>-${e}</sup></span></div>`).join("")}</div>
-      <p>The minus sign means "one over." 1/100 = 10<sup>-2</sup>. Decimals work too: 0.1 = 10<sup>-1</sup>, 0.01 = 10<sup>-2</sup>.</p></div>
+      <p>The minus sign means "one over." $\\frac{1}{100} = 10^{-2}$. Decimals work too: $0.1 = 10^{-1}$ and $0.01 = 10^{-2}$.</p></div>
     <div class="rv"><h3>3. Multiplying: add the exponents</h3>
-      <p class="rvbig center">10<sup>-2</sup> × 10<sup>-2</sup> = 10<sup>-2 + -2</sup> = 10<sup>-4</sup></p>
-      <p>Check it the long way: 1/100 × 1/100 = 1/10,000. That is 4 zeros, so 10<sup>-4</sup>. ✓</p></div>
+      <div class="rvmath">$$10^{-2} \\times 10^{-2} = 10^{-2 + (-2)} = 10^{-4}$$</div>
+      <p>Check it the long way. That is 4 zeros, so it matches. ✓</p><div class="rvmath">$$\\frac{1}{100} \\times \\frac{1}{100} = \\frac{1}{10{,}000} = 10^{-4}$$</div></div>
     <div class="rv"><h3>4. Dividing by 10 to a negative: flip the sign</h3>
-      <p class="rvbig center">52 ÷ 10<sup>-8</sup> = 52 × 10<sup>8</sup></p>
+      <div class="rvmath">$$\\frac{52}{10^{-8}} = 52 \\times 10^{8}$$</div>
       <p>Dividing by a tiny number makes your answer big. That is why cells/mL comes out so large.</p></div>
     <div class="rv"><h3>5. Scientific notation: one digit before the decimal</h3>
-      <p class="rvbig center">52 × 10<sup>8</sup> = 5.2 × 10<sup>9</sup></p>
+      <div class="rvmath">$$52 \\times 10^{8} = 5.2 \\times 10^{9}$$</div>
       <p>Move the decimal 1 place to the left (52 becomes 5.2), so add 1 to the exponent (8 becomes 9). The value stays the same.</p></div>
     <div class="rv rvtry"><h3>Try it</h3><div id="rvQ"></div><div class="btnrow" style="justify-content:center;margin-top:10px"><button type="button" class="btn ghost small" id="rvNew">Another one</button></div></div>`,
     init(body){
