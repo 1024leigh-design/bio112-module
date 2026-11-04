@@ -38,7 +38,7 @@
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:18px; line-height:1.55; overflow-x:hidden}
-.wrap{max-width:1240px; margin:0 auto; padding-inline:16px; padding-block:0 60px}
+.wrap{max-width:1400px; margin:0 auto; padding-inline:16px; padding-block:0 60px}
 h1,h2,h3,h4{font-family:var(--f-display); margin:0; text-wrap:balance; letter-spacing:-.01em}
 p{margin:0}
 button,select{font:inherit; color:inherit}
@@ -98,12 +98,12 @@ b,strong{font-weight:700}
 .msg.good{background:var(--good-soft)} .msg.good > b:first-child{color:var(--good)}
 .msg.bad{background:var(--bad-soft)} .msg.bad > b:first-child{color:var(--bad)}
 
-/* tour layout */
-.tour{display:grid; grid-template-columns:minmax(0,1fr); gap:18px}
+/* tour layout: full-width tree on top, lesson below */
+.tour{display:flex; flex-direction:column; gap:18px}
 .treepanel{display:flex; flex-direction:column; gap:10px; min-width:0}
 .treehead{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
 .treehead .lbl{font:600 13px var(--f-mono); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-right:auto}
-.treebox{position:relative; height:340px; overflow:auto; background:var(--surface); border:1px solid var(--line); border-radius:20px; overscroll-behavior:contain; -webkit-overflow-scrolling:touch}
+.treebox{position:relative; height:clamp(340px, 60vh, 640px); overflow:auto; background:var(--surface); border:1px solid var(--line); border-radius:20px; overscroll-behavior:contain; -webkit-overflow-scrolling:touch}
 .treebox.drag{cursor:grabbing; user-select:none}
 #tree{display:block; margin:0 auto}
 #tree .edges path{fill:none; stroke:var(--line); stroke-width:2.5; transition:stroke .3s, stroke-width .3s, opacity .3s}
@@ -123,11 +123,10 @@ b,strong{font-weight:700}
 .tn.hid text{fill:var(--muted); letter-spacing:.2em}
 .tn:hover rect, .tn:focus-visible rect{stroke-width:4.5}
 .treehint{font-size:15px; color:var(--muted)}
-@media (min-width:1000px){
-  .tour{grid-template-columns:minmax(0,5fr) minmax(0,6fr); align-items:start}
-  .treepanel{position:sticky; top:76px}
-  .treebox{height:calc(100vh - 210px); min-height:380px}
-}
+.ranks{position:sticky; top:0; z-index:2; height:46px; background:var(--surface); border-bottom:1px solid var(--line)}
+.ranks span{position:absolute; top:8px; height:30px; display:flex; align-items:center; justify-content:center; text-align:center; font:700 13px var(--f-mono); text-transform:uppercase; letter-spacing:.04em; line-height:1.1; color:var(--ink); border-radius:8px; background:var(--surface-2); padding:0 4px; overflow:hidden}
+.ranks span.lab{background:transparent; border:1.5px dashed var(--line); color:var(--muted); font-weight:600}
+#tree .bands rect{fill:var(--surface-2); opacity:.5}
 
 /* progress */
 .progress{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
@@ -136,7 +135,8 @@ b,strong{font-weight:700}
 .bar i{display:block; height:100%; background:var(--gn-edge); border-radius:99px; transition:width .4s}
 
 /* trait ribbon */
-.ribbon{background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:14px 14px 16px; display:flex; flex-direction:column; gap:10px; min-width:0}
+.ribbon{background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:14px 16px; min-width:0}
+.traits{background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:14px; min-width:0}
 .ribbon .rl{font:600 12.5px var(--f-mono); text-transform:uppercase; letter-spacing:.07em; color:var(--muted)}
 .crumbs{display:flex; flex-wrap:wrap; align-items:center; gap:4px 6px; font-weight:700; font-size:17px}
 .crumbs .sep{color:var(--muted); font-weight:400}
@@ -164,7 +164,7 @@ select.blank:disabled{opacity:1; cursor:default}
 .ans{font-weight:700; color:var(--good)}
 
 /* lesson */
-.lessoncol{display:flex; flex-direction:column; gap:18px; min-width:0}
+.lessoncol{display:flex; flex-direction:column; gap:18px; min-width:0; width:100%; max-width:880px; margin-inline:auto}
 .mhead{display:flex; gap:16px; align-items:flex-start}
 .mbadge{flex-shrink:0; width:58px; height:58px; border-radius:50%; background:var(--c, var(--arrow)); color:#fff; display:flex; align-items:center; justify-content:center; font:700 22px var(--f-mono)}
 .mhead > div{min-width:0}
@@ -308,7 +308,6 @@ table.ent tr.grp td{background:color-mix(in srgb, var(--c) 12%, var(--surface))}
       <div class="eyebrow" id="startEyebrow"></div>
       <h1 id="startTitle"></h1>
     </div>
-    <p id="startIntro"></p>
   </div>
   <div class="startgrid">
     <div class="panel">
@@ -338,8 +337,8 @@ table.ent tr.grp td{background:color-mix(in srgb, var(--c) 12%, var(--surface))}
         <button class="btn small ghost" type="button" data-act="restart">&#8634; Start tour from the beginning</button>
         <button class="btn small ghost" type="button" data-act="full" id="fullBtn">Show full tree</button>
       </div>
-      <div class="treebox" id="treebox"><svg id="tree" role="group" aria-label="Bacterial family tree. Every branch is a button."></svg></div>
-      <p class="treehint">Tap any branch to jump there. Drag or scroll to look around.</p>
+      <div class="treebox" id="treebox"><div class="ranks" id="ranks" aria-hidden="true"></div><svg id="tree" role="group" aria-label="Bacterial family tree. Every branch is a button."></svg></div>
+      <p class="treehint">Tap any branch to jump there. Dashed column names are lab-test groups, not taxonomic ranks.</p>
     </aside>
     <div class="lessoncol">
       <div class="progress">
@@ -348,7 +347,7 @@ table.ent tr.grp td{background:color-mix(in srgb, var(--c) 12%, var(--surface))}
         <button class="btn small ghost" type="button" data-act="prev" aria-label="Previous stop">&larr; Back</button>
         <button class="btn small" type="button" data-act="next" aria-label="Next stop">Next &rarr;</button>
       </div>
-      <section class="ribbon" id="ribbon" aria-label="Trait ribbon"></section>
+      <nav class="ribbon crumbs" id="ribbon" aria-label="Path from the top of the tree"></nav>
       <article id="lesson" class="lessoncol"></article>
     </div>
   </div>
@@ -498,30 +497,44 @@ var DIAGRAMS = {
 
 /* ================= tree layout ================= */
 var T = {W: 0, H: 0, s: 1, laid: false};
-var FONT = 17, ROWH = 46, NODEH = 34, GAPX = 40, PAD = 24;
+var FONT = 17, ROWH = 44, NODEH = 34, GAPX = 34, PAD = 20, HEADH = 46;
 var measureCtx = document.createElement("canvas").getContext("2d");
 function nodeText(n){ return (n.locked ? "🔒 " : "") + n.label; }
 function textW(n){ measureCtx.font = (n.italic ? "italic " : "") + "700 " + FONT + "px 'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif"; return measureCtx.measureText(nodeText(n)).width; }
+/* columns: one per rank in D.ranks (falls back to tree depth if a tour has no ranks) */
+var RANKI = {};
+(D.ranks || []).forEach(function(r, i){ RANKI[r.id] = i; });
+function colOf(n){ return D.ranks ? RANKI[n.rank] : n.d; }
 function layout(){
-  var depthW = [], row = 0;
+  var colW = [], row = 0;
   (function walk(n, d){
-    n.d = d; n.w = Math.ceil(textW(n)) + 28; depthW[d] = Math.max(depthW[d] || 0, n.w);
+    n.d = d; n.w = Math.ceil(textW(n)) + 26;
     if (!n.kids.length){ n.y = PAD + row * ROWH + NODEH / 2; row++; }
     else { n.kids.forEach(function(k){ walk(k, d + 1); }); n.y = (n.kids[0].y + n.kids[n.kids.length - 1].y) / 2; }
   })(ROOT, 0);
+  D.tree.forEach(function(n){ var c = colOf(n); colW[c] = Math.max(colW[c] || 90, n.w); });
   var xs = [PAD];
-  for (var d = 1; d < depthW.length; d++) xs[d] = xs[d - 1] + depthW[d - 1] + GAPX;
-  D.tree.forEach(function(n){ n.x = xs[n.d]; });
-  T.W = xs[depthW.length - 1] + depthW[depthW.length - 1] + PAD;
+  for (var c = 1; c < colW.length; c++) xs[c] = xs[c - 1] + (colW[c - 1] || 90) + GAPX;
+  D.tree.forEach(function(n){ n.x = xs[colOf(n)]; });
+  T.cols = colW.map(function(w, c){ return {x: xs[c], w: w || 90}; });
+  T.W = xs[colW.length - 1] + colW[colW.length - 1] + PAD;
   T.H = PAD * 2 + (row - 1) * ROWH + NODEH;
+}
+function placeRanks(sc){
+  var el = $("#ranks"); if (!D.ranks){ el.hidden = true; return; }
+  el.style.width = (T.W * sc) + "px";
+  if (!el.children.length) el.innerHTML = D.ranks.map(function(r){ return '<span class="' + (r.lab ? "lab" : "") + '">' + esc(r.label) + "</span>"; }).join("");
+  $$("span", el).forEach(function(sp, c){ var col = T.cols[c]; sp.style.left = ((col.x - GAPX / 2 + 3) * sc) + "px"; sp.style.width = ((col.w + GAPX - 6) * sc) + "px"; });
 }
 function drawTree(){
   layout();
-  var svg = $("#tree"), h = '<g class="edges">';
+  var svg = $("#tree"), h = '<g class="bands">';
   svg.setAttribute("viewBox", "0 0 " + T.W + " " + T.H);
+  if (D.ranks) T.cols.forEach(function(col, c){ if (c % 2) h += '<rect x="' + (col.x - GAPX / 2) + '" y="0" width="' + (col.w + GAPX) + '" height="' + T.H + '"/>'; });
+  h += '</g><g class="edges">';
   D.tree.forEach(function(n){
     if (!n.parent) return;
-    var p = N[n.parent], mx = n.x - GAPX / 2;
+    var p = N[n.parent], mx = p.x + p.w + GAPX / 2;
     h += '<path data-e="' + n.id + '" style="--c:' + colorOf(n) + '" d="M' + (p.x + p.w) + " " + p.y + " H" + mx + " V" + n.y + " H" + n.x + '"/>';
   });
   h += '</g><g class="nodes">';
@@ -579,22 +592,23 @@ function updateTree(animate){
 /* ================= camera: zoom + pan the scrollable tree box ================= */
 var camAnim = 0;
 function frame(v, animate){
-  var box = $("#treebox"), W = box.clientWidth, H = box.clientHeight, b, sc;
+  var box = $("#treebox"), W = box.clientWidth, H = box.clientHeight - (D.ranks ? HEADH : 0), b, sc;
   if (!W || !H) return;
-  if (!v.ids){ b = {x: 0, y: 0, w: T.W, h: T.H}; sc = Math.min(W / T.W, H / T.H); }
+  var minS = W < 500 ? 0.74 : 0.8;
+  if (!v.ids){ b = {x: 0, y: 0, w: T.W, h: T.H}; sc = Math.max(W < 500 ? minS : 0.5, Math.min(1.15, W / T.W)); }
   else {
     var x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
     v.ids.forEach(function(id){ var n = N[id]; x0 = Math.min(x0, n.x); x1 = Math.max(x1, n.x + n.w); y0 = Math.min(y0, n.y - NODEH / 2); y1 = Math.max(y1, n.y + NODEH / 2); });
     b = {x: x0 - 20, y: y0 - 20, w: x1 - x0 + 40, h: y1 - y0 + 40};
-    var minS = W < 500 ? 0.74 : 0.8;
     sc = Math.max(minS, Math.min(1.15, Math.min(W / b.w, H / b.h)));
   }
   var curN = N[v.cur];
   var left = b.w * sc <= W ? (b.x + b.w / 2) * sc - W / 2 : Math.min(curN.x * sc - 8, (b.x + b.w) * sc - W);
   var top = b.h * sc <= H ? (b.y + b.h / 2) * sc - H / 2 : curN.y * sc - H / 2;
+  if (!v.ids) left = 0;
   left = Math.max(0, Math.min(left, T.W * sc - W)); top = Math.max(0, Math.min(top, T.H * sc - H));
   var s0 = T.s, l0 = box.scrollLeft, t0 = box.scrollTop, svg = $("#tree"), id = ++camAnim;
-  function apply(sv, l, t){ svg.style.width = (T.W * sv) + "px"; svg.style.height = (T.H * sv) + "px"; box.scrollLeft = l; box.scrollTop = t; T.s = sv; }
+  function apply(sv, l, t){ svg.style.width = (T.W * sv) + "px"; svg.style.height = (T.H * sv) + "px"; placeRanks(sv); box.scrollLeft = l; box.scrollTop = t; T.s = sv; }
   if (!animate || reduced){ apply(sc, left, top); return; }
   var start = performance.now();
   (function step(now){
@@ -672,14 +686,15 @@ function traitChip(n, t, k){
   return '<span class="chip' + (t.strong ? " strong" : "") + '">' + esc(t.t) + "</span>";
 }
 function renderRibbon(){
-  var s = stop(), v = viewInfo(), p = pathTo(v.cur), h = '<div class="rl">Path from the top of the tree</div><nav class="crumbs" aria-label="Path">';
-  p.forEach(function(n, k){ if (k) h += '<span class="sep" aria-hidden="true">→</span>'; h += crumbHtml(n); });
-  h += '</nav><div class="rl">Traits collected along this path</div><div class="tgroups">';
-  var any = false;
+  var h = "";
+  pathTo(viewInfo().cur).forEach(function(n, k){ if (k) h += '<span class="sep" aria-hidden="true">→</span>'; h += crumbHtml(n); });
+  $("#ribbon").innerHTML = h;
+}
+function traitsHtml(){
+  var s = stop(), v = viewInfo(), p = pathTo(v.cur), h = '<section class="traits" aria-label="Traits along this path"><div class="tgroups">';
   p.forEach(function(n){
     var lbl = labelHidden(n) ? "this branch" : (n.italic ? "<i>" + esc(n.label) + "</i>" : esc(n.label));
     if (n.traits && n.traits.length){
-      any = true;
       h += '<div class="tg" style="--c:' + colorOf(n) + '"><span class="tgl">From ' + lbl + ":</span>" + n.traits.map(function(t, k){ return traitChip(n, t, k); }).join("") + "</div>";
     } else if (n.note && n.id === s.node){
       h += '<div class="tg note" style="--c:' + colorOf(n) + '"><span class="tgl">' + lbl + ":</span> " + esc(n.note) + "</div>";
@@ -691,11 +706,8 @@ function renderRibbon(){
       h += '<div class="tg only"><span class="tgl">' + (o.type === "phylum" ? esc(o.name) : "<i>" + esc(o.name) + "</i>") + " only:</span>" +
         o.only.map(function(c){ return '<span class="chip">' + (hide ? "?" : esc(c)) + "</span>"; }).join("") + "</div>";
     }
-  } else if (s.orgs && s.orgs.length){
-    h += '<p class="hint">Tap a card below to add that organism to the path.</p>';
   }
-  if (!any && !(s.orgs || []).length && !N[v.cur].note) h += '<p class="hint">No traits on this branch yet.</p>';
-  $("#ribbon").innerHTML = h + "</div>";
+  return h + "</div></section>";
 }
 
 /* ================= lesson + cards ================= */
@@ -770,12 +782,13 @@ function checkbarHtml(keys){
 function stepTitle(i){ return i < 0 ? "Start screen" : D.stops[i].title; }
 function renderLesson(){
   var s = stop(), h = "", c = colorOf(N[s.node]);
-  h += '<header class="mhead"><div class="mbadge" style="--c:' + c + '">' + (s.n + 1) + "</div><div><div class=\"eyebrow\">Stop " + (s.n + 1) + " of " + D.stops.length + "</div><h2>" + s.title + "</h2></div></header>";
+  h += '<header class="mhead"><div class="mbadge" style="--c:' + c + '">' + (s.n + 1) + "</div><div><h2>" + s.title + "</h2></div></header>";
   if (s.lesson) h += '<ul class="lesson">' + s.lesson.map(function(p){ return "<li>" + p + "</li>"; }).join("") + "</ul>";
   if (s.diagram && DIAGRAMS[s.diagram]){ var dg = DIAGRAMS[s.diagram](); h += '<figure class="figure" style="margin:0">' + dg.svg + "<figcaption>" + dg.cap + "</figcaption></figure>"; }
   if (s.entericTable) h += '<div><button class="btn ghost" type="button" data-act="table">📋 Open the enteric ID table</button></div>';
   if (s.orgs && s.orgs.length) h += '<div class="orgs">' + s.orgs.map(orgCard).join("") + "</div>";
   if (s.finale) h += finaleHtml(s);
+  h += traitsHtml();
   var keys = Object.keys(KEYS);
   if (testOn()) h += checkbarHtml(keys);
   h += checkinHtml(s);
@@ -920,7 +933,6 @@ document.title = D.plainTitle;
 $("#brandTxt").textContent = D.brand;
 $("#startEyebrow").textContent = D.eyebrow;
 $("#startTitle").innerHTML = D.title;
-$("#startIntro").textContent = D.intro;
 $("#goals").innerHTML = D.goals.map(function(g){ return "<li><span>" + g + "</span></li>"; }).join("");
 $("#tabs").innerHTML = D.tabs.map(function(t){
   return t.current ? '<button type="button" role="tab" aria-selected="true" class="on">' + esc(t.label) + "</button>"
