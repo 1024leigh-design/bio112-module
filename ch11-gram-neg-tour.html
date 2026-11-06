@@ -139,7 +139,8 @@ b,strong{font-weight:700}
 .maphead{display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; margin-bottom:8px}
 .maphead h3{font-size:22px; margin-right:auto}
 .mapbox{overflow-x:auto; -webkit-overflow-scrolling:touch}
-#map{display:block; width:100%; min-width:900px; height:auto}
+#map{display:block; width:100%; min-width:1100px; height:auto}
+.maphead p{flex-basis:100%; font-size:15px; color:var(--muted)}
 #map .rowband{fill:var(--surface-2); opacity:.55}
 #map .rowlbl{font:700 13px var(--f-mono); fill:var(--muted); text-transform:uppercase; letter-spacing:.04em}
 #map .edges path{fill:none; stroke:var(--line); stroke-width:2}
@@ -379,7 +380,7 @@ table.ent tr.grp td{background:color-mix(in srgb, var(--c) 12%, var(--surface))}
     </div>
   </div>
   <section class="mapsec" id="mapsec" hidden aria-label="Overview map of the whole tree">
-    <div class="maphead"><h3>🗺️ The whole tree</h3><button class="btn small ghost" type="button" data-act="map">Hide the map</button></div>
+    <div class="maphead"><h3>🗺️ The whole tree</h3><button class="btn small ghost" type="button" data-act="map">Hide the map</button><p>Scroll sideways to see it all. 📍 = where you are.</p></div>
     <div class="mapbox"><svg id="map" role="group" aria-label="Overview map. Every branch is a button."></svg></div>
   </section>
 </section>
@@ -412,8 +413,9 @@ function ease(t){ return t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
 
 /* ================= index the data ================= */
 var N = {}, ROOT = D.tree[0];
+var TREE = D.tree.filter(function(n){ return !n.overviewOnly; });   /* nodes on the side tree; overviewOnly nodes are map-only */
 D.tree.forEach(function(n){ N[n.id] = n; n.kids = []; });
-D.tree.forEach(function(n){ if (n.parent) N[n.parent].kids.push(n); });
+TREE.forEach(function(n){ if (n.parent) N[n.parent].kids.push(n); });
 function pathTo(id){ var p = [], n = N[id]; while (n){ p.unshift(n); n = n.parent ? N[n.parent] : null; } return p; }
 function colorOf(n){ while (n){ if (n.color) return n.color; n = n.parent ? N[n.parent] : null; } return "#64748b"; }
 function subtree(id, acc){ acc = acc || []; acc.push(id); N[id].kids.forEach(function(k){ subtree(k.id, acc); }); return acc; }
@@ -543,10 +545,10 @@ function layout(){
     if (!n.kids.length){ n.y = PAD + row * ROWH + NODEH / 2; row++; }
     else { n.kids.forEach(function(k){ walk(k, d + 1); }); n.y = (n.kids[0].y + n.kids[n.kids.length - 1].y) / 2; }
   })(ROOT, 0);
-  D.tree.forEach(function(n){ var c = colOf(n); colW[c] = Math.max(colW[c] || 90, n.w); });
+  TREE.forEach(function(n){ var c = colOf(n); colW[c] = Math.max(colW[c] || 90, n.w); });
   var xs = [PAD];
   for (var c = 1; c < colW.length; c++) xs[c] = xs[c - 1] + (colW[c - 1] || 90) + GAPX;
-  D.tree.forEach(function(n){ n.x = xs[colOf(n)]; });
+  TREE.forEach(function(n){ n.x = xs[colOf(n)]; });
   T.cols = colW.map(function(w, c){ return {x: xs[c], w: w || 90}; });
   T.W = xs[colW.length - 1] + colW[colW.length - 1] + PAD;
   T.H = PAD * 2 + (row - 1) * ROWH + NODEH;
@@ -564,13 +566,13 @@ function drawTree(){
   svg.setAttribute("viewBox", "0 0 " + T.W + " " + T.H);
   if (D.ranks) T.cols.forEach(function(col, c){ if (c % 2) h += '<rect x="' + (col.x - GAPX / 2) + '" y="0" width="' + (col.w + GAPX) + '" height="' + T.H + '"/>'; });
   h += '</g><g class="edges">';
-  D.tree.forEach(function(n){
+  TREE.forEach(function(n){
     if (!n.parent) return;
     var p = N[n.parent], mx = p.x + p.w + GAPX / 2;
     h += '<path data-e="' + n.id + '" style="--c:' + colorOf(n) + '" d="M' + (p.x + p.w) + " " + p.y + " H" + mx + " V" + n.y + " H" + n.x + '"/>';
   });
   h += '</g><g class="nodes">';
-  D.tree.forEach(function(n){
+  TREE.forEach(function(n){
     var cls = "tn" + (n.italic ? " it" : "") + (n.locked || n.muted ? " off" : "") + (n.kids.length ? "" : " leaf");
     h += '<g class="' + cls + '" data-node="' + n.id + '" tabindex="0" role="button" style="--c:' + colorOf(n) + '" transform="translate(' + n.x + " " + (n.y - NODEH / 2) + ')">' +
       '<rect width="' + n.w + '" height="' + NODEH + '" rx="' + (n.kids.length ? 10 : 17) + '"/><text x="' + (n.w / 2) + '" y="' + (NODEH / 2) + '"></text></g>';
@@ -702,54 +704,59 @@ function boxPoint(clientX, clientY){ var r = $("#treebox").getBoundingClientRect
 var MAP = {laid: false};
 var MSKIP = (D.overview && D.overview.skipRanks) || [];
 function mapVisible(n){ return MSKIP.indexOf(n.rank) < 0; }
-function mapParent(n){ var p = n.parent ? N[n.parent] : null; while (p && !mapVisible(p)) p = p.parent ? N[p.parent] : null; return p; }
+function mapParent(n){ var p = n.mapParent ? N[n.mapParent] : n.parent ? N[n.parent] : null; while (p && !mapVisible(p)) p = p.parent ? N[p.parent] : null; return p; }
+function mapPath(n){ var p = []; while (n){ p.unshift(n); n = mapParent(n); } return p; }
 function mapNodeFor(id){ var n = N[id]; while (n && !mapVisible(n)) n = n.parent ? N[n.parent] : null; return n; }
 function layoutMap(){
-  var MF = 15, MH = 32, ROW = 62, LANE = 38, GAP = 14, STEP = 30, LBLW = 170, MP = 16;
+  /* Rows = ranks. Each row has two lanes (one slightly lower) so labels can overlap side to side.
+     Spacing rules keep every connector clear: boxes in the same lane never touch, and no box covers
+     the center of a box in the other lane, where its vertical connector runs. */
+  var MF = 15, MH = 32, ROWGAP = 40, LANE = 36, GAP = 12, M = 10, STEP = 18, LBLW = 172, MP = 16;
   var vis = D.tree.filter(mapVisible), rows = (D.ranks || []).filter(function(r){ return MSKIP.indexOf(r.id) < 0; });
-  vis.forEach(function(n){ n.mk = []; n.mw = 0; });
+  vis.forEach(function(n){ n.mk = []; });
   vis.forEach(function(n){ var p = mapParent(n); if (p) p.mk.push(n); });
-  measureCtx.font = "700 " + MF + "px 'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif";
   vis.forEach(function(n){ measureCtx.font = (n.italic ? "italic " : "") + "700 " + MF + "px 'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif"; n.mw = Math.ceil(measureCtx.measureText(nodeText(n)).width) + 22; });
-  var laneCount = {}, laneRight = {}, prevX = LBLW, hasLane = {};
+  var placed = {}, count = {}, prevX = LBLW, hasLane = {};
+  function minX(n, x){
+    var need = Math.max(x, LBLW + n.mw / 2);
+    (placed[n.rank] || []).forEach(function(p){
+      var req = p.mlane === n.mlane ? (p.mw + n.mw) / 2 + GAP : Math.max(p.mw, n.mw) / 2 + M;
+      need = Math.max(need, p.mx + req);
+    });
+    return need;
+  }
+  function place(n, x){
+    n.mlane = (count[n.rank] = (count[n.rank] || 0) + 1) % 2 ? 0 : 1;
+    if (n.mlane) hasLane[n.rank] = 1;
+    n.mx = minX(n, x);
+    (placed[n.rank] = placed[n.rank] || []).push(n);
+    prevX = Math.max(prevX, n.mx);
+  }
   (function walk(n){
-    if (!n.mk.length){
-      var lane = (laneCount[n.rank] = (laneCount[n.rank] || 0) + 1) % 2 ? 0 : 1, key = n.rank + lane;
-      if (lane) hasLane[n.rank] = 1;
-      n.mlane = lane;
-      n.mx = Math.max(prevX + STEP, (laneRight[key] || LBLW) + GAP + n.mw / 2, LBLW + n.mw / 2);
-      laneRight[key] = n.mx + n.mw / 2; prevX = n.mx;
-    } else {
-      n.mk.forEach(walk); n.mx = (n.mk[0].mx + n.mk[n.mk.length - 1].mx) / 2; n.mlane = 0;
-      var k0 = n.rank + 0; laneRight[k0] = Math.max(laneRight[k0] || 0, n.mx + n.mw / 2); prevX = Math.max(prevX, n.mx);
-    }
+    if (!n.mk.length){ place(n, prevX + STEP); return; }
+    n.mk.forEach(walk);
+    place(n, (n.mk[0].mx + n.mk[n.mk.length - 1].mx) / 2);
   })(ROOT);
-  var rowY = {}, y = MP + 24;
-  rows.forEach(function(r){ rowY[r.id] = y; y += ROW + (hasLane[r.id] ? LANE : 0); });
+  var rowY = {}, rowBottom = {}, y = MP + 24;
+  rows.forEach(function(r){ rowY[r.id] = y; rowBottom[r.id] = y + MH + (hasLane[r.id] ? LANE : 0); y = rowBottom[r.id] + ROWGAP; });
   vis.forEach(function(n){ n.my = rowY[n.rank] + MH / 2 + n.mlane * LANE; });
-  /* nudge apart any labels that still touch on the same line */
-  var lines = {};
-  vis.forEach(function(n){ (lines[n.my] = lines[n.my] || []).push(n); });
-  Object.keys(lines).forEach(function(k){
-    var row = lines[k].sort(function(a, b){ return a.mx - b.mx; });
-    for (var i = 1; i < row.length; i++){ var a = row[i - 1], b = row[i], need = a.mx + a.mw / 2 + GAP + b.mw / 2; if (b.mx < need) b.mx = need; }
-  });
   var W = 0; vis.forEach(function(n){ W = Math.max(W, n.mx + n.mw / 2); });
-  MAP.W = W + MP; MAP.H = y - ROW + MH + 30; MAP.vis = vis; MAP.rows = rows; MAP.rowY = rowY; MAP.hasLane = hasLane; MAP.MH = MH; MAP.LANE = LANE; MAP.ROW = ROW;
+  MAP.W = W + MP; MAP.H = y - ROWGAP + 24; MAP.vis = vis; MAP.rows = rows; MAP.rowY = rowY; MAP.rowBottom = rowBottom; MAP.hasLane = hasLane; MAP.MH = MH; MAP.LANE = LANE;
 }
 function drawMap(){
   layoutMap();
   var svg = $("#map"), h = "", MH = MAP.MH;
   svg.setAttribute("viewBox", "0 0 " + MAP.W + " " + MAP.H);
+  svg.style.minWidth = Math.round(MAP.W * 0.8) + "px";   /* readable text; the box scrolls sideways */
   MAP.rows.forEach(function(r, i){
-    var y0 = MAP.rowY[r.id] - 10, hh = MAP.ROW - 8 + (MAP.hasLane[r.id] ? MAP.LANE : 0);
+    var y0 = MAP.rowY[r.id] - 10, hh = MAP.rowBottom[r.id] - MAP.rowY[r.id] + 20;
     if (i % 2 === 0) h += '<rect class="rowband" x="0" y="' + y0 + '" width="' + MAP.W + '" height="' + hh + '" rx="10"/>';
     h += '<text class="rowlbl" x="14" y="' + (MAP.rowY[r.id] + MH / 2) + '" dominant-baseline="central">' + esc(r.label) + "</text>";
   });
   h += '<g class="edges">';
   MAP.vis.forEach(function(n){
     var p = mapParent(n); if (!p) return;
-    var y1 = p.my + MH / 2, mid = y1 + 12;
+    var y1 = p.my + MH / 2, mid = MAP.rowBottom[p.rank] + 12;
     h += '<path data-e="' + n.id + '" style="--c:' + colorOf(n) + '" d="M' + p.mx + " " + y1 + " V" + mid + " H" + n.mx + " V" + (n.my - MH / 2) + '"/>';
   });
   h += '</g><g class="nodes">';
@@ -766,8 +773,10 @@ function updateMap(){
   var sec = $("#mapsec"); sec.hidden = !st.map;
   if (!st.map) return;
   if (!MAP.laid) drawMap();
-  var s = stop(), here = mapNodeFor(viewInfo().cur), onPath = {};
-  pathTo(here.id).forEach(function(n){ onPath[n.id] = 1; });
+  var s = stop(), here = null, onPath = {};
+  if (st.org) MAP.vis.forEach(function(n){ if (!here && n.card === st.org) here = n; });
+  if (!here) here = mapNodeFor(viewInfo().cur);
+  mapPath(here).forEach(function(n){ onPath[n.id] = 1; });
   $$("#map .tn").forEach(function(g){
     var id = g.getAttribute("data-node"), n = N[id], hid = labelHidden(n) && !s.finale;
     g.classList.toggle("cur", id === here.id);
@@ -778,6 +787,8 @@ function updateMap(){
   });
   $$("#map .edges path").forEach(function(p){ var id = p.getAttribute("data-e"), par = mapParent(N[id]); p.classList.toggle("on", !!(onPath[id] && par && onPath[par.id])); });
   var pin = $("#mapPin"); pin.setAttribute("x", here.mx); pin.setAttribute("y", here.my - MAP.MH / 2 - 4);
+  var mb = $(".mapbox"), k = $("#map").clientWidth / MAP.W;
+  mb.scrollTo({left: Math.max(0, here.mx * k - mb.clientWidth / 2), behavior: reduced ? "auto" : "smooth"});
 }
 
 /* ================= blanks ================= */
@@ -1003,6 +1014,7 @@ function showStart(fromHistory){
 }
 function openNode(id){
   var n = N[id];
+  if (n.card && ORG[n.card] && !OPEN[id]) OPEN[id] = {stop: ORG[n.card].stop, org: n.card};
   if (n.locked){ toast(n.locked); return; }
   if (n.muted){ toast(n.muted); return; }
   var o = OPEN[id]; if (!o) return;
