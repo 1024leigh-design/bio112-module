@@ -36,11 +36,11 @@ window.TOUR_DATA = {
     {label: "Gram-negative", current: true},
     {label: "Gram-positive (coming soon)", soon: "Coming soon: Firmicutes and Actinobacteria"}
   ],
-  /* related games: TODO add real URLs (not in this repo yet). Entries with no href show as "link coming soon". */
+  /* related games. Entries with no href show as "link coming soon" (TODO: Microbe Match). */
   games: [
-    {title: "Mystery Microbe", href: ""},
+    {title: "Mystery Microbe", href: "mystery-microbe.html"},
     {title: "Microbe Match", href: ""},
-    {title: "Disease Typing Game", href: ""}
+    {title: "Disease Typing Game", href: "disease-type.html"}
   ],
   wordBank: ["Alpha", "Beta", "Gamma", "Epsilon", "Enterics", "Coliforms", "Non-coliforms"],
 
