@@ -58,6 +58,9 @@ window.TOUR_DATA = {
     {id: "species", label: "Species"}
   ],
 
+  /* Bottom overview map: drops these lab-test columns so the whole tree fits on one screen. */
+  overview: {skipRanks: ["oxygen", "lactose"]},
+
   tree: [
     {id: "bacteria", rank: "domain", label: "Bacteria", color: "#64748b",
       traits: [
