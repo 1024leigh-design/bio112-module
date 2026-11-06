@@ -98,12 +98,17 @@ b,strong{font-weight:700}
 .msg.good{background:var(--good-soft)} .msg.good > b:first-child{color:var(--good)}
 .msg.bad{background:var(--bad-soft)} .msg.bad > b:first-child{color:var(--bad)}
 
-/* tour layout: full-width tree on top, lesson below */
+/* tour layout: tree beside the lesson on wide screens, stacked on phones */
 .tour{display:flex; flex-direction:column; gap:18px}
+@media (min-width:1000px){
+  .tour{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:24px; align-items:start}
+  .treepanel{position:sticky; top:76px}
+  .treebox{height:calc(100vh - 170px)!important; min-height:420px}
+}
 .treepanel{display:flex; flex-direction:column; gap:10px; min-width:0}
 .treehead{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
 .treehead .lbl{font:600 13px var(--f-mono); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-right:auto}
-.treebox{position:relative; height:clamp(340px, 60vh, 640px); overflow:auto; background:var(--surface); border:1px solid var(--line); border-radius:20px; overscroll-behavior:contain; -webkit-overflow-scrolling:touch}
+.treebox{position:relative; height:380px; overflow:auto; background:var(--surface); border:1px solid var(--line); border-radius:20px; overscroll-behavior:contain; -webkit-overflow-scrolling:touch}
 .treebox.drag{cursor:grabbing; user-select:none}
 #tree{display:block; margin:0 auto}
 #tree .edges path{fill:none; stroke:var(--line); stroke-width:2.5; transition:stroke .3s, stroke-width .3s, opacity .3s}
@@ -122,9 +127,26 @@ b,strong{font-weight:700}
 .tn.off text{fill:var(--muted)}
 .tn.hid text{fill:var(--muted); letter-spacing:.2em}
 .tn:hover rect, .tn:focus-visible rect{stroke-width:4.5}
+#map .tn text{font-size:15px}
 .treehint{font-size:15px; color:var(--muted)}
-.ranks{position:sticky; top:0; z-index:2; height:46px; background:var(--surface); border-bottom:1px solid var(--line)}
-.ranks span{position:absolute; top:8px; height:30px; display:flex; align-items:center; justify-content:center; text-align:center; font:700 13px var(--f-mono); text-transform:uppercase; letter-spacing:.04em; line-height:1.1; color:var(--ink); border-radius:8px; background:var(--surface-2); padding:0 4px; overflow:hidden}
+.tools{display:flex; gap:6px; flex-wrap:wrap}
+.tool{min-width:40px; height:40px; padding:0 12px; border-radius:12px; border:1.5px solid var(--line); background:var(--surface); font-weight:700; font-size:16px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px}
+.tool:hover{border-color:var(--arrow); color:var(--arrow)}
+.tool.big{font-size:22px; line-height:1; padding:0}
+.tool.on{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+/* overview map */
+.mapsec{margin-top:26px; background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:14px; scroll-margin-top:80px}
+.maphead{display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; margin-bottom:8px}
+.maphead h3{font-size:22px; margin-right:auto}
+.mapbox{overflow-x:auto; -webkit-overflow-scrolling:touch}
+#map{display:block; width:100%; min-width:900px; height:auto}
+#map .rowband{fill:var(--surface-2); opacity:.55}
+#map .rowlbl{font:700 13px var(--f-mono); fill:var(--muted); text-transform:uppercase; letter-spacing:.04em}
+#map .edges path{fill:none; stroke:var(--line); stroke-width:2}
+#map .edges path.on{stroke:var(--c); stroke-width:4}
+#map .here-pin{font-size:20px; text-anchor:middle}
+.ranks{position:sticky; top:0; z-index:2; height:46px; margin:0 auto; background:var(--surface); border-bottom:1px solid var(--line)}
+.ranks span{position:absolute; top:8px; height:30px; display:flex; align-items:center; justify-content:center; text-align:center; font-family:var(--f-mono); font-weight:700; font-size:inherit; text-transform:uppercase; letter-spacing:.04em; line-height:1.1; color:var(--ink); border-radius:8px; background:var(--surface-2); padding:0 4px; overflow:hidden}
 .ranks span.lab{background:transparent; border:1.5px dashed var(--line); color:var(--muted); font-weight:600}
 #tree .bands rect{fill:var(--surface-2); opacity:.5}
 
@@ -334,16 +356,21 @@ table.ent tr.grp td{background:color-mix(in srgb, var(--c) 12%, var(--surface))}
     <aside class="treepanel" aria-label="Family tree">
       <div class="treehead">
         <span class="lbl">Family tree</span>
-        <button class="btn small ghost" type="button" data-act="restart">&#8634; Start tour from the beginning</button>
-        <button class="btn small ghost" type="button" data-act="full" id="fullBtn">Show full tree</button>
+        <div class="tools" role="toolbar" aria-label="Move around the tree">
+          <button class="tool big" type="button" data-act="zoomout" aria-label="Zoom out" title="Zoom out">&minus;</button>
+          <button class="tool big" type="button" data-act="zoomin" aria-label="Zoom in" title="Zoom in">+</button>
+          <button class="tool" type="button" data-act="full" id="fullBtn" title="Show the full tree">&#10530; Full tree</button>
+          <button class="tool" type="button" data-act="refocus" id="focusBtn" title="Back to this stop">&#9678; This stop</button>
+        </div>
       </div>
       <div class="treebox" id="treebox"><div class="ranks" id="ranks" aria-hidden="true"></div><svg id="tree" role="group" aria-label="Bacterial family tree. Every branch is a button."></svg></div>
-      <p class="treehint">Tap any branch to jump there. Dashed column names are lab-test groups, not taxonomic ranks.</p>
+      <p class="treehint">Dashed headings are lab-test groups, not taxonomic ranks.</p>
     </aside>
     <div class="lessoncol">
       <div class="progress">
         <span class="count" id="count"></span>
         <div class="bar" aria-hidden="true"><i id="barFill"></i></div>
+        <button class="btn small ghost" type="button" data-act="restart" aria-label="Start tour from the beginning" title="Start tour from the beginning">&#8634;</button>
         <button class="btn small ghost" type="button" data-act="prev" aria-label="Previous stop">&larr; Back</button>
         <button class="btn small" type="button" data-act="next" aria-label="Next stop">Next &rarr;</button>
       </div>
@@ -351,6 +378,10 @@ table.ent tr.grp td{background:color-mix(in srgb, var(--c) 12%, var(--surface))}
       <article id="lesson" class="lessoncol"></article>
     </div>
   </div>
+  <section class="mapsec" id="mapsec" hidden aria-label="Overview map of the whole tree">
+    <div class="maphead"><h3>🗺️ The whole tree</h3><button class="btn small ghost" type="button" data-act="map">Hide the map</button></div>
+    <div class="mapbox"><svg id="map" role="group" aria-label="Overview map. Every branch is a button."></svg></div>
+  </section>
 </section>
 </div>
 
@@ -392,7 +423,7 @@ D.stops.forEach(function(s, i){ [s.node].concat(s.also || []).forEach(function(i
 var LAST = D.stops.length - 1;
 
 /* ================= state ================= */
-var st = {mode: store(D.id + "-mode") === "test" ? "test" : "learn", view: "start", i: 0, org: null, full: false, ans: {}, chk: {}, ci: {}};
+var st = {mode: store(D.id + "-mode") === "test" ? "test" : "learn", view: "start", i: 0, org: null, full: false, map: false, ans: {}, chk: {}, ci: {}};
 var KEYS = {};   // answer key for every blank currently on screen
 
 function stop(){ return D.stops[st.i]; }
@@ -523,6 +554,7 @@ function layout(){
 function placeRanks(sc){
   var el = $("#ranks"); if (!D.ranks){ el.hidden = true; return; }
   el.style.width = (T.W * sc) + "px";
+  el.style.fontSize = Math.max(9, Math.min(13, 15 * sc)) + "px";
   if (!el.children.length) el.innerHTML = D.ranks.map(function(r){ return '<span class="' + (r.lab ? "lab" : "") + '">' + esc(r.label) + "</span>"; }).join("");
   $$("span", el).forEach(function(sp, c){ var col = T.cols[c]; sp.style.left = ((col.x - GAPX / 2 + 3) * sc) + "px"; sp.style.width = ((col.w + GAPX - 6) * sc) + "px"; });
 }
@@ -584,18 +616,20 @@ function updateTree(animate){
     p.classList.toggle("on", !!(onPath[id] && onPath[N[id].parent]));
     p.classList.toggle("fade", !!(v.lit && !v.lit[id]));
   });
-  $("#fullBtn").textContent = (s.full || st.full) ? (s.full ? "Full tree" : "Zoom to this stop") : "Show full tree";
-  $("#fullBtn").disabled = !!s.full;
+  $("#fullBtn").classList.toggle("on", !!(s.full || st.full));
   frame(v, animate);
 }
 
 /* ================= camera: zoom + pan the scrollable tree box ================= */
 var camAnim = 0;
+function viewSize(){ var box = $("#treebox"); return {W: box.clientWidth, H: box.clientHeight - (D.ranks ? HEADH : 0)}; }
+function fitScale(){ var z = viewSize(); return Math.min(z.W / T.W, z.H / T.H); }
+var MAXS = 1.8;
 function frame(v, animate){
-  var box = $("#treebox"), W = box.clientWidth, H = box.clientHeight - (D.ranks ? HEADH : 0), b, sc;
+  var z = viewSize(), W = z.W, H = z.H, b, sc;
   if (!W || !H) return;
   var minS = W < 500 ? 0.74 : 0.8;
-  if (!v.ids){ b = {x: 0, y: 0, w: T.W, h: T.H}; sc = Math.max(W < 500 ? minS : 0.5, Math.min(1.15, W / T.W)); }
+  if (!v.ids){ b = {x: 0, y: 0, w: T.W, h: T.H}; sc = fitScale(); }
   else {
     var x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
     v.ids.forEach(function(id){ var n = N[id]; x0 = Math.min(x0, n.x); x1 = Math.max(x1, n.x + n.w); y0 = Math.min(y0, n.y - NODEH / 2); y1 = Math.max(y1, n.y + NODEH / 2); });
@@ -605,7 +639,12 @@ function frame(v, animate){
   var curN = N[v.cur];
   var left = b.w * sc <= W ? (b.x + b.w / 2) * sc - W / 2 : Math.min(curN.x * sc - 8, (b.x + b.w) * sc - W);
   var top = b.h * sc <= H ? (b.y + b.h / 2) * sc - H / 2 : curN.y * sc - H / 2;
-  if (!v.ids) left = 0;
+  if (!v.ids){ left = 0; top = 0; }
+  camTo(sc, left, top, animate);
+}
+/* move the camera: sc = zoom, left/top = scroll position of the tree box */
+function camTo(sc, left, top, animate){
+  var box = $("#treebox"), z = viewSize(), W = z.W, H = z.H;
   left = Math.max(0, Math.min(left, T.W * sc - W)); top = Math.max(0, Math.min(top, T.H * sc - H));
   var s0 = T.s, l0 = box.scrollLeft, t0 = box.scrollTop, svg = $("#tree"), id = ++camAnim;
   function apply(sv, l, t){ svg.style.width = (T.W * sv) + "px"; svg.style.height = (T.H * sv) + "px"; placeRanks(sv); box.scrollLeft = l; box.scrollTop = t; T.s = sv; }
@@ -618,6 +657,35 @@ function frame(v, animate){
     if (k < 1) requestAnimationFrame(step);
   })(start);
 }
+/* zoom about a point (px, py) in the visible tree area; defaults to its center */
+function zoomTo(s2, px, py, animate){
+  var box = $("#treebox"), z = viewSize(), s1 = T.s;
+  s2 = Math.max(Math.min(fitScale(), 0.6), Math.min(MAXS, s2));
+  if (px == null){ px = z.W / 2; py = z.H / 2; }
+  var ox1 = Math.max(0, (z.W - T.W * s1) / 2), ox2 = Math.max(0, (z.W - T.W * s2) / 2);
+  var X = (box.scrollLeft + px - ox1) / s1, Y = (box.scrollTop + py) / s1;
+  camTo(s2, X * s2 - px + ox2, Y * s2 - py, animate);
+}
+function boxPoint(clientX, clientY){ var r = $("#treebox").getBoundingClientRect(); return {x: clientX - r.left, y: clientY - r.top - (D.ranks ? HEADH : 0)}; }
+(function pinchZoom(){
+  var box = $("#treebox"), pinch = null;
+  function dist(t){ return Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY); }
+  box.addEventListener("touchstart", function(e){ if (e.touches.length === 2){ pinch = {d: dist(e.touches), s: T.s}; camAnim++; } }, {passive: true});
+  box.addEventListener("touchmove", function(e){
+    if (!pinch || e.touches.length !== 2) return;
+    e.preventDefault();
+    var m = boxPoint((e.touches[0].clientX + e.touches[1].clientX) / 2, (e.touches[0].clientY + e.touches[1].clientY) / 2);
+    zoomTo(pinch.s * dist(e.touches) / pinch.d, m.x, m.y, false);
+  }, {passive: false});
+  box.addEventListener("touchend", function(e){ if (e.touches.length < 2) pinch = null; });
+  box.addEventListener("gesturestart", function(e){ e.preventDefault(); });
+  box.addEventListener("wheel", function(e){
+    if (!e.ctrlKey && !e.metaKey) return;
+    e.preventDefault(); camAnim++;
+    var m = boxPoint(e.clientX, e.clientY);
+    zoomTo(T.s * Math.exp(-e.deltaY * 0.01), m.x, m.y, false);
+  }, {passive: false});
+})();
 (function dragPan(){
   var box = $("#treebox"), down = null;
   box.addEventListener("pointerdown", function(e){ if (e.pointerType !== "mouse" || e.button !== 0) return; down = {x: e.clientX, y: e.clientY, l: box.scrollLeft, t: box.scrollTop, moved: false}; });
@@ -629,6 +697,88 @@ function frame(v, animate){
   });
   window.addEventListener("pointerup", function(){ if (down && down.moved){ T.justDragged = true; setTimeout(function(){ T.justDragged = false; }, 0); } down = null; box.classList.remove("drag"); });
 })();
+
+/* ================= overview map: top-down, real ranks only, staggered leaves ================= */
+var MAP = {laid: false};
+var MSKIP = (D.overview && D.overview.skipRanks) || [];
+function mapVisible(n){ return MSKIP.indexOf(n.rank) < 0; }
+function mapParent(n){ var p = n.parent ? N[n.parent] : null; while (p && !mapVisible(p)) p = p.parent ? N[p.parent] : null; return p; }
+function mapNodeFor(id){ var n = N[id]; while (n && !mapVisible(n)) n = n.parent ? N[n.parent] : null; return n; }
+function layoutMap(){
+  var MF = 15, MH = 32, ROW = 62, LANE = 38, GAP = 14, STEP = 30, LBLW = 170, MP = 16;
+  var vis = D.tree.filter(mapVisible), rows = (D.ranks || []).filter(function(r){ return MSKIP.indexOf(r.id) < 0; });
+  vis.forEach(function(n){ n.mk = []; n.mw = 0; });
+  vis.forEach(function(n){ var p = mapParent(n); if (p) p.mk.push(n); });
+  measureCtx.font = "700 " + MF + "px 'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif";
+  vis.forEach(function(n){ measureCtx.font = (n.italic ? "italic " : "") + "700 " + MF + "px 'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif"; n.mw = Math.ceil(measureCtx.measureText(nodeText(n)).width) + 22; });
+  var laneCount = {}, laneRight = {}, prevX = LBLW, hasLane = {};
+  (function walk(n){
+    if (!n.mk.length){
+      var lane = (laneCount[n.rank] = (laneCount[n.rank] || 0) + 1) % 2 ? 0 : 1, key = n.rank + lane;
+      if (lane) hasLane[n.rank] = 1;
+      n.mlane = lane;
+      n.mx = Math.max(prevX + STEP, (laneRight[key] || LBLW) + GAP + n.mw / 2, LBLW + n.mw / 2);
+      laneRight[key] = n.mx + n.mw / 2; prevX = n.mx;
+    } else {
+      n.mk.forEach(walk); n.mx = (n.mk[0].mx + n.mk[n.mk.length - 1].mx) / 2; n.mlane = 0;
+      var k0 = n.rank + 0; laneRight[k0] = Math.max(laneRight[k0] || 0, n.mx + n.mw / 2); prevX = Math.max(prevX, n.mx);
+    }
+  })(ROOT);
+  var rowY = {}, y = MP + 24;
+  rows.forEach(function(r){ rowY[r.id] = y; y += ROW + (hasLane[r.id] ? LANE : 0); });
+  vis.forEach(function(n){ n.my = rowY[n.rank] + MH / 2 + n.mlane * LANE; });
+  /* nudge apart any labels that still touch on the same line */
+  var lines = {};
+  vis.forEach(function(n){ (lines[n.my] = lines[n.my] || []).push(n); });
+  Object.keys(lines).forEach(function(k){
+    var row = lines[k].sort(function(a, b){ return a.mx - b.mx; });
+    for (var i = 1; i < row.length; i++){ var a = row[i - 1], b = row[i], need = a.mx + a.mw / 2 + GAP + b.mw / 2; if (b.mx < need) b.mx = need; }
+  });
+  var W = 0; vis.forEach(function(n){ W = Math.max(W, n.mx + n.mw / 2); });
+  MAP.W = W + MP; MAP.H = y - ROW + MH + 30; MAP.vis = vis; MAP.rows = rows; MAP.rowY = rowY; MAP.hasLane = hasLane; MAP.MH = MH; MAP.LANE = LANE; MAP.ROW = ROW;
+}
+function drawMap(){
+  layoutMap();
+  var svg = $("#map"), h = "", MH = MAP.MH;
+  svg.setAttribute("viewBox", "0 0 " + MAP.W + " " + MAP.H);
+  MAP.rows.forEach(function(r, i){
+    var y0 = MAP.rowY[r.id] - 10, hh = MAP.ROW - 8 + (MAP.hasLane[r.id] ? MAP.LANE : 0);
+    if (i % 2 === 0) h += '<rect class="rowband" x="0" y="' + y0 + '" width="' + MAP.W + '" height="' + hh + '" rx="10"/>';
+    h += '<text class="rowlbl" x="14" y="' + (MAP.rowY[r.id] + MH / 2) + '" dominant-baseline="central">' + esc(r.label) + "</text>";
+  });
+  h += '<g class="edges">';
+  MAP.vis.forEach(function(n){
+    var p = mapParent(n); if (!p) return;
+    var y1 = p.my + MH / 2, mid = y1 + 12;
+    h += '<path data-e="' + n.id + '" style="--c:' + colorOf(n) + '" d="M' + p.mx + " " + y1 + " V" + mid + " H" + n.mx + " V" + (n.my - MH / 2) + '"/>';
+  });
+  h += '</g><g class="nodes">';
+  MAP.vis.forEach(function(n){
+    var cls = "tn" + (n.italic ? " it" : "") + (n.locked || n.muted ? " off" : "") + (n.mk.length ? "" : " leaf");
+    h += '<g class="' + cls + '" data-node="' + n.id + '" tabindex="0" role="button" style="--c:' + colorOf(n) + '" transform="translate(' + (n.mx - n.mw / 2) + " " + (n.my - MH / 2) + ')">' +
+      '<rect width="' + n.mw + '" height="' + MH + '" rx="' + (n.mk.length ? 9 : 16) + '"/><text x="' + (n.mw / 2) + '" y="' + (MH / 2) + '"></text></g>';
+  });
+  h += '</g><text class="here-pin" id="mapPin" aria-hidden="true">📍</text>';
+  svg.innerHTML = h;
+  MAP.laid = true;
+}
+function updateMap(){
+  var sec = $("#mapsec"); sec.hidden = !st.map;
+  if (!st.map) return;
+  if (!MAP.laid) drawMap();
+  var s = stop(), here = mapNodeFor(viewInfo().cur), onPath = {};
+  pathTo(here.id).forEach(function(n){ onPath[n.id] = 1; });
+  $$("#map .tn").forEach(function(g){
+    var id = g.getAttribute("data-node"), n = N[id], hid = labelHidden(n) && !s.finale;
+    g.classList.toggle("cur", id === here.id);
+    g.classList.toggle("path", !!onPath[id]);
+    g.classList.toggle("hid", hid);
+    $("text", g).textContent = hid ? "?" : nodeText(n);
+    g.setAttribute("aria-label", (hid ? "Hidden branch name" : n.label) + (id === here.id ? ", you are here" : "") + (n.locked ? ", coming soon" : n.muted ? ", not covered" : ""));
+  });
+  $$("#map .edges path").forEach(function(p){ var id = p.getAttribute("data-e"), par = mapParent(N[id]); p.classList.toggle("on", !!(onPath[id] && par && onPath[par.id])); });
+  var pin = $("#mapPin"); pin.setAttribute("x", here.mx); pin.setAttribute("y", here.my - MAP.MH / 2 - 4);
+}
 
 /* ================= blanks ================= */
 function register(key, info){ KEYS[key] = info; }
@@ -792,6 +942,7 @@ function renderLesson(){
   var keys = Object.keys(KEYS);
   if (testOn()) h += checkbarHtml(keys);
   h += checkinHtml(s);
+  h += '<div><button class="btn ghost" type="button" data-act="map" aria-controls="mapsec">🗺️ ' + (st.map ? "Hide the map" : "Show the map") + "</button></div>";
   h += '<nav class="stepnav" aria-label="Tour navigation">' +
     '<button type="button" data-act="prev"><small>&larr; Back</small><b>' + stepTitle(s.n - 1) + "</b></button>" +
     (s.n < LAST ? '<button type="button" class="next" data-act="next"><small>Next &rarr;</small><b>' + stepTitle(s.n + 1) + "</b></button>" : '<button type="button" class="next" data-act="restart"><small>Again? &#8634;</small><b>Start from the beginning</b></button>') + "</nav>";
@@ -833,6 +984,7 @@ function renderAll(animate){
   renderRibbon();
   renderLesson();
   updateTree(animate);
+  updateMap();
 }
 function go(i, opts){
   opts = opts || {};
@@ -869,6 +1021,7 @@ function stopKeys(){ return Object.keys(KEYS); }
 document.addEventListener("click", function(e){
   var el;
   if ((el = e.target.closest("#tree .tn"))){ if (T.justDragged) return; openNode(el.getAttribute("data-node")); return; }
+  if ((el = e.target.closest("#map .tn"))){ openNode(el.getAttribute("data-node")); if (!N[el.getAttribute("data-node")].locked && !N[el.getAttribute("data-node")].muted) window.scrollTo({top: 0, behavior: reduced ? "auto" : "smooth"}); return; }
   if ((el = e.target.closest(".crumbs button[data-node]"))){ openNode(el.getAttribute("data-node")); return; }
   if ((el = e.target.closest("[data-mode]"))){ setMode(el.getAttribute("data-mode")); return; }
   if ((el = e.target.closest("[data-mc]"))){
@@ -900,7 +1053,11 @@ document.addEventListener("click", function(e){
   else if (act === "explore"){ go(st.view === "tour" ? st.i : 0, {full: true}); $("#treebox").scrollIntoView({behavior: reduced ? "auto" : "smooth", block: "center"}); }
   else if (act === "next") go(st.i + 1, {scroll: "top"});
   else if (act === "prev"){ if (st.i === 0) showStart(); else go(st.i - 1, {scroll: "top"}); }
-  else if (act === "full"){ st.full = !st.full; updateTree(true); }
+  else if (act === "full"){ st.full = true; updateTree(true); }
+  else if (act === "refocus"){ st.full = false; updateTree(true); }
+  else if (act === "zoomin") zoomTo(T.s * 1.35, null, null, true);
+  else if (act === "zoomout") zoomTo(T.s / 1.35, null, null, true);
+  else if (act === "map"){ st.map = !st.map; renderAll(false); if (st.map) $("#mapsec").scrollIntoView({behavior: reduced ? "auto" : "smooth", block: "start"}); }
   else if (act === "testmode"){ setMode("test"); go(0, {scroll: "top"}); }
   else if (act === "table"){ renderTable(); var dl = $("#entDlg"); if (dl.showModal) dl.showModal(); else dl.setAttribute("open", ""); }
   else if (act === "closeDlg"){ var d2 = $("#entDlg"); if (d2.close) d2.close(); else d2.removeAttribute("open"); }
@@ -915,8 +1072,8 @@ document.addEventListener("change", function(e){
   var s = e.target.closest("select[data-key]"); if (!s) return;
   st.ans[s.getAttribute("data-key")] = s.value;
 });
-$("#tree").addEventListener("keydown", function(e){
-  var g = e.target.closest(".tn"); if (!g) return;
+document.addEventListener("keydown", function(e){
+  var g = e.target.closest && e.target.closest("#tree .tn, #map .tn"); if (!g) return;
   if (e.key === "Enter" || e.key === " "){ e.preventDefault(); openNode(g.getAttribute("data-node")); }
 });
 $("#entDlg").addEventListener("click", function(e){ if (e.target === e.currentTarget) e.currentTarget.close(); });
@@ -941,7 +1098,7 @@ $("#tabs").innerHTML = D.tabs.map(function(t){
 
 drawTree();
 fromHash(true);
-if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ drawTree(); if (st.view === "tour") updateTree(false); });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ drawTree(); MAP.laid = false; if (st.view === "tour"){ updateTree(false); updateMap(); } });
 })();
 </script>
 </body>
