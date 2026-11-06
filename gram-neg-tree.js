@@ -58,7 +58,9 @@ window.TOUR_DATA = {
     {id: "species", label: "Species"}
   ],
 
-  /* Bottom overview map: drops these lab-test columns so the whole tree fits on one screen. */
+  /* Bottom overview map: drops these lab-test columns so the whole tree fits on one screen.
+     Nodes with overviewOnly: true (the species from the Ch. 11 study guide) appear only on this map.
+     card = the organism card a map node opens; mapParent = its parent on the map when it differs. */
   overview: {skipRanks: ["oxygen", "lactose"]},
 
   tree: [
@@ -78,9 +80,11 @@ window.TOUR_DATA = {
     {id: "alpha", rank: "class", label: "Alpha", full: "Alphaproteobacteria", parent: "proteo", color: "#b45309", blankLabel: true,
       traits: [{t: "many grow with very low nutrients", blank: {pre: "many grow with very ", post: " nutrients", a: "low", o: ["low", "high"], why: "Many alphaproteobacteria can grow with very low nutrient levels."}}]},
     {id: "rickettsia", rank: "genus", label: "Rickettsia", parent: "alpha", italic: true},
+    {id: "r_rickettsii", rank: "species", label: "R. rickettsii", parent: "rickettsia", overviewOnly: true, italic: true, card: "rrickettsii"},
     {id: "beta", rank: "class", label: "Beta", full: "Betaproteobacteria", parent: "proteo", color: "#0e7490", blankLabel: true,
       note: "none extra (Beta is a grouping; the traits live on each genus)"},
     {id: "bordetella", rank: "genus", label: "Bordetella", parent: "beta", italic: true},
+    {id: "b_pertussis", rank: "species", label: "B. pertussis", parent: "bordetella", overviewOnly: true, italic: true, card: "bpertussis"},
     {id: "neisseria", rank: "genus", label: "Neisseria", parent: "beta", italic: true, color: "#4f46e5",
       traits: [
         {t: "gram-negative diplococci", blank: {pre: "gram-negative ", post: "", a: "diplococci", o: ["diplococci", "rods", "spirals"], why: "Neisseria are diplococci: round cells in pairs."}},
@@ -95,7 +99,10 @@ window.TOUR_DATA = {
     {id: "obligate", rank: "oxygen", label: "Obligate aerobes", parent: "gamma", color: "#0f766e",
       traits: [{t: "require oxygen", blank: {pre: "", post: " oxygen", a: "require", o: ["require", "don't need"], why: "Obligate aerobes must have oxygen to grow."}}]},
     {id: "pseudomonas", rank: "genus", label: "Pseudomonas", parent: "obligate", italic: true},
+    {id: "p_aeruginosa", rank: "species", label: "P. aeruginosa", parent: "pseudomonas", overviewOnly: true, italic: true, card: "paeruginosa"},
+    {id: "p_fluorescens", rank: "species", label: "P. fluorescens", parent: "pseudomonas", overviewOnly: true, italic: true, card: "paeruginosa"},
     {id: "legionella", rank: "genus", label: "Legionella", parent: "obligate", italic: true},
+    {id: "l_pneumophila", rank: "species", label: "L. pneumophila", parent: "legionella", overviewOnly: true, italic: true, card: "lpneumophila"},
     {id: "facultative", rank: "oxygen", label: "Facultative anaerobes", parent: "gamma", color: "#15803d",
       traits: [{t: "grow with or without oxygen", blank: {pre: "grow ", post: " oxygen", a: "with or without", o: ["with or without", "only with", "only without"], why: "Facultative anaerobes grow with or without oxygen."}}]},
     {id: "enterics", rank: "order", label: "Enterics", parent: "facultative", color: "#ea580c", blankLabel: true,
@@ -107,17 +114,32 @@ window.TOUR_DATA = {
       ]},
     {id: "coliforms", rank: "lactose", label: "Coliforms", parent: "enterics", color: "#9d174d", blankLabel: true,
       traits: [{t: "lactose +", strong: true, blank: {pre: "lactose ", post: "", a: "+", o: ["+", "−"], why: "Coliforms are the enterics that ferment lactose: pink colonies on MacConkey agar."}}]},
-    {id: "ecoli", rank: "species", label: "E. coli", parent: "coliforms", italic: true},
+    {id: "escherichia", rank: "genus", label: "Escherichia", parent: "coliforms", overviewOnly: true, italic: true, card: "ecoli"},
+    {id: "ecoli", rank: "species", label: "E. coli", parent: "coliforms", mapParent: "escherichia", italic: true},
     {id: "klebsiella", rank: "genus", label: "Klebsiella", parent: "coliforms", italic: true},
+    {id: "k_pneumoniae", rank: "species", label: "K. pneumoniae", parent: "klebsiella", overviewOnly: true, italic: true, card: "kpneumoniae"},
     {id: "enterobacter", rank: "genus", label: "Enterobacter", parent: "coliforms", italic: true},
+    {id: "e_aerogenes", rank: "species", label: "E. aerogenes", parent: "enterobacter", overviewOnly: true, italic: true, card: "enterobacter"},
+    {id: "e_cloacae", rank: "species", label: "E. cloacae", parent: "enterobacter", overviewOnly: true, italic: true, card: "enterobacter"},
     {id: "noncoliforms", rank: "lactose", label: "Non-coliforms", parent: "enterics", color: "#0369a1", blankLabel: true,
       traits: [{t: "lactose −", strong: true, blank: {pre: "lactose ", post: "", a: "−", o: ["+", "−"], why: "Non-coliforms don't ferment lactose: colorless colonies on MacConkey agar."}}]},
     {id: "salmonella", rank: "genus", label: "Salmonella", parent: "noncoliforms", italic: true},
+    /* Enteritidis and Typhi are serovars of S. enterica; shown as the slides and study guide write them */
+    {id: "s_enteritidis", rank: "species", label: "S. Enteritidis", parent: "salmonella", overviewOnly: true, card: "salmonella"},
+    {id: "s_typhi", rank: "species", label: "S. Typhi", parent: "salmonella", overviewOnly: true, card: "salmonella"},
     {id: "shigella", rank: "genus", label: "Shigella", parent: "noncoliforms", italic: true},
+    {id: "s_boydii", rank: "species", label: "S. boydii", parent: "shigella", overviewOnly: true, italic: true, card: "shigella"},
+    {id: "s_sonnei", rank: "species", label: "S. sonnei", parent: "shigella", overviewOnly: true, italic: true, card: "shigella"},
+    {id: "s_flexneri", rank: "species", label: "S. flexneri", parent: "shigella", overviewOnly: true, italic: true, card: "shigella"},
     {id: "proteus", rank: "genus", label: "Proteus", parent: "noncoliforms", italic: true},
+    {id: "p_vulgaris", rank: "species", label: "P. vulgaris", parent: "proteus", overviewOnly: true, italic: true, card: "proteus"},
+    {id: "p_mirabilis", rank: "species", label: "P. mirabilis", parent: "proteus", overviewOnly: true, italic: true, card: "proteus"},
     {id: "yersinia", rank: "genus", label: "Yersinia", parent: "noncoliforms", italic: true},
+    {id: "y_pestis", rank: "species", label: "Y. pestis", parent: "yersinia", overviewOnly: true, italic: true, card: "ypestis"},
     {id: "serratia", rank: "genus", label: "Serratia", parent: "noncoliforms", italic: true},
+    {id: "s_marcescens", rank: "species", label: "S. marcescens", parent: "serratia", overviewOnly: true, italic: true, card: "smarcescens"},
     {id: "vibrio", rank: "genus", label: "Vibrio", parent: "facultative", italic: true},
+    {id: "v_cholerae", rank: "species", label: "V. cholerae", parent: "vibrio", overviewOnly: true, italic: true, card: "vcholerae"},
     {id: "delta", rank: "class", label: "Delta", parent: "proteo", muted: "Deltaproteobacteria are not covered in BIO 112."},
     {id: "epsilon", rank: "class", label: "Epsilon", full: "Epsilonproteobacteria", parent: "proteo", color: "#be123c", blankLabel: true,
       traits: [
@@ -126,7 +148,9 @@ window.TOUR_DATA = {
         {t: "highly motile"}
       ]},
     {id: "campylobacter", rank: "genus", label: "Campylobacter", parent: "epsilon", italic: true},
+    {id: "c_jejuni", rank: "species", label: "C. jejuni", parent: "campylobacter", overviewOnly: true, italic: true, card: "cjejuni"},
     {id: "helicobacter", rank: "genus", label: "Helicobacter", parent: "epsilon", italic: true},
+    {id: "h_pylori", rank: "species", label: "H. pylori", parent: "helicobacter", overviewOnly: true, italic: true, card: "hpylori"},
     {id: "spirochetes", rank: "phylum", label: "Spirochetes", parent: "gramneg", color: "#a16207",
       traits: [
         {t: "all gram-negative (stain poorly)"},
@@ -134,15 +158,21 @@ window.TOUR_DATA = {
         {t: "axial filaments", blank: {pre: "moves with ", post: "", a: "axial filaments", o: ["axial filaments", "external flagella"], why: "Axial filaments are flagella that run inside the cell, between the inner and outer membranes."}}
       ]},
     {id: "treponema", rank: "genus", label: "Treponema", parent: "spirochetes", italic: true},
+    {id: "t_pallidum", rank: "species", label: "T. pallidum", parent: "treponema", overviewOnly: true, italic: true, card: "tpallidum"},
     {id: "borrelia", rank: "genus", label: "Borrelia", parent: "spirochetes", italic: true},
+    {id: "b_burgdorferi", rank: "species", label: "B. burgdorferi", parent: "borrelia", overviewOnly: true, italic: true, card: "bburgdorferi"},
+    {id: "b_relapsing", rank: "species", label: "relapsing fever spp.", parent: "borrelia", overviewOnly: true, card: "brf"},
     {id: "chlamydiae", rank: "phylum", label: "Chlamydiae", parent: "gramneg", color: "#a21caf",
       traits: [
         {t: "obligate intracellular", blank: {pre: "", post: "", a: "obligate intracellular", o: ["obligate intracellular", "free-living"], why: "Chlamydia can only reproduce inside host cells."}},
         {t: "two-form life cycle"}
       ]},
     {id: "chlamydia", rank: "genus", label: "Chlamydia", parent: "chlamydiae", italic: true},
+    {id: "c_trachomatis", rank: "species", label: "C. trachomatis", parent: "chlamydia", overviewOnly: true, italic: true, card: "ctrachomatis"},
+    {id: "c_pneumoniae", rank: "species", label: "C. pneumoniae", parent: "chlamydia", overviewOnly: true, italic: true, card: "cpneumoniae"},
     {id: "planctomycetes", rank: "phylum", label: "Planctomycetes", parent: "gramneg", color: "#4d7c0f"},
     {id: "fusobacteria", rank: "phylum", label: "Fusobacteria", parent: "gramneg", color: "#9a3412"},
+    {id: "fusobacterium", rank: "genus", label: "Fusobacterium", parent: "fusobacteria", overviewOnly: true, italic: true, card: "fuso"},
     {id: "cyanobacteria", rank: "phylum", label: "Cyanobacteria", parent: "gramneg", color: "#0d9488"},
     {id: "bacteroidetes", rank: "phylum", label: "Bacteroidetes", parent: "gramneg", color: "#57534e"},
     {id: "grampos", rank: "gram", label: "Gram-positive", parent: "bacteria", locked: "Coming soon: Firmicutes and Actinobacteria"}
