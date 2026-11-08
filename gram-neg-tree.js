@@ -6,14 +6,28 @@
    at a new data file with this same shape, and edit only the data.
 
    Shape:
+     ranks     the tree's levels, left to right. Each has one color, so every
+               box on that level (and its header) shares it. lab: true = a
+               lab-test grouping, not a taxonomic rank (drawn small and gray).
      tree      nodes in display order. parent = id of parent node.
-               traits = chips this node ADDS to the trait ribbon.
+               traits = chips this node ADDS to the trait box.
                A trait with "blank" becomes a dropdown in Test mode.
                blankLabel: true = branch name becomes a word-bank blank in Test mode.
                locked / muted = grayed out, with a message instead of a stop.
-     stops     tour order. node = where the tour sits on the tree.
-               also = extra tree nodes that open this stop.
-               orgs = organism cards (or phylum cards with type: "phylum").
+               overviewOnly: true = shown only on the bottom overview map.
+               card = the organism card a map-only node opens.
+     stops     tour order (one stop per organism that has its own slide).
+               node = where the tour sits on the tree. also = extra tree
+               nodes that open this stop. orgs = organism cards.
+     Organism card:
+       tests   lab results, drawn as flip tiles. k = test (see TESTS in the
+               page code), v = result, from = the branch it is inherited from.
+               The quick sort at the end of each card is built from these.
+       disease short (for Test mode choices), html, plus optional
+               flow (step-through), flips (tap to reveal), boxes (icons).
+       facts   icon boxes: spread, found in, at risk, prevention, diagnosis.
+       treat   treatment (Test mode makes it multiple choice).
+       extra   extra callout boxes. hook = memory hook.
      checkins  multiple choice, first option is correct (shuffled on screen).
      enteric   reference table (section 8 of the brief).
 
@@ -44,48 +58,45 @@ window.TOUR_DATA = {
   ],
   wordBank: ["Alpha", "Beta", "Gamma", "Epsilon", "Enterics", "Coliforms", "Non-coliforms"],
 
-  /* Columns of the tree, left to right. Every tree node has a rank from this list.
-     lab: true = a lab-test grouping we use to sort organisms, not a taxonomic rank. */
+  /* Columns of the tree, left to right, each with one color. */
   ranks: [
-    {id: "domain", label: "Domain / Kingdom"},
-    {id: "gram", label: "Gram stain", lab: true},
-    {id: "phylum", label: "Phylum"},
-    {id: "class", label: "Class"},
-    {id: "oxygen", label: "Oxygen", lab: true},
-    {id: "order", label: "Order"},
-    {id: "lactose", label: "Lactose", lab: true},
-    {id: "genus", label: "Genus"},
-    {id: "species", label: "Species"}
+    {id: "domain", label: "Domain / Kingdom", color: "#475569"},
+    {id: "gram", label: "Gram stain", lab: true, color: "#db2777"},
+    {id: "phylum", label: "Phylum", color: "#1d4ed8"},
+    {id: "class", label: "Class", color: "#0e7490"},
+    {id: "oxygen", label: "Oxygen", lab: true, minimal: true, color: "#94a3b8"},
+    {id: "order", label: "Order", color: "#7c3aed"},
+    {id: "lactose", label: "Lactose", lab: true, minimal: true, color: "#94a3b8"},
+    {id: "genus", label: "Genus", color: "#15803d"},
+    {id: "species", label: "Species", color: "#b45309"}
   ],
 
-  /* Bottom overview map: drops these lab-test columns so the whole tree fits on one screen.
-     Nodes with overviewOnly: true (the species from the Ch. 11 study guide) appear only on this map.
-     card = the organism card a map node opens; mapParent = its parent on the map when it differs. */
+  /* Bottom overview map: drops these lab-test columns so the whole tree fits on one screen. */
   overview: {skipRanks: ["oxygen", "lactose"]},
 
   tree: [
-    {id: "bacteria", rank: "domain", label: "Bacteria", color: "#64748b",
+    {id: "bacteria", rank: "domain", label: "Bacteria",
       traits: [
         {t: "prokaryote", blank: {pre: "", post: "", a: "prokaryote", o: ["prokaryote", "eukaryote"], why: "All bacteria are prokaryotes: no nucleus."}},
         {t: "no nucleus"}
       ]},
-    {id: "gramneg", rank: "gram", label: "Gram-negative", parent: "bacteria", color: "#db2777",
+    {id: "gramneg", rank: "gram", label: "Gram-negative", parent: "bacteria",
       traits: [
         {t: "pink Gram stain", blank: {pre: "", post: " Gram stain", a: "pink", o: ["pink", "purple"], why: "Thin peptidoglycan lets the crystal violet wash out, so gram-negatives pick up the pink safranin."}},
         {t: "thin peptidoglycan"},
         {t: "outer membrane with LPS"}
       ]},
-    {id: "proteo", rank: "phylum", label: "Proteobacteria", parent: "gramneg", color: "#2563eb",
+    {id: "proteo", rank: "phylum", label: "Proteobacteria", parent: "gramneg",
       traits: [{t: "largest group of bacteria"}, {t: "mostly chemoheterotrophs"}]},
-    {id: "alpha", rank: "class", label: "Alpha", full: "Alphaproteobacteria", parent: "proteo", color: "#b45309", blankLabel: true,
+    {id: "alpha", rank: "class", label: "Alpha", full: "Alphaproteobacteria", parent: "proteo", blankLabel: true,
       traits: [{t: "many grow with very low nutrients", blank: {pre: "many grow with very ", post: " nutrients", a: "low", o: ["low", "high"], why: "Many alphaproteobacteria can grow with very low nutrient levels."}}]},
     {id: "rickettsia", rank: "genus", label: "Rickettsia", parent: "alpha", italic: true},
     {id: "r_rickettsii", rank: "species", label: "R. rickettsii", parent: "rickettsia", overviewOnly: true, italic: true, card: "rrickettsii"},
-    {id: "beta", rank: "class", label: "Beta", full: "Betaproteobacteria", parent: "proteo", color: "#0e7490", blankLabel: true,
+    {id: "beta", rank: "class", label: "Beta", full: "Betaproteobacteria", parent: "proteo", blankLabel: true,
       note: "none extra (Beta is a grouping; the traits live on each genus)"},
     {id: "bordetella", rank: "genus", label: "Bordetella", parent: "beta", italic: true},
     {id: "b_pertussis", rank: "species", label: "B. pertussis", parent: "bordetella", overviewOnly: true, italic: true, card: "bpertussis"},
-    {id: "neisseria", rank: "genus", label: "Neisseria", parent: "beta", italic: true, color: "#4f46e5",
+    {id: "neisseria", rank: "genus", label: "Neisseria", parent: "beta", italic: true,
       traits: [
         {t: "gram-negative diplococci", blank: {pre: "gram-negative ", post: "", a: "diplococci", o: ["diplococci", "rods", "spirals"], why: "Neisseria are diplococci: round cells in pairs."}},
         {t: "obligate aerobes"},
@@ -94,39 +105,39 @@ window.TOUR_DATA = {
       ]},
     {id: "ngon", rank: "species", label: "N. gonorrhoeae", parent: "neisseria", italic: true},
     {id: "nmen", rank: "species", label: "N. meningitidis", parent: "neisseria", italic: true},
-    {id: "gamma", rank: "class", label: "Gamma", full: "Gammaproteobacteria", parent: "proteo", color: "#7c3aed", blankLabel: true,
+    {id: "gamma", rank: "class", label: "Gamma", full: "Gammaproteobacteria", parent: "proteo", blankLabel: true,
       traits: [{t: "largest proteobacteria class"}]},
-    {id: "obligate", rank: "oxygen", label: "Obligate aerobes", parent: "gamma", color: "#0f766e",
+    {id: "obligate", rank: "oxygen", label: "Obligate aerobes", parent: "gamma",
       traits: [{t: "require oxygen", blank: {pre: "", post: " oxygen", a: "require", o: ["require", "don't need"], why: "Obligate aerobes must have oxygen to grow."}}]},
     {id: "pseudomonas", rank: "genus", label: "Pseudomonas", parent: "obligate", italic: true},
     {id: "p_aeruginosa", rank: "species", label: "P. aeruginosa", parent: "pseudomonas", overviewOnly: true, italic: true, card: "paeruginosa"},
     {id: "p_fluorescens", rank: "species", label: "P. fluorescens", parent: "pseudomonas", overviewOnly: true, italic: true, card: "paeruginosa"},
     {id: "legionella", rank: "genus", label: "Legionella", parent: "obligate", italic: true},
     {id: "l_pneumophila", rank: "species", label: "L. pneumophila", parent: "legionella", overviewOnly: true, italic: true, card: "lpneumophila"},
-    {id: "facultative", rank: "oxygen", label: "Facultative anaerobes", parent: "gamma", color: "#15803d",
+    {id: "facultative", rank: "oxygen", label: "Facultative anaerobes", parent: "gamma",
       traits: [{t: "grow with or without oxygen", blank: {pre: "grow ", post: " oxygen", a: "with or without", o: ["with or without", "only with", "only without"], why: "Facultative anaerobes grow with or without oxygen."}}]},
-    {id: "enterics", rank: "order", label: "Enterics", parent: "facultative", color: "#ea580c", blankLabel: true,
+    {id: "enterics", rank: "order", label: "Enterics", parent: "facultative", blankLabel: true,
       traits: [
         {t: "rod"},
         {t: "ferment sugars"},
         {t: "oxidase −", blank: {pre: "oxidase ", post: "", a: "−", o: ["+", "−"], why: "Enterics are oxidase −. That is one way to tell them from Vibrio, which is oxidase +."}},
         {t: "live in the intestines"}
       ]},
-    {id: "coliforms", rank: "lactose", label: "Coliforms", parent: "enterics", color: "#9d174d", blankLabel: true,
+    {id: "coliforms", rank: "lactose", label: "Coliforms", parent: "enterics", blankLabel: true,
       traits: [{t: "lactose +", strong: true, blank: {pre: "lactose ", post: "", a: "+", o: ["+", "−"], why: "Coliforms are the enterics that ferment lactose: pink colonies on MacConkey agar."}}]},
-    {id: "escherichia", rank: "genus", label: "Escherichia", parent: "coliforms", overviewOnly: true, italic: true, card: "ecoli"},
-    {id: "ecoli", rank: "species", label: "E. coli", parent: "coliforms", mapParent: "escherichia", italic: true},
+    {id: "escherichia", rank: "genus", label: "Escherichia", parent: "coliforms", italic: true, card: "ecoli"},
+    {id: "ecoli", rank: "species", label: "E. coli", parent: "escherichia", italic: true},
     {id: "klebsiella", rank: "genus", label: "Klebsiella", parent: "coliforms", italic: true},
     {id: "k_pneumoniae", rank: "species", label: "K. pneumoniae", parent: "klebsiella", overviewOnly: true, italic: true, card: "kpneumoniae"},
     {id: "enterobacter", rank: "genus", label: "Enterobacter", parent: "coliforms", italic: true},
     {id: "e_aerogenes", rank: "species", label: "E. aerogenes", parent: "enterobacter", overviewOnly: true, italic: true, card: "enterobacter"},
     {id: "e_cloacae", rank: "species", label: "E. cloacae", parent: "enterobacter", overviewOnly: true, italic: true, card: "enterobacter"},
-    {id: "noncoliforms", rank: "lactose", label: "Non-coliforms", parent: "enterics", color: "#0369a1", blankLabel: true,
+    {id: "noncoliforms", rank: "lactose", label: "Non-coliforms", parent: "enterics", blankLabel: true,
       traits: [{t: "lactose −", strong: true, blank: {pre: "lactose ", post: "", a: "−", o: ["+", "−"], why: "Non-coliforms don't ferment lactose: colorless colonies on MacConkey agar."}}]},
     {id: "salmonella", rank: "genus", label: "Salmonella", parent: "noncoliforms", italic: true},
-    /* Enteritidis and Typhi are serovars of S. enterica; shown as the slides and study guide write them */
-    {id: "s_enteritidis", rank: "species", label: "S. Enteritidis", parent: "salmonella", overviewOnly: true, card: "salmonella"},
-    {id: "s_typhi", rank: "species", label: "S. Typhi", parent: "salmonella", overviewOnly: true, card: "salmonella"},
+    /* Enteritidis and Typhi are serovars of S. enterica; shown the way the slides and study guide write them */
+    {id: "s_enteritidis", rank: "species", label: "S. Enteritidis", parent: "salmonella", card: "salmonella"},
+    {id: "s_typhi", rank: "species", label: "S. Typhi", parent: "salmonella"},
     {id: "shigella", rank: "genus", label: "Shigella", parent: "noncoliforms", italic: true},
     {id: "s_boydii", rank: "species", label: "S. boydii", parent: "shigella", overviewOnly: true, italic: true, card: "shigella"},
     {id: "s_sonnei", rank: "species", label: "S. sonnei", parent: "shigella", overviewOnly: true, italic: true, card: "shigella"},
@@ -141,7 +152,7 @@ window.TOUR_DATA = {
     {id: "vibrio", rank: "genus", label: "Vibrio", parent: "facultative", italic: true},
     {id: "v_cholerae", rank: "species", label: "V. cholerae", parent: "vibrio", overviewOnly: true, italic: true, card: "vcholerae"},
     {id: "delta", rank: "class", label: "Delta", parent: "proteo", muted: "Deltaproteobacteria are not covered in BIO 112."},
-    {id: "epsilon", rank: "class", label: "Epsilon", full: "Epsilonproteobacteria", parent: "proteo", color: "#be123c", blankLabel: true,
+    {id: "epsilon", rank: "class", label: "Epsilon", full: "Epsilonproteobacteria", parent: "proteo", blankLabel: true,
       traits: [
         {t: "spiral or curved rods"},
         {t: "microaerophilic (need low oxygen)", blank: {pre: "oxygen: ", post: "", a: "microaerophilic", o: ["microaerophilic", "obligate aerobe", "obligate anaerobe"], why: "Epsilons are microaerophilic: they need oxygen, but less than the air has."}},
@@ -151,7 +162,7 @@ window.TOUR_DATA = {
     {id: "c_jejuni", rank: "species", label: "C. jejuni", parent: "campylobacter", overviewOnly: true, italic: true, card: "cjejuni"},
     {id: "helicobacter", rank: "genus", label: "Helicobacter", parent: "epsilon", italic: true},
     {id: "h_pylori", rank: "species", label: "H. pylori", parent: "helicobacter", overviewOnly: true, italic: true, card: "hpylori"},
-    {id: "spirochetes", rank: "phylum", label: "Spirochetes", parent: "gramneg", color: "#a16207",
+    {id: "spirochetes", rank: "phylum", label: "Spirochetes", parent: "gramneg",
       traits: [
         {t: "all gram-negative (stain poorly)"},
         {t: "corkscrew shape"},
@@ -160,9 +171,9 @@ window.TOUR_DATA = {
     {id: "treponema", rank: "genus", label: "Treponema", parent: "spirochetes", italic: true},
     {id: "t_pallidum", rank: "species", label: "T. pallidum", parent: "treponema", overviewOnly: true, italic: true, card: "tpallidum"},
     {id: "borrelia", rank: "genus", label: "Borrelia", parent: "spirochetes", italic: true},
-    {id: "b_burgdorferi", rank: "species", label: "B. burgdorferi", parent: "borrelia", overviewOnly: true, italic: true, card: "bburgdorferi"},
-    {id: "b_relapsing", rank: "species", label: "relapsing fever spp.", parent: "borrelia", overviewOnly: true, card: "brf"},
-    {id: "chlamydiae", rank: "phylum", label: "Chlamydiae", parent: "gramneg", color: "#a21caf",
+    {id: "b_burgdorferi", rank: "species", label: "B. burgdorferi", parent: "borrelia", italic: true},
+    {id: "b_relapsing", rank: "species", label: "relapsing fever spp.", parent: "borrelia"},
+    {id: "chlamydiae", rank: "phylum", label: "Chlamydiae", parent: "gramneg",
       traits: [
         {t: "obligate intracellular", blank: {pre: "", post: "", a: "obligate intracellular", o: ["obligate intracellular", "free-living"], why: "Chlamydia can only reproduce inside host cells."}},
         {t: "two-form life cycle"}
@@ -170,16 +181,16 @@ window.TOUR_DATA = {
     {id: "chlamydia", rank: "genus", label: "Chlamydia", parent: "chlamydiae", italic: true},
     {id: "c_trachomatis", rank: "species", label: "C. trachomatis", parent: "chlamydia", overviewOnly: true, italic: true, card: "ctrachomatis"},
     {id: "c_pneumoniae", rank: "species", label: "C. pneumoniae", parent: "chlamydia", overviewOnly: true, italic: true, card: "cpneumoniae"},
-    {id: "planctomycetes", rank: "phylum", label: "Planctomycetes", parent: "gramneg", color: "#4d7c0f"},
-    {id: "fusobacteria", rank: "phylum", label: "Fusobacteria", parent: "gramneg", color: "#9a3412"},
-    {id: "fusobacterium", rank: "genus", label: "Fusobacterium", parent: "fusobacteria", overviewOnly: true, italic: true, card: "fuso"},
-    {id: "cyanobacteria", rank: "phylum", label: "Cyanobacteria", parent: "gramneg", color: "#0d9488"},
-    {id: "bacteroidetes", rank: "phylum", label: "Bacteroidetes", parent: "gramneg", color: "#57534e"},
+    {id: "planctomycetes", rank: "phylum", label: "Planctomycetes", parent: "gramneg"},
+    {id: "fusobacteria", rank: "phylum", label: "Fusobacteria", parent: "gramneg"},
+    {id: "fusobacterium", rank: "genus", label: "Fusobacterium", parent: "fusobacteria", italic: true, card: "fuso"},
+    {id: "cyanobacteria", rank: "phylum", label: "Cyanobacteria", parent: "gramneg"},
+    {id: "bacteroidetes", rank: "phylum", label: "Bacteroidetes", parent: "gramneg"},
     {id: "grampos", rank: "gram", label: "Gram-positive", parent: "bacteria", locked: "Coming soon: Firmicutes and Actinobacteria"}
   ],
 
   stops: [
-    /* ---------- 1 ---------- */
+    /* ---------- The big picture ---------- */
     {id: "big-tree", node: "bacteria", title: "The Big Tree", full: true,
       lesson: [
         "All bacteria belong to the domain <b>Bacteria</b>. There are about 40 known phyla, and that number keeps changing as we discover more.",
@@ -187,7 +198,6 @@ window.TOUR_DATA = {
         "Gram stain groups aren't a perfect family tree, but they're the first branch point we use in lab, so we'll use them to organize this tour.",
         "Today: the <b>gram-negatives</b>. The gram-positives are coming in the next module."
       ]},
-    /* ---------- 2 ---------- */
     {id: "gram-negative", node: "gramneg", title: "Gram-negative bacteria", diagram: "gramwall",
       lesson: [
         "Gram-negative cells have a <b>thin peptidoglycan layer</b> and an <b>outer membrane</b>. The crystal violet washes out during decolorizing, so the cells pick up the pink safranin.",
@@ -195,7 +205,6 @@ window.TOUR_DATA = {
         "The outer membrane is also a barrier that keeps some antibiotics out.",
         "<b>Major gram-negative phyla:</b> Proteobacteria (the big one!), Spirochetes, Chlamydiae, Planctomycetes, Fusobacteria, Cyanobacteria, Bacteroidetes."
       ]},
-    /* ---------- 3 ---------- */
     {id: "proteobacteria", node: "proteo", title: "Proteobacteria",
       lesson: [
         "Proteobacteria are the <b>largest</b> group of bacteria.",
@@ -203,127 +212,162 @@ window.TOUR_DATA = {
         "Proteobacteria are split into <b>five classes</b> named with Greek letters: <b>Alpha, Beta, Gamma, Delta, Epsilon</b>.",
         "We'll cover four of them. Delta isn't on our list."
       ]},
-    /* ---------- 4 ---------- */
+
+    /* ---------- Alpha ---------- */
     {id: "alpha", node: "alpha", title: "Alphaproteobacteria",
       lesson: [
         "Many alphaproteobacteria can grow with very low nutrient levels.",
         "Some have unusual shapes, like stalks or buds (<i>Caulobacter</i>).",
         "Some are <b>obligate intracellular parasites</b>: they can only grow inside a host cell. That's our pathogen here."
-      ],
+      ]},
+    {id: "rickettsia", node: "rickettsia", title: "<i>Rickettsia rickettsii</i>",
       orgs: [
-        {id: "rrickettsii", node: "rickettsia", name: "Rickettsia rickettsii", shape: "rod",
-          only: ["tiny rod", "obligate intracellular"],
-          ids: [
-            {t: "tiny gram-negative rod"},
-            {t: "obligate intracellular (won't grow on agar plates)", q: "Grows", a: "only inside host cells", o: ["only inside host cells", "on regular agar plates"]}
+        {id: "rrickettsii", node: "rickettsia", name: "Rickettsia rickettsii", shape: "rod", emoji: "🕷️",
+          tests: [
+            {k: "gram", v: "−", from: "gramneg"},
+            {k: "shape", v: "tiny rod"},
+            {k: "media", v: "only inside host cells", note: "obligate intracellular: won't grow on agar plates"}
           ],
           disease: {short: "Rocky Mountain spotted fever", html: "Rocky Mountain spotted fever"},
-          spread: {label: "How it spreads", html: "tick bites"},
-          treat: {label: "Treatment", short: "doxycycline", html: "doxycycline", drugs: ["doxycycline"]}}
+          facts: [{ic: "🕷️", h: "How it spreads", t: "tick bites"}],
+          treat: {short: "doxycycline", html: "doxycycline", drugs: ["doxycycline"]}}
       ]},
-    /* ---------- 5 ---------- */
-    {id: "beta-bordetella", node: "beta", title: "Betaproteobacteria and <i>Bordetella</i>", also: ["bordetella"],
+
+    /* ---------- Beta ---------- */
+    {id: "beta", node: "beta", title: "Betaproteobacteria",
       lesson: [
-        "Our two beta genera are <b><i>Bordetella</i></b> and <b><i>Neisseria</i></b>.",
-        "<i>Bordetella</i> is a small gram-negative <b>coccobacillus</b> (a very short rod, almost round)."
-      ],
-      orgs: [
-        {id: "bpertussis", node: "bordetella", name: "Bordetella pertussis", shape: "coccobacillus",
-          only: ["coccobacillus", "aerobic", "oxidase +", "catalase +"],
-          ids: [
-            {t: "small gram-negative coccobacillus", q: "Shape", a: "coccobacillus", o: ["coccobacillus", "diplococcus", "spiral"]},
-            {t: "aerobic"},
-            {t: "oxidase +", q: "Oxidase", a: "+", o: ["+", "−"]},
-            {t: "catalase +", q: "Catalase", a: "+", o: ["+", "−"]},
-            {t: "needs special media to grow"}
-          ],
-          disease: {short: "whooping cough", html: "whooping cough (\"100 day cough\"); most dangerous for infants under 6 months",
-            more: {h: "How it causes disease", items: [
-              "<b>Tracheal cytotoxin</b> kills ciliated airway cells → mucus builds up → coughing fits",
-              "<b>Pertussis toxin</b> weakens the immune response",
-              "The \"whoop\" is the gasp for air after a coughing fit"
-            ]}},
-          spread: {label: "How it spreads", html: "respiratory droplets"},
-          treat: {label: "Treatment / prevention", short: "azithromycin or clarithromycin; DTaP / Tdap vaccine", html: "azithromycin or clarithromycin (best early); vaccine (DTaP / Tdap)", drugs: ["azithromycin", "clarithromycin", "vaccine"]},
-          extra: [{h: "Why cases are rising", items: ["waning vaccine immunity", "better detection", "vaccine hesitancy"]}]}
+        "Our two beta genera are <b><i>Bordetella</i></b> and <b><i>Neisseria</i></b>."
       ]},
-    /* ---------- 6 ---------- */
+    {id: "bordetella", node: "bordetella", title: "<i>Bordetella pertussis</i>",
+      lesson: ["<i>Bordetella</i> is a small gram-negative <b>coccobacillus</b> (a very short rod, almost round)."],
+      orgs: [
+        {id: "bpertussis", node: "bordetella", name: "Bordetella pertussis", shape: "coccobacillus", emoji: "🫁",
+          tests: [
+            {k: "gram", v: "−", from: "gramneg"},
+            {k: "shape", v: "coccobacillus"},
+            {k: "oxygen", v: "aerobic"},
+            {k: "oxidase", v: "+"},
+            {k: "catalase", v: "+"},
+            {k: "media", v: "special media", note: "needs special media to grow"}
+          ],
+          disease: {short: "whooping cough", html: "whooping cough (\"100 day cough\")",
+            flow: {title: "How it causes disease", steps: [
+              "<b>Tracheal cytotoxin</b>",
+              "kills ciliated airway cells",
+              "mucus builds up",
+              "coughing fits",
+              "the \"whoop\" is the gasp for air after a coughing fit"
+            ], side: "<b>Pertussis toxin</b> weakens the immune response"}},
+          facts: [
+            {ic: "💨", h: "How it spreads", t: "respiratory droplets"},
+            {ic: "👶", h: "Most at risk", t: "infants under 6 months", warn: true},
+            {ic: "💉", h: "Prevention", t: "vaccine (DTaP / Tdap)"}
+          ],
+          treat: {short: "azithromycin or clarithromycin", html: "azithromycin or clarithromycin (best early)", drugs: ["azithromycin", "clarithromycin"]},
+          extra: [{h: "📈 Why cases are rising", boxes: [{ic: "⏳", t: "waning vaccine immunity"}, {ic: "🔍", t: "better detection"}, {ic: "🚫", t: "vaccine hesitancy"}]}]}
+      ]},
     {id: "neisseria", node: "neisseria", title: "<i>Neisseria</i>",
       lesson: [
         "<i>Neisseria</i> are <b>diplococci</b>: round cells in pairs (they look like two kidney beans).",
         "Both species share the same traits from this branch. The <b>sugar fermentation test</b> tells them apart:<ul><li><i>N. gonorrhoeae</i> ferments <b>glucose only</b></li><li><i>N. meningitidis</i> ferments <b>glucose AND maltose</b></li></ul>"
-      ],
+      ]},
+    {id: "n-gonorrhoeae", node: "ngon", title: "<i>Neisseria gonorrhoeae</i>",
       orgs: [
-        {id: "ngon", node: "ngon", name: "Neisseria gonorrhoeae", shape: "diplococcus",
-          only: ["glucose only"],
-          ids: [{t: "ferments glucose only (not maltose)", q: "Sugars fermented", a: "glucose only", o: ["glucose only", "glucose and maltose", "lactose", "none"]}],
+        {id: "ngon", node: "ngon", name: "Neisseria gonorrhoeae", shape: "diplococcus", emoji: "⚠️",
+          tests: [
+            {k: "gram", v: "−", from: "gramneg"},
+            {k: "shape", v: "diplococci", from: "neisseria"},
+            {k: "oxygen", v: "obligate aerobe", from: "neisseria"},
+            {k: "oxidase", v: "+", from: "neisseria"},
+            {k: "media", v: "chocolate agar + CO₂", from: "neisseria"},
+            {k: "sugars", v: "glucose only"}
+          ],
           disease: {short: "gonorrhea", html: "gonorrhea",
-            more: {h: "Symptoms", items: [
-              "<b>Women:</b> often no symptoms, possible discharge, PID",
-              "<b>Men:</b> painful urination, pus-like discharge",
-              "<b>Newborns:</b> eye infection that can cause blindness"
-            ]}},
-          spread: {label: "How it spreads", html: "sexual contact; mother to infant during birth"},
-          treat: {label: "Treatment", short: "ceftriaxone", html: "ceftriaxone (resistance keeps evolving!)", drugs: ["ceftriaxone"]},
-          extra: [{h: "No vaccine", items: ["It has high antigenic variation (it keeps changing its surface proteins)."]}]},
-        {id: "nmen", node: "nmen", name: "Neisseria meningitidis", shape: "diplococcus",
-          only: ["glucose + maltose"],
-          ids: [{t: "ferments glucose AND maltose", q: "Sugars fermented", a: "glucose and maltose", o: ["glucose only", "glucose and maltose", "lactose", "none"]}],
-          disease: {short: "meningococcal meningitis", html: "meningococcal meningitis. Fever, headache, stiff neck, nausea, purple rash. Can be fatal, even with treatment."},
-          spread: {label: "How it spreads", html: "respiratory droplets, close contact. Lives in the human nasopharynx.",
-            more: {h: "At risk", items: ["young children, teens, people in dorms or the military"]}},
-          treat: {label: "Treatment / prevention", short: "ceftriaxone; vaccine", html: "ceftriaxone; vaccine", drugs: ["ceftriaxone", "vaccine"]}}
+            flips: [
+              {f: "👩 Women", b: "often no symptoms, possible discharge, PID"},
+              {f: "👨 Men", b: "painful urination, pus-like discharge"},
+              {f: "👶 Newborns", b: "eye infection that can cause blindness"}
+            ]},
+          facts: [{ic: "🤝", h: "How it spreads", t: "sexual contact; mother to infant during birth"}],
+          treat: {short: "ceftriaxone", html: "ceftriaxone (resistance keeps evolving!)", drugs: ["ceftriaxone"]},
+          extra: [{h: "🚫 No vaccine", boxes: [{ic: "🎭", t: "It has high antigenic variation (it keeps changing its surface proteins)."}]}]}
+      ]},
+    {id: "n-meningitidis", node: "nmen", title: "<i>Neisseria meningitidis</i>",
+      orgs: [
+        {id: "nmen", node: "nmen", name: "Neisseria meningitidis", shape: "diplococcus", emoji: "🧠",
+          tests: [
+            {k: "gram", v: "−", from: "gramneg"},
+            {k: "shape", v: "diplococci", from: "neisseria"},
+            {k: "oxygen", v: "obligate aerobe", from: "neisseria"},
+            {k: "oxidase", v: "+", from: "neisseria"},
+            {k: "media", v: "chocolate agar + CO₂", from: "neisseria"},
+            {k: "sugars", v: "glucose + maltose"}
+          ],
+          disease: {short: "meningococcal meningitis", html: "meningococcal meningitis. Can be fatal, even with treatment.",
+            boxes: [{ic: "🌡️", t: "fever"}, {ic: "🤕", t: "headache"}, {ic: "🦒", t: "stiff neck"}, {ic: "🤢", t: "nausea"}, {ic: "🟣", t: "purple rash"}]},
+          facts: [
+            {ic: "💨", h: "How it spreads", t: "respiratory droplets, close contact"},
+            {ic: "👃", h: "Lives in", t: "the human nasopharynx"},
+            {ic: "🏫", h: "Most at risk", t: "young children, teens, people in dorms or the military", warn: true},
+            {ic: "💉", h: "Prevention", t: "vaccine"}
+          ],
+          treat: {short: "ceftriaxone", html: "ceftriaxone", drugs: ["ceftriaxone"]}}
       ],
       checkin: {
         q: "An oxidase +, gram-negative diplococcus ferments glucose and maltose. What is it?",
         o: ["<i>N. meningitidis</i>", "<i>N. gonorrhoeae</i>", "<i>Bordetella pertussis</i>", "<i>E. coli</i>"],
         w: "Both <i>Neisseria</i> are oxidase + diplococci. Only <i>N. meningitidis</i> ferments maltose."
       }},
-    /* ---------- 7 ---------- */
+
+    /* ---------- Gamma ---------- */
     {id: "gamma", node: "gamma", title: "Gammaproteobacteria",
       lesson: [
         "Gamma has the most pathogens on our list. We split it by <b>oxygen needs</b>:<ul><li><b>Obligate aerobes:</b> <i>Pseudomonas</i>, <i>Legionella</i></li><li><b>Facultative anaerobes:</b> the enterics and <i>Vibrio</i></li></ul>"
       ]},
-    /* ---------- 8 ---------- */
-    {id: "pseudomonas", node: "obligate", title: "Obligate aerobes: <i>Pseudomonas</i>",
+    {id: "pseudomonas", node: "pseudomonas", title: "Obligate aerobes: <i>Pseudomonas</i>", also: ["obligate"],
       lesson: [
         "<i>Pseudomonas</i> is everywhere in soil and water.",
         "It is an <b>opportunistic pathogen</b>: it mostly infects people whose defenses are already down, like patients with burns or wounds."
       ],
       orgs: [
-        {id: "paeruginosa", node: "pseudomonas", name: "Pseudomonas aeruginosa", shape: "rod",
-          only: ["lactose −", "oxidase +", "polar flagella", "greenish, pearly colonies"],
-          ids: [
-            {t: "gram-negative rod"},
-            {t: "obligate aerobe", q: "Oxygen", a: "obligate aerobe", o: ["obligate aerobe", "facultative anaerobe", "microaerophilic"]},
-            {t: "lactose −", q: "Lactose", a: "−", o: ["+", "−"]},
-            {t: "oxidase +", q: "Oxidase", a: "+", o: ["+", "−"]},
-            {t: "polar flagella"},
-            {t: "greenish, pearly colonies"}
+        {id: "paeruginosa", node: "pseudomonas", name: "Pseudomonas aeruginosa", shape: "rod", emoji: "🔥",
+          tests: [
+            {k: "gram", v: "−", from: "gramneg"},
+            {k: "shape", v: "rod"},
+            {k: "oxygen", v: "obligate aerobe", from: "obligate"},
+            {k: "lactose", v: "−"},
+            {k: "oxidase", v: "+"},
+            {k: "feature", v: "polar flagella", ic: "〰️"},
+            {k: "pigment", v: "greenish, pearly colonies"}
           ],
-          disease: {short: "burn and wound infections, sepsis, swimmer's ear", html: "burn and wound infections, sepsis (hospitals), eye infections (contact lenses), swimmer's ear, UTIs", tags: ["wound", "sepsis", "uti", "eye", "hospital"]},
-          spread: {label: "Found in", html: "soil, water, hospitals"},
-          extra: [{h: "Related species", items: ["<i>P. fluorescens</i> is a major cause of refrigerated food spoilage"]}]}
+          disease: {short: "burn and wound infections, sepsis, swimmer's ear", html: "opportunistic infections:", tags: ["wound", "sepsis", "uti", "eye", "hospital"],
+            boxes: [{ic: "🔥", t: "burn and wound infections"}, {ic: "🩸", t: "sepsis (hospitals)"}, {ic: "👁️", t: "eye infections (contact lenses)"}, {ic: "👂", t: "swimmer's ear"}, {ic: "🚽", t: "UTIs"}]},
+          facts: [{ic: "🌍", h: "Found in", t: "soil, water, hospitals"}],
+          extra: [{h: "🍓 Related species", boxes: [{ic: "🧊", t: "<i>P. fluorescens</i> is a major cause of refrigerated food spoilage"}]}]}
           /* TODO: brief gives no treatment for P. aeruginosa */
       ]},
-    /* ---------- 9 ---------- */
-    {id: "legionella", node: "legionella", title: "<i>Legionella</i>",
+    {id: "legionella", node: "legionella", title: "<i>Legionella pneumophila</i>",
       lesson: [
         "<i>Legionella</i> was named after a 1976 pneumonia outbreak at an American Legion convention (\"Legionnaires' disease\").",
         "It doesn't grow on the usual agar media. It needs special media to isolate and culture.",
         "In nature, it lives in water and <b>reproduces inside amoebae</b>."
       ],
       orgs: [
-        {id: "lpneumophila", node: "legionella", name: "Legionella pneumophila", shape: "rod",
-          only: ["needs special media"],
-          ids: [
-            {t: "gram-negative rod"},
-            {t: "obligate aerobe", q: "Oxygen", a: "obligate aerobe", o: ["obligate aerobe", "facultative anaerobe", "microaerophilic"]},
-            {t: "needs special media", q: "Media", a: "needs special media", o: ["needs special media", "grows on the usual agar"]}
+        {id: "lpneumophila", node: "legionella", name: "Legionella pneumophila", shape: "rod", emoji: "🛁",
+          tests: [
+            {k: "gram", v: "−", from: "gramneg"},
+            {k: "shape", v: "rod"},
+            {k: "oxygen", v: "obligate aerobe", from: "obligate"},
+            {k: "media", v: "special media", note: "needs special media"}
           ],
-          disease: {short: "Legionnaires' disease", html: "Legionnaires' disease (pneumonia)", tags: ["pneumonia"]},
-          spread: {label: "How it spreads", html: "breathing in contaminated water droplets from building water systems (cooling towers, hot tubs, showers). <b>Not spread person to person.</b>",
-            more: {h: "At risk", items: ["hospital patients, immunocompromised people, people exposed to contaminated water systems"]}}}
+          disease: {short: "Legionnaires' disease", html: "Legionnaires' disease (pneumonia)", tags: ["pneumonia"],
+            flow: {title: "How people get it", steps: [
+              "lives in water, <b>reproduces inside amoebae</b>",
+              "building water systems: cooling towers, hot tubs, showers",
+              "people breathe in contaminated water droplets",
+              "Legionnaires' disease (pneumonia)"
+            ], side: "<b>Not spread person to person.</b>"}},
+          facts: [{ic: "🏥", h: "Most at risk", t: "hospital patients, immunocompromised people, people exposed to contaminated water systems", warn: true}]}
           /* TODO: brief gives no treatment for Legionella */
       ],
       checkin: {
@@ -331,7 +375,8 @@ window.TOUR_DATA = {
         o: ["<i>Legionella</i>", "<i>Neisseria meningitidis</i>", "<i>Bordetella pertussis</i>", "<i>Rickettsia</i>"],
         w: "<i>Legionella</i> spreads from contaminated water droplets, not from person to person."
       }},
-    /* ---------- 10 ---------- */
+
+    /* ---------- Enterics ---------- */
     {id: "enterics", node: "enterics", title: "Facultative anaerobes and the Enterics", also: ["facultative"], diagram: "macconkey", entericTable: true,
       lesson: [
         "The <b>enterics</b> (order Enterobacteriales) live in the <b>intestinal tracts</b> of humans and animals.",
@@ -339,38 +384,59 @@ window.TOUR_DATA = {
         "They all look alike under the microscope, so we ID them with <b>biochemical tests</b>. The first big split is <b>lactose fermentation</b>:<ul><li><b>Coliforms</b> ferment lactose → pink colonies on MacConkey agar</li><li><b>Non-coliforms</b> don't → colorless colonies on MacConkey agar</li></ul>",
         "The next tool is the <b>IMViC</b> panel: <b>I</b>ndole, <b>M</b>ethyl red, <b>V</b>oges-Proskauer, <b>C</b>itrate. Results are written in that order, like ++−−."
       ]},
-    /* ---------- 11 ---------- */
     {id: "coliforms", node: "coliforms", title: "Coliforms", entericTable: true,
       lesson: [
         "All three coliforms ferment lactose. To tell them apart, use IMViC:<ul><li><i>E. coli</i> is <b>++−−</b></li><li><i>Klebsiella</i> and <i>Enterobacter</i> are the opposite: <b>−−++</b></li></ul>"
-      ],
+      ]},
+    {id: "e-coli", node: "ecoli", title: "<i>Escherichia coli</i>", also: ["escherichia"], entericTable: true,
       orgs: [
-        {id: "ecoli", node: "ecoli", name: "Escherichia coli", shape: "rod",
-          only: ["IMViC ++−−"],
-          ids: [
-            {t: "IMViC ++−−", q: "IMViC", a: "++−−", o: ["++−−", "−−++", "−+−+", "−+−−"]},
-            {t: "negative for all the other tests we run in our lab"}
+        {id: "ecoli", node: "ecoli", name: "Escherichia coli", shape: "rod", emoji: "🚽",
+          tests: [
+            {k: "gram", v: "−", from: "gramneg"},
+            {k: "shape", v: "rod", from: "enterics"},
+            {k: "oxygen", v: "facultative anaerobe", from: "facultative"},
+            {k: "oxidase", v: "−", from: "enterics"},
+            {k: "lactose", v: "+", from: "coliforms"},
+            {k: "imvic", v: "++−−"},
+            {k: "feature", v: "negative for all the other tests we run in our lab", ic: "➖"}
           ],
-          disease: {short: "#1 cause of UTIs and traveler's diarrhea", html: "#1 cause of UTIs and traveler's diarrhea", tags: ["uti", "gi"]},
-          spread: {label: "Found in", html: "the intestines (normal flora)"},
-          hook: "UTIs are more common in females because of the shorter urethra."},
+          disease: {short: "#1 cause of UTIs and traveler's diarrhea", html: "the #1 cause of:", tags: ["uti", "gi"],
+            boxes: [{ic: "🚽", t: "UTIs"}, {ic: "✈️", t: "traveler's diarrhea"}]},
+          facts: [{ic: "🏠", h: "Found in", t: "the intestines (normal flora)"}],
+          hook: "UTIs are more common in females because of the shorter urethra."}
           /* TODO: brief gives no treatment for E. coli */
-        {id: "kpneumoniae", node: "klebsiella", name: "Klebsiella pneumoniae", shape: "rod",
-          only: ["IMViC −−++", "non-motile", "urease + (slow)"],
-          ids: [
-            {t: "IMViC −−++", q: "IMViC", a: "−−++", o: ["++−−", "−−++", "−+−+", "−+−−"]},
-            {t: "non-motile"},
-            {t: "urease + (slow)", q: "Urease", a: "+ (slow)", o: ["+ (slow)", "−"]}
+      ]},
+    {id: "klebsiella", node: "klebsiella", title: "<i>Klebsiella pneumoniae</i>", entericTable: true,
+      orgs: [
+        {id: "kpneumoniae", node: "klebsiella", name: "Klebsiella pneumoniae", shape: "rod", emoji: "🫁",
+          tests: [
+            {k: "gram", v: "−", from: "gramneg"},
+            {k: "shape", v: "rod", from: "enterics"},
+            {k: "oxygen", v: "facultative anaerobe", from: "facultative"},
+            {k: "oxidase", v: "−", from: "enterics"},
+            {k: "lactose", v: "+", from: "coliforms"},
+            {k: "imvic", v: "−−++"},
+            {k: "feature", v: "non-motile", ic: "⛔"},
+            {k: "urease", v: "+ slow"}
           ],
           disease: {short: "aspiration pneumonia", html: "aspiration pneumonia, often hospital-acquired", tags: ["pneumonia", "hospital"]},
-          spread: {label: "Found in", html: "soil and water (it fixes nitrogen)"}},
-        {id: "enterobacter", node: "enterobacter", name: "Enterobacter", shape: "rod",
-          only: ["IMViC −−++"],
-          ids: [{t: "IMViC −−++", q: "IMViC", a: "−−++", o: ["++−−", "−−++", "−+−+", "−+−−"]}],
+          facts: [{ic: "🌱", h: "Found in", t: "soil and water (it fixes nitrogen)"}]}
+      ]},
+    {id: "enterobacter", node: "enterobacter", title: "<i>Enterobacter</i>", entericTable: true,
+      orgs: [
+        {id: "enterobacter", node: "enterobacter", name: "Enterobacter", shape: "rod", emoji: "🏥",
+          tests: [
+            {k: "gram", v: "−", from: "gramneg"},
+            {k: "shape", v: "rod", from: "enterics"},
+            {k: "oxygen", v: "facultative anaerobe", from: "facultative"},
+            {k: "oxidase", v: "−", from: "enterics"},
+            {k: "lactose", v: "+", from: "coliforms"},
+            {k: "imvic", v: "−−++"}
+          ],
           disease: {short: "hospital-acquired infections", html: "hospital-acquired infections", tags: ["hospital"]},
-          extra: [{h: "Species", items: [
-            "<i>E. aerogenes</i> (now called <i>Klebsiella aerogenes</i>): urease −",
-            "<i>E. cloacae</i>: urease + (slow)"
+          extra: [{h: "🔬 Two species: tap to reveal the urease result", flips: [
+            {f: "<i>E. aerogenes</i><br><small>(now called <i>Klebsiella aerogenes</i>)</small>", b: "urease −"},
+            {f: "<i>E. cloacae</i>", b: "urease + (slow)"}
           ]}]}
       ],
       checkin: {
@@ -378,214 +444,314 @@ window.TOUR_DATA = {
         o: ["<i>Klebsiella</i> or <i>Enterobacter</i>", "<i>E. coli</i>", "<i>Salmonella</i>", "<i>Proteus</i>"],
         w: "<i>E. coli</i> is ++−−. <i>Klebsiella</i> and <i>Enterobacter</i> share the opposite pattern, −−++."
       }},
-    /* ---------- 12 ---------- */
     {id: "non-coliforms", node: "noncoliforms", title: "Non-coliforms", entericTable: true,
       lesson: [
         "Non-coliforms don't ferment lactose, so they make colorless colonies on MacConkey agar.",
         "To tell them apart, look at <b>H₂S</b>, <b>citrate</b>, and <b>urease</b>.",
         "Watch for the classic look-alike pair: <b><i>Salmonella</i></b> (H₂S +, citrate +) vs <b><i>Shigella</i></b> (H₂S −, citrate −)."
-      ],
+      ]},
+    {id: "salmonella", node: "s_enteritidis", title: "<i>Salmonella</i>", also: ["salmonella"], entericTable: true,
       orgs: [
-        {id: "salmonella", node: "salmonella", name: "Salmonella", shape: "rod",
-          only: ["IMViC −+−+", "H₂S +", "citrate +"],
-          ids: [
-            {t: "IMViC −+−+", q: "IMViC", a: "−+−+", o: ["++−−", "−−++", "−+−+", "−+−−"]},
-            {t: "H₂S +", q: "H₂S", a: "+", o: ["+", "−"]},
-            {t: "citrate +", q: "Citrate", a: "+", o: ["+", "−"]}
+        {id: "salmonella", node: "s_enteritidis", name: "Salmonella", sub: "(S. enterica serovar Enteritidis)", shape: "rod", emoji: "🍗",
+          tests: [
+            {k: "gram", v: "−", from: "gramneg"},
+            {k: "shape", v: "rod", from: "enterics"},
+            {k: "oxygen", v: "facultative anaerobe", from: "facultative"},
+            {k: "oxidase", v: "−", from: "enterics"},
+            {k: "lactose", v: "−", from: "noncoliforms"},
+            {k: "imvic", v: "−+−+"},
+            {k: "h2s", v: "+"},
+            {k: "citrate", v: "+"}
           ],
-          disease: {short: "salmonellosis (food poisoning) and typhoid fever", html: "Species and diseases:",
-            more: {items: [
-              "<i>S. enterica</i> serovar Enteritidis: food poisoning (salmonellosis)",
-              "<i>S.</i> Typhi: typhoid fever, the most severe <i>Salmonella</i> illness. Prevented by clean water and sanitation. Exception: <i>S.</i> Typhi is citrate − with weak H₂S."
-            ]}, tags: ["gi"]},
-          spread: {label: "Found in", html: "poultry and other animals (raw meat)"}},
-        {id: "shigella", node: "shigella", name: "Shigella", shape: "rod",
-          only: ["H₂S −", "citrate −"],
-          ids: [
-            {t: "H₂S −", q: "H₂S", a: "−", o: ["+", "−"]},
-            {t: "citrate − (opposite of <i>Salmonella</i>)", q: "Citrate", a: "−", o: ["+", "−"]}
+          disease: {short: "salmonellosis (food poisoning)", html: "food poisoning (salmonellosis)", tags: ["gi"]},
+          facts: [{ic: "🍗", h: "Found in", t: "poultry and other animals (raw meat)"}],
+          extra: [{h: "➡️ Next stop", boxes: [{ic: "🌡️", t: "<i>S.</i> Typhi causes typhoid fever, the most severe <i>Salmonella</i> illness."}]}]}
+      ]},
+    {id: "s-typhi", node: "s_typhi", title: "<i>Salmonella</i> Typhi", entericTable: true,
+      orgs: [
+        {id: "styphi", node: "s_typhi", name: "Salmonella", sub: "Typhi", shape: "rod", emoji: "🌡️",
+          tests: [
+            {k: "gram", v: "−", from: "gramneg"},
+            {k: "shape", v: "rod", from: "enterics"},
+            {k: "oxidase", v: "−", from: "enterics"},
+            {k: "lactose", v: "−", from: "noncoliforms"},
+            {k: "citrate", v: "−", note: "the exception in Salmonella"},
+            {k: "h2s", v: "weak", note: "the exception in Salmonella"}
+          ],
+          disease: {short: "typhoid fever", html: "typhoid fever, the most severe <i>Salmonella</i> illness"},
+          facts: [{ic: "🚰", h: "Prevention", t: "clean water and sanitation"}]}
+      ]},
+    {id: "shigella", node: "shigella", title: "<i>Shigella</i>", entericTable: true,
+      orgs: [
+        {id: "shigella", node: "shigella", name: "Shigella", shape: "rod", emoji: "🧻",
+          tests: [
+            {k: "gram", v: "−", from: "gramneg"},
+            {k: "shape", v: "rod", from: "enterics"},
+            {k: "oxygen", v: "facultative anaerobe", from: "facultative"},
+            {k: "oxidase", v: "−", from: "enterics"},
+            {k: "lactose", v: "−", from: "noncoliforms"},
+            {k: "h2s", v: "−", note: "opposite of Salmonella"},
+            {k: "citrate", v: "−", note: "opposite of Salmonella"}
           ],
           disease: {short: "shigellosis (bacillary dysentery)", html: "shigellosis (bacillary dysentery)", tags: ["gi"]},
-          spread: {label: "Found in", html: "humans only"},
-          extra: [{h: "Species", items: ["<i>S. sonnei</i>, <i>S. boydii</i>, <i>S. flexneri</i>"]}]},
-        {id: "proteus", node: "proteus", name: "Proteus", shape: "rod",
-          only: ["urease +", "H₂S +", "swarms"],
-          ids: [
-            {t: "urease +", q: "Urease", a: "+", o: ["+", "−"]},
-            {t: "H₂S +", q: "H₂S", a: "+", o: ["+", "−"]},
-            {t: "swarms across the agar; strong odor"},
-            {t: "IMViC: <i>P. vulgaris</i> ++−v; <i>P. mirabilis</i> −+−+ (v = variable)"}
+          facts: [{ic: "🧍", h: "Found in", t: "humans only"}],
+          extra: [{h: "🔬 Species", boxes: [{ic: "•", t: "<i>S. sonnei</i>"}, {ic: "•", t: "<i>S. boydii</i>"}, {ic: "•", t: "<i>S. flexneri</i>"}]}]}
+      ]},
+    {id: "proteus", node: "proteus", title: "<i>Proteus</i>", entericTable: true,
+      orgs: [
+        {id: "proteus", node: "proteus", name: "Proteus", shape: "rod", emoji: "🌊",
+          tests: [
+            {k: "gram", v: "−", from: "gramneg"},
+            {k: "shape", v: "rod", from: "enterics"},
+            {k: "oxidase", v: "−", from: "enterics"},
+            {k: "lactose", v: "−", from: "noncoliforms"},
+            {k: "urease", v: "+"},
+            {k: "h2s", v: "+"},
+            {k: "feature", v: "swarms across the agar; strong odor", ic: "🌊"},
+            {k: "imvic", v: "++−v", label: "IMViC: <i>P. vulgaris</i>"},
+            {k: "imvic", v: "−+−+", label: "IMViC: <i>P. mirabilis</i>"}
           ],
-          disease: {short: "opportunistic UTIs and wound infections", html: "opportunistic UTIs and wound infections", tags: ["uti", "wound"]}},
-        {id: "ypestis", node: "yersinia", name: "Yersinia pestis", shape: "rod",
-          only: ["IMViC −+−−"],
-          ids: [
-            {t: "lactose −", q: "Lactose", a: "−", o: ["+", "−"]},
-            {t: "IMViC −+−−", q: "IMViC", a: "−+−−", o: ["++−−", "−−++", "−+−+", "−+−−"]}
+          disease: {short: "opportunistic UTIs and wound infections", html: "opportunistic infections:", tags: ["uti", "wound"],
+            boxes: [{ic: "🚽", t: "UTIs"}, {ic: "🩹", t: "wound infections"}]}}
+      ]},
+    {id: "yersinia", node: "yersinia", title: "<i>Yersinia pestis</i>", entericTable: true,
+      orgs: [
+        {id: "ypestis", node: "yersinia", name: "Yersinia pestis", shape: "rod", emoji: "🐀",
+          tests: [
+            {k: "gram", v: "−", from: "gramneg"},
+            {k: "shape", v: "rod", from: "enterics"},
+            {k: "oxidase", v: "−", from: "enterics"},
+            {k: "lactose", v: "−", from: "noncoliforms"},
+            {k: "imvic", v: "−+−−"}
           ],
-          disease: {short: "plague", html: "plague",
-            more: {items: [
-              "<b>Bubonic:</b> infects lymph nodes → bubos (swollen, painful nodes)",
-              "<b>Septicemic:</b> infects the blood → gangrene, blackened skin (\"Black plague\")",
-              "<b>Pneumonic:</b> infects the lungs; nearly always fatal if untreated"
-            ]}},
-          spread: {label: "How it spreads", html: "fleas from rats"},
-          treat: {label: "Treatment", short: "streptomycin, gentamicin, doxycycline", html: "streptomycin, gentamicin, doxycycline", drugs: ["streptomycin", "gentamicin", "doxycycline"]},
-          extra: [{h: "History", items: ["The 14th century pandemic killed 30 to 60% of Europe."]}]},
-        {id: "smarcescens", node: "serratia", name: "Serratia marcescens", shape: "rod",
-          only: ["IMViC −−++", "red pigment"],
-          ids: [
-            {t: "IMViC −−++", q: "IMViC", a: "−−++", o: ["++−−", "−−++", "−+−+", "−+−−"]},
-            {t: "red pigment (may not form at 37°C)", q: "Pigment", a: "red", o: ["red", "green", "none"]}
+          disease: {short: "plague", html: "plague: tap each form",
+            flow: {title: "How it spreads", steps: ["🐀 rats", "🦟 their fleas", "🧍 people"]},
+            flips: [
+              {f: "Bubonic", b: "infects lymph nodes → bubos (swollen, painful nodes)"},
+              {f: "Septicemic", b: "infects the blood → gangrene, blackened skin (\"Black plague\")"},
+              {f: "Pneumonic", b: "infects the lungs; nearly always fatal if untreated"}
+            ]},
+          treat: {short: "streptomycin, gentamicin, doxycycline", html: "streptomycin, gentamicin, doxycycline", drugs: ["streptomycin", "gentamicin", "doxycycline"]},
+          extra: [{h: "📜 History", boxes: [{ic: "☠️", t: "The 14th century pandemic killed 30 to 60% of Europe."}]}]}
+      ]},
+    {id: "serratia", node: "serratia", title: "<i>Serratia marcescens</i>", entericTable: true,
+      orgs: [
+        {id: "smarcescens", node: "serratia", name: "Serratia marcescens", shape: "rod", emoji: "🏥",
+          tests: [
+            {k: "gram", v: "−", from: "gramneg"},
+            {k: "shape", v: "rod", from: "enterics"},
+            {k: "oxidase", v: "−", from: "enterics"},
+            {k: "lactose", v: "−", from: "noncoliforms"},
+            {k: "imvic", v: "−−++"},
+            {k: "pigment", v: "red", note: "may not form at 37°C"}
           ],
-          disease: {short: "hospital-acquired UTIs, pneumonia, wound infections", html: "hospital-acquired UTIs, pneumonia, wound infections, bacteremia; linked to catheters and IV lines", tags: ["hospital", "uti", "pneumonia", "wound", "sepsis"]},
-          spread: {label: "Found in", html: "water, soil, bathrooms, medical equipment"}}
+          disease: {short: "hospital-acquired UTIs, pneumonia, wound infections", html: "hospital-acquired infections, linked to catheters and IV lines:", tags: ["hospital", "uti", "pneumonia", "wound", "sepsis"],
+            boxes: [{ic: "🚽", t: "UTIs"}, {ic: "🫁", t: "pneumonia"}, {ic: "🩹", t: "wound infections"}, {ic: "🩸", t: "bacteremia"}]},
+          facts: [{ic: "🚿", h: "Found in", t: "water, soil, bathrooms, medical equipment"}]}
       ],
       checkin: {
         q: "An enteric is lactose −, H₂S +, citrate +, and urease −. What is it?",
         o: ["<i>Salmonella</i>", "<i>Shigella</i>", "<i>Proteus</i>", "<i>E. coli</i>"],
         w: "<i>Shigella</i> is H₂S − and citrate −. <i>Proteus</i> is urease +. <i>E. coli</i> is lactose +."
       }},
-    /* ---------- 13 ---------- */
-    {id: "vibrio", node: "vibrio", title: "<i>Vibrio</i>",
+    {id: "vibrio", node: "vibrio", title: "<i>Vibrio cholerae</i>",
       lesson: [
         "<i>Vibrio</i> is a facultative anaerobe like the enterics, but it is <b>not</b> an enteric. One clue: <i>Vibrio</i> is <b>oxidase +</b>, while enterics are oxidase −.",
         "Shape: a <b>curved rod</b> (the macaroni! 🍝)"
       ],
       orgs: [
-        {id: "vcholerae", node: "vibrio", name: "Vibrio cholerae", shape: "curved",
-          only: ["curved rod", "oxidase +"],
-          ids: [
-            {t: "curved (comma-shaped) gram-negative rod", q: "Shape", a: "curved (comma-shaped) rod", o: ["curved (comma-shaped) rod", "diplococcus", "spirochete"]},
-            {t: "oxidase +", q: "Oxidase", a: "+", o: ["+", "−"]}
+        {id: "vcholerae", node: "vibrio", name: "Vibrio cholerae", shape: "curved", emoji: "💧",
+          tests: [
+            {k: "gram", v: "−", from: "gramneg"},
+            {k: "shape", v: "curved rod", note: "comma-shaped"},
+            {k: "oxygen", v: "facultative anaerobe", from: "facultative"},
+            {k: "oxidase", v: "+", note: "enterics are −"}
           ],
-          disease: {short: "cholera", html: "cholera. Cholera toxin → \"rice water\" diarrhea → severe dehydration", tags: ["gi"]},
-          spread: {label: "How it spreads", html: "fecal-oral route through contaminated water and food; poor sanitation"},
-          treat: {label: "Treatment", short: "rehydration first, plus doxycycline or azithromycin", html: "<b>rehydration first!</b> Plus doxycycline or azithromycin", drugs: ["rehydration", "doxycycline", "azithromycin"]}}
+          disease: {short: "cholera", html: "cholera", tags: ["gi"],
+            flow: {title: "How it causes disease", steps: ["<b>Cholera toxin</b>", "\"rice water\" diarrhea", "severe dehydration"]}},
+          facts: [{ic: "🚰", h: "How it spreads", t: "fecal-oral route through contaminated water and food; poor sanitation"}],
+          treat: {short: "rehydration first, plus doxycycline or azithromycin", html: "<b>rehydration first!</b> Plus doxycycline or azithromycin", drugs: ["rehydration", "doxycycline", "azithromycin"]}}
       ]},
-    /* ---------- 14 ---------- */
+
+    /* ---------- Epsilon ---------- */
     {id: "epsilon", node: "epsilon", title: "Epsilonproteobacteria",
       lesson: [
         "Our two epsilons are both curved or spiral and both are <b>microaerophilic</b>: they need oxygen, but less than the air has.",
         "Both are gut pathogens: one in the intestine, one in the stomach."
-      ],
+      ]},
+    {id: "campylobacter", node: "campylobacter", title: "<i>Campylobacter jejuni</i>",
       orgs: [
-        {id: "cjejuni", node: "campylobacter", name: "Campylobacter jejuni", shape: "gullwing",
-          only: ["\"gull-wing\" spiral"],
-          ids: [
-            {t: "spiral, \"gull-wing\" shape (the cavatappi! 🍝)"},
-            {t: "microaerophilic", q: "Oxygen", a: "microaerophilic", o: ["microaerophilic", "obligate aerobe", "facultative anaerobe"]}
+        {id: "cjejuni", node: "campylobacter", name: "Campylobacter jejuni", shape: "gullwing", emoji: "🍗",
+          tests: [
+            {k: "gram", v: "−", from: "gramneg"},
+            {k: "shape", v: "gull-wing spiral", note: "the cavatappi! 🍝"},
+            {k: "oxygen", v: "microaerophilic", from: "epsilon"},
+            {k: "feature", v: "highly motile", ic: "💨", from: "epsilon"}
           ],
           disease: {short: "bacterial gastroenteritis", html: "the most common cause of bacterial gastroenteritis worldwide", tags: ["gi"]},
-          spread: {label: "How it spreads", html: "undercooked poultry, contaminated water, raw (unpasteurized) milk"}},
-        {id: "hpylori", node: "helicobacter", name: "Helicobacter pylori", shape: "spiral",
-          only: ["urease +"],
-          ids: [
-            {t: "spiral rod"},
-            {t: "<b>urease +</b>", q: "Urease", a: "+", o: ["+", "−"]}
+          facts: [{ic: "🍗", h: "How it spreads", t: "undercooked poultry, contaminated water, raw (unpasteurized) milk"}]}
+      ]},
+    {id: "helicobacter", node: "helicobacter", title: "<i>Helicobacter pylori</i>",
+      orgs: [
+        {id: "hpylori", node: "helicobacter", name: "Helicobacter pylori", shape: "spiral", emoji: "🫃",
+          tests: [
+            {k: "gram", v: "−", from: "gramneg"},
+            {k: "shape", v: "spiral rod"},
+            {k: "oxygen", v: "microaerophilic", from: "epsilon"},
+            {k: "urease", v: "+"}
           ],
           disease: {short: "gastritis and peptic ulcers", html: "gastritis and peptic (stomach) ulcers",
-            more: {h: "How it survives the stomach", items: ["It makes <b>urease</b>, which produces ammonia, and the ammonia neutralizes the acid around it. It is <b>not</b> an acidophile."]}},
-          treat: {label: "Treatment", short: "2 antibiotics + a proton pump inhibitor", html: "2 antibiotics + a proton pump inhibitor", drugs: ["ppi"]}}
+            flow: {title: "How it survives the stomach", steps: ["makes <b>urease</b>", "urease produces ammonia", "ammonia neutralizes the acid around it", "survives in the stomach"], side: "It is <b>not</b> an acidophile."}},
+          treat: {short: "2 antibiotics + a proton pump inhibitor", html: "2 antibiotics + a proton pump inhibitor", drugs: ["ppi"]}}
       ],
       checkin: {
         q: "How does <i>H. pylori</i> survive in the acidic stomach?",
         o: ["Urease makes ammonia, which neutralizes the acid around it", "It is an acidophile that loves low pH", "It forms endospores", "It hides inside amoebae"],
         w: "<i>H. pylori</i> makes urease, and the ammonia it produces neutralizes the acid around it. It is not an acidophile."
       }},
-    /* ---------- 15 ---------- */
+
+    /* ---------- Spirochetes ---------- */
     {id: "spirochetes", node: "spirochetes", title: "Spirochetes", diagram: "axial",
       lesson: [
         "Spirochetes have <b>axial filaments</b>: flagella that run <b>inside</b> the cell, between the inner and outer membranes.",
         "When the filaments rotate, the whole cell twists like a corkscrew. This lets spirochetes move well through thick, viscous environments.",
         "Our two genera are <b><i>Treponema</i></b> and <b><i>Borrelia</i></b>."
-      ],
+      ]},
+    {id: "treponema", node: "treponema", title: "<i>Treponema pallidum</i>",
       orgs: [
-        {id: "tpallidum", node: "treponema", name: "Treponema pallidum", shape: "spirochete",
-          only: ["very thin spirochete"],
-          ids: [{t: "thin spirochete (too thin to see well with a regular light microscope)", q: "Shape", a: "spirochete", o: ["spirochete", "diplococcus", "coccobacillus"]}],
-          disease: {short: "syphilis", html: "syphilis",
-            more: {items: [
-              "<b>Primary:</b> painless chancre",
-              "<b>Secondary:</b> skin rash, including palms and soles",
-              "<b>Tertiary:</b> gummas; heart and nerve damage",
-              "<b>Congenital</b> (mother to fetus): bone deformities, Hutchinson's teeth, nervous system effects"
+        {id: "tpallidum", node: "treponema", name: "Treponema pallidum", shape: "spirochete", emoji: "⚠️",
+          tests: [
+            {k: "gram", v: "− (stains poorly)", from: "spirochetes"},
+            {k: "shape", v: "spirochete", note: "too thin to see well with a regular light microscope"},
+            {k: "feature", v: "axial filaments", ic: "🌀", from: "spirochetes"}
+          ],
+          disease: {short: "syphilis", html: "syphilis: tap each stage",
+            flips: [
+              {f: "1. Primary", b: "painless chancre"},
+              {f: "2. Secondary", b: "skin rash, including palms and soles"},
+              {f: "3. Tertiary", b: "gummas; heart and nerve damage"},
+              {f: "👶 Congenital", b: "mother to fetus: bone deformities, Hutchinson's teeth, nervous system effects"}
+            ]},
+          facts: [{ic: "🤝", h: "How it spreads", t: "sexual contact; congenital"}],
+          treat: {short: "penicillin G", html: "penicillin G", drugs: ["penicillin"]},
+          extra: [{h: "🔗 Related", boxes: [{ic: "🌍", t: "Other <i>Treponema</i> species cause bejel, yaws, and pinta, which are spread without sexual contact."}]}]}
+      ]},
+    {id: "lyme", node: "b_burgdorferi", title: "<i>Borrelia burgdorferi</i>: Lyme disease", also: ["borrelia"],
+      orgs: [
+        {id: "bburgdorferi", node: "b_burgdorferi", name: "Borrelia burgdorferi", shape: "spirochete", emoji: "🎯",
+          tests: [
+            {k: "gram", v: "− (stains poorly)", from: "spirochetes"},
+            {k: "shape", v: "spirochete", from: "spirochetes"},
+            {k: "feature", v: "axial filaments", ic: "🌀", from: "spirochetes"}
+          ],
+          /* TODO: brief gives no Key ID results specific to B. burgdorferi */
+          disease: {short: "Lyme disease", html: "Lyme disease. Early signs:",
+            boxes: [{ic: "🎯", t: "erythema migrans (\"bull's-eye\" rash)"}, {ic: "🤒", t: "flu-like: fever, headache, fatigue, muscle/joint aches"}]},
+          facts: [
+            {ic: "🕷️", h: "How it spreads", t: "<i>Ixodes</i> ticks: the blacklegged (\"deer\") tick. In California, the western blacklegged tick. Usually must be attached 24 to 48+ hours."},
+            {ic: "🧴", h: "Prevention", t: "tick checks, repellent, protective clothing"}
+          ],
+          treat: {short: "doxycycline (early), amoxicillin, cefuroxime", html: "doxycycline (early), amoxicillin, cefuroxime", drugs: ["doxycycline", "amoxicillin", "cefuroxime"]}}
+      ]},
+    {id: "relapsing-fever", node: "b_relapsing", title: "<i>Borrelia</i>: relapsing fever",
+      orgs: [
+        {id: "brf", node: "b_relapsing", name: "Borrelia", sub: "(relapsing fever species)", shape: "spirochete", emoji: "🔁",
+          tests: [
+            {k: "gram", v: "− (stains poorly)", from: "spirochetes"},
+            {k: "shape", v: "spirochete", from: "spirochetes"},
+            {k: "feature", v: "axial filaments", ic: "🌀", from: "spirochetes"}
+          ],
+          /* TODO: brief gives no Key ID results specific to relapsing fever Borrelia */
+          disease: {short: "relapsing fever", html: "relapsing fever: high fever, chills, headache, and aches. The fever goes away, then comes back.",
+            flow: {title: "Why it relapses: antigenic variation", loop: true, steps: [
+              "<i>Borrelia</i> changes its surface proteins",
+              "the immune system clears one variant",
+              "a new variant emerges",
+              "the fever returns"
             ]}},
-          spread: {label: "How it spreads", html: "sexual contact; congenital"},
-          treat: {label: "Treatment", short: "penicillin G", html: "penicillin G", drugs: ["penicillin"]},
-          extra: [{h: "Related", items: ["Other <i>Treponema</i> species cause bejel, yaws, and pinta, which are spread without sexual contact."]}]},
-        {id: "bburgdorferi", node: "borrelia", name: "Borrelia burgdorferi", shape: "spirochete",
-          /* TODO: brief gives no Key ID results for B. burgdorferi */
-          disease: {short: "Lyme disease", html: "Lyme disease. Early sign: erythema migrans (\"bull's-eye\" rash), plus flu-like fever, headache, fatigue, and muscle/joint aches."},
-          spread: {label: "How it spreads", html: "<i>Ixodes</i> ticks: the blacklegged (\"deer\") tick. In California, it's the western blacklegged tick. The tick usually must be attached 24 to 48+ hours to transmit it."},
-          treat: {label: "Treatment / prevention", short: "doxycycline (early), amoxicillin, cefuroxime", html: "doxycycline (early), amoxicillin, cefuroxime; tick checks, repellent, protective clothing", drugs: ["doxycycline", "amoxicillin", "cefuroxime"]}},
-        {id: "brf", node: "borrelia", name: "Borrelia", suffix: "(relapsing fever species)", shape: "spirochete",
-          /* TODO: brief gives no Key ID results for relapsing fever Borrelia */
-          disease: {short: "relapsing fever", html: "relapsing fever. High fever, chills, headache, and aches. The fever goes away, then comes back.",
-            more: {h: "Why it relapses", items: ["<b>Antigenic variation.</b> <i>Borrelia</i> changes its surface proteins. The immune system clears one variant, a new variant emerges, and the fever returns."]}},
-          spread: {label: "How it spreads", html: "soft ticks or body lice"},
-          treat: {label: "Treatment", short: "doxycycline, erythromycin, penicillin", html: "doxycycline, erythromycin, penicillin", drugs: ["doxycycline", "erythromycin", "penicillin"]}}
+          facts: [{ic: "🕷️", h: "How it spreads", t: "soft ticks or body lice"}],
+          treat: {short: "doxycycline, erythromycin, penicillin", html: "doxycycline, erythromycin, penicillin", drugs: ["doxycycline", "erythromycin", "penicillin"]}}
       ],
       checkin: {
         q: "Why does relapsing fever keep coming back?",
         o: ["<i>Borrelia</i> changes its surface proteins, so the immune system has to start over", "The bacteria form endospores", "Antibiotics don't work on spirochetes", "The patient gets bitten by a new tick each time"],
         w: "Antigenic variation: the immune system clears one variant, a new variant emerges, and the fever returns."
       }},
-    /* ---------- 16 ---------- */
-    {id: "chlamydiae", node: "chlamydiae", title: "Chlamydiae", diagram: "chlamydia",
+
+    /* ---------- Chlamydiae ---------- */
+    {id: "chlamydiae", node: "chlamydiae", title: "Chlamydiae", also: ["chlamydia"], diagram: "chlamydia",
       lesson: [
         "<i>Chlamydia</i> can only reproduce <b>inside host cells</b>. It switches between two forms:<ul><li><b>Elementary body (EB):</b> infectious, but can't reproduce. Survives outside the host cell. Metabolically limited.</li><li><b>Reticulate body (RB):</b> reproduces, but not infectious. Can't survive outside the host cell. Metabolically active.</li></ul>",
         "Life cycle: EB enters the cell → becomes an RB → multiplies → turns back into EBs → EBs are released to infect new cells.",
         "Memory hook: EB = the \"delivery vehicle,\" RB = the \"factory.\""
       ],
       orgs: [
-        {id: "ctrachomatis", node: "chlamydia", name: "Chlamydia trachomatis", shape: "intracellular",
-          /* TODO: brief gives no Key ID results; diagnosis is listed below */
-          disease: {short: "the most common bacterial STI; trachoma", html: "the most common bacterial STI (discharge, genital pain and inflammation); also trachoma (an eye infection) and pneumonia", tags: ["eye", "pneumonia"],
-            more: {h: "Diagnosis", items: ["PCR, antigen detection"]}},
-          treat: {label: "Treatment", short: "azithromycin, doxycycline", html: "azithromycin, doxycycline", drugs: ["azithromycin", "doxycycline"]}},
-        {id: "cpneumoniae", node: "chlamydia", name: "Chlamydia pneumoniae", shape: "intracellular",
+        {id: "ctrachomatis", node: "chlamydia", name: "Chlamydia trachomatis", shape: "intracellular", emoji: "⚠️",
+          tests: [
+            {k: "gram", v: "−", from: "gramneg"},
+            {k: "media", v: "only inside host cells", from: "chlamydiae"},
+            {k: "feature", v: "two-form life cycle (EB and RB)", ic: "🔄", from: "chlamydiae"}
+          ],
+          disease: {short: "the most common bacterial STI; trachoma", html: "the most common bacterial STI (discharge, genital pain and inflammation). Also:", tags: ["eye", "pneumonia"],
+            boxes: [{ic: "👁️", t: "trachoma (an eye infection)"}, {ic: "🫁", t: "pneumonia"}]},
+          facts: [{ic: "🧬", h: "Diagnosis", t: "PCR, antigen detection"}],
+          treat: {short: "azithromycin, doxycycline", html: "azithromycin, doxycycline", drugs: ["azithromycin", "doxycycline"]}},
+        {id: "cpneumoniae", node: "chlamydia", name: "Chlamydia pneumoniae", shape: "intracellular", emoji: "🫁",
+          tests: [
+            {k: "gram", v: "−", from: "gramneg"},
+            {k: "media", v: "only inside host cells", from: "chlamydiae"}
+          ],
           disease: {short: "respiratory infections", html: "respiratory infections", tags: ["pneumonia"]}}
       ]},
-    /* ---------- 17 ---------- */
-    {id: "other-phyla", node: "gramneg", title: "The other gram-negative phyla", also: ["planctomycetes", "fusobacteria", "cyanobacteria", "bacteroidetes"], focusTree: ["planctomycetes", "fusobacteria", "cyanobacteria", "bacteroidetes"],
-      lesson: [
-        "Four more gram-negative phyla to know. Tap a card to see it on the tree."
-      ],
+
+    /* ---------- The other phyla ---------- */
+    {id: "planctomycetes", node: "planctomycetes", title: "Planctomycetes",
       orgs: [
         {type: "phylum", id: "planct", node: "planctomycetes", name: "Planctomycetes", shape: "budding",
-          items: [
-            "Gram-negative bacteria that reproduce by budding",
-            "Examples: <i>Planctomyces</i>, <i>Gemmata</i>, <i>Brocadia</i>",
-            "Once thought to bridge prokaryotes and eukaryotes, because they have internal membrane compartments (some around the nucleoid) and sterols in their membranes"
-          ]},
+          boxes: [
+            {ic: "🫧", t: "Gram-negative bacteria that reproduce by <b>budding</b>"},
+            {ic: "🔬", t: "Examples: <i>Planctomyces</i>, <i>Gemmata</i>, <i>Brocadia</i>"}
+          ],
+          flips: [{f: "Why were they once thought to bridge prokaryotes and eukaryotes?", b: "They have internal membrane compartments (some around the nucleoid) and sterols in their membranes."}]}
+      ]},
+    {id: "fusobacteria", node: "fusobacteria", title: "Fusobacteria",
+      orgs: [
         {type: "phylum", id: "fuso", node: "fusobacteria", name: "Fusobacteria", shape: "spindle",
-          items: [
-            "Anaerobic, spindle-shaped rods",
-            "Live in the mouth, gut, and genital tract",
-            "Some cause periodontal (gum) disease and abscesses; opportunistic, and can help other microbes in mixed infections"
-          ]},
+          boxes: [
+            {ic: "🚫", t: "Anaerobic, <b>spindle-shaped</b> rods"},
+            {ic: "🦷", t: "Some cause periodontal (gum) disease and abscesses"},
+            {ic: "🤝", t: "Opportunistic, and can help other microbes in mixed infections"}
+          ],
+          flips: [{f: "Where do they live?", b: "the mouth, gut, and genital tract"}]}
+      ]},
+    {id: "cyanobacteria", node: "cyanobacteria", title: "Cyanobacteria",
+      orgs: [
         {type: "phylum", id: "cyano", node: "cyanobacteria", name: "Cyanobacteria", shape: "filament",
-          items: [
-            "Photosynthetic. Nicknamed \"blue-green algae,\" but they are bacteria, NOT algae!",
-            "Use chlorophyll <i>a</i> and release O₂. They made the oxygen in early Earth's atmosphere.",
-            "Some fix nitrogen in special cells called <b>heterocysts</b>",
-            "Can form toxic blooms in water"
-          ]},
+          boxes: [
+            {ic: "☀️", t: "Photosynthetic: use chlorophyll <i>a</i> and release O₂"},
+            {ic: "🌍", t: "They made the oxygen in early Earth's atmosphere"},
+            {ic: "⚪", t: "Some fix nitrogen in special cells called <b>heterocysts</b>"},
+            {ic: "⚠️", t: "Can form toxic blooms in water"}
+          ],
+          flips: [{f: "Nicknamed \"blue-green algae.\" Are they algae?", b: "NO! They are bacteria, not algae."}]}
+      ]},
+    {id: "bacteroidetes", node: "bacteroidetes", title: "Bacteroidetes",
+      orgs: [
         {type: "phylum", id: "bactero", node: "bacteroidetes", name: "Bacteroidetes", shape: "generic",
-          items: [
-            "Mostly anaerobic",
-            "A dominant group in the human gut (along with the Firmicutes, coming in the next module!)",
-            "Help digest complex carbohydrates",
-            "Some can become opportunistic pathogens (e.g. <i>Bacteroides fragilis</i>)"
-          ]}
+          boxes: [
+            {ic: "🚫", t: "Mostly anaerobic"},
+            {ic: "🍞", t: "Help digest complex carbohydrates"},
+            {ic: "⚠️", t: "Some can become opportunistic pathogens (e.g. <i>Bacteroides fragilis</i>)"}
+          ],
+          flips: [{f: "They're a dominant group in the human gut, along with which other group?", b: "the Firmicutes (coming in the next module!)"}]}
       ],
       checkin: {
         q: "Which gram-negative group makes oxygen through photosynthesis?",
         o: ["Cyanobacteria", "Bacteroidetes", "Fusobacteria", "Planctomycetes"],
         w: "Cyanobacteria use chlorophyll <i>a</i> and release O₂."
       }},
-    /* ---------- 18 ---------- */
+
+    /* ---------- Finale ---------- */
     {id: "finale", node: "bacteria", title: "Finale: the full tree", full: true, finale: true,
       takeaways: [
         "Every organism inherits the traits of the branches above it.",
@@ -596,6 +762,7 @@ window.TOUR_DATA = {
 
   /* Section 8 of the brief. Motility is intentionally left out. */
   enteric: {
+    groupColors: {coliforms: "#9d174d", noncoliforms: "#0369a1"},
     cols: ["Lactose", "Indole", "MR", "VP", "Citrate", "H₂S", "Urease"],
     rows: [
       {name: "E. coli", group: "coliforms", v: ["+", "+", "+", "−", "−", "−", "−"]},
