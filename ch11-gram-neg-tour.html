@@ -302,6 +302,93 @@ table.ent tr.grp td{background:color-mix(in srgb, var(--c) 12%, var(--surface))}
 .toast{position:fixed; left:50%; bottom:22px; transform:translate(-50%, 20px); opacity:0; background:var(--ink); color:var(--bg); padding:12px 18px; border-radius:14px; font-weight:700; font-size:17px; z-index:60; transition:opacity .25s, transform .25s; pointer-events:none; max-width:calc(100vw - 32px); text-align:center}
 .toast.show{opacity:1; transform:translate(-50%, 0)}
 
+/* ---- organism card v2: microscope view, flip tiles, flows, icon boxes, quick sort ---- */
+:root{--scope:#fdf2f6}
+:root[data-theme="dark"]{--scope:#2b1d26}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--scope:#2b1d26} }
+.org.v2{display:flex; flex-direction:column; gap:20px; padding:20px}
+.org.v2 .hero{display:grid; grid-template-columns:132px minmax(0,1fr); gap:16px; align-items:center}
+.org.v2 .hero > div{display:flex; flex-direction:column; align-items:flex-start; gap:8px}
+.org.v2 .hero{margin:0}
+.org.v2 .hero h3{font-size:30px; line-height:1.05; flex:none; text-align:left}
+.scope{width:132px; height:132px}
+@media (max-width:560px){ .org.v2 .hero{grid-template-columns:96px minmax(0,1fr)} .scope{width:96px; height:96px} .org.v2 .hero h3{font-size:24px} }
+.badges{display:flex; flex-wrap:wrap; gap:6px}
+.badge{font-weight:700; font-size:14.5px; padding:4px 11px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface-2)}
+.badge.gram{background:var(--gn-fill); border-color:var(--gn-edge); color:#5c0b2b; font-family:var(--f-mono)}
+.sec{display:flex; flex-direction:column; gap:8px; min-width:0}
+.sechead{display:flex; align-items:center; gap:10px; justify-content:space-between; flex-wrap:wrap}
+.sech{font-size:21px; font-family:var(--f-display); margin:0}
+.sec .hint{font-size:15.5px; color:var(--muted); margin:0}
+.tiles{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px}
+.tile{position:relative; height:172px; perspective:900px; cursor:pointer; text-align:center}
+.tile .in{position:absolute; inset:0; transition:transform .5s; transform-style:preserve-3d}
+.tile.on .in{transform:rotateY(180deg)}
+.tile .f, .tile .b{position:absolute; inset:0; border-radius:16px; backface-visibility:hidden; -webkit-backface-visibility:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:10px; overflow:hidden}
+.tile .f{background:var(--surface-2); border:2px dashed var(--line)}
+.tile .f .tq{font-family:var(--f-display); font-weight:700; font-size:18px; line-height:1.15}
+.tile .f .qm{font-size:24px; color:var(--muted); font-weight:800}
+.tile .f small{font-size:12.5px; color:var(--muted)}
+.tile .f select.blank{font-size:15px; max-width:100%}
+.tile .b{transform:rotateY(180deg); border:2.5px solid var(--k); background:var(--surface); background:color-mix(in srgb, var(--k) 12%, var(--surface))}
+.tile .b svg{width:62px; height:42px; flex-shrink:0}
+.tile .b b{font-size:17px; color:var(--ink); line-height:1.15}
+.tile .b small{font-size:13px; color:var(--muted); line-height:1.25}
+.tile .b .tnote{color:var(--ink); font-style:italic}
+.tile .b .temoji{font-size:30px; line-height:1}
+.tile .from{font:600 11px var(--f-mono); text-transform:uppercase; letter-spacing:.03em; padding:2px 7px; border-radius:999px; background:var(--surface); border:1px solid var(--line); color:var(--muted)}
+.tile .tmark{font-size:12.5px; font-weight:700}
+.tile .tmark.good{color:var(--good)} .tile .tmark.bad{color:var(--bad)}
+.dzname{display:flex; align-items:center; gap:10px; font-size:20px}
+.dzname > span{font-size:32px; line-height:1}
+.iboxes{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px}
+.iboxes.small{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
+.ibox{border:2px solid var(--line); border-radius:16px; padding:12px 14px; background:var(--surface); display:flex; flex-direction:column; gap:4px}
+.ibox .ic{font-size:28px; line-height:1}
+.ibox h5{margin:0; font:700 12.5px var(--f-mono); text-transform:uppercase; letter-spacing:.05em; color:var(--muted)}
+.ibox p{margin:0; font-size:17px}
+.ibox.warn{border-color:var(--bad); background:var(--bad-soft)}
+.iboxes.small .ibox{flex-direction:row; align-items:center; gap:10px}
+.iboxes.small .ibox .ic{font-size:24px}
+.flips{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px}
+.flipc{position:relative; min-height:118px; perspective:900px; border:0; background:none; padding:0; cursor:pointer; font:inherit; color:inherit}
+.flipc .in{position:absolute; inset:0; transition:transform .5s; transform-style:preserve-3d; display:block}
+.flipc.on .in{transform:rotateY(180deg)}
+.flipc .fa, .flipc .fb{position:absolute; inset:0; border-radius:16px; backface-visibility:hidden; -webkit-backface-visibility:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:12px; text-align:center}
+.flipc .fa{background:var(--surface-2); border:2px solid var(--c); font-family:var(--f-display); font-weight:700; font-size:18px; line-height:1.2}
+.flipc .fa small{font:600 12px var(--f-body); color:var(--muted)}
+.flipc .fb{transform:rotateY(180deg); background:var(--surface); border:2px solid var(--line); font-size:16.5px}
+.flowbox{border:2px solid var(--line); border-radius:16px; padding:12px; display:flex; flex-direction:column; gap:10px; background:var(--surface)}
+.flowbox h5{margin:0; font-family:var(--f-display); font-size:17px}
+.flow{display:flex; flex-wrap:wrap; align-items:stretch; gap:6px}
+.flow .step{flex:1 1 120px; border-radius:12px; padding:10px; background:var(--surface-2); border:2px solid var(--line); opacity:.2; transform:translateY(6px); transition:opacity .4s, transform .4s; font-size:16px}
+.flow .step.on{opacity:1; transform:none}
+.flow .step.first{border-color:var(--gn-edge); background:color-mix(in srgb, var(--gn-edge) 10%, var(--surface))}
+.flow .arr{align-self:center; font-weight:800; font-size:22px; color:var(--arrow); opacity:.2; transition:opacity .4s}
+.flow .arr.on{opacity:1}
+.flowside{border-left:5px solid var(--gn-edge); padding:6px 10px; background:var(--surface-2); border-radius:0 10px 10px 0; font-size:16px}
+.hook{background:var(--warn-soft); border-radius:14px; padding:12px 14px; font-size:17px}
+.sortsec .spool{display:flex; flex-wrap:wrap; gap:6px; min-height:44px; padding:8px; border-radius:12px; background:var(--surface-2)}
+.sbins{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+@media (max-width:520px){ .sbins{grid-template-columns:1fr} }
+.sbin{border:2px dashed var(--line); border-radius:14px; padding:10px; min-height:96px; display:flex; flex-wrap:wrap; align-content:flex-start; gap:6px; cursor:pointer}
+.sbin h5{flex-basis:100%; margin:0 0 2px; font:700 13px var(--f-mono); text-transform:uppercase; color:var(--muted)}
+.schip{border:1.5px solid var(--line); background:var(--surface); border-radius:999px; padding:7px 13px; font-size:16px; font-weight:700; cursor:grab; touch-action:none; user-select:none; position:relative}
+.schip.sel{border-color:var(--arrow); background:var(--arrow-soft)}
+.schip.dragging{z-index:50; box-shadow:0 10px 26px rgba(0,0,0,.2); cursor:grabbing; transition:none}
+.schip.right{border-color:var(--good); background:var(--good-soft)}
+.schip.wrong{border-color:var(--bad); background:var(--bad-soft)}
+.schip:disabled{cursor:default; opacity:1; color:inherit}
+/* tree + map: one color per level; oxygen / lactose kept small and gray */
+.ranks span{border:1.5px solid var(--c); background:color-mix(in srgb, var(--c) 16%, var(--surface))}
+.ranks span.lab{border-style:dashed}
+.ranks span.min{background:transparent; border-color:var(--line); color:var(--muted); font-weight:500; font-size:.85em}
+.tn.min rect{fill:var(--surface)!important; stroke:var(--line)!important; stroke-dasharray:3 3; stroke-width:1.2!important}
+.tn.min text{font-size:14px; font-weight:500; fill:var(--muted); font-style:italic}
+.tn.min.cur rect, .tn.min.path rect{stroke:var(--muted)!important}
+#map .rowchip{fill:color-mix(in srgb, var(--c) 16%, var(--surface)); stroke:var(--c); stroke-width:1.5}
+#map .rowlbl{fill:var(--ink)}
+
 @media (prefers-reduced-motion: reduce){ *{transition:none!important; animation:none!important} html{scroll-behavior:auto} }
 </style>
 </head>
@@ -417,7 +504,9 @@ var TREE = D.tree.filter(function(n){ return !n.overviewOnly; });   /* nodes on 
 D.tree.forEach(function(n){ N[n.id] = n; n.kids = []; });
 TREE.forEach(function(n){ if (n.parent) N[n.parent].kids.push(n); });
 function pathTo(id){ var p = [], n = N[id]; while (n){ p.unshift(n); n = n.parent ? N[n.parent] : null; } return p; }
-function colorOf(n){ while (n){ if (n.color) return n.color; n = n.parent ? N[n.parent] : null; } return "#64748b"; }
+var RCOL = {}, RMIN = {};
+(D.ranks || []).forEach(function(r){ RCOL[r.id] = r.color; RMIN[r.id] = !!r.minimal; });
+function colorOf(n){ return (n && RCOL[n.rank]) || "#64748b"; }   /* every box on a level shares that level's color */
 function subtree(id, acc){ acc = acc || []; acc.push(id); N[id].kids.forEach(function(k){ subtree(k.id, acc); }); return acc; }
 var ORG = {}, OPEN = {}, ALLORGS = [];
 D.stops.forEach(function(s, i){ s.n = i; (s.orgs || []).forEach(function(o){ o.stop = i; ORG[o.id] = o; if (o.type !== "phylum") ALLORGS.push(o); if (!OPEN[o.node]) OPEN[o.node] = {stop: i, org: o.id}; }); });
@@ -425,7 +514,7 @@ D.stops.forEach(function(s, i){ [s.node].concat(s.also || []).forEach(function(i
 var LAST = D.stops.length - 1;
 
 /* ================= state ================= */
-var st = {mode: store(D.id + "-mode") === "test" ? "test" : "learn", view: "start", i: 0, org: null, full: false, map: false, ans: {}, chk: {}, ci: {}};
+var st = {mode: store(D.id + "-mode") === "test" ? "test" : "learn", view: "start", i: 0, org: null, full: false, map: false, ans: {}, chk: {}, ci: {}, flip: {}, flow: {}, sort: {}, sortSel: null};
 var KEYS = {};   // answer key for every blank currently on screen
 
 function stop(){ return D.stops[st.i]; }
@@ -439,8 +528,9 @@ function wavePath(x0, x1, cy, amp, periods, dy, steps){
   for (var i = 0; i <= n; i++){ var x = x0 + (x1 - x0) * i / n, y = cy + (dy || 0) + amp * Math.sin(i / n * periods * 2 * Math.PI); d += (i ? "L" : "M") + x.toFixed(1) + " " + y.toFixed(1); }
   return d;
 }
-function icon(shape){
-  var f = 'fill="var(--gn-fill)" stroke="var(--gn-edge)" stroke-width="2"', s = '<svg viewBox="0 0 64 44" aria-hidden="true">';
+function icon(shape){ return '<svg viewBox="0 0 64 44" aria-hidden="true">' + iconInner(shape) + "</svg>"; }
+function iconInner(shape){
+  var f = 'fill="var(--gn-fill)" stroke="var(--gn-edge)" stroke-width="2"', s = "";
   function tube(d, w){ return '<path d="' + d + '" fill="none" stroke="var(--gn-edge)" stroke-width="' + (w + 4) + '" stroke-linecap="round"/><path d="' + d + '" fill="none" stroke="var(--gn-fill)" stroke-width="' + w + '" stroke-linecap="round"/>'; }
   switch (shape){
     case "rod": s += '<rect x="8" y="14" width="48" height="16" rx="8" ' + f + '/>'; break;
@@ -456,7 +546,7 @@ function icon(shape){
     case "intracellular": s += '<ellipse cx="32" cy="22" rx="28" ry="18" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="4 3"/>' + [[22, 17], [30, 26], [39, 18], [44, 27], [26, 29]].map(function(p){ return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3.6" ' + f + '/>'; }).join(""); break;
     default: s += '<rect x="14" y="13" width="36" height="18" rx="9" ' + f + '/>'; /* generic cell: TODO no shape given in the brief */
   }
-  return s + "</svg>";
+  return s;
 }
 
 /* ================= diagrams (drawn from scratch) ================= */
@@ -557,7 +647,7 @@ function placeRanks(sc){
   var el = $("#ranks"); if (!D.ranks){ el.hidden = true; return; }
   el.style.width = (T.W * sc) + "px";
   el.style.fontSize = Math.max(9, Math.min(13, 15 * sc)) + "px";
-  if (!el.children.length) el.innerHTML = D.ranks.map(function(r){ return '<span class="' + (r.lab ? "lab" : "") + '">' + esc(r.label) + "</span>"; }).join("");
+  if (!el.children.length) el.innerHTML = D.ranks.map(function(r){ return '<span class="' + (r.lab ? "lab" : "") + (r.minimal ? " min" : "") + '" style="--c:' + r.color + '">' + esc(r.label) + "</span>"; }).join("");
   $$("span", el).forEach(function(sp, c){ var col = T.cols[c]; sp.style.left = ((col.x - GAPX / 2 + 3) * sc) + "px"; sp.style.width = ((col.w + GAPX - 6) * sc) + "px"; });
 }
 function drawTree(){
@@ -573,7 +663,7 @@ function drawTree(){
   });
   h += '</g><g class="nodes">';
   TREE.forEach(function(n){
-    var cls = "tn" + (n.italic ? " it" : "") + (n.locked || n.muted ? " off" : "") + (n.kids.length ? "" : " leaf");
+    var cls = "tn" + (n.italic ? " it" : "") + (n.locked || n.muted ? " off" : "") + (n.kids.length ? "" : " leaf") + (RMIN[n.rank] ? " min" : "");
     h += '<g class="' + cls + '" data-node="' + n.id + '" tabindex="0" role="button" style="--c:' + colorOf(n) + '" transform="translate(' + n.x + " " + (n.y - NODEH / 2) + ')">' +
       '<rect width="' + n.w + '" height="' + NODEH + '" rx="' + (n.kids.length ? 10 : 17) + '"/><text x="' + (n.w / 2) + '" y="' + (NODEH / 2) + '"></text></g>';
   });
@@ -751,7 +841,8 @@ function drawMap(){
   MAP.rows.forEach(function(r, i){
     var y0 = MAP.rowY[r.id] - 10, hh = MAP.rowBottom[r.id] - MAP.rowY[r.id] + 20;
     if (i % 2 === 0) h += '<rect class="rowband" x="0" y="' + y0 + '" width="' + MAP.W + '" height="' + hh + '" rx="10"/>';
-    h += '<text class="rowlbl" x="14" y="' + (MAP.rowY[r.id] + MH / 2) + '" dominant-baseline="central">' + esc(r.label) + "</text>";
+    h += '<rect class="rowchip" x="8" y="' + (MAP.rowY[r.id] + 2) + '" width="' + (r.label.length * 9.2 + 18) + '" height="' + (MH - 4) + '" rx="8" style="--c:' + r.color + '"/>' +
+      '<text class="rowlbl" x="17" y="' + (MAP.rowY[r.id] + MH / 2) + '" dominant-baseline="central">' + esc(r.label) + "</text>";
   });
   h += '<g class="edges">';
   MAP.vis.forEach(function(n){
@@ -861,58 +952,209 @@ function traitsHtml(){
       h += '<div class="tg note" style="--c:' + colorOf(n) + '"><span class="tgl">' + lbl + ":</span> " + esc(n.note) + "</div>";
     }
   });
-  if (st.org){
-    var o = ORG[st.org], hide = testOn() && o.ids && o.ids.some(function(it, k){ return it.q && !st.chk["i:" + o.id + ":" + k]; });
-    if (o.only && o.only.length){
-      h += '<div class="tg only"><span class="tgl">' + (o.type === "phylum" ? esc(o.name) : "<i>" + esc(o.name) + "</i>") + " only:</span>" +
-        o.only.map(function(c){ return '<span class="chip">' + (hide ? "?" : esc(c)) + "</span>"; }).join("") + "</div>";
-    }
+  var o = st.org ? ORG[st.org] : (s.orgs && s.orgs.length === 1 ? s.orgs[0] : null);
+  if (o && o.tests){
+    var own = o.tests.filter(function(x){ return !x.from; });
+    var hide = testOn() && own.some(function(x){ return testable(x) && !st.chk["i:" + o.id + ":" + o.tests.indexOf(x)]; });
+    var chips = own.map(function(x){ var T0 = testOf(x); return (T0.chip && T0.chip(x.v)) || x.v; }).filter(Boolean);
+    if (chips.length) h += '<div class="tg only"><span class="tgl"><i>' + esc(o.name) + "</i>" + (o.sub ? " " + esc(o.sub) : "") + " only:</span>" +
+      chips.map(function(c){ return '<span class="chip">' + (hide ? "?" : esc(c)) + "</span>"; }).join("") + "</div>";
   }
   return h + "</div></section>";
 }
 
+/* ================= lab tests: what each result looks like (colors match the real tests) ================= */
+var IMVIC = ["++−−", "−−++", "−+−+", "−+−−"];
+var NEG = "#64748b";
+function tubeG(x, liquid, opts){
+  /* a small test tube 12 wide, 30 tall, at x. opts: ring (color at top), dots, band, bottom */
+  opts = opts || {};
+  var g = '<path d="M' + x + ' 6 V30 a6 6 0 0 0 12 0 V6" fill="' + liquid + '" stroke="#64748b" stroke-width="1.6"/>';
+  if (opts.ring) g += '<rect x="' + x + '" y="6" width="12" height="5" fill="' + opts.ring + '"/>';
+  if (opts.bottom) g += '<path d="M' + x + ' 26 V30 a6 6 0 0 0 12 0 V26 Z" fill="' + opts.bottom + '"/>';
+  if (opts.dots) opts.dots.forEach(function(p){ g += '<circle cx="' + (x + p[0]) + '" cy="' + p[1] + '" r="1.4" fill="#1e3a8a"/>'; });
+  if (opts.band) g += '<rect x="' + x + '" y="' + opts.band + '" width="12" height="3" fill="#1e3a8a" opacity=".75"/>';
+  return g;
+}
+function svgBox(inner){ return '<svg viewBox="0 0 64 44" aria-hidden="true">' + inner + "</svg>"; }
+function plateG(colony, edge){
+  var g = '<ellipse cx="32" cy="23" rx="26" ry="17" fill="var(--mac)" stroke="#94a3b8" stroke-width="1.6"/>';
+  [[22, 19], [34, 16], [42, 25], [28, 28], [18, 27], [38, 32]].forEach(function(p){ g += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3.4" fill="' + colony + '"' + (edge ? ' stroke="' + edge + '" stroke-width="1"' : "") + "/>"; });
+  return g;
+}
+function shapeKey(v){ return {"rod": "rod", "tiny rod": "rod", "coccobacillus": "coccobacillus", "diplococci": "diplococcus", "curved rod": "curved", "spiral rod": "spiral", "gull-wing spiral": "gullwing", "spirochete": "spirochete"}[v] || "rod"; }
+var SHAPES = ["rod", "coccobacillus", "diplococci", "curved rod", "spiral rod", "gull-wing spiral", "spirochete"];
+function pm(v){ return String(v).charAt(0) === "+" ? "+" : String(v).charAt(0) === "−" ? "−" : v; }
+var TESTS = {
+  gram: {name: "Gram stain", opts: ["pink (−)", "purple (+)"], ans: function(){ return "pink (−)"; },
+    back: function(v){ return {txt: "Pink (−)", sub: /poorly/.test(v) ? "stains poorly" : "safranin color", col: "#c2185b", svg: svgBox(iconInner("rod"))}; },
+    chip: function(){ return "gram −"; }, opp: function(){ return "gram +"; }},
+  shape: {name: "Shape", opts: SHAPES, ans: function(v){ return v === "tiny rod" ? "rod" : v; },
+    back: function(v){ return {txt: v, sub: "", col: "#be185d", svg: svgBox(iconInner(shapeKey(v)))}; },
+    chip: function(v){ return v; }, opp: function(v){ return /cocc/.test(v) ? "spirochete" : "diplococci"; }},
+  oxygen: {name: "Oxygen", opts: ["needs O₂ (aerobe)", "with or without O₂", "low O₂ (microaerophilic)"],
+    ans: function(v){ return /facultative/.test(v) ? "with or without O₂" : /micro/.test(v) ? "low O₂ (microaerophilic)" : "needs O₂ (aerobe)"; },
+    back: function(v){
+      var o = /facultative/.test(v) ? {dots: [[4, 10], [8, 13], [5, 18], [8, 23], [4, 28], [7, 31]]} : /micro/.test(v) ? {band: 14} : {dots: [[3, 9], [6, 8], [9, 9], [5, 11], [8, 11]]};
+      return {txt: v, sub: /facultative/.test(v) ? "grows with or without O₂" : /micro/.test(v) ? "needs a little O₂" : "grows at the top: needs O₂", col: "#1d4ed8", svg: svgBox(tubeG(26, "#fdf6e3", o))};
+    },
+    chip: function(v){ return v; }, opp: function(v){ return /facultative/.test(v) ? "obligate aerobe" : "facultative anaerobe"; }},
+  oxidase: {name: "Oxidase", opts: ["+", "−"], ans: pm,
+    back: function(v){ var p = pm(v) === "+"; return {txt: p ? "Positive (+)" : "Negative (−)", sub: p ? "turns purple" : "no color change", col: p ? "#6b21a8" : NEG, svg: svgBox('<rect x="10" y="12" width="44" height="20" rx="4" fill="#fff" stroke="#94a3b8"/><circle cx="32" cy="22" r="7" fill="' + (p ? "#6b21a8" : "#f1f5f9") + '" stroke="#94a3b8" stroke-width="' + (p ? 0 : 1) + '"/>')}; },
+    chip: function(v){ return "oxidase " + pm(v); }, opp: function(v){ return "oxidase " + (pm(v) === "+" ? "−" : "+"); }},
+  catalase: {name: "Catalase", opts: ["+", "−"], ans: pm,
+    back: function(v){ var p = pm(v) === "+"; return {txt: p ? "Positive (+)" : "Negative (−)", sub: p ? "bubbles" : "no bubbles", col: p ? "#0f766e" : NEG, svg: svgBox('<ellipse cx="32" cy="32" rx="20" ry="6" fill="#e0f2fe" stroke="#94a3b8"/>' + (p ? '<g fill="none" stroke="#0f766e" stroke-width="2"><circle cx="26" cy="24" r="5"/><circle cx="37" cy="19" r="4"/><circle cx="40" cy="28" r="3"/><circle cx="30" cy="12" r="3"/></g>' : ""))}; },
+    chip: function(v){ return "catalase " + pm(v); }, opp: function(v){ return "catalase " + (pm(v) === "+" ? "−" : "+"); }},
+  lactose: {name: "Lactose", opts: ["+", "−"], ans: pm,
+    back: function(v){ var p = pm(v) === "+"; return {txt: p ? "Positive (+)" : "Negative (−)", sub: p ? "pink colonies on MacConkey" : "colorless colonies on MacConkey", col: p ? "#be185d" : NEG, svg: svgBox(plateG(p ? "var(--col-pink)" : "var(--col-clear)", p ? null : "var(--col-clear-edge)"))}; },
+    chip: function(v){ return "lactose " + pm(v); }, opp: function(v){ return "lactose " + (pm(v) === "+" ? "−" : "+"); }},
+  imvic: {name: "IMViC", opts: IMVIC, ans: function(v){ return v; },
+    back: function(v){
+      var cols = [["#dc2626", "#facc15"], ["#dc2626", "#facc15"], ["#e11d48", "#fde68a"], ["#2563eb", "#16a34a"]], g = "";
+      for (var i = 0; i < 4; i++){ var r = v.charAt(i), c = r === "+" ? cols[i][0] : r === "−" ? cols[i][1] : "#cbd5e1"; g += i === 0 ? tubeG(6 + i * 14, "#fef9c3", {ring: c}) : tubeG(6 + i * 14, c); }
+      return {txt: v, sub: "I · M · V · C", col: "#b45309", svg: svgBox(g)};
+    },
+    chip: function(v){ return "IMViC " + v; }, opp: function(v){ return "IMViC " + (v === "++−−" ? "−−++" : "++−−"); }},
+  h2s: {name: "H₂S", opts: ["+", "−"], ans: pm,
+    back: function(v){ var p = pm(v) === "+", w = v === "weak"; return {txt: w ? "Weak" : p ? "Positive (+)" : "Negative (−)", sub: w ? "a little black" : p ? "black precipitate" : "no black", col: p || w ? "#1f2937" : NEG, svg: svgBox(tubeG(26, "#e7d7b1", p ? {bottom: "#111827"} : w ? {bottom: "#6b7280"} : {}))}; },
+    chip: function(v){ return v === "weak" ? "" : "H₂S " + pm(v); }, opp: function(v){ return v === "weak" ? "" : "H₂S " + (pm(v) === "+" ? "−" : "+"); }},
+  citrate: {name: "Citrate", opts: ["+", "−"], ans: pm,
+    back: function(v){ var p = pm(v) === "+"; return {txt: p ? "Positive (+)" : "Negative (−)", sub: p ? "turns blue" : "stays green", col: p ? "#2563eb" : NEG, svg: svgBox(tubeG(26, p ? "#2563eb" : "#16a34a"))}; },
+    chip: function(v){ return "citrate " + pm(v); }, opp: function(v){ return "citrate " + (pm(v) === "+" ? "−" : "+"); }},
+  urease: {name: "Urease", opts: ["+", "−"], ans: pm,
+    back: function(v){ var p = pm(v) === "+", slow = /slow/.test(v); return {txt: p ? (slow ? "Positive (slow)" : "Positive (+)") : "Negative (−)", sub: p ? "turns hot pink" : "stays yellow", col: p ? "#db2777" : NEG, svg: svgBox(tubeG(26, p ? (slow ? "#f9a8d4" : "#db2777") : "#fcd34d"))}; },
+    chip: function(v){ return "urease " + pm(v); }, opp: function(v){ return "urease " + (pm(v) === "+" ? "−" : "+"); }},
+  sugars: {name: "Sugars fermented", opts: ["glucose only", "glucose + maltose"], ans: function(v){ return v; },
+    back: function(v){ var m = /maltose/.test(v); return {txt: v, sub: "yellow = fermented", col: "#ca8a04", svg: svgBox(tubeG(17, "#facc15") + tubeG(35, m ? "#facc15" : "#ef4444") + '<text x="23" y="43" font-size="7" text-anchor="middle" fill="#64748b">glu</text><text x="41" y="43" font-size="7" text-anchor="middle" fill="#64748b">mal</text>')}; },
+    chip: function(v){ return "ferments " + v; }, opp: function(v){ return "ferments " + (/maltose/.test(v) ? "glucose only" : "glucose + maltose"); }},
+  media: {name: "Grows on", opts: null,
+    back: function(v){ var host = /host/.test(v); return {txt: v, sub: "", col: "#a16207", svg: svgBox(host ? '<ellipse cx="32" cy="22" rx="27" ry="17" fill="#fef3c7" stroke="#a16207" stroke-width="1.6"/><circle cx="34" cy="21" r="7" fill="#fde68a" stroke="#a16207"/>' + [[18, 16], [22, 28], [46, 15], [47, 27], [28, 33]].map(function(p){ return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="2.6" fill="var(--gn-fill)" stroke="var(--gn-edge)"/>'; }).join("") : '<ellipse cx="32" cy="23" rx="26" ry="17" fill="' + (/chocolate/.test(v) ? "#8b5a2b" : "#f3dfa9") + '" stroke="#a16207" stroke-width="1.6"/><circle cx="24" cy="20" r="2.6" fill="#fff"/><circle cx="36" cy="26" r="2.6" fill="#fff"/>')}; }},
+  pigment: {name: "Colonies", opts: null,
+    back: function(v){ var c = /red/.test(v) ? "#dc2626" : "#65a30d"; return {txt: v, sub: "", col: c, svg: svgBox(plateG(c))}; }},
+  feature: {name: "Look for", opts: null,
+    back: function(v, t){ return {txt: v, sub: "", col: "#475569", emoji: t.ic || "🔎"}; }}
+};
+function testOf(t){ return TESTS[t.k]; }
+function testable(t){ var T0 = testOf(t); return !!(T0 && T0.opts && T0.opts.indexOf(T0.ans(t.v)) >= 0); }
+function tileFront(t){ return t.label || testOf(t).name; }
+
+/* ================= microscope view: many small cells of the organism's shape ================= */
+function scopeSvg(shape){
+  var pos = [[42, 46, 20], [80, 38, -15], [108, 62, 40], [58, 78, -30], [88, 96, 10], [40, 104, 60], [112, 104, -40], [70, 120, 25]];
+  var inner = iconInner(shape), sc = shape === "spirochete" ? 0.62 : shape === "intracellular" ? 0.9 : 0.42;
+  var h = '<svg class="scope" viewBox="0 0 150 150" aria-hidden="true"><circle cx="75" cy="75" r="70" fill="var(--scope)" stroke="#33415c" stroke-width="7"/>';
+  (shape === "intracellular" ? pos.slice(0, 3) : pos).forEach(function(p){ h += '<g transform="translate(' + p[0] + " " + p[1] + ") rotate(" + p[2] + ") scale(" + sc + ') translate(-32 -22)">' + inner + "</g>"; });
+  return h + "</svg>";
+}
+
 /* ================= lesson + cards ================= */
-function list(items){ return '<ul class="bul">' + items.map(function(i){ return "<li>" + i + "</li>"; }).join("") + "</ul>"; }
-function more(m){ return m ? (m.h ? '<div class="moreh">' + m.h + "</div>" : "") + list(m.items) : ""; }
-function field(label, html, num){ return '<div><dt><span class="num">' + num + "</span>" + label + "</dt><dd>" + html + "</dd></div>"; }
-function orgCard(o){
-  var c = colorOf(N[o.node]), sel = st.org === o.id, t = testOn();
-  var nm = o.type === "phylum" ? esc(o.name) : "<i>" + esc(o.name) + "</i>" + (o.suffix ? " <small>" + esc(o.suffix) + "</small>" : "");
-  var h = '<article class="org' + (sel ? " on" : "") + '" id="org-' + o.id + '" data-org="' + o.id + '" style="--c:' + c + '">' +
-    '<header data-focus="' + o.id + '" title="Show on the tree">' + icon(o.shape) + "<h3>" + nm + '</h3><button type="button" class="btn small ghost" data-focus="' + o.id + '">' + (sel ? "📍 On the tree" : "Show on tree") + "</button></header>";
-  if (o.type === "phylum") return h + list(o.items) + "</article>";
-  h += "<dl>";
-  var n = 1;
-  if (o.ids){
-    h += field("Key ID results", '<ul class="idlist">' + o.ids.map(function(it, k){
-      if (!(t && it.q)) return "<li>" + it.t + "</li>";
-      var key = "i:" + o.id + ":" + k;
-      register(key, {a: it.a, kind: "id", why: "<b><i>" + esc(o.name) + "</i>, " + esc(it.q) + ":</b> " + it.t});
-      return '<li class="' + markCls(key) + '"><span class="q">' + esc(it.q) + ":</span> " + selectHtml(key, it.o, o.name + " " + it.q) + " " + markIcon(key) + (st.chk[key] ? '<span class="full">' + it.t + "</span>" : "") + "</li>";
-    }).join("") + "</ul>", n++);
+function boxesHtml(list, cls){ return '<div class="iboxes ' + (cls || "") + '">' + list.map(function(b){ return '<div class="ibox' + (b.warn ? " warn" : "") + '"><span class="ic">' + (b.ic || "") + "</span>" + (b.h ? "<h5>" + b.h + "</h5>" : "") + "<p>" + b.t + "</p></div>"; }).join("") + "</div>"; }
+function flipsHtml(oid, list, tag){
+  return '<div class="flips">' + list.map(function(f, i){
+    var key = "f:" + oid + ":" + tag + ":" + i, on = st.flip[key];
+    return '<button type="button" class="flipc' + (on ? " on" : "") + '" data-flip="' + key + '"><span class="in"><span class="fa">' + f.f + '<small>tap to reveal</small></span><span class="fb">' + f.b + "</span></span></button>";
+  }).join("") + "</div>";
+}
+function flowHtml(oid, fl){
+  var n = st.flow[oid] || 1, h = '<div class="flowbox" data-flowbox="' + oid + '"><h5>' + fl.title + '</h5><div class="flow">';
+  fl.steps.forEach(function(stp, i){
+    if (i) h += '<span class="arr' + (i < n ? " on" : "") + '" aria-hidden="true">→</span>';
+    h += '<div class="step' + (i < n ? " on" : "") + (i === 0 ? " first" : "") + '">' + stp + "</div>";
+  });
+  if (fl.loop) h += '<span class="arr loop' + (n >= fl.steps.length ? " on" : "") + '" aria-hidden="true">↺</span>';
+  h += "</div>";
+  if (fl.side) h += '<div class="flowside">' + fl.side + "</div>";
+  h += '<div class="btnrow">' + (n < fl.steps.length ? '<button class="btn small" type="button" data-flow="' + oid + '" data-dir="next">Next step →</button><button class="btn small ghost" type="button" data-flow="' + oid + '" data-dir="all">Show all</button>' : '<button class="btn small ghost" type="button" data-flow="' + oid + '" data-dir="reset">↺ Start over</button>') + "</div>";
+  return h + "</div>";
+}
+function tileHtml(o, t, k){
+  var T0 = testOf(t), key = "i:" + o.id + ":" + k, b = T0.back(t.v, t), canTest = testOn() && testable(t);
+  var on = canTest ? !!st.chk[key] : !!st.flip[key];
+  var from = t.from ? '<span class="from">from ' + esc(N[t.from].label) + "</span>" : "";
+  var front;
+  if (canTest){
+    register(key, {a: T0.ans(t.v), kind: "id", why: "<b><i>" + esc(o.name) + "</i>, " + plain(tileFront(t)) + ":</b> " + esc(b.txt) + (t.note ? " (" + t.note + ")" : "")});
+    front = '<span class="tq">' + tileFront(t) + "</span>" + selectHtml(key, T0.opts, o.name + " " + plain(tileFront(t)));
+  } else front = '<span class="tq">' + tileFront(t) + '</span><span class="qm">?</span><small>tap to flip</small>';
+  var mark = canTest && st.chk[key] ? '<span class="tmark ' + markCls(key) + '">' + (st.ans[key] === T0.ans(t.v) ? "✓ you got it" : "✗ you said " + esc(st.ans[key] || "nothing")) + "</span>" : "";
+  return '<div class="tile' + (on ? " on" : "") + '" style="--k:' + b.col + '"' + (canTest ? "" : ' role="button" tabindex="0" data-tile="' + key + '"') + '><div class="in"><div class="f">' + front + '</div><div class="b">' +
+    (b.emoji ? '<span class="temoji">' + b.emoji + "</span>" : b.svg) + "<b>" + esc(b.txt) + "</b>" + (b.sub ? "<small>" + esc(b.sub) + "</small>" : "") + (t.note ? '<small class="tnote">' + t.note + "</small>" : "") + from + mark + "</div></div></div>";
+}
+function sortItems(o){
+  /* own results first, then the tests that best tell organisms apart; skip the Gram stain (everything here is gram −) */
+  var PRI = ["sugars", "lactose", "oxidase", "urease", "h2s", "citrate", "imvic", "oxygen", "catalase", "shape"];
+  var cands = (o.tests || []).filter(function(t){ var T0 = testOf(t); return t.k !== "gram" && T0 && T0.chip && T0.chip(t.v) && T0.opp(t.v); });
+  cands.sort(function(a, b){ return ((a.from ? 100 : 0) + PRI.indexOf(a.k)) - ((b.from ? 100 : 0) + PRI.indexOf(b.k)); });
+  cands = cands.slice(0, 3);
+  if (cands.length < 2) return null;
+  var items = [];
+  cands.forEach(function(t){ var T0 = testOf(t); items.push({t: T0.chip(t.v), yes: true}); items.push({t: T0.opp(t.v), yes: false}); });
+  return shuffle(items, rng(hashStr("sort" + o.id)));
+}
+function sortHtml(o){
+  var items = sortItems(o); if (!items) return "";
+  var S = st.sort[o.id] || (st.sort[o.id] = {at: {}, chk: false}), sel = st.sortSel && st.sortSel.o === o.id ? st.sortSel.i : -1;
+  function chip(it, i){
+    var c = "schip" + (i === sel ? " sel" : "") + (S.chk && S.at[i] ? ((S.at[i] === "yes") === it.yes ? " right" : " wrong") : "");
+    return '<button type="button" class="' + c + '" data-schip="' + o.id + '" data-i="' + i + '"' + (S.chk ? " disabled" : "") + ">" + esc(it.t) + "</button>";
   }
+  var pool = "", yes = "", no = "", placed = 0;
+  items.forEach(function(it, i){ var w = S.at[i]; if (w) placed++; if (w === "yes") yes += chip(it, i); else if (w === "no") no += chip(it, i); else pool += chip(it, i); });
+  var nm = "<i>" + esc(o.name) + "</i>" + (o.sub ? " " + esc(o.sub) : "");
+  var h = '<section class="sec sortsec" data-sortsec="' + o.id + '"><h4 class="sech">✋ Quick sort</h4><p class="hint">Drag each result into a bin (or tap a result, then tap a bin).</p>' +
+    '<div class="spool">' + (pool || '<span class="hint">All sorted!</span>') + "</div>" +
+    '<div class="sbins"><div class="sbin" data-sbin="yes" data-o="' + o.id + '"><h5>✅ ' + nm + "</h5>" + yes + '</div><div class="sbin" data-sbin="no" data-o="' + o.id + '"><h5>❌ Not ' + nm + "</h5>" + no + "</div></div>";
+  if (S.chk){
+    var right = items.filter(function(it, i){ return (S.at[i] === "yes") === it.yes; }).length;
+    h += '<div class="msg ' + (right === items.length ? "good" : "bad") + '"><b>' + right + " of " + items.length + " sorted right.</b> " + (right === items.length ? "✨" : "Red ones are in the wrong bin.") + "</div>";
+  }
+  h += '<div class="btnrow">' + (S.chk ? '<button class="btn small ghost" type="button" data-sort="' + o.id + '" data-dir="reset">↺ Try again</button>' : '<button class="btn small" type="button" data-sort="' + o.id + '" data-dir="check"' + (placed < items.length ? " disabled" : "") + ">Check</button>") + "</div>";
+  return h + "</section>";
+}
+function orgCard(o){
+  var t = testOn(), sel = st.org === o.id;
+  var nm = o.type === "phylum" ? esc(o.name) : "<i>" + esc(o.name) + "</i>" + (o.sub ? " " + esc(o.sub) : "");
+  var h = '<article class="org v2' + (sel ? " on" : "") + '" id="org-' + o.id + '" data-org="' + o.id + '" style="--c:' + colorOf(N[o.node]) + '">';
+  h += '<div class="hero">' + scopeSvg(o.shape) + '<div><h3>' + nm + '</h3><div class="badges">';
+  if (o.type !== "phylum"){
+    h += '<span class="badge gram">GRAM −</span>';
+    var sh = (o.tests || []).filter(function(x){ return x.k === "shape"; })[0];
+    if (sh) h += '<span class="badge">' + esc(sh.v) + "</span>";
+    if (!t && o.disease) h += '<span class="badge">' + (o.emoji || "") + " " + esc(o.disease.short) + "</span>";
+  }
+  h += '</div><button type="button" class="btn small ghost" data-focus="' + o.id + '">' + (sel ? "📍 On the tree" : "Show on tree") + "</button></div></div>";
+  if (o.type === "phylum") return h + boxesHtml(o.boxes) + (o.flips ? flipsHtml(o.id, o.flips, "p") : "") + "</article>";
+
+  /* Lab ID tiles */
+  if (o.tests && o.tests.length){
+    h += '<section class="sec"><div class="sechead"><h4 class="sech">🧪 Lab ID</h4>' + (t ? "" : '<button class="btn small ghost" type="button" data-flipall="' + o.id + '">Flip all</button>') + "</div>" +
+      '<p class="hint">' + (t ? "Pick each result. Gray tiles flip when you tap them." : "Predict each result, then tap to flip.") + '</p><div class="tiles">' +
+      o.tests.map(function(x, k){ return tileHtml(o, x, k); }).join("") + "</div></section>";
+  }
+  /* Disease */
   if (o.disease){
-    var dh;
+    var d = o.disease, detail = (d.boxes ? boxesHtml(d.boxes, "small") : "") + (d.flips ? flipsHtml(o.id, d.flips, "d") : "") + (d.flow ? flowHtml(o.id, d.flow) : "");
+    h += '<section class="sec"><h4 class="sech">🦠 Disease</h4>';
     if (t){
       var dk = "d:" + o.id;
-      register(dk, {a: o.disease.short, kind: "disease", why: "<b><i>" + esc(o.name) + "</i> disease:</b> " + o.disease.html});
-      dh = mcHtml(dk, diseaseOpts(o)) + (st.chk[dk] ? '<div class="reveal">' + o.disease.html + more(o.disease.more) + "</div>" : "");
-    } else dh = o.disease.html + more(o.disease.more);
-    h += field("Disease", dh, n++);
+      register(dk, {a: d.short, kind: "disease", why: "<b><i>" + esc(o.name) + "</i> disease:</b> " + d.html});
+      h += mcHtml(dk, diseaseOpts(o)) + (st.chk[dk] ? '<div class="reveal"><div class="dzname"><span>' + (o.emoji || "") + "</span><b>" + d.html + "</b></div>" + detail + "</div>" : "");
+    } else h += '<div class="dzname"><span>' + (o.emoji || "") + "</span><b>" + d.html + "</b></div>" + detail;
+    h += "</section>";
   }
-  if (o.spread) h += field(o.spread.label, o.spread.html + more(o.spread.more), n++);
-  if (o.treat){
-    var th;
-    if (t){
-      var tk = "x:" + o.id;
-      register(tk, {a: o.treat.short, kind: "treat", why: "<b><i>" + esc(o.name) + "</i> " + o.treat.label.toLowerCase() + ":</b> " + o.treat.html});
-      th = mcHtml(tk, treatOpts(o)) + (st.chk[tk] ? '<div class="reveal">' + o.treat.html + "</div>" : "");
-    } else th = o.treat.html;
-    h += field(o.treat.label, th, n++);
+  /* Spread, found in, at risk, prevention, treatment */
+  var facts = (o.facts || []).slice();
+  if (o.treat && !t) facts.push({ic: "💊", h: "Treatment", t: o.treat.html});
+  if (facts.length) h += '<section class="sec">' + boxesHtml(facts) + "</section>";
+  if (o.treat && t){
+    var tk = "x:" + o.id;
+    register(tk, {a: o.treat.short, kind: "treat", why: "<b><i>" + esc(o.name) + "</i> treatment:</b> " + o.treat.html});
+    h += '<section class="sec"><h4 class="sech">💊 Treatment</h4>' + mcHtml(tk, treatOpts(o)) + (st.chk[tk] ? '<div class="reveal">' + o.treat.html + "</div>" : "") + "</section>";
   }
-  (o.extra || []).forEach(function(e){ h += field(e.h, list(e.items), n++); });
-  if (o.hook) h += field("Memory hook", '<div class="hook">💡 ' + o.hook + "</div>", n++);
-  return h + "</dl></article>";
+  (o.extra || []).forEach(function(e, i){ h += '<section class="sec"><h4 class="sech">' + e.h + "</h4>" + (e.boxes ? boxesHtml(e.boxes, "small") : "") + (e.flips ? flipsHtml(o.id, e.flips, "x" + i) : "") + "</section>"; });
+  if (o.hook) h += '<div class="hook">💡 <b>Memory hook:</b> ' + o.hook + "</div>";
+  h += sortHtml(o);
+  return h + "</article>";
 }
 function checkinHtml(s){
   var c = s.checkin; if (!c) return "";
@@ -973,9 +1215,9 @@ function finaleHtml(s){
 
 /* ================= enteric table ================= */
 function renderTable(){
-  var E = D.enteric, h = '<div class="legend"><span style="--c:' + N.coliforms.color + '"><i></i>Coliforms (lactose +)</span><span style="--c:' + N.noncoliforms.color + '"><i></i>Non-coliforms (lactose −)</span><span>' + esc(E.key) + "</span></div>";
+  var E = D.enteric, GC = E.groupColors, h = '<div class="legend"><span style="--c:' + GC.coliforms + '"><i></i>Coliforms (lactose +)</span><span style="--c:' + GC.noncoliforms + '"><i></i>Non-coliforms (lactose −)</span><span>' + esc(E.key) + "</span></div>";
   h += '<div class="tablewrap"><table class="ent"><thead><tr><th scope="col">Organism</th>' + E.cols.map(function(c){ return '<th scope="col">' + c + "</th>"; }).join("") + "</tr></thead><tbody>";
-  E.rows.forEach(function(r){ h += '<tr class="grp" style="--c:' + N[r.group].color + '"><td>' + esc(r.name) + "</td>" + r.v.map(function(x){ return "<td>" + x + "</td>"; }).join("") + "</tr>"; });
+  E.rows.forEach(function(r){ h += '<tr class="grp" style="--c:' + GC[r.group] + '"><td>' + esc(r.name) + "</td>" + r.v.map(function(x){ return "<td>" + x + "</td>"; }).join("") + "</tr>"; });
   h += '</tbody></table></div><p style="font-size:16px">' + E.footnote + "</p>";
   $("#entBody").innerHTML = h;
 }
@@ -1048,6 +1290,35 @@ document.addEventListener("click", function(e){
     $("#checkin").outerHTML = checkinHtml(s);
     return;
   }
+  if ((el = e.target.closest("[data-tile]"))){ var tk = el.getAttribute("data-tile"); st.flip[tk] = !st.flip[tk]; el.classList.toggle("on", st.flip[tk]); return; }
+  if ((el = e.target.closest("[data-flip]"))){ var fk = el.getAttribute("data-flip"); st.flip[fk] = !st.flip[fk]; el.classList.toggle("on", st.flip[fk]); return; }
+  if ((el = e.target.closest("[data-flipall]"))){
+    var card = el.closest(".org"), tiles = $$("[data-tile]", card), allOn = tiles.every(function(x){ return x.classList.contains("on"); });
+    tiles.forEach(function(x){ st.flip[x.getAttribute("data-tile")] = !allOn; x.classList.toggle("on", !allOn); });
+    el.textContent = allOn ? "Flip all" : "Hide all";
+    return;
+  }
+  if ((el = e.target.closest("[data-flow]"))){
+    var fo = el.getAttribute("data-flow"), fdir = el.getAttribute("data-dir"), forg = ORG[fo], fl = forg.disease.flow;
+    st.flow[fo] = fdir === "reset" ? 1 : fdir === "all" ? fl.steps.length : Math.min(fl.steps.length, (st.flow[fo] || 1) + 1);
+    var fb = $('[data-flowbox="' + fo + '"]'); if (fb) fb.outerHTML = flowHtml(fo, fl);
+    return;
+  }
+  if ((el = e.target.closest("[data-schip]"))){
+    if (sortDrag.moved) return;
+    var so = el.getAttribute("data-schip"), si = Number(el.getAttribute("data-i"));
+    st.sortSel = st.sortSel && st.sortSel.o === so && st.sortSel.i === si ? null : {o: so, i: si};
+    redrawSort(so); return;
+  }
+  if ((el = e.target.closest("[data-sbin]"))){
+    if (st.sortSel && st.sortSel.o === el.getAttribute("data-o")){ placeSort(st.sortSel.o, st.sortSel.i, el.getAttribute("data-sbin")); }
+    return;
+  }
+  if ((el = e.target.closest("[data-sort]"))){
+    var sto = el.getAttribute("data-sort"), SS = st.sort[sto];
+    if (el.getAttribute("data-dir") === "check") SS.chk = true; else { st.sort[sto] = {at: {}, chk: false}; st.sortSel = null; }
+    redrawSort(sto); return;
+  }
   if ((el = e.target.closest("[data-focus]"))){
     if (e.target.closest("select")) return;
     var id = el.getAttribute("data-focus");
@@ -1084,7 +1355,33 @@ document.addEventListener("change", function(e){
   var s = e.target.closest("select[data-key]"); if (!s) return;
   st.ans[s.getAttribute("data-key")] = s.value;
 });
+/* quick sort: drag a result chip into a bin (mouse, pen or finger); a tap without moving selects it instead */
+var sortDrag = {el: null, moved: false};
+function redrawSort(oid){ var sec = $('[data-sortsec="' + oid + '"]'); if (sec) sec.outerHTML = sortHtml(ORG[oid]); }
+function placeSort(oid, i, bin){ var S = st.sort[oid]; if (!S || S.chk) return; S.at[i] = bin; st.sortSel = null; redrawSort(oid); }
+document.addEventListener("pointerdown", function(e){
+  var c = e.target.closest && e.target.closest("[data-schip]"); if (!c || c.disabled) return;
+  sortDrag = {el: c, moved: false, x: e.clientX, y: e.clientY, id: e.pointerId};
+});
+document.addEventListener("pointermove", function(e){
+  var d = sortDrag; if (!d.el || e.pointerId !== d.id) return;
+  var dx = e.clientX - d.x, dy = e.clientY - d.y;
+  if (!d.moved && Math.abs(dx) + Math.abs(dy) > 8){ d.moved = true; d.el.classList.add("dragging"); try { d.el.setPointerCapture(e.pointerId); } catch (er) {} }
+  if (d.moved){ e.preventDefault(); d.el.style.transform = "translate(" + dx + "px," + dy + "px)"; }
+}, {passive: false});
+document.addEventListener("pointerup", function(e){
+  var d = sortDrag; if (!d.el || e.pointerId !== d.id) return;
+  if (d.moved){
+    d.el.style.visibility = "hidden";
+    var under = document.elementFromPoint(e.clientX, e.clientY), bin = under && under.closest("[data-sbin]");
+    d.el.style.visibility = ""; d.el.style.transform = ""; d.el.classList.remove("dragging");
+    if (bin && bin.getAttribute("data-o") === d.el.getAttribute("data-schip")) placeSort(bin.getAttribute("data-o"), Number(d.el.getAttribute("data-i")), bin.getAttribute("data-sbin"));
+    setTimeout(function(){ sortDrag = {el: null, moved: false}; }, 0);
+  } else sortDrag = {el: null, moved: false};
+});
 document.addEventListener("keydown", function(e){
+  var tl = e.target.closest && e.target.closest("[data-tile]");
+  if (tl && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); tl.click(); return; }
   var g = e.target.closest && e.target.closest("#tree .tn, #map .tn"); if (!g) return;
   if (e.key === "Enter" || e.key === " "){ e.preventDefault(); openNode(g.getAttribute("data-node")); }
 });
