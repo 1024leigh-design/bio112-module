@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bacteria Unit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Ch. 11 Bacteria unit hub: tours, games, and study tools in one place. Same tokens as the tour. */
+:root{
+  --bg:#f2f5f8; --surface:#ffffff; --surface-2:#e8eef4; --ink:#14223a; --muted:#53657b; --line:#d3dde7;
+  --arrow:#1683cc; --arrow-soft:#dcecf9; --good:#1f8a55; --bad:#c43a2b; --bad-soft:#fbe0db; --gold:#e3a008;
+  --gn-fill:#f7b6cf; --gn-edge:#c2185b; --gp-fill:#d8c8f5; --gp-edge:#6d28d9; --scope:#fdf2f6;
+  --f-display:'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --f-body:'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
+  --f-mono:'IBM Plex Mono', ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
+    --arrow:#4aa9ee; --arrow-soft:#173450; --good:#4ccb8b; --bad:#ff7d6d; --bad-soft:#46211d; --gold:#f5c542;
+    --gn-fill:#9c3d68; --gn-edge:#f48fb6; --gp-fill:#4c3a7a; --gp-edge:#c4b0f5; --scope:#2b1d26; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
+  --arrow:#4aa9ee; --arrow-soft:#173450; --good:#4ccb8b; --bad:#ff7d6d; --bad-soft:#46211d; --gold:#f5c542;
+  --gn-fill:#9c3d68; --gn-edge:#f48fb6; --gp-fill:#4c3a7a; --gp-edge:#c4b0f5; --scope:#2b1d26; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:18px; line-height:1.5; overflow-x:hidden}
+.wrap{max-width:1100px; margin:0 auto; padding:16px 16px 60px}
+h1,h2,h3{font-family:var(--f-display); margin:0; letter-spacing:-.01em}
+p{margin:0}
+.top{display:flex; align-items:center; gap:10px; padding-bottom:12px; border-bottom:1px solid var(--line); margin-bottom:24px}
+.top .brand{font-family:var(--f-display); font-weight:700}
+.top a{margin-left:auto; text-decoration:none; color:var(--ink); font-weight:700; font-size:15px; padding:8px 13px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface)}
+.hero{display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,1fr); gap:20px; align-items:center; margin-bottom:34px}
+@media (max-width:760px){ .hero{grid-template-columns:minmax(0,1fr)} }
+.eyebrow{font:600 13px var(--f-mono); letter-spacing:.08em; text-transform:uppercase; color:var(--arrow); margin-bottom:8px}
+.hero h1{font-size:clamp(38px,6.5vw,60px); line-height:1}
+.hero h1 span{color:var(--gn-edge)}
+.hero p{color:var(--muted); font-size:19px; margin-top:12px; max-width:44ch}
+.hero svg{width:100%; max-width:360px; height:auto; justify-self:center}
+section{margin-bottom:34px}
+.sec{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:14px}
+.sec h2{font-size:28px}
+.sec p{color:var(--muted); font-size:16.5px}
+.grid{display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.tile{position:relative; display:flex; flex-direction:column; gap:6px; background:var(--surface); border:1.5px solid var(--line); border-top:6px solid var(--c); border-radius:18px; padding:16px; text-decoration:none; color:var(--ink); transition:transform .15s, box-shadow .15s}
+a.tile:hover{transform:translateY(-3px); box-shadow:0 12px 26px rgba(0,0,0,.12); border-color:var(--c)}
+a.tile:focus-visible{outline:3px solid var(--arrow); outline-offset:2px}
+.tile .ic{font-size:34px; line-height:1}
+.tile svg{width:76px; height:52px}
+.tile .t{font-family:var(--f-display); font-weight:700; font-size:22px; line-height:1.15}
+.tile .d{color:var(--muted); font-size:16.5px}
+.tag{align-self:flex-start; font:600 12px var(--f-mono); text-transform:uppercase; letter-spacing:.05em; padding:3px 10px; border-radius:999px; background:var(--surface-2); color:var(--c)}
+.new{position:absolute; top:12px; right:12px; font:700 12px var(--f-mono); background:var(--gold); color:#1f1300; padding:3px 9px; border-radius:999px}
+.tile.soon{background:var(--surface-2); border-style:dashed; border-top-style:solid; color:var(--muted)}
+.tile.soon svg{filter:grayscale(.7); opacity:.7}
+.note{display:flex; gap:12px; align-items:flex-start; background:var(--surface); border:1.5px solid var(--line); border-left:6px solid var(--gold); border-radius:14px; padding:12px 16px; font-size:16.5px}
+.note b{font-family:var(--f-display)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><span class="brand">🧫 BIO 112 Microbiology</span><a href="index.html">☰ All modules</a></header>
+
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Chapter 11 · Unit hub</div>
+      <h1>The <span>Bacteria</span> unit</h1>
+      <p>Tour the bacterial family tree, then practice IDs, diseases, and spelling with the games.</p>
+    </div>
+    <svg viewBox="0 0 340 200" role="img" aria-label="A pink gram-negative rod and a purple gram-positive coccus side by side">
+      <circle cx="86" cy="96" r="78" fill="var(--scope)" stroke="#33415c" stroke-width="7"/>
+      <g fill="var(--gn-fill)" stroke="var(--gn-edge)" stroke-width="2.5" transform="translate(-6 -4)">
+        <rect x="55" y="70" width="46" height="16" rx="8" transform="rotate(-20 78 78)"/><rect x="88" y="104" width="46" height="16" rx="8" transform="rotate(25 111 112)"/><rect x="50" y="118" width="46" height="16" rx="8" transform="rotate(5 73 126)"/>
+      </g>
+      <circle cx="254" cy="96" r="78" fill="var(--surface)" stroke="#33415c" stroke-width="7"/>
+      <g fill="var(--gp-fill)" stroke="var(--gp-edge)" stroke-width="2.5" transform="translate(42 -4)">
+        <circle cx="185" cy="80" r="11"/><circle cx="205" cy="76" r="11"/><circle cx="225" cy="82" r="11"/><circle cx="196" cy="118" r="11"/><circle cx="216" cy="122" r="11"/><circle cx="236" cy="116" r="11"/>
+      </g>
+      <text x="86" y="194" text-anchor="middle" font-size="14" font-weight="700" fill="var(--gn-edge)">gram −</text>
+      <text x="254" y="194" text-anchor="middle" font-size="14" font-weight="700" fill="var(--gp-edge)">gram +</text>
+    </svg>
+  </section>
+
+  <section aria-labelledby="h-tours">
+    <div class="sec"><h2 id="h-tours">🌳 Family tree tours</h2><p>Start here</p></div>
+    <div class="grid">
+      <a class="tile" href="ch11-gram-neg-tour.html" style="--c:var(--gn-edge)">
+        <svg viewBox="0 0 64 44" aria-hidden="true"><rect x="8" y="14" width="48" height="16" rx="8" fill="var(--gn-fill)" stroke="var(--gn-edge)" stroke-width="2"/></svg>
+        <span class="tag">Learn</span><span class="t">Gram-Negative Tour</span><span class="d">39 stops: why each organism has its ID traits, with flip tiles, patient cases, and comics.</span></a>
+      <div class="tile soon" style="--c:var(--gp-edge)" aria-disabled="true">
+        <svg viewBox="0 0 64 44" aria-hidden="true"><circle cx="22" cy="22" r="10" fill="var(--gp-fill)" stroke="var(--gp-edge)" stroke-width="2"/><circle cx="42" cy="22" r="10" fill="var(--gp-fill)" stroke="var(--gp-edge)" stroke-width="2"/></svg>
+        <span class="tag">Learn · coming soon</span><span class="t">Gram-Positive Tour</span><span class="d">Firmicutes and Actinobacteria.</span></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-games">
+    <div class="sec"><h2 id="h-games">🎮 Games</h2><p>Practice, compete, collect</p></div>
+    <div class="grid">
+      <a class="tile" href="microbe-collector.html" style="--c:var(--gold)"><span class="new">NEW</span><span class="ic">🃏</span>
+        <span class="tag">Game</span><span class="t">Microbe Collector</span><span class="d">Earn a trading card for every organism: ID it, name its disease, spell it. Collect full sets.</span></a>
+      <a class="tile" href="mystery-microbe.html" style="--c:#0e7490"><span class="ic">🕵️</span>
+        <span class="tag">Game</span><span class="t">Mystery Microbe</span><span class="d">Flip lab-test cards and guess the mystery organism.</span></a>
+      <a class="tile" href="disease-type.html" style="--c:#7c3aed"><span class="ic">⌨️</span>
+        <span class="tag">Game</span><span class="t">Disease Typing Game</span><span class="d">See a disease, type the organism that causes it before time runs out.</span></a>
+      <!-- TODO: Microbe Match isn't in this repo yet. Swap this tile for a link once it exists. -->
+      <div class="tile soon" style="--c:#64748b" aria-disabled="true"><span class="ic">🧩</span>
+        <span class="tag">Game · coming soon</span><span class="t">Microbe Match</span><span class="d">Match each microbe to its traits.</span></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-tools">
+    <div class="sec"><h2 id="h-tools">🧰 Study tools</h2><p>Quick references</p></div>
+    <div class="grid">
+      <a class="tile" href="ch11-gram-neg-tour.html#cheats" style="--c:var(--bad)"><span class="ic">🎯</span>
+        <span class="tag">Reference</span><span class="t">ID cheat sheet</span><span class="d">One clue that sets each organism apart, like "the only gram-negative with a red pigment."</span></a>
+      <a class="tile" href="ch11-gram-neg-tour.html#table" style="--c:#ea580c"><span class="ic">📋</span>
+        <span class="tag">Reference</span><span class="t">Enteric ID table</span><span class="d">Lactose, IMViC, H₂S, and urease for every enteric.</span></a>
+    </div>
+  </section>
+
+  <div class="note"><span style="font-size:26px">🏆</span><div><b>Class leaderboards.</b> Saving your game score is always optional. Use any nickname: only the nickname, score, and date are saved. You get a secret claim code that only you and your instructor can match.</div></div>
+</div>
+</body>
+</html>

@@ -199,23 +199,12 @@ canvas#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:200}
       <div class="stat-card"><div class="val" id="s-avg">0</div><div class="lbl">Avg per Microbe</div></div>
       <div class="stat-card"><div class="val" id="s-best">0</div><div class="lbl">Best Round</div></div>
     </div>
-    <div id="leaderboard-section">
-      <h3>🏆 Leaderboard</h3>
-      <div id="name-row">
-        <input id="player-name-input" type="text" placeholder="Enter your name to save score" maxlength="30">
-        <button id="save-btn">Save Score</button>
-      </div>
-      <table id="lb-table">
-        <thead><tr>
-          <th>#</th><th>Name</th><th>Total</th><th>Microbes</th><th>Avg</th><th>Date</th>
-        </tr></thead>
-        <tbody id="lb-body"><tr><td colspan="6" style="text-align:center;color:#aaa;padding:16px">Loading leaderboard... 🔄</td></tr></tbody>
-      </table>
-    </div>
+    <div id="leaderboard-section"></div>
     <button id="play-again-btn">Play Again! 🦠</button>
   </div>
 </div>
 
+<script src="leaderboard.js"></script>
 <script>
 // ─────────────────────────────────────────────────────────────
 // ORGANISM DATA
@@ -991,7 +980,13 @@ function levenshtein(a, b) {
   return dp[m][n];
 }
 
-function normalize(s){ return s.trim().toLowerCase().replace(/[.,;:!?]+$/,''); }
+/* accept plural / group forms of the genus word: Fusobacteria = Fusobacterium, Staphylococci = Staphylococcus, ... */
+function singularGenus(s){
+  var parts = s.split(" "), g = parts[0];
+  g = g.replace(/bacteria$/, "bacterium").replace(/cocci$/, "coccus").replace(/bacilli$/, "bacillus").replace(/^clostridia$/, "clostridium").replace(/^chlamydiae$/, "chlamydia").replace(/^neisseriae$/, "neisseria");
+  parts[0] = g; return parts.join(" ");
+}
+function normalize(s){ return singularGenus(s.trim().toLowerCase().replace(/[.,;:!?]+$/,'').replace(/\s+/g,' ')); }
 
 function checkGuess() {
   const raw = document.getElementById('guess-input').value;
@@ -1134,80 +1129,14 @@ function triggerConfetti() {
 // ─────────────────────────────────────────────────────────────
 // DB / LEADERBOARD
 // ─────────────────────────────────────────────────────────────
-let dbRef = null;
-let userRef = null;
-
-async function initDB() {
-  try {
-    dbRef = await window.claude.use('db');
-    userRef = await window.claude.use('user');
-  } catch(e) {
-    dbRef = null; userRef = null;
-  }
+// Class leaderboard: optional nickname save to the instructor's Google Sheet (leaderboard.js)
+function loadLeaderboard(){
+  if(!window.BIO112_LB) return;
+  BIO112_LB.widget(document.getElementById('leaderboard-section'), {game: 'mystery', title: 'Class leaderboard', score: function(){
+    return {score: state.total, details: state.sessionScores.length + ' microbes'};
+  }});
 }
 
-async function saveScore(name) {
-  if (!dbRef || !userRef) {
-    showLBError('Leaderboard not available in this environment.');
-    return;
-  }
-  const scores = state.sessionScores;
-  const total = state.total;
-  const count = scores.length;
-  if (count === 0) { showLBError("Complete at least one microbe first!"); return; }
-  const avg = parseFloat((total/count).toFixed(2));
-  const uid = await userRef.id();
-  const docId = uid || ('anon_' + Date.now().toString(36));
-  try {
-    await dbRef.collection('leaderboard').doc(docId).set({
-      name: name.trim().substring(0,30),
-      totalPoints: total,
-      microbesCompleted: count,
-      avgPoints: avg,
-      date: new Date().toLocaleDateString(),
-      timestamp: Date.now()
-    });
-    document.getElementById('save-btn').disabled = true;
-    document.getElementById('save-btn').textContent = 'Saved! ✅';
-    loadLeaderboard();
-  } catch(e) {
-    showLBError('Could not save score. Try again!');
-  }
-}
-
-async function loadLeaderboard() {
-  const tbody = document.getElementById('lb-body');
-  if (!dbRef) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#aaa;padding:12px">Leaderboard requires claude.ai artifact viewer 🔬</td></tr>';
-    return;
-  }
-  try {
-    const snap = await dbRef.collection('leaderboard').orderBy('totalPoints','desc').limit(20).get();
-    if (snap.empty) {
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#aaa;padding:12px">No scores yet. Be the first! 🏆</td></tr>';
-      return;
-    }
-    tbody.innerHTML = snap.docs.map((doc,i)=>{
-      const d = doc.data();
-      if(!d) return '';
-      return `<tr>
-        <td class="lb-rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</td>
-        <td>${escHtml(d.name||'Anonymous')}</td>
-        <td><strong>${d.totalPoints||0}</strong></td>
-        <td>${d.microbesCompleted||0}</td>
-        <td>${typeof d.avgPoints==='number'?d.avgPoints.toFixed(1):d.avgPoints||0}</td>
-        <td style="color:#aaa;font-size:.8rem">${d.date||''}</td>
-      </tr>`;
-    }).join('');
-  } catch(e) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#aaa;padding:12px">Could not load leaderboard 😢</td></tr>';
-  }
-}
-
-function showLBError(msg) {
-  const tbody = document.getElementById('lb-body');
-  tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#c44;padding:12px">${msg}</td></tr>`;
-}
 
 function escHtml(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -1228,16 +1157,11 @@ document.getElementById('play-again-btn').addEventListener('click', ()=>{
   document.getElementById('modal-overlay').classList.remove('active');
   startSession();
 });
-document.getElementById('save-btn').addEventListener('click', ()=>{
-  const n = document.getElementById('player-name-input').value.trim();
-  if(!n){document.getElementById('player-name-input').focus();return;}
-  saveScore(n);
-});
+
 
 // ─────────────────────────────────────────────────────────────
 // INIT
 // ─────────────────────────────────────────────────────────────
-initDB();
 startSession();
 </script>
 </body>

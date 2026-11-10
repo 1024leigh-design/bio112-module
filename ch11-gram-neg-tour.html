@@ -401,6 +401,39 @@ table.ent tr.grp td{background:color-mix(in srgb, var(--c) 12%, var(--surface))}
 .sw input:focus{border-bottom-color:var(--arrow)}
 .sw.good{border-color:var(--good); background:var(--good-soft)}
 .sw.bad{border-color:var(--bad); background:var(--bad-soft)}
+/* animations: oxidase bloom, catalase bubbles, Proteus swarm */
+:root{--agar2:#f3e7c4}
+:root[data-theme="dark"]{--agar2:#4a3f26}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--agar2:#4a3f26} }
+.tile.on .oxdot{transform-box:fill-box; transform-origin:center; animation:bloom 1.1s ease-out .35s both}
+@keyframes bloom{from{transform:scale(0); opacity:.2} to{transform:scale(1); opacity:1}}
+.tile.on .bubs circle{animation:bub 1.6s ease-in infinite}
+.tile.on .bubs circle:nth-child(2){animation-delay:.4s} .tile.on .bubs circle:nth-child(3){animation-delay:.8s} .tile.on .bubs circle:nth-child(4){animation-delay:1.2s}
+@keyframes bub{0%{transform:translateY(6px); opacity:0} 30%{opacity:1} 100%{transform:translateY(-10px); opacity:0}}
+.swarmbox{display:flex; flex-wrap:wrap; align-items:center; gap:14px; border:2px solid var(--line); border-radius:16px; padding:12px; background:var(--surface)}
+.swarmbox svg{width:220px; max-width:100%; height:auto}
+.swarmbox p{flex:1 1 180px; margin:0; font-size:17px}
+.swarmbox .ring{transform-box:fill-box; transform-origin:center; animation:swarm 3.6s ease-out infinite; opacity:0}
+@keyframes swarm{0%{transform:scale(.06); opacity:.95} 85%{opacity:.5} 100%{transform:scale(1); opacity:0}}
+/* in your life, comics, cases */
+.life{display:flex; flex-direction:column; gap:8px; border-left:6px solid var(--good); padding:4px 0 4px 12px}
+.comic{display:flex; flex-direction:column; gap:10px}
+.panels{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px}
+@media (max-width:700px){ .panels{grid-template-columns:minmax(0,1fr)} }
+.panel{position:relative; margin:0; border:3px solid var(--ink); border-radius:6px; background:var(--surface); overflow:hidden; display:flex; flex-direction:column}
+.panel svg{display:block; width:100%; height:auto; aspect-ratio:300/190; border-bottom:3px solid var(--ink)}
+.panel figcaption{padding:8px 10px; font-size:15.5px; line-height:1.4}
+.panel .pnum{position:absolute; top:6px; left:6px; width:26px; height:26px; border-radius:50%; background:var(--ink); color:var(--bg); font:700 13px var(--f-mono); display:flex; align-items:center; justify-content:center}
+.casebtn{background:var(--good); border-color:var(--good)}
+.case{display:flex; flex-direction:column; gap:10px; border:2.5px solid var(--good); border-radius:18px; padding:16px; background:var(--surface)}
+.case h5{margin:4px 0 0; font-family:var(--f-display); font-size:17px}
+.case .story{background:var(--good-soft); border-radius:12px; padding:12px; font-size:17.5px}
+.ctests{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:8px}
+.ctest{display:flex; flex-direction:column; align-items:flex-start; gap:2px; text-align:left; border:2px dashed var(--line); background:var(--surface-2); border-radius:12px; padding:10px 12px; cursor:pointer; font:inherit; color:inherit}
+.ctest span{font-size:22px} .ctest b{font-size:16px} .ctest em{font-style:normal; font-size:15px; color:var(--muted)}
+.ctest.on{border-style:solid; border-color:var(--arrow); background:var(--arrow-soft); cursor:default}
+.ctest.on em{color:var(--ink)}
+@media (prefers-reduced-motion: reduce){ .tile.on .oxdot, .tile.on .bubs circle, .swarmbox .ring{animation:none!important; opacity:1} }
 /* tree + map: one color per level; oxygen / lactose kept small and gray */
 .ranks span{border:1.5px solid var(--c); background:color-mix(in srgb, var(--c) 16%, var(--surface))}
 .ranks span.lab{border-style:dashed}
@@ -542,7 +575,8 @@ var LAST = D.stops.length - 1;
 
 /* ================= state ================= */
 var CHEATLIST = [];
-var st = {spell: {}, mode: store(D.id + "-mode") === "test" ? "test" : "learn", view: "start", i: 0, org: null, full: false, map: false, ans: {}, chk: {}, ci: {}, flip: {}, flow: {}, sort: {}, sortSel: null};
+var CASES = {};
+var st = {spell: {}, cases: {}, mode: store(D.id + "-mode") === "test" ? "test" : "learn", view: "start", i: 0, org: null, full: false, map: false, ans: {}, chk: {}, ci: {}, flip: {}, flow: {}, sort: {}, sortSel: null};
 var KEYS = {};   // answer key for every blank currently on screen
 
 function stop(){ return D.stops[st.i]; }
@@ -555,6 +589,22 @@ function wavePath(x0, x1, cy, amp, periods, dy, steps){
   var d = "", n = steps || 120;
   for (var i = 0; i <= n; i++){ var x = x0 + (x1 - x0) * i / n, y = cy + (dy || 0) + amp * Math.sin(i / n * periods * 2 * Math.PI); d += (i ? "L" : "M") + x.toFixed(1) + " " + y.toFixed(1); }
   return d;
+}
+function wavePhase(x0, x1, cy, amp, periods, dy, steps, ph){
+  var d = "";
+  for (var i = 0; i <= steps; i++){ var x = x0 + (x1 - x0) * i / steps, y = cy + dy + amp * Math.sin(i / steps * periods * 2 * Math.PI + ph); d += (i ? "L" : "M") + x.toFixed(1) + " " + y.toFixed(1); }
+  return d;
+}
+var axialAnim = 0;
+function startAxial(){
+  var paths = $$("#lesson [data-wave]"); if (!paths.length || reduced) return;
+  var id = ++axialAnim, t0 = performance.now();
+  (function step(now){
+    if (id !== axialAnim || !paths[0].isConnected) return;
+    var ph = -((now - t0) / 1000) * 2.2;
+    paths.forEach(function(pth){ pth.setAttribute("d", wavePhase(40, 480, 92, 32, 3, Number(pth.getAttribute("data-wave")), 160, ph)); });
+    requestAnimationFrame(step);
+  })(t0);
 }
 function icon(shape){ return '<svg viewBox="0 0 64 44" aria-hidden="true">' + iconInner(shape) + "</svg>"; }
 function iconInner(shape){
@@ -621,11 +671,11 @@ var DIAGRAMS = {
   },
   axial: function(){
     var d = wavePath(40, 480, 92, 32, 3, 0, 160);
-    var s = '<svg viewBox="0 0 520 290" role="img" aria-label="Spirochete with axial filaments running inside the cell, under the outer membrane.">' +
-      '<path d="' + d + '" fill="none" stroke="var(--gn-edge)" stroke-width="40" stroke-linecap="round"/>' +
-      '<path d="' + d + '" fill="none" stroke="var(--gn-fill)" stroke-width="33" stroke-linecap="round"/>' +
-      '<path d="' + wavePath(40, 480, 92, 32, 3, -7, 160) + '" fill="none" stroke="var(--arrow)" stroke-width="3.5"/>' +
-      '<path d="' + wavePath(40, 480, 92, 32, 3, 7, 160) + '" fill="none" stroke="var(--arrow)" stroke-width="3.5"/>' +
+    var s = '<svg viewBox="0 0 520 290" role="img" aria-label="Spirochete with axial filaments running inside the cell, under the outer membrane. It twists like a corkscrew.">' +
+      '<path data-wave="0" d="' + d + '" fill="none" stroke="var(--gn-edge)" stroke-width="40" stroke-linecap="round"/>' +
+      '<path data-wave="0" d="' + d + '" fill="none" stroke="var(--gn-fill)" stroke-width="33" stroke-linecap="round"/>' +
+      '<path data-wave="-7" d="' + wavePath(40, 480, 92, 32, 3, -7, 160) + '" fill="none" stroke="var(--arrow)" stroke-width="3.5"/>' +
+      '<path data-wave="7" d="' + wavePath(40, 480, 92, 32, 3, 7, 160) + '" fill="none" stroke="var(--arrow)" stroke-width="3.5"/>' +
       '<path d="M24 184 H56" stroke="var(--arrow)" stroke-width="4"/><text class="dg-t" x="66" y="184" dominant-baseline="central">Axial filaments: flagella inside the cell</text>' +
       '<path d="M24 222 H56" stroke="var(--gn-edge)" stroke-width="8" stroke-linecap="round"/><text class="dg-t" x="66" y="222" dominant-baseline="central">Outer membrane</text>' +
       '<text class="dg-m" x="24" y="268">Filaments rotate → the whole cell twists</text>';
@@ -1034,10 +1084,10 @@ var TESTS = {
     },
     chip: function(v){ return v; }, opp: function(v){ return /facultative/.test(v) ? "obligate aerobe" : "facultative anaerobe"; }},
   oxidase: {name: "Oxidase", opts: ["+", "−"], ans: pm,
-    back: function(v){ var p = pm(v) === "+"; return {txt: p ? "Positive (+)" : "Negative (−)", sub: p ? "turns purple" : "no color change", col: p ? "#6b21a8" : NEG, svg: svgBox('<rect x="10" y="12" width="44" height="20" rx="4" fill="#fff" stroke="#94a3b8"/><circle cx="32" cy="22" r="7" fill="' + (p ? "#6b21a8" : "#f1f5f9") + '" stroke="#94a3b8" stroke-width="' + (p ? 0 : 1) + '"/>')}; },
+    back: function(v){ var p = pm(v) === "+"; return {txt: p ? "Positive (+)" : "Negative (−)", sub: p ? "turns purple" : "no color change", col: p ? "#6b21a8" : NEG, svg: svgBox('<rect x="10" y="12" width="44" height="20" rx="4" fill="#fff" stroke="#94a3b8"/><circle class="' + (p ? "oxdot" : "") + '" cx="32" cy="22" r="7" fill="' + (p ? "#6b21a8" : "#f1f5f9") + '" stroke="#94a3b8" stroke-width="' + (p ? 0 : 1) + '"/>')}; },
     chip: function(v){ return "oxidase " + pm(v); }, opp: function(v){ return "oxidase " + (pm(v) === "+" ? "−" : "+"); }},
   catalase: {name: "Catalase", opts: ["+", "−"], ans: pm,
-    back: function(v){ var p = pm(v) === "+"; return {txt: p ? "Positive (+)" : "Negative (−)", sub: p ? "bubbles" : "no bubbles", col: p ? "#0f766e" : NEG, svg: svgBox('<ellipse cx="32" cy="32" rx="20" ry="6" fill="#e0f2fe" stroke="#94a3b8"/>' + (p ? '<g fill="none" stroke="#0f766e" stroke-width="2"><circle cx="26" cy="24" r="5"/><circle cx="37" cy="19" r="4"/><circle cx="40" cy="28" r="3"/><circle cx="30" cy="12" r="3"/></g>' : ""))}; },
+    back: function(v){ var p = pm(v) === "+"; return {txt: p ? "Positive (+)" : "Negative (−)", sub: p ? "bubbles" : "no bubbles", col: p ? "#0f766e" : NEG, svg: svgBox('<ellipse cx="32" cy="32" rx="20" ry="6" fill="#e0f2fe" stroke="#94a3b8"/>' + (p ? '<g class="bubs" fill="none" stroke="#0f766e" stroke-width="2"><circle cx="26" cy="24" r="5"/><circle cx="37" cy="19" r="4"/><circle cx="40" cy="28" r="3"/><circle cx="30" cy="12" r="3"/></g>' : ""))}; },
     chip: function(v){ return "catalase " + pm(v); }, opp: function(v){ return "catalase " + (pm(v) === "+" ? "−" : "+"); }},
   lactose: {name: "Lactose", opts: ["+", "−"], ans: pm,
     back: function(v){ var p = pm(v) === "+"; return {txt: p ? "Positive (+)" : "Negative (−)", sub: p ? "pink colonies on MacConkey" : "colorless colonies on MacConkey", col: p ? "#be185d" : NEG, svg: svgBox(plateG(p ? "var(--col-pink)" : "var(--col-clear)", p ? null : "var(--col-clear-edge)"))}; },
@@ -1145,10 +1195,11 @@ function sortHtml(o){
   h += '<div class="btnrow">' + (S.chk ? '<button class="btn small ghost" type="button" data-sort="' + o.id + '" data-dir="reset">↺ Try again</button>' : '<button class="btn small" type="button" data-sort="' + o.id + '" data-dir="check"' + (placed < items.length ? " disabled" : "") + ">Check</button>") + "</div>";
   return h + "</section>";
 }
-function cheatHtml(c){ return c ? '<div class="cheat"><span class="ci">🎯</span><div><b>ID cheat:</b> ' + c + ' <button type="button" class="linkbtn" data-act="cheats">See all ID cheats →</button></div></div>' : ""; }
+function cheatHtml(c, o){ return c ? '<div class="cheat"><span class="ci">🎯</span><div><b>ID cheat' + (o ? " (<i>" + esc(o.name) + "</i>)" : "") + ':</b> ' + c + ' <button type="button" class="linkbtn" data-act="cheats">See all ID cheats →</button></div></div>' : ""; }
 function spellWords(o){ return (o.spell || o.name).split(" "); }
 function spellHtml(o){
-  var words = spellWords(o), S = st.spell[o.id] || (st.spell[o.id] = {v: [], chk: false});
+  var words = spellWords(o), S = st.spell[o.id] || (st.spell[o.id] = {v: [], chk: false, open: false});
+  if (!S.open) return '<div data-spellsec="' + o.id + '"><button class="btn ghost small" type="button" data-spell="' + o.id + '" data-dir="open">✏️ Practice spelling</button></div>';
   var ok = words.map(function(w, i){ var v = (S.v[i] || "").trim().toLowerCase(); return v === w.slice(1).toLowerCase() || v === w.toLowerCase(); });
   var h = '<section class="sec spell" data-spellsec="' + o.id + '"><h4 class="sech">✏️ Practice spelling</h4><p class="hint">Type the rest of each word.</p><div class="spellrow">';
   words.forEach(function(w, i){
@@ -1175,7 +1226,6 @@ function orgCard(o){
     if (!t && o.disease) h += '<span class="badge">' + (o.emoji || "") + " " + esc(o.disease.short) + "</span>";
   }
   h += '</div><button type="button" class="btn small ghost" data-focus="' + o.id + '">' + (sel ? "📍 On the tree" : "Show on tree") + "</button></div></div>";
-  h += cheatHtml(o.cheat);
   if (o.type === "phylum") return h + boxesHtml(o.boxes) + (o.flips ? flipsHtml(o.id, o.flips, "p") : "") + "</article>";
 
   /* Lab ID tiles */
@@ -1205,6 +1255,9 @@ function orgCard(o){
     h += '<section class="sec"><h4 class="sech">💊 Treatment</h4>' + mcHtml(tk, treatOpts(o)) + (st.chk[tk] ? '<div class="reveal">' + o.treat.html + "</div>" : "") + "</section>";
   }
   (o.extra || []).forEach(function(e, i){ h += '<section class="sec"><h4 class="sech">' + e.h + "</h4>" + (e.boxes ? boxesHtml(e.boxes, "small") : "") + (e.flips ? flipsHtml(o.id, e.flips, "x" + i) : "") + "</section>"; });
+  if (o.anim === "swarm") h += '<section class="sec"><h4 class="sech">🌊 Watch it swarm</h4><div class="swarmbox"><svg viewBox="0 0 220 160" role="img" aria-label="A Proteus colony spreading across the agar in waves of rings"><ellipse cx="110" cy="80" rx="100" ry="70" fill="var(--agar2)" stroke="#94a3b8" stroke-width="2"/>' +
+    [0, 1, 2, 3].map(function(k){ return '<ellipse class="ring" style="animation-delay:' + (k * 0.9) + 's" cx="110" cy="80" rx="96" ry="66" fill="none" stroke="#a16207" stroke-width="3"/>'; }).join("") +
+    '<circle cx="110" cy="80" r="6" fill="#a16207"/></svg><p>Each wave of cells spreads out across the whole plate.</p></div></section>';
   if (o.hook) h += '<div class="hook">💡 <b>Memory hook:</b> ' + o.hook + "</div>";
   h += sortHtml(o);
   h += spellHtml(o);
@@ -1236,16 +1289,71 @@ function checkbarHtml(keys){
     (done.length ? '<button class="btn ghost" type="button" data-act="retry">Try again</button>' : "") + "</div>";
   return h + "</section>";
 }
+/* ---- mini comics: simple scenes drawn from shapes and emoji ---- */
+function sceneSvg(name){
+  var E = function(x, y, sz, e){ return '<text x="' + x + '" y="' + y + '" font-size="' + sz + '" text-anchor="middle" dominant-baseline="central">' + e + "</text>"; };
+  var flea = function(x, y){ return '<g transform="translate(' + x + " " + y + ')"><ellipse rx="5" ry="3.6" fill="#3f2a14"/><path d="M-3 2 l-3 4 M0 3 l0 5 M3 2 l3 4" stroke="#3f2a14" stroke-width="1.2"/></g>'; };
+  var h = '<svg viewBox="0 0 300 190" preserveAspectRatio="xMidYMid slice" aria-hidden="true">';
+  switch (name){
+    case "hotel":
+      h += '<rect width="300" height="190" fill="#dbeafe"/><rect x="70" y="40" width="160" height="150" fill="#cbd5e1" stroke="#334155" stroke-width="3"/>';
+      for (var r = 0; r < 4; r++) for (var c = 0; c < 5; c++) h += '<rect x="' + (82 + c * 29) + '" y="' + (52 + r * 26) + '" width="18" height="14" fill="#fde68a" stroke="#334155" stroke-width="1.5"/>';
+      h += '<rect x="40" y="14" width="220" height="26" rx="4" fill="#1d4ed8"/><text x="150" y="27" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="700" fill="#fff">AMERICAN LEGION 1976</text>' + E(40, 168, 30, "🧍") + E(262, 168, 30, "🧍‍♀️") + E(235, 172, 26, "🧍‍♂️"); break;
+    case "sick":
+      h += '<rect width="300" height="190" fill="#fef3c7"/>' + E(80, 100, 64, "🤒") + E(210, 100, 64, "🤧") + '<path d="M150 30 q40 -20 80 0 q10 25 -20 30 l-10 14 l-2 -14 q-40 -2 -48 -30z" fill="#fff" stroke="#334155" stroke-width="2"/><text x="190" y="40" text-anchor="middle" font-size="16" font-weight="700" fill="#334155">*cough*</text>' + E(150, 160, 28, "❓ ❓ ❓"); break;
+    case "tower":
+      h += '<rect width="300" height="190" fill="#e0f2fe"/><path d="M40 170 L60 70 L120 70 L140 170 Z" fill="#94a3b8" stroke="#334155" stroke-width="3"/><text x="90" y="182" text-anchor="middle" font-size="12" font-weight="700" fill="#334155">cooling tower</text>';
+      [[90, 55], [78, 40], [104, 36], [92, 22]].forEach(function(q){ h += E(q[0], q[1], 16, "💧"); });
+      h += '<circle cx="215" cy="95" r="58" fill="#fff" stroke="#334155" stroke-width="5"/><line x1="256" y1="136" x2="285" y2="170" stroke="#334155" stroke-width="10" stroke-linecap="round"/>';
+      [[195, 80, 20], [225, 75, -25], [215, 105, 60], [190, 110, -10], [240, 102, 15]].forEach(function(q){ h += '<rect x="' + (q[0] - 12) + '" y="' + (q[1] - 4) + '" width="24" height="8" rx="4" fill="var(--gn-fill)" stroke="var(--gn-edge)" stroke-width="1.5" transform="rotate(' + q[2] + " " + q[0] + " " + q[1] + ')"/>'; });
+      break;
+    case "rats":
+      h += '<rect width="300" height="190" fill="#e7e5e4"/><path d="M20 120 L60 80 L100 120 Z M180 120 L230 70 L280 120 Z" fill="#a8a29e" stroke="#44403c" stroke-width="3"/><rect x="30" y="120" width="60" height="50" fill="#d6d3d1" stroke="#44403c" stroke-width="3"/><rect x="190" y="120" width="80" height="50" fill="#d6d3d1" stroke="#44403c" stroke-width="3"/>' +
+        E(130, 160, 40, "🐀") + E(155, 120, 30, "🐀") + flea(120, 140) + flea(150, 150) + flea(165, 105) + '<text x="150" y="25" text-anchor="middle" font-size="15" font-weight="700" fill="#44403c">rats + fleas</text>'; break;
+    case "bite":
+      h += '<rect width="300" height="190" fill="#fde2e4"/>' + E(110, 105, 90, "🧍") + flea(160, 80) + '<path d="M162 84 l-24 10" stroke="#3f2a14" stroke-width="2" stroke-dasharray="3 3"/>' +
+        '<circle cx="128" cy="128" r="12" fill="#b91c1c" opacity=".75"/><text x="215" y="125" font-size="14" font-weight="700" fill="#7f1d1d">bubo</text><path d="M205 122 L142 128" stroke="#7f1d1d" stroke-width="2"/><text x="215" y="80" font-size="14" font-weight="700" fill="#3f2a14">flea bite</text>'; break;
+    case "europe":
+      h += '<rect width="300" height="190" fill="#f5f5f4"/>';
+      for (var i = 0; i < 10; i++) h += E(42 + (i % 5) * 54, 60 + Math.floor(i / 5) * 62, 38, i < 4 ? "💀" : "🧍");
+      h += '<text x="150" y="172" text-anchor="middle" font-size="16" font-weight="800" fill="#7f1d1d">30 to 60% of Europe</text>'; break;
+  }
+  return h + "</svg>";
+}
+function comicHtml(c){
+  return '<section class="comic"><h4 class="sech">💬 ' + c.title + '</h4><div class="panels">' + c.panels.map(function(pn, i){
+    return '<figure class="panel"><span class="pnum">' + (i + 1) + "</span>" + sceneSvg(pn.scene) + "<figcaption>" + pn.t + "</figcaption></figure>";
+  }).join("") + "</div></section>";
+}
+/* ---- patient cases: order tests, then diagnose ---- */
+function caseHtml(s){
+  var C = s.case, S = st.cases[s.n] || (st.cases[s.n] = {open: false, rev: {}, pick: null});
+  if (!S.open) return '<div id="casebox"><button class="btn casebtn" type="button" data-case="open">🩺 Try a patient case</button></div>';
+  var order = shuffle(C.o.map(function(_, i){ return i; }), rng(hashStr("case" + s.id)));
+  var h = '<section class="case" id="casebox"><h4 class="sech">🩺 Patient case</h4><div class="story">📋 ' + C.story + '</div><h5>Order tests (tap each one):</h5><div class="ctests">';
+  C.tests.forEach(function(t, i){
+    h += S.rev[i] ? '<div class="ctest on"><span>' + t.ic + "</span><b>" + t.name + "</b><em>" + t.r + "</em></div>" : '<button type="button" class="ctest" data-case="test" data-i="' + i + '"><span>' + t.ic + "</span><b>" + t.name + "</b><em>tap to run</em></button>";
+  });
+  h += "</div><h5>" + C.q + '</h5><div class="qopts">';
+  order.forEach(function(i){ var cls = "qopt" + (S.pick != null ? (i === 0 ? " right" : i === S.pick ? " wrong" : "") : ""); h += '<button type="button" class="' + cls + '" data-case="pick" data-i="' + i + '"' + (S.pick != null ? " disabled" : "") + ">" + C.o[i] + "</button>"; });
+  h += "</div>";
+  if (S.pick != null) h += '<div class="msg ' + (S.pick === 0 ? "good" : "bad") + '"><b>' + (S.pick === 0 ? "Case solved! 🎉" : "Not quite.") + "</b> " + C.w + "</div>";
+  return h + "</section>";
+}
 function stepTitle(i){ return i < 0 ? "Start screen" : D.stops[i].title; }
 function renderLesson(){
   var s = stop(), h = "", c = colorOf(N[s.node]);
   h += '<header class="mhead"><div class="mbadge" style="--c:' + c + '">' + (s.n + 1) + "</div><div><h2>" + s.title + "</h2></div></header>";
-  h += cheatHtml(s.cheat);
   if (s.lesson) h += '<ul class="lesson">' + s.lesson.map(function(p){ return "<li>" + p + "</li>"; }).join("") + "</ul>";
   if (s.diagram && DIAGRAMS[s.diagram]){ var dg = DIAGRAMS[s.diagram](); h += '<figure class="figure' + (dg.small ? " smallfig" : "") + '" style="margin:0">' + dg.svg + "<figcaption>" + dg.cap + "</figcaption></figure>"; }
+  if (s.life) h += '<section class="life"><h4 class="sech">🌍 In your life</h4>' + boxesHtml(s.life, "small") + "</section>";
   if (s.entericTable) h += '<div><button class="btn ghost" type="button" data-act="table">📋 Open the enteric ID table</button></div>';
+  if (s.comic) h += comicHtml(s.comic);
   if (s.orgs && s.orgs.length) h += '<div class="orgs">' + s.orgs.map(orgCard).join("") + "</div>";
+  if (s.case) h += caseHtml(s);
   if (s.finale) h += finaleHtml(s);
+  h += cheatHtml(s.cheat);
+  (s.orgs || []).forEach(function(o){ if (o.cheat) h += cheatHtml(o.cheat, s.orgs.length > 1 ? o : null); });
   h += traitsHtml();
   var keys = Object.keys(KEYS);
   if (testOn()) h += checkbarHtml(keys);
@@ -1255,6 +1363,7 @@ function renderLesson(){
     '<button type="button" data-act="prev"><small>&larr; Back</small><b>' + stepTitle(s.n - 1) + "</b></button>" +
     (s.n < LAST ? '<button type="button" class="next" data-act="next"><small>Next &rarr;</small><b>' + stepTitle(s.n + 1) + "</b></button>" : '<button type="button" class="next" data-act="restart"><small>Again? &#8634;</small><b>Start from the beginning</b></button>') + "</nav>";
   $("#lesson").innerHTML = h;
+  if (s.diagram === "axial") startAxial();
 }
 function finaleHtml(s){
   var h = '<ol class="takeaways">' + s.takeaways.map(function(t){ return "<li>" + t + "</li>"; }).join("") + "</ol>";
@@ -1361,13 +1470,22 @@ document.addEventListener("click", function(e){
     $("#checkin").outerHTML = checkinHtml(s);
     return;
   }
+  if ((el = e.target.closest("[data-case]"))){
+    var cs = stop(), CS = st.cases[cs.n], ca = el.getAttribute("data-case");
+    if (ca === "open") CS.open = true;
+    else if (ca === "test") CS.rev[Number(el.getAttribute("data-i"))] = true;
+    else if (ca === "pick" && CS.pick == null) CS.pick = Number(el.getAttribute("data-i"));
+    $("#casebox").outerHTML = caseHtml(cs);
+    return;
+  }
   if ((el = e.target.closest("[data-gostop]"))){
     var cdl = $("#cheatDlg"); if (cdl.close) cdl.close(); else cdl.removeAttribute("open");
     go(Number(el.getAttribute("data-gostop")), {org: el.getAttribute("data-org") || null, scroll: "top"}); return;
   }
   if ((el = e.target.closest("[data-spell]"))){
     var spo = el.getAttribute("data-spell"), SP = st.spell[spo];
-    if (el.getAttribute("data-dir") === "check") SP.chk = true; else st.spell[spo] = {v: [], chk: false};
+    var sdir = el.getAttribute("data-dir");
+    if (sdir === "open") SP.open = true; else if (sdir === "check") SP.chk = true; else st.spell[spo] = {v: [], chk: false, open: true};
     var ssec = $('[data-spellsec="' + spo + '"]'); if (ssec) ssec.outerHTML = spellHtml(ORG[spo]);
     return;
   }
@@ -1480,9 +1598,12 @@ $("#entDlg").addEventListener("click", function(e){ if (e.target === e.currentTa
 $("#cheatDlg").addEventListener("click", function(e){ if (e.target === e.currentTarget) e.currentTarget.close(); });
 window.addEventListener("resize", function(){ if (st.view === "tour") frame(viewInfo(), false); });
 function fromHash(fromHistory){
-  var m = /^#stop-(\d+)$/.exec(location.hash || "");
-  if (m) go(Number(m[1]) - 1, {fromHistory: true});
-  else showStart(fromHistory);
+  var hsh = location.hash || "", m = /^#stop-(\d+)$/.exec(hsh);
+  if (m){ go(Number(m[1]) - 1, {fromHistory: true}); return; }
+  showStart(fromHistory);
+  /* links from the unit page: #cheats opens the ID cheat sheet, #table the enteric ID table */
+  if (hsh === "#cheats"){ renderCheats(); var cd = $("#cheatDlg"); if (cd.showModal) cd.showModal(); else cd.setAttribute("open", ""); }
+  if (hsh === "#table"){ renderTable(); var td = $("#entDlg"); if (td.showModal) td.showModal(); else td.setAttribute("open", ""); }
 }
 window.addEventListener("popstate", function(){ fromHash(true); });
 
