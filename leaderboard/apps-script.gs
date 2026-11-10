@@ -1,3 +1,4 @@
+/** @OnlyCurrentDoc */
 /* BIO 112 class leaderboard: Google Apps Script backend.
    Paste this whole file into Extensions > Apps Script in a Google Sheet,
    then deploy it as a web app (see SETUP.md).
