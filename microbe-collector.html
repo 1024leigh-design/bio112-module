@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Microbe Collector</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Microbe Collector: earn a trading card for every gram-negative organism.
+   Organism data comes from gram-neg-tree.js (the same file the tour uses). */
+:root{
+  --bg:#f2f5f8; --surface:#ffffff; --surface-2:#e8eef4; --ink:#14223a; --muted:#53657b; --line:#d3dde7;
+  --arrow:#1683cc; --arrow-soft:#dcecf9; --good:#1f8a55; --good-soft:#dcf2e5; --bad:#c43a2b; --bad-soft:#fbe0db; --gold:#e3a008;
+  --gn-fill:#f7b6cf; --gn-edge:#c2185b; --scope:#fdf2f6; --locked:#cbd5e1;
+  --f-display:'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --f-body:'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
+  --f-mono:'IBM Plex Mono', ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
+    --arrow:#4aa9ee; --arrow-soft:#173450; --good:#4ccb8b; --good-soft:#153a29; --bad:#ff7d6d; --bad-soft:#46211d; --gold:#f5c542;
+    --gn-fill:#9c3d68; --gn-edge:#f48fb6; --scope:#2b1d26; --locked:#334155; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
+  --arrow:#4aa9ee; --arrow-soft:#173450; --good:#4ccb8b; --good-soft:#153a29; --bad:#ff7d6d; --bad-soft:#46211d; --gold:#f5c542;
+  --gn-fill:#9c3d68; --gn-edge:#f48fb6; --scope:#2b1d26; --locked:#334155; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:18px; line-height:1.5; overflow-x:hidden}
+.wrap{max-width:1180px; margin:0 auto; padding:16px 16px 60px}
+h1,h2,h3,h4{font-family:var(--f-display); margin:0; letter-spacing:-.01em}
+p{margin:0}
+button,input{font:inherit; color:inherit}
+:focus-visible{outline:3px solid var(--arrow); outline-offset:2px; border-radius:6px}
+.top{display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; padding-bottom:12px; border-bottom:1px solid var(--line); margin-bottom:18px}
+.top a{margin-left:auto; text-decoration:none; color:var(--ink); font-weight:700; font-size:15px; padding:8px 13px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface)}
+.brand{font-family:var(--f-display); font-weight:700}
+.hero{display:flex; flex-wrap:wrap; gap:14px 24px; align-items:flex-end; justify-content:space-between; margin-bottom:16px}
+.hero h1{font-size:clamp(34px,6vw,52px); line-height:1}
+.hero p{color:var(--muted); font-size:18px; max-width:52ch; margin-top:6px}
+.stats{display:flex; flex-wrap:wrap; gap:8px}
+.stat{background:var(--surface); border:1.5px solid var(--line); border-radius:14px; padding:8px 14px; min-width:110px}
+.stat small{display:block; font:600 12px var(--f-mono); text-transform:uppercase; letter-spacing:.06em; color:var(--muted)}
+.stat b{font-family:var(--f-display); font-size:26px}
+.bar{height:10px; border-radius:99px; background:var(--surface-2); overflow:hidden; margin:6px 0 20px}
+.bar i{display:block; height:100%; background:linear-gradient(90deg, var(--gn-edge), var(--gold)); transition:width .6s}
+.btn{display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:10px 18px; font-weight:700; font-size:16px; cursor:pointer; border:1.5px solid var(--arrow); background:var(--arrow); color:#fff}
+.btn.ghost{background:transparent; color:var(--arrow)}
+.btn:disabled{opacity:.5; cursor:not-allowed}
+.btnrow{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.how{background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:12px 16px; font-size:16.5px; margin-bottom:22px}
+.set{margin-bottom:26px}
+.sethead{display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap}
+.sethead h2{font-size:24px}
+.sethead .cnt{font:600 14px var(--f-mono); color:var(--muted)}
+.sethead .done{font-weight:700; color:var(--good); font-size:15px}
+.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(168px,1fr)); gap:12px}
+.card{position:relative; aspect-ratio:5/7; border-radius:16px; border:3px solid var(--c); background:var(--surface); cursor:pointer; padding:10px; display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center; font:inherit; color:inherit; transition:transform .15s, box-shadow .15s; overflow:hidden}
+.card:hover{transform:translateY(-3px); box-shadow:0 10px 24px rgba(0,0,0,.12)}
+.card .scope{width:72%; height:auto}
+.card .nm{font-family:var(--f-display); font-weight:700; font-size:16px; line-height:1.15; font-style:italic}
+.card .nm.np{font-style:normal}
+.card .stars{font-size:18px; letter-spacing:2px; color:var(--gold)}
+.card .tag{font:600 11px var(--f-mono); text-transform:uppercase; color:var(--muted)}
+.card.locked{border-color:var(--locked); border-style:dashed; background:var(--surface-2)}
+.card.locked .scope{filter:grayscale(1) brightness(.35) opacity(.45)}
+.card.locked .nm{font-style:normal; color:var(--muted)}
+.card.new{animation:pop .7s ease}
+@keyframes pop{0%{transform:scale(.6) rotateY(90deg)} 60%{transform:scale(1.08) rotateY(0)} 100%{transform:scale(1)}}
+dialog{border:0; border-radius:22px; padding:0; width:min(640px, calc(100vw - 20px)); max-height:calc(100vh - 20px); background:var(--surface); color:var(--ink); box-shadow:0 20px 60px rgba(0,0,0,.4)}
+dialog::backdrop{background:rgba(10,20,30,.6)}
+.dlg{padding:18px; display:flex; flex-direction:column; gap:14px}
+.dlghead{display:flex; align-items:center; gap:10px}
+.dlghead h3{font-size:22px; margin-right:auto}
+.steps{display:flex; gap:6px}
+.steps span{flex:1; height:6px; border-radius:99px; background:var(--surface-2)}
+.steps span.on{background:var(--arrow)} .steps span.ok{background:var(--good)}
+.clues{display:flex; flex-wrap:wrap; gap:8px}
+.clue{background:var(--arrow-soft); border:1.5px solid var(--arrow); border-radius:12px; padding:8px 12px; font-weight:700; font-size:17px}
+.opts{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+@media (max-width:520px){ .opts{grid-template-columns:1fr} }
+.opt{text-align:left; border:2px solid var(--line); background:var(--bg); border-radius:12px; padding:11px 14px; cursor:pointer; font-size:17px}
+.opt:hover:not(:disabled){border-color:var(--arrow)}
+.opt.wrong{border-color:var(--bad); background:var(--bad-soft)} .opt.right{border-color:var(--good); background:var(--good-soft)}
+.opt:disabled{cursor:default}
+.hearts{font-size:20px}
+.spellrow{display:flex; flex-wrap:wrap; gap:10px}
+.sw{display:inline-flex; align-items:baseline; border:2px solid var(--line); border-radius:12px; padding:6px 10px; background:var(--surface); font-size:21px; font-style:italic}
+.sw b{font-size:23px}
+.sw input{border:0; border-bottom:2px dashed var(--muted); background:transparent; font:italic 600 21px var(--f-body); outline:none; padding:0 2px; max-width:55vw}
+.sw.bad{border-color:var(--bad); background:var(--bad-soft)}
+.msg{border-radius:12px; padding:10px 12px; font-size:16.5px; background:var(--surface-2)}
+.msg.good{background:var(--good-soft)} .msg.bad{background:var(--bad-soft)}
+.reveal{display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center}
+.reveal .card{width:220px; cursor:default}
+.reveal .card:hover{transform:none; box-shadow:none}
+.back{display:flex; flex-direction:column; gap:8px}
+.back .row{display:flex; gap:10px; align-items:flex-start; background:var(--surface-2); border-radius:12px; padding:9px 12px; font-size:16.5px}
+.back .row b{min-width:92px; font:600 12.5px var(--f-mono); text-transform:uppercase; color:var(--muted); padding-top:3px}
+.cheat{border:2px solid var(--bad); background:var(--bad-soft); border-radius:12px; padding:9px 12px}
+.confetti{position:fixed; inset:0; pointer-events:none; z-index:100; overflow:hidden}
+.confetti i{position:absolute; top:-20px; width:10px; height:14px; border-radius:2px; animation:fall 1.8s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+.toast{position:fixed; left:50%; bottom:22px; transform:translate(-50%,20px); opacity:0; background:var(--ink); color:var(--bg); padding:12px 18px; border-radius:14px; font-weight:700; z-index:90; transition:all .3s; pointer-events:none; text-align:center; max-width:calc(100vw - 32px)}
+.toast.show{opacity:1; transform:translate(-50%,0)}
+.lbbox{background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:16px; margin-top:10px}
+@media (prefers-reduced-motion: reduce){ *{animation:none!important; transition:none!important} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><span class="brand">🧫 BIO 112 · Ch. 11</span><a href="unit-bacteria.html">← Bacteria unit</a></header>
+  <section class="hero">
+    <div><h1>Microbe Collector 🃏</h1><p>Earn a card for every gram-negative organism. ID it from lab clues, name its disease, and spell it. Fewer mistakes = more stars.</p></div>
+    <div class="stats">
+      <div class="stat"><small>Cards</small><b id="sCards">0</b></div>
+      <div class="stat"><small>Stars</small><b id="sStars">0</b></div>
+      <div class="stat"><small>Score</small><b id="sScore">0</b></div>
+    </div>
+  </section>
+  <div class="bar" aria-hidden="true"><i id="barFill" style="width:0"></i></div>
+  <div class="btnrow" style="margin-bottom:14px"><button class="btn" type="button" id="randomBtn">🎲 Random challenge</button><button class="btn ghost" type="button" id="lbBtn">🏆 Leaderboard</button></div>
+  <p class="how">⭐ Each card: up to 3 stars (lose one per wrong answer). ✅ Finish a whole set for a +25 bonus. Score = 10 per star + set bonuses. Tap an earned card to see it, or play it again for more stars.</p>
+  <main id="book"></main>
+  <section class="lbbox" id="lbSec"><div id="lb"></div></section>
+</div>
+<dialog id="dlg"><div class="dlg" id="dlgBody"></div></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="gram-neg-tree.js"></script>
+<script src="leaderboard.js"></script>
+<script>
+(function(){
+"use strict";
+var D = window.TOUR_DATA;
+function $(s, r){ return (r || document).querySelector(s); }
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;"}[c]; }); }
+function shuffle(a){ a = a.slice(); for (var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function store(k, v){ try { if (v === undefined) return JSON.parse(localStorage.getItem(k)); localStorage.setItem(k, JSON.stringify(v)); } catch (e) { return null; } }
+var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- shapes (same drawings as the tour) ---------- */
+function wavePath(x0, x1, cy, amp, periods, steps){ var d = ""; for (var i = 0; i <= steps; i++){ var x = x0 + (x1 - x0) * i / steps, y = cy + amp * Math.sin(i / steps * periods * 2 * Math.PI); d += (i ? "L" : "M") + x.toFixed(1) + " " + y.toFixed(1); } return d; }
+function iconInner(shape){
+  var f = 'fill="var(--gn-fill)" stroke="var(--gn-edge)" stroke-width="2"';
+  function tube(d, w){ return '<path d="' + d + '" fill="none" stroke="var(--gn-edge)" stroke-width="' + (w + 4) + '" stroke-linecap="round"/><path d="' + d + '" fill="none" stroke="var(--gn-fill)" stroke-width="' + w + '" stroke-linecap="round"/>'; }
+  switch (shape){
+    case "coccobacillus": return '<rect x="18" y="11" width="28" height="22" rx="11" ' + f + '/>';
+    case "diplococcus": return '<path d="M28.5 9 A13 13 0 1 0 28.5 35 Q21 22 28.5 9Z" ' + f + '/><path d="M35.5 9 A13 13 0 1 1 35.5 35 Q43 22 35.5 9Z" ' + f + '/>';
+    case "curved": return tube("M14 32 Q32 2 50 32", 10);
+    case "gullwing": return tube("M8 30 Q19 8 32 24 Q45 8 56 30", 8);
+    case "spiral": return tube(wavePath(8, 56, 22, 9, 2, 40), 7);
+    case "spirochete": return tube(wavePath(6, 58, 22, 6, 6, 90), 3);
+    case "spindle": return '<path d="M5 22 Q32 6 59 22 Q32 38 5 22Z" ' + f + '/>';
+    case "filament": return [8, 19, 30, 41].map(function(x){ return '<circle cx="' + x + '" cy="22" r="5.6" ' + f + '/>'; }).join("") + '<circle cx="53.5" cy="22" r="7.2" fill="var(--surface)" stroke="var(--gn-edge)" stroke-width="3"/>';
+    case "budding": return '<circle cx="25" cy="24" r="14" ' + f + '/><circle cx="45" cy="13" r="7.5" ' + f + '/>';
+    case "intracellular": return '<ellipse cx="32" cy="22" rx="28" ry="18" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="4 3"/>' + [[22, 17], [30, 26], [39, 18], [44, 27], [26, 29]].map(function(p){ return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3.6" ' + f + '/>'; }).join("");
+    case "rod": return '<rect x="8" y="14" width="48" height="16" rx="8" ' + f + '/>';
+    default: return '<rect x="14" y="13" width="36" height="18" rx="9" ' + f + '/>';
+  }
+}
+function scope(shape){
+  var pos = [[42, 46, 20], [80, 38, -15], [108, 62, 40], [58, 78, -30], [88, 96, 10], [40, 104, 60], [112, 104, -40], [70, 120, 25]];
+  var sc = shape === "spirochete" ? 0.62 : shape === "intracellular" ? 0.9 : 0.42, h = '<svg class="scope" viewBox="0 0 150 150" aria-hidden="true"><circle cx="75" cy="75" r="70" fill="var(--scope)" stroke="#33415c" stroke-width="7"/>';
+  (shape === "intracellular" ? pos.slice(0, 3) : pos).forEach(function(p){ h += '<g transform="translate(' + p[0] + " " + p[1] + ") rotate(" + p[2] + ") scale(" + sc + ') translate(-32 -22)">' + iconInner(shape) + "</g>"; });
+  return h + "</svg>";
+}
+
+/* ---------- the deck: every organism card in the tour ---------- */
+var N = {}; D.tree.forEach(function(n){ N[n.id] = n; });
+function path(id){ var p = [], n = N[id]; while (n){ p.unshift(n.id); n = n.parent ? N[n.parent] : null; } return p; }
+var SETS = [
+  {id: "alpha", name: "Alpha", c: "#b45309"}, {id: "beta", name: "Beta", c: "#0e7490"}, {id: "gamma", name: "Gamma (non-enterics)", c: "#7c3aed"},
+  {id: "enterics", name: "Enterics", c: "#ea580c"}, {id: "epsilon", name: "Epsilon", c: "#be123c"}, {id: "spirochetes", name: "Spirochetes", c: "#a16207"},
+  {id: "chlamydiae", name: "Chlamydiae", c: "#a21caf"}, {id: "other", name: "Other phyla", c: "#15803d"}
+];
+function setOf(o){
+  if (o.type === "phylum") return "other";
+  var p = path(o.node);
+  if (p.indexOf("enterics") >= 0) return "enterics";
+  for (var i = 0; i < SETS.length; i++) if (p.indexOf(SETS[i].id) >= 0) return SETS[i].id;
+  return "other";
+}
+var DECK = [];
+D.stops.forEach(function(s){ (s.orgs || []).forEach(function(o){ o.set = setOf(o); DECK.push(o); }); });
+var BY = {}; DECK.forEach(function(o){ BY[o.id] = o; });
+function nameHtml(o){ return o.type === "phylum" ? esc(o.name) : "<i>" + esc(o.name) + "</i>" + (o.sub ? " " + esc(o.sub) : ""); }
+
+/* ---------- clues from the lab tests ---------- */
+function pm(v){ return String(v).charAt(0); }
+function clueOf(t){
+  switch (t.k){
+    case "shape": return "shape: " + t.v;
+    case "oxygen": return t.v;
+    case "oxidase": case "catalase": case "lactose": case "citrate": case "urease": return t.k + " " + t.v;
+    case "h2s": return "H₂S " + t.v;
+    case "imvic": return "IMViC " + t.v;
+    case "sugars": return "uses " + t.v;
+    case "media": return "grows: " + t.v;
+    case "pigment": return t.v + " colonies";
+    case "feature": return t.v;
+    default: return "";
+  }
+}
+var PRI = ["sugars", "pigment", "imvic", "h2s", "citrate", "urease", "lactose", "oxidase", "feature", "shape", "oxygen", "media", "catalase"];
+function clues(o){
+  if (o.type === "phylum") return [o.boxes[0].t];
+  var ts = (o.tests || []).filter(function(t){ return t.k !== "gram" && clueOf(t); });
+  ts.sort(function(a, b){ return ((a.from ? 100 : 0) + PRI.indexOf(a.k)) - ((b.from ? 100 : 0) + PRI.indexOf(b.k)); });
+  var out = ts.slice(0, 3).map(clueOf);
+  if (out.length < 3 && o.facts && o.facts[0]) out.push(o.facts[0].h.toLowerCase() + ": " + o.facts[0].t);
+  return out.slice(0, 3);
+}
+function diseaseOpts(o){
+  var tags = o.disease.tags || [], seen = {}, pool = [];
+  seen[o.disease.short] = 1;
+  shuffle(DECK).forEach(function(x){
+    var sh = x.disease && x.disease.short;
+    if (!sh || seen[sh] || (x.disease.tags || []).some(function(t){ return tags.indexOf(t) >= 0; })) return;
+    seen[sh] = 1; pool.push(sh);
+  });
+  return shuffle([o.disease.short].concat(pool.slice(0, 3)));
+}
+function nameOpts(o){
+  var same = shuffle(DECK.filter(function(x){ return x !== o && x.set === o.set && x.name !== o.name && x.type === o.type; }));
+  var rest = shuffle(DECK.filter(function(x){ return x !== o && x.set !== o.set && x.name !== o.name && x.type === o.type; }));
+  var picks = same.slice(0, 2).concat(rest).slice(0, 3);
+  return shuffle([o].concat(picks));
+}
+
+/* ---------- progress ---------- */
+var KEY = "bio112-collector-v1";
+var P = store(KEY) || {cards: {}};
+function save(){ store(KEY, P); }
+function setDone(sid){ return DECK.filter(function(o){ return o.set === sid; }).every(function(o){ return P.cards[o.id]; }); }
+function totals(){
+  var cards = 0, stars = 0;
+  DECK.forEach(function(o){ var c = P.cards[o.id]; if (c){ cards++; stars += c.stars; } });
+  var bonus = SETS.filter(function(st){ return setDone(st.id); }).length * 25;
+  return {cards: cards, stars: stars, score: stars * 10 + bonus};
+}
+
+/* ---------- the collection book ---------- */
+function cardHtml(o, opts){
+  var got = P.cards[o.id], set = SETS.filter(function(s){ return s.id === o.set; })[0];
+  return '<button type="button" class="card' + (got ? "" : " locked") + (opts && opts.isNew ? " new" : "") + '" data-card="' + o.id + '" style="--c:' + set.c + '" aria-label="' + (got ? esc(o.name) + ", " + got.stars + " stars" : "Locked card. Tap to earn it") + '">' +
+    scope(o.shape) + '<span class="nm' + (o.type === "phylum" ? " np" : "") + '">' + (got ? nameHtml(o) : "???") + "</span>" +
+    (got ? '<span class="stars">' + "★".repeat(got.stars) + "☆".repeat(3 - got.stars) + "</span>" : '<span class="tag">tap to earn</span>') +
+    '<span class="tag">' + set.name + "</span></button>";
+}
+function renderBook(newId){
+  var h = "";
+  SETS.forEach(function(st){
+    var cs = DECK.filter(function(o){ return o.set === st.id; }), got = cs.filter(function(o){ return P.cards[o.id]; }).length;
+    h += '<section class="set"><div class="sethead"><h2 style="color:' + st.c + '">' + st.name + '</h2><span class="cnt">' + got + " / " + cs.length + "</span>" + (got === cs.length ? '<span class="done">✅ Set complete! +25</span>' : "") + '</div><div class="cards">' +
+      cs.map(function(o){ return cardHtml(o, {isNew: o.id === newId}); }).join("") + "</div></section>";
+  });
+  $("#book").innerHTML = h;
+  var t = totals();
+  $("#sCards").textContent = t.cards + " / " + DECK.length; $("#sStars").textContent = t.stars; $("#sScore").textContent = t.score;
+  $("#barFill").style.width = (t.cards / DECK.length * 100) + "%";
+}
+
+/* ---------- a challenge: 1) who am I, 2) disease, 3) spelling ---------- */
+var C = null;
+function startChallenge(o){
+  C = {o: o, step: 0, miss: 0, steps: o.type === "phylum" ? ["who", "spell"] : ["who", "disease", "spell"], names: nameOpts(o), dis: o.disease ? diseaseOpts(o) : null, clues: clues(o), wrong: {}};
+  renderChallenge();
+  var d = $("#dlg"); if (!d.open){ if (d.showModal) d.showModal(); else d.setAttribute("open", ""); }
+}
+function stars(){ return Math.max(1, 3 - C.miss); }
+function renderChallenge(){
+  var o = C.o, kind = C.steps[C.step], h = '<div class="dlghead"><h3>🃏 Earn this card</h3><span class="hearts" aria-label="' + stars() + ' stars left">' + "★".repeat(stars()) + "☆".repeat(3 - stars()) + '</span><button class="btn ghost" type="button" data-x="close">✕</button></div>';
+  h += '<div class="steps">' + C.steps.map(function(_, i){ return '<span class="' + (i < C.step ? "ok" : i === C.step ? "on" : "") + '"></span>'; }).join("") + "</div>";
+  if (kind === "who"){
+    h += "<h4>🔬 Who am I?</h4><div class=\"clues\">" + C.clues.map(function(c){ return '<span class="clue">' + c + "</span>"; }).join("") + '</div><div class="opts">' +
+      C.names.map(function(x){ return '<button type="button" class="opt' + (C.wrong[x.id] ? " wrong" : "") + '" data-who="' + x.id + '"' + (C.wrong[x.id] ? " disabled" : "") + ">" + nameHtml(x) + "</button>"; }).join("") + "</div>";
+  } else if (kind === "disease"){
+    h += "<h4>🦠 Correct! Now: what disease does " + nameHtml(o) + " cause?</h4><div class=\"opts\">" +
+      C.dis.map(function(dz, i){ return '<button type="button" class="opt' + (C.wrong["d" + i] ? " wrong" : "") + '" data-dz="' + i + '"' + (C.wrong["d" + i] ? " disabled" : "") + ">" + esc(dz) + "</button>"; }).join("") + "</div>";
+  } else if (kind === "spell"){
+    var words = (o.spell || o.name).split(" ");
+    h += '<h4>✏️ Last step: spell it!</h4><div class="spellrow">' + words.map(function(w, i){ return '<label class="sw' + (C.spellBad ? " bad" : "") + '"><b>' + esc(w.charAt(0)) + '</b><input type="text" data-sp="' + i + '" size="' + Math.max(4, w.length) + '" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Rest of word ' + (i + 1) + '"></label>'; }).join("") +
+      '</div>' + (C.spellBad ? '<div class="msg bad">Not quite. Check each letter and try again (it cost a star).</div>' : "") + '<div class="btnrow"><button class="btn" type="button" data-x="spell">Check spelling</button></div>';
+  } else if (kind === "done"){
+    h += '<div class="reveal"><h4>🎉 You earned it!</h4>' + cardHtml(o, {isNew: true}) + '<p><b>+' + (C.gain) + " points</b>" + (C.setBonus ? " · ✅ Set complete! +25" : "") + '</p><div class="btnrow"><button class="btn" type="button" data-x="next">🎲 Next random card</button><button class="btn ghost" type="button" data-x="close">Back to my collection</button></div></div>';
+  }
+  $("#dlgBody").innerHTML = h;
+  var first = $("#dlgBody input"); if (first) first.focus();
+}
+function miss(key){ C.wrong[key] = true; C.miss++; }
+function advance(){
+  C.step++;
+  if (C.step >= C.steps.length){
+    var o = C.o, before = totals(), prev = P.cards[o.id];
+    if (!prev || stars() > prev.stars) P.cards[o.id] = {stars: stars()};
+    save();
+    var after = totals();
+    C.gain = after.score - before.score; C.setBonus = setDoneBefore === false && setDone(o.set);
+    C.steps.push("done"); C.step = C.steps.length - 1;
+    renderBook(o.id);
+    if (C.gain > 0) confetti();
+    if (window.BIO112_LB && BIO112_LB.refresh) BIO112_LB.refresh();
+  }
+  renderChallenge();
+}
+var setDoneBefore = null;
+function confetti(){
+  if (reduced) return;
+  var box = document.createElement("div"), cols = ["#c2185b", "#e3a008", "#1683cc", "#1f8a55", "#7c3aed"];
+  box.className = "confetti";
+  for (var i = 0; i < 60; i++){ var c = document.createElement("i"); c.style.left = Math.random() * 100 + "%"; c.style.background = cols[i % cols.length]; c.style.animationDelay = Math.random() * .6 + "s"; box.appendChild(c); }
+  document.body.appendChild(box); setTimeout(function(){ box.remove(); }, 2600);
+}
+function toast(m){ var t = $("#toast"); t.textContent = m; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(function(){ t.classList.remove("show"); }, 2400); }
+
+/* an earned card's back side */
+function showCard(o){
+  var got = P.cards[o.id], h = '<div class="dlghead"><h3>' + nameHtml(o) + '</h3><button class="btn ghost" type="button" data-x="close">✕</button></div><div class="reveal">' + cardHtml(o) + "</div><div class=\"back\">";
+  if (o.cheat) h += '<div class="cheat">🎯 <b>ID cheat:</b> ' + o.cheat + "</div>";
+  if (o.disease) h += '<div class="row"><b>Disease</b><span>' + o.disease.html + "</span></div>";
+  (o.facts || []).forEach(function(f){ h += '<div class="row"><b>' + esc(f.h) + "</b><span>" + f.t + "</span></div>"; });
+  if (o.treat) h += '<div class="row"><b>Treatment</b><span>' + o.treat.html + "</span></div>";
+  if (o.boxes) o.boxes.forEach(function(b){ h += '<div class="row"><b>' + b.ic + "</b><span>" + b.t + "</span></div>"; });
+  h += '</div><div class="btnrow">' + (got.stars < 3 ? '<button class="btn" type="button" data-x="replay">⭐ Play again for more stars</button>' : '<span>⭐ Perfect card!</span>') + "</div>";
+  C = {o: o};
+  $("#dlgBody").innerHTML = h;
+  var d = $("#dlg"); if (!d.open){ if (d.showModal) d.showModal(); else d.setAttribute("open", ""); }
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click", function(e){
+  var el;
+  if ((el = e.target.closest("[data-card]"))){ var o = BY[el.getAttribute("data-card")]; if (P.cards[o.id]) showCard(o); else { setDoneBefore = setDone(o.set); startChallenge(o); } return; }
+  if ((el = e.target.closest("[data-who]"))){
+    if (el.getAttribute("data-who") === C.o.id){ el.classList.add("right"); setTimeout(advance, 450); }
+    else { miss(el.getAttribute("data-who")); renderChallenge(); }
+    return;
+  }
+  if ((el = e.target.closest("[data-dz]"))){
+    var i = Number(el.getAttribute("data-dz"));
+    if (C.dis[i] === C.o.disease.short){ el.classList.add("right"); setTimeout(advance, 450); }
+    else { miss("d" + i); renderChallenge(); }
+    return;
+  }
+  if (!(el = e.target.closest("[data-x]"))) return;
+  var x = el.getAttribute("data-x"), d = $("#dlg");
+  if (x === "close"){ if (d.close) d.close(); else d.removeAttribute("open"); }
+  else if (x === "spell") checkSpell();
+  else if (x === "next" || x === "random") randomChallenge();
+  else if (x === "replay"){ setDoneBefore = setDone(C.o.set); startChallenge(C.o); }
+});
+function checkSpell(){
+  var words = (C.o.spell || C.o.name).split(" "), ok = true;
+  document.querySelectorAll("#dlgBody input[data-sp]").forEach(function(inp){
+    var w = words[Number(inp.getAttribute("data-sp"))], v = inp.value.trim().toLowerCase();
+    if (v !== w.slice(1).toLowerCase() && v !== w.toLowerCase()) ok = false;
+  });
+  if (ok){ C.spellBad = false; advance(); }
+  else { if (!C.spellBad) C.miss++; C.spellBad = true; renderChallenge(); }
+}
+document.addEventListener("keydown", function(e){ if (e.key === "Enter" && e.target.closest && e.target.closest("#dlgBody input[data-sp]")){ e.preventDefault(); checkSpell(); } });
+function randomChallenge(){
+  var left = DECK.filter(function(o){ return !P.cards[o.id]; });
+  var pool = left.length ? left : DECK.filter(function(o){ return P.cards[o.id].stars < 3; });
+  if (!pool.length){ toast("You collected every card with 3 stars! 🏆"); return; }
+  var o = pool[Math.floor(Math.random() * pool.length)];
+  setDoneBefore = setDone(o.set); startChallenge(o);
+}
+$("#randomBtn").addEventListener("click", randomChallenge);
+$("#lbBtn").addEventListener("click", function(){ $("#lbSec").scrollIntoView({behavior: reduced ? "auto" : "smooth"}); });
+$("#dlg").addEventListener("click", function(e){ if (e.target === e.currentTarget && e.currentTarget.close) e.currentTarget.close(); });
+
+renderBook();
+if (window.BIO112_LB){
+  BIO112_LB.widget($("#lb"), {game: "collector", title: "Microbe Collector leaderboard", score: function(){ var t = totals(); return {score: t.score, details: t.cards + " cards, " + t.stars + " stars"}; }});
+}
+})();
+</script>
+</body>
+</html>

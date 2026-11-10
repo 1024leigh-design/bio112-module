@@ -20,6 +20,8 @@
                node = where the tour sits on the tree. also = extra tree
                nodes that open this stop. orgs = organism cards.
                cheat = a one-line ID shortcut (red box); also collected on the cheat sheet.
+               life = "In your life" boxes. comic = 3-panel mini comic (scenes drawn in the page code).
+               case = a patient case behind a button: story, tests to order, diagnosis (first option correct).
      Organism card:
        tests   lab results, drawn as flip tiles. k = test (see TESTS in the
                page code), v = result, from = the branch it is inherited from.
@@ -53,6 +55,7 @@ window.TOUR_DATA = {
   ],
   /* related games. Entries with no href show as "link coming soon" (TODO: Microbe Match). */
   games: [
+    {title: "Microbe Collector", href: "microbe-collector.html"},
     {title: "Mystery Microbe", href: "mystery-microbe.html"},
     {title: "Microbe Match", href: ""},
     {title: "Disease Typing Game", href: "disease-type.html"}
@@ -218,7 +221,7 @@ window.TOUR_DATA = {
       ]},
 
     /* ---------- Alpha ---------- */
-    {id: "alpha", node: "alpha", title: "Alphaproteobacteria",
+    {id: "alpha", node: "alpha", life: [{"ic": "🔋", "t": "The mitochondria in your cells are thought to come from an ancient alphaproteobacterium that moved inside another cell (endosymbiosis)."}], title: "Alphaproteobacteria",
       lesson: [
         "Many alphaproteobacteria can grow with very low nutrient levels.",
         "Some have unusual shapes, like stalks or buds (<i>Caulobacter</i>).",
@@ -238,7 +241,7 @@ window.TOUR_DATA = {
       ]},
 
     /* ---------- Beta ---------- */
-    {id: "beta", node: "beta", title: "Betaproteobacteria",
+    {id: "beta", node: "beta", life: [{"ic": "💉", "t": "The \"P\" in the DTaP and Tdap vaccines stands for <b>pertussis</b>."}], title: "Betaproteobacteria",
       lesson: [
         "Our two beta genera are <b><i>Bordetella</i></b> and <b><i>Neisseria</i></b>.",
         "Both are <b>round or almost round</b>: <i>Neisseria</i> are cocci (in pairs) and <i>Bordetella</i> is a coccobacillus.",
@@ -272,7 +275,7 @@ window.TOUR_DATA = {
           treat: {short: "azithromycin or clarithromycin", html: "azithromycin or clarithromycin (best early)", drugs: ["azithromycin", "clarithromycin"]},
           extra: [{h: "📈 Why cases are rising", boxes: [{ic: "⏳", t: "waning vaccine immunity"}, {ic: "🔍", t: "better detection"}, {ic: "🚫", t: "vaccine hesitancy"}]}]}
       ]},
-    {id: "neisseria", node: "neisseria", title: "<i>Neisseria</i>", diagram: "diplococci",
+    {id: "neisseria", node: "neisseria", case: {"story": "A college freshman living in a dorm has a high fever, headache, stiff neck, and a purple rash.", "tests": [{"name": "Gram stain", "ic": "🔬", "r": "gram − <b>diplococci</b>"}, {"name": "Oxidase", "ic": "🟣", "r": "<b>+</b> (turns purple)"}, {"name": "Sugar (CTA) test", "ic": "🧪", "r": "uses <b>glucose AND maltose</b>"}], "q": "What's your diagnosis?", "o": ["<i>N. meningitidis</i>", "<i>N. gonorrhoeae</i>", "<i>Bordetella pertussis</i>", "<i>Legionella</i>"], "w": "Gram − diplococci + oxidase + = <i>Neisseria</i>. Using maltose = <i>N. meningitidis</i>. Treat with ceftriaxone."}, title: "<i>Neisseria</i>", diagram: "diplococci",
       cheat: "The only gram-negative <b>diplococci</b> on our list, grown on <b>chocolate agar + CO₂</b>.",
       lesson: [
         "<i>Neisseria</i> are <b>diplococci</b>: round cells in pairs (they look like two kidney beans).",
@@ -336,7 +339,7 @@ window.TOUR_DATA = {
       lesson: [
         "Gamma has the most pathogens on our list. We split it by <b>oxygen needs</b>:<ul><li><b>Obligate aerobes:</b> <i>Pseudomonas</i>, <i>Legionella</i></li><li><b>Facultative anaerobes:</b> the enterics and <i>Vibrio</i></li></ul>"
       ]},
-    {id: "pseudomonas", node: "pseudomonas", title: "Obligate aerobes: <i>Pseudomonas</i>", also: ["obligate"],
+    {id: "pseudomonas", node: "pseudomonas", life: [{"ic": "👁️", "t": "<i>Pseudomonas</i> lives in water, one reason to never rinse or store contact lenses in tap water."}], title: "Obligate aerobes: <i>Pseudomonas</i>", also: ["obligate"],
       lesson: [
         "<i>Pseudomonas</i> is everywhere in soil and water.",
         "It is an <b>opportunistic pathogen</b>: it mostly infects people whose defenses are already down, like patients with burns or wounds."
@@ -358,7 +361,7 @@ window.TOUR_DATA = {
           extra: [{h: "🍓 Related species", boxes: [{ic: "🧊", t: "<i>P. fluorescens</i> is a major cause of refrigerated food spoilage"}]}]}
           /* TODO: brief gives no treatment for P. aeruginosa */
       ]},
-    {id: "legionella", node: "legionella", title: "<i>Legionella pneumophila</i>",
+    {id: "legionella", node: "legionella", comic: {"title": "The mystery of 1976", "panels": [{"scene": "hotel", "t": "1976, Philadelphia: thousands of people attend an American Legion convention at a hotel."}, {"scene": "sick", "t": "More than 180 attendees get a mysterious pneumonia. Nobody knows why."}, {"scene": "tower", "t": "The culprit: a new bacterium, <i>Legionella</i>, growing in the building's water system (a cooling tower). It spread in water droplets, not person to person."}]}, title: "<i>Legionella pneumophila</i>",
       lesson: [
         "<i>Legionella</i> was named after a 1976 pneumonia outbreak at an American Legion convention (\"Legionnaires' disease\").",
         "It doesn't grow on the usual agar media. It needs special media to isolate and culture.",
@@ -389,7 +392,7 @@ window.TOUR_DATA = {
       }},
 
     /* ---------- Enterics ---------- */
-    {id: "enterics", node: "enterics", title: "Facultative anaerobes and the Enterics", also: ["facultative"], diagram: "macconkey", entericTable: true,
+    {id: "enterics", node: "enterics", life: [{"ic": "🏠", "t": "Right now, <i>E. coli</i> is living in your intestines as normal flora."}], title: "Facultative anaerobes and the Enterics", also: ["facultative"], diagram: "macconkey", entericTable: true,
       lesson: [
         "The <b>enterics</b> (order Enterobacteriales) live in the <b>intestinal tracts</b> of humans and animals.",
         "They're all gram-negative rods and facultative anaerobes, and they ferment carbohydrates. Most have peritrichous flagella and fimbriae for attaching to surfaces.",
@@ -397,7 +400,7 @@ window.TOUR_DATA = {
         "They all look alike under the microscope, so we ID them with <b>biochemical tests</b>. The first big split is <b>lactose fermentation</b>:<ul><li><b>Coliforms</b> ferment lactose → pink colonies on MacConkey agar</li><li><b>Non-coliforms</b> don't → colorless colonies on MacConkey agar</li></ul>",
         "The next tool is the <b>IMViC</b> panel: <b>I</b>ndole, <b>M</b>ethyl red, <b>V</b>oges-Proskauer, <b>C</b>itrate. Results are written in that order, like ++−−."
       ]},
-    {id: "coliforms", node: "coliforms", title: "Coliforms", entericTable: true,
+    {id: "coliforms", node: "coliforms", case: {"story": "A patient has burning, frequent urination: a UTI. The urine culture grows gram − rods.", "tests": [{"name": "Oxidase", "ic": "⚪", "r": "<b>−</b> (no color change)"}, {"name": "MacConkey agar", "ic": "🧫", "r": "<b>pink</b> colonies (lactose +)"}, {"name": "IMViC", "ic": "🧪", "r": "<b>++−−</b>"}], "q": "Which organism is it?", "o": ["<i>E. coli</i>", "<i>Klebsiella</i>", "<i>Salmonella</i>", "<i>Proteus</i>"], "w": "Oxidase − and lactose + = a coliform. IMViC ++−− = <i>E. coli</i>, the #1 cause of UTIs."}, title: "Coliforms", entericTable: true,
       lesson: [
         "All three coliforms ferment lactose. To tell them apart, use IMViC:<ul><li><i>E. coli</i> is <b>++−−</b></li><li><i>Klebsiella</i> and <i>Enterobacter</i> are the opposite: <b>−−++</b></li></ul>"
       ]},
@@ -457,7 +460,7 @@ window.TOUR_DATA = {
         o: ["<i>Klebsiella</i> or <i>Enterobacter</i>", "<i>E. coli</i>", "<i>Salmonella</i>", "<i>Proteus</i>"],
         w: "<i>E. coli</i> is ++−−. <i>Klebsiella</i> and <i>Enterobacter</i> share the opposite pattern, −−++."
       }},
-    {id: "non-coliforms", node: "noncoliforms", title: "Non-coliforms", entericTable: true,
+    {id: "non-coliforms", node: "noncoliforms", case: {"story": "Several people get food poisoning after a barbecue with undercooked chicken.", "tests": [{"name": "MacConkey agar", "ic": "🧫", "r": "<b>colorless</b> colonies (lactose −)"}, {"name": "H₂S", "ic": "⚫", "r": "<b>+</b> (black)"}, {"name": "Citrate", "ic": "🔵", "r": "<b>+</b> (blue)"}, {"name": "Urease", "ic": "🟡", "r": "<b>−</b> (stays yellow)"}], "q": "Which organism is it?", "o": ["<i>Salmonella</i>", "<i>Shigella</i>", "<i>Proteus</i>", "<i>E. coli</i>"], "w": "Lactose −, H₂S +, citrate +, urease − = <i>Salmonella</i>. Poultry and raw meat are classic sources."}, title: "Non-coliforms", entericTable: true,
       lesson: [
         "Non-coliforms don't ferment lactose, so they make colorless colonies on MacConkey agar.",
         "To tell them apart, look at <b>H₂S</b>, <b>citrate</b>, and <b>urease</b>.",
@@ -512,7 +515,7 @@ window.TOUR_DATA = {
       ]},
     {id: "proteus", node: "proteus", title: "<i>Proteus</i>", entericTable: true,
       orgs: [
-        {id: "proteus", node: "proteus", cheat: "The only one that <b>swarms across the agar</b> (with a strong odor).", name: "Proteus", shape: "rod", emoji: "🌊",
+        {id: "proteus", node: "proteus", anim: "swarm", cheat: "The only one that <b>swarms across the agar</b> (with a strong odor).", name: "Proteus", shape: "rod", emoji: "🌊",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "rod", from: "enterics"},
@@ -527,7 +530,7 @@ window.TOUR_DATA = {
           disease: {short: "opportunistic UTIs and wound infections", html: "opportunistic infections:", tags: ["uti", "wound"],
             boxes: [{ic: "🚽", t: "UTIs"}, {ic: "🩹", t: "wound infections"}]}}
       ]},
-    {id: "yersinia", node: "yersinia", title: "<i>Yersinia pestis</i>", entericTable: true,
+    {id: "yersinia", node: "yersinia", comic: {"title": "The Black Death", "panels": [{"scene": "rats", "t": "1300s: rats carrying infected fleas live right alongside people."}, {"scene": "bite", "t": "The fleas bite people. <i>Y. pestis</i> infects the lymph nodes and swells them into bubos."}, {"scene": "europe", "t": "The 14th century pandemic killed 30 to 60% of Europe."}]}, title: "<i>Yersinia pestis</i>", entericTable: true,
       orgs: [
         {id: "ypestis", node: "yersinia", name: "Yersinia pestis", shape: "rod", emoji: "🐀",
           tests: [
@@ -587,7 +590,7 @@ window.TOUR_DATA = {
       ]},
 
     /* ---------- Epsilon ---------- */
-    {id: "epsilon", node: "epsilon", title: "Epsilonproteobacteria",
+    {id: "epsilon", node: "epsilon", life: [{"ic": "🏆", "t": "In 1984, Barry Marshall drank a culture of <i>H. pylori</i> to help prove it inflames the stomach. He and Robin Warren won the 2005 Nobel Prize."}], title: "Epsilonproteobacteria",
       lesson: [
         "Our two epsilons are both curved or spiral and both are <b>microaerophilic</b>: they need oxygen, but less than the air has.",
         "Both are gut pathogens: one in the intestine, one in the stomach."
@@ -624,7 +627,7 @@ window.TOUR_DATA = {
       }},
 
     /* ---------- Spirochetes ---------- */
-    {id: "spirochetes", node: "spirochetes", title: "Spirochetes", diagram: "axial",
+    {id: "spirochetes", node: "spirochetes", life: [{"ic": "🌲", "t": "Lyme disease is named after Lyme, Connecticut, where a cluster of cases was studied in the 1970s."}], title: "Spirochetes", diagram: "axial",
       lesson: [
         "Spirochetes have <b>axial filaments</b>: flagella that run <b>inside</b> the cell, between the inner and outer membranes.",
         "When the filaments rotate, the whole cell twists like a corkscrew. This lets spirochetes move well through thick, viscous environments.",
@@ -692,7 +695,7 @@ window.TOUR_DATA = {
       }},
 
     /* ---------- Chlamydiae ---------- */
-    {id: "chlamydiae", node: "chlamydiae", title: "Chlamydiae", also: ["chlamydia"], diagram: "chlamydia",
+    {id: "chlamydiae", node: "chlamydiae", life: [{"ic": "🔎", "t": "Many people with chlamydia have no symptoms, which is why routine testing matters."}], title: "Chlamydiae", also: ["chlamydia"], diagram: "chlamydia",
       lesson: [
         "<i>Chlamydia</i> can only reproduce <b>inside host cells</b>. It switches between two forms:<ul><li><b>Elementary body (EB):</b> infectious, but can't reproduce. Survives outside the host cell. Metabolically limited.</li><li><b>Reticulate body (RB):</b> reproduces, but not infectious. Can't survive outside the host cell. Metabolically active.</li></ul>",
         "Life cycle: EB enters the cell → becomes an RB → multiplies → turns back into EBs → EBs are released to infect new cells.",
@@ -737,7 +740,7 @@ window.TOUR_DATA = {
           ],
           flips: [{f: "Where do they live?", b: "the mouth, gut, and genital tract"}]}
       ]},
-    {id: "cyanobacteria", node: "cyanobacteria", title: "Cyanobacteria",
+    {id: "cyanobacteria", node: "cyanobacteria", life: [{"ic": "🌿", "t": "The chloroplasts in plant cells are thought to come from ancient cyanobacteria."}], title: "Cyanobacteria",
       orgs: [
         {type: "phylum", id: "cyano", node: "cyanobacteria", cheat: "The only <b>photosynthetic</b> group: it makes O₂.", name: "Cyanobacteria", shape: "filament",
           boxes: [

@@ -229,23 +229,12 @@ canvas#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:200}
     <div class="s-card"><div class="sv" id="es-avg">0</div><div class="sl">Avg per Question</div></div>
     <div class="s-card"><div class="sv" id="es-best">0</div><div class="sl">Best Round</div></div>
   </div>
-  <div id="lb-section">
-    <h3>Leaderboard</h3>
-    <div id="save-row">
-      <input id="save-name" type="text" placeholder="Your name" maxlength="30">
-      <button id="save-btn">Save Score</button>
-    </div>
-    <table id="lb-table">
-      <thead><tr>
-        <th>#</th><th>Name</th><th>Total</th><th>Correct</th><th>Avg</th><th>Date</th>
-      </tr></thead>
-      <tbody id="lb-body"><tr><td colspan="6" style="text-align:center;color:#aaa;padding:12px">Loading...</td></tr></tbody>
-    </table>
-  </div>
+  <div id="lb-section"></div>
   <button id="play-again-btn">Play Again</button>
   <button id="back-to-name-btn">Change Name</button>
 </div>
 
+<script src="leaderboard.js"></script>
 <script>
 // ─────────────────────────────────────────────────────────────
 // DATA: 40 disease-to-organism pairs
@@ -309,7 +298,13 @@ function levenshtein(a,b){
   return dp[m][n];
 }
 
-function norm(s){return s.trim().toLowerCase();}
+/* accept plural / group forms of the genus word: Fusobacteria = Fusobacterium, Staphylococci = Staphylococcus, ... */
+function singularGenus(s){
+  var parts = s.split(" "), g = parts[0];
+  g = g.replace(/bacteria$/, "bacterium").replace(/cocci$/, "coccus").replace(/bacilli$/, "bacillus").replace(/^clostridia$/, "clostridium").replace(/^chlamydiae$/, "chlamydia").replace(/^neisseriae$/, "neisseria");
+  parts[0] = g; return parts.join(" ");
+}
+function norm(s){return singularGenus(s.trim().toLowerCase().replace(/\s+/g," "));}
 function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 const WIN_MSGS=[
@@ -634,9 +629,6 @@ function endSession(){
   document.getElementById('es-avg').textContent=avg;
   document.getElementById('es-best').textContent=best;
   document.getElementById('end-subtitle').textContent=`${session.playerName} answered ${count} question${count!==1?'s':''}.`;
-  document.getElementById('save-name').value=session.playerName||'';
-  document.getElementById('save-btn').disabled=false;
-  document.getElementById('save-btn').textContent='Save Score';
 
   showScreen('end-screen');
   loadLeaderboard();
@@ -673,53 +665,15 @@ function triggerConfetti(){
 // ─────────────────────────────────────────────────────────────
 // DB / LEADERBOARD
 // ─────────────────────────────────────────────────────────────
-let dbRef=null,userRef=null;
-
-async function initDB(){
-  try{dbRef=await window.claude.use('db');userRef=await window.claude.use('user');}
-  catch(e){dbRef=null;userRef=null;}
+// Class leaderboard: optional nickname save to the instructor's Google Sheet (leaderboard.js)
+function loadLeaderboard(){
+  if(!window.BIO112_LB) return;
+  BIO112_LB.widget(document.getElementById('lb-section'), {game: 'disease', title: 'Class leaderboard', score: function(){
+    var c = session.scores.filter(function(s){ return s > 0; }).length;
+    return {score: session.total, details: session.scores.length + ' questions, ' + c + ' correct'};
+  }});
 }
 
-async function saveScore(name){
-  if(!dbRef||!userRef){showLBMsg('Leaderboard requires the claude.ai artifact viewer.');return;}
-  const scores=session.scores;
-  const total=session.total;
-  const count=scores.length;
-  if(count===0){showLBMsg('Answer at least one question first!');return;}
-  const correct=scores.filter(s=>s>0).length;
-  const avg=parseFloat((total/count).toFixed(2));
-  const uid=await userRef.id();
-  const docId=uid||('anon_'+Date.now().toString(36));
-  try{
-    await dbRef.collection('disease-type-leaderboard').doc(docId).set({
-      name:name.trim().substring(0,30),totalScore:total,questionsAnswered:count,
-      correct,avgScore:avg,date:new Date().toLocaleDateString(),timestamp:Date.now()
-    });
-    document.getElementById('save-btn').disabled=true;
-    document.getElementById('save-btn').textContent='Saved! ✅';
-    loadLeaderboard();
-  }catch(e){showLBMsg('Could not save. Try again.');}
-}
-
-async function loadLeaderboard(){
-  const tbody=document.getElementById('lb-body');
-  if(!dbRef){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:#aaa;padding:12px">Leaderboard requires the claude.ai artifact viewer.</td></tr>';return;}
-  try{
-    const snap=await dbRef.collection('disease-type-leaderboard').orderBy('totalScore','desc').limit(20).get();
-    if(snap.empty){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:#aaa;padding:12px">No scores yet. Be the first! 🏆</td></tr>';return;}
-    tbody.innerHTML=snap.docs.map((doc,i)=>{
-      const d=doc.data();if(!d)return'';
-      return`<tr><td class="lb-rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</td>
-        <td>${escHtml(d.name||'Anonymous')}</td><td><strong>${d.totalScore||0}</strong></td>
-        <td>${d.correct||0}</td><td>${typeof d.avgScore==='number'?d.avgScore.toFixed(1):d.avgScore||0}</td>
-        <td style="color:#aaa;font-size:.78rem">${d.date||''}</td></tr>`;
-    }).join('');
-  }catch(e){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:#aaa;padding:12px">Could not load leaderboard.</td></tr>';}
-}
-
-function showLBMsg(msg){
-  document.getElementById('lb-body').innerHTML=`<tr><td colspan="6" style="text-align:center;color:#c44;padding:12px">${msg}</td></tr>`;
-}
 
 // ─────────────────────────────────────────────────────────────
 // EVENT LISTENERS
@@ -744,11 +698,7 @@ document.getElementById('answer-input').addEventListener('keydown',e=>{
 document.getElementById('end-session-btn').addEventListener('click',()=>{
   if(confirm('End the session now? Your current question won\'t count.'))endSession();
 });
-document.getElementById('save-btn').addEventListener('click',()=>{
-  const n=document.getElementById('save-name').value.trim();
-  if(!n){document.getElementById('save-name').focus();return;}
-  saveScore(n);
-});
+
 document.getElementById('play-again-btn').addEventListener('click',()=>{
   startSession();
 });
@@ -761,7 +711,6 @@ document.getElementById('back-to-name-btn').addEventListener('click',()=>{
 // ─────────────────────────────────────────────────────────────
 // INIT
 // ─────────────────────────────────────────────────────────────
-initDB();
 </script>
 </body>
 </html>
