@@ -19,6 +19,7 @@
      stops     tour order (one stop per organism that has its own slide).
                node = where the tour sits on the tree. also = extra tree
                nodes that open this stop. orgs = organism cards.
+               cheat = a one-line ID shortcut (red box); also collected on the cheat sheet.
      Organism card:
        tests   lab results, drawn as flip tiles. k = test (see TESTS in the
                page code), v = result, from = the branch it is inherited from.
@@ -93,15 +94,18 @@ window.TOUR_DATA = {
     {id: "rickettsia", rank: "genus", label: "Rickettsia", parent: "alpha", italic: true},
     {id: "r_rickettsii", rank: "species", label: "R. rickettsii", parent: "rickettsia", overviewOnly: true, italic: true, card: "rrickettsii"},
     {id: "beta", rank: "class", label: "Beta", full: "Betaproteobacteria", parent: "proteo", blankLabel: true,
-      note: "none extra (Beta is a grouping; the traits live on each genus)"},
+      traits: [
+        {t: "cocci or coccobacilli (round or almost round)"},
+        {t: "obligate aerobes", blank: {pre: "", post: "", a: "obligate aerobes", o: ["obligate aerobes", "facultative anaerobes", "obligate anaerobes"], why: "Both of our beta genera, Bordetella and Neisseria, are obligate aerobes."}}
+      ]},
     {id: "bordetella", rank: "genus", label: "Bordetella", parent: "beta", italic: true},
     {id: "b_pertussis", rank: "species", label: "B. pertussis", parent: "bordetella", overviewOnly: true, italic: true, card: "bpertussis"},
     {id: "neisseria", rank: "genus", label: "Neisseria", parent: "beta", italic: true,
       traits: [
         {t: "gram-negative diplococci", blank: {pre: "gram-negative ", post: "", a: "diplococci", o: ["diplococci", "rods", "spirals"], why: "Neisseria are diplococci: round cells in pairs."}},
-        {t: "obligate aerobes"},
         {t: "oxidase +"},
-        {t: "grow on chocolate agar + CO₂"}
+        {t: "grow on chocolate agar + CO₂"},
+        {t: "break sugars down oxidatively (not by fermentation)"}
       ]},
     {id: "ngon", rank: "species", label: "N. gonorrhoeae", parent: "neisseria", italic: true},
     {id: "nmen", rank: "species", label: "N. meningitidis", parent: "neisseria", italic: true},
@@ -222,7 +226,7 @@ window.TOUR_DATA = {
       ]},
     {id: "rickettsia", node: "rickettsia", title: "<i>Rickettsia rickettsii</i>",
       orgs: [
-        {id: "rrickettsii", node: "rickettsia", name: "Rickettsia rickettsii", shape: "rod", emoji: "🕷️",
+        {id: "rrickettsii", node: "rickettsia", cheat: "A tiny rod that <b>only grows inside host cells</b> and spreads by <b>tick bites</b>.", name: "Rickettsia rickettsii", shape: "rod", emoji: "🕷️",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "tiny rod"},
@@ -236,16 +240,18 @@ window.TOUR_DATA = {
     /* ---------- Beta ---------- */
     {id: "beta", node: "beta", title: "Betaproteobacteria",
       lesson: [
-        "Our two beta genera are <b><i>Bordetella</i></b> and <b><i>Neisseria</i></b>."
+        "Our two beta genera are <b><i>Bordetella</i></b> and <b><i>Neisseria</i></b>.",
+        "Both are <b>round or almost round</b>: <i>Neisseria</i> are cocci (in pairs) and <i>Bordetella</i> is a coccobacillus.",
+        "Both are <b>obligate aerobes</b>: they need oxygen."
       ]},
     {id: "bordetella", node: "bordetella", title: "<i>Bordetella pertussis</i>",
       lesson: ["<i>Bordetella</i> is a small gram-negative <b>coccobacillus</b> (a very short rod, almost round)."],
       orgs: [
-        {id: "bpertussis", node: "bordetella", name: "Bordetella pertussis", shape: "coccobacillus", emoji: "🫁",
+        {id: "bpertussis", node: "bordetella", cheat: "The only <b>coccobacillus</b> on our list.", name: "Bordetella pertussis", shape: "coccobacillus", emoji: "🫁",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "coccobacillus"},
-            {k: "oxygen", v: "aerobic"},
+            {k: "oxygen", v: "obligate aerobe", from: "beta"},
             {k: "oxidase", v: "+"},
             {k: "catalase", v: "+"},
             {k: "media", v: "special media", note: "needs special media to grow"}
@@ -266,18 +272,20 @@ window.TOUR_DATA = {
           treat: {short: "azithromycin or clarithromycin", html: "azithromycin or clarithromycin (best early)", drugs: ["azithromycin", "clarithromycin"]},
           extra: [{h: "📈 Why cases are rising", boxes: [{ic: "⏳", t: "waning vaccine immunity"}, {ic: "🔍", t: "better detection"}, {ic: "🚫", t: "vaccine hesitancy"}]}]}
       ]},
-    {id: "neisseria", node: "neisseria", title: "<i>Neisseria</i>",
+    {id: "neisseria", node: "neisseria", title: "<i>Neisseria</i>", diagram: "diplococci",
+      cheat: "The only gram-negative <b>diplococci</b> on our list, grown on <b>chocolate agar + CO₂</b>.",
       lesson: [
         "<i>Neisseria</i> are <b>diplococci</b>: round cells in pairs (they look like two kidney beans).",
-        "Both species share the same traits from this branch. The <b>sugar fermentation test</b> tells them apart:<ul><li><i>N. gonorrhoeae</i> ferments <b>glucose only</b></li><li><i>N. meningitidis</i> ferments <b>glucose AND maltose</b></li></ul>"
+        "Both species share the same traits from this branch. A <b>sugar test</b> tells them apart:<ul><li><i>N. gonorrhoeae</i> uses <b>glucose only</b></li><li><i>N. meningitidis</i> uses <b>glucose AND maltose</b></li></ul>",
+        "Heads up: <i>Neisseria</i> don't truly <b>ferment</b>. As obligate aerobes, they break sugars down <b>oxidatively</b>. The sugar (CTA) tube still turns yellow from the acid made, which shows which sugars they use."
       ]},
     {id: "n-gonorrhoeae", node: "ngon", title: "<i>Neisseria gonorrhoeae</i>",
       orgs: [
-        {id: "ngon", node: "ngon", name: "Neisseria gonorrhoeae", shape: "diplococcus", emoji: "⚠️",
+        {id: "ngon", node: "ngon", cheat: "A <i>Neisseria</i> (gram − diplococcus on chocolate agar) that uses <b>glucose only</b>.", name: "Neisseria gonorrhoeae", shape: "diplococcus", emoji: "⚠️",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "diplococci", from: "neisseria"},
-            {k: "oxygen", v: "obligate aerobe", from: "neisseria"},
+            {k: "oxygen", v: "obligate aerobe", from: "beta"},
             {k: "oxidase", v: "+", from: "neisseria"},
             {k: "media", v: "chocolate agar + CO₂", from: "neisseria"},
             {k: "sugars", v: "glucose only"}
@@ -294,11 +302,11 @@ window.TOUR_DATA = {
       ]},
     {id: "n-meningitidis", node: "nmen", title: "<i>Neisseria meningitidis</i>",
       orgs: [
-        {id: "nmen", node: "nmen", name: "Neisseria meningitidis", shape: "diplococcus", emoji: "🧠",
+        {id: "nmen", node: "nmen", cheat: "A <i>Neisseria</i> (gram − diplococcus on chocolate agar) that also uses <b>maltose</b>.", name: "Neisseria meningitidis", shape: "diplococcus", emoji: "🧠",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "diplococci", from: "neisseria"},
-            {k: "oxygen", v: "obligate aerobe", from: "neisseria"},
+            {k: "oxygen", v: "obligate aerobe", from: "beta"},
             {k: "oxidase", v: "+", from: "neisseria"},
             {k: "media", v: "chocolate agar + CO₂", from: "neisseria"},
             {k: "sugars", v: "glucose + maltose"}
@@ -311,12 +319,16 @@ window.TOUR_DATA = {
             {ic: "🏫", h: "Most at risk", t: "young children, teens, people in dorms or the military", warn: true},
             {ic: "💉", h: "Prevention", t: "vaccine"}
           ],
-          treat: {short: "ceftriaxone", html: "ceftriaxone", drugs: ["ceftriaxone"]}}
+          treat: {short: "ceftriaxone", html: "ceftriaxone", drugs: ["ceftriaxone"]},
+          extra: [{h: "✏️ Don't mix these up", boxes: [
+            {ic: "🦠", t: "<b><i>meningitidis</i></b> = the bacterium's species name"},
+            {ic: "🧠", t: "<b>meningitis</b> = the disease: inflamed meninges (the membranes around the brain and spinal cord)"}
+          ]}]}
       ],
       checkin: {
-        q: "An oxidase +, gram-negative diplococcus ferments glucose and maltose. What is it?",
+        q: "An oxidase +, gram-negative diplococcus uses glucose and maltose. What is it?",
         o: ["<i>N. meningitidis</i>", "<i>N. gonorrhoeae</i>", "<i>Bordetella pertussis</i>", "<i>E. coli</i>"],
-        w: "Both <i>Neisseria</i> are oxidase + diplococci. Only <i>N. meningitidis</i> ferments maltose."
+        w: "Both <i>Neisseria</i> are oxidase + diplococci. Only <i>N. meningitidis</i> uses maltose."
       }},
 
     /* ---------- Gamma ---------- */
@@ -330,7 +342,7 @@ window.TOUR_DATA = {
         "It is an <b>opportunistic pathogen</b>: it mostly infects people whose defenses are already down, like patients with burns or wounds."
       ],
       orgs: [
-        {id: "paeruginosa", node: "pseudomonas", name: "Pseudomonas aeruginosa", shape: "rod", emoji: "🔥",
+        {id: "paeruginosa", node: "pseudomonas", cheat: "<b>Greenish, pearly colonies</b> (oxidase +, lactose −).", name: "Pseudomonas aeruginosa", shape: "rod", emoji: "🔥",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "rod"},
@@ -353,7 +365,7 @@ window.TOUR_DATA = {
         "In nature, it lives in water and <b>reproduces inside amoebae</b>."
       ],
       orgs: [
-        {id: "lpneumophila", node: "legionella", name: "Legionella pneumophila", shape: "rod", emoji: "🛁",
+        {id: "lpneumophila", node: "legionella", cheat: "<b>Reproduces inside amoebae</b>; outbreaks come from water systems, not person to person.", name: "Legionella pneumophila", shape: "rod", emoji: "🛁",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "rod"},
@@ -381,6 +393,7 @@ window.TOUR_DATA = {
       lesson: [
         "The <b>enterics</b> (order Enterobacteriales) live in the <b>intestinal tracts</b> of humans and animals.",
         "They're all gram-negative rods and facultative anaerobes, and they ferment carbohydrates. Most have peritrichous flagella and fimbriae for attaching to surfaces.",
+        "<b>Oxidase − doesn't mean they can't use oxygen.</b> The oxidase test detects one enzyme, cytochrome c oxidase. Enterics don't have it: they pass electrons to oxygen with different enzymes, and without oxygen they can use other final electron acceptors or ferment. So they're oxidase − but still facultative anaerobes.",
         "They all look alike under the microscope, so we ID them with <b>biochemical tests</b>. The first big split is <b>lactose fermentation</b>:<ul><li><b>Coliforms</b> ferment lactose → pink colonies on MacConkey agar</li><li><b>Non-coliforms</b> don't → colorless colonies on MacConkey agar</li></ul>",
         "The next tool is the <b>IMViC</b> panel: <b>I</b>ndole, <b>M</b>ethyl red, <b>V</b>oges-Proskauer, <b>C</b>itrate. Results are written in that order, like ++−−."
       ]},
@@ -390,7 +403,7 @@ window.TOUR_DATA = {
       ]},
     {id: "e-coli", node: "ecoli", title: "<i>Escherichia coli</i>", also: ["escherichia"], entericTable: true,
       orgs: [
-        {id: "ecoli", node: "ecoli", name: "Escherichia coli", shape: "rod", emoji: "🚽",
+        {id: "ecoli", node: "ecoli", cheat: "The only coliform with <b>IMViC ++−−</b>.", name: "Escherichia coli", shape: "rod", emoji: "🚽",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "rod", from: "enterics"},
@@ -408,7 +421,7 @@ window.TOUR_DATA = {
       ]},
     {id: "klebsiella", node: "klebsiella", title: "<i>Klebsiella pneumoniae</i>", entericTable: true,
       orgs: [
-        {id: "kpneumoniae", node: "klebsiella", name: "Klebsiella pneumoniae", shape: "rod", emoji: "🫁",
+        {id: "kpneumoniae", node: "klebsiella", cheat: "The only <b>non-motile</b> coliform (IMViC −−++).", name: "Klebsiella pneumoniae", shape: "rod", emoji: "🫁",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "rod", from: "enterics"},
@@ -424,7 +437,7 @@ window.TOUR_DATA = {
       ]},
     {id: "enterobacter", node: "enterobacter", title: "<i>Enterobacter</i>", entericTable: true,
       orgs: [
-        {id: "enterobacter", node: "enterobacter", name: "Enterobacter", shape: "rod", emoji: "🏥",
+        {id: "enterobacter", node: "enterobacter", cheat: "IMViC <b>−−++</b> like <i>Klebsiella</i>, but <b>motile</b>.", name: "Enterobacter", shape: "rod", emoji: "🏥",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "rod", from: "enterics"},
@@ -452,7 +465,7 @@ window.TOUR_DATA = {
       ]},
     {id: "salmonella", node: "s_enteritidis", title: "<i>Salmonella</i>", also: ["salmonella"], entericTable: true,
       orgs: [
-        {id: "salmonella", node: "s_enteritidis", name: "Salmonella", sub: "(S. enterica serovar Enteritidis)", shape: "rod", emoji: "🍗",
+        {id: "salmonella", node: "s_enteritidis", cheat: "The only non-coliform that's <b>H₂S + but urease −</b>.", spell: "Salmonella", name: "Salmonella", sub: "(S. enterica serovar Enteritidis)", shape: "rod", emoji: "🍗",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "rod", from: "enterics"},
@@ -469,7 +482,7 @@ window.TOUR_DATA = {
       ]},
     {id: "s-typhi", node: "s_typhi", title: "<i>Salmonella</i> Typhi", entericTable: true,
       orgs: [
-        {id: "styphi", node: "s_typhi", name: "Salmonella", sub: "Typhi", shape: "rod", emoji: "🌡️",
+        {id: "styphi", node: "s_typhi", spell: "Salmonella Typhi", cheat: "The <i>Salmonella</i> that breaks the rules: <b>citrate −</b>, <b>weak H₂S</b>.", name: "Salmonella", sub: "Typhi", shape: "rod", emoji: "🌡️",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "rod", from: "enterics"},
@@ -499,7 +512,7 @@ window.TOUR_DATA = {
       ]},
     {id: "proteus", node: "proteus", title: "<i>Proteus</i>", entericTable: true,
       orgs: [
-        {id: "proteus", node: "proteus", name: "Proteus", shape: "rod", emoji: "🌊",
+        {id: "proteus", node: "proteus", cheat: "The only one that <b>swarms across the agar</b> (with a strong odor).", name: "Proteus", shape: "rod", emoji: "🌊",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "rod", from: "enterics"},
@@ -536,7 +549,7 @@ window.TOUR_DATA = {
       ]},
     {id: "serratia", node: "serratia", title: "<i>Serratia marcescens</i>", entericTable: true,
       orgs: [
-        {id: "smarcescens", node: "serratia", name: "Serratia marcescens", shape: "rod", emoji: "🏥",
+        {id: "smarcescens", node: "serratia", cheat: "The only gram-negative with a <b>red pigment</b>.", name: "Serratia marcescens", shape: "rod", emoji: "🏥",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "rod", from: "enterics"},
@@ -560,7 +573,7 @@ window.TOUR_DATA = {
         "Shape: a <b>curved rod</b> (the macaroni! 🍝)"
       ],
       orgs: [
-        {id: "vcholerae", node: "vibrio", name: "Vibrio cholerae", shape: "curved", emoji: "💧",
+        {id: "vcholerae", node: "vibrio", cheat: "The <b>comma-shaped</b> rod: oxidase +, unlike the oxidase − enterics.", name: "Vibrio cholerae", shape: "curved", emoji: "💧",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "curved rod", note: "comma-shaped"},
@@ -581,7 +594,7 @@ window.TOUR_DATA = {
       ]},
     {id: "campylobacter", node: "campylobacter", title: "<i>Campylobacter jejuni</i>",
       orgs: [
-        {id: "cjejuni", node: "campylobacter", name: "Campylobacter jejuni", shape: "gullwing", emoji: "🍗",
+        {id: "cjejuni", node: "campylobacter", cheat: "The only <b>gull-wing</b> shape.", name: "Campylobacter jejuni", shape: "gullwing", emoji: "🍗",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "gull-wing spiral", note: "the cavatappi! 🍝"},
@@ -593,7 +606,7 @@ window.TOUR_DATA = {
       ]},
     {id: "helicobacter", node: "helicobacter", title: "<i>Helicobacter pylori</i>",
       orgs: [
-        {id: "hpylori", node: "helicobacter", name: "Helicobacter pylori", shape: "spiral", emoji: "🫃",
+        {id: "hpylori", node: "helicobacter", cheat: "The <b>urease + spiral</b> that lives in the stomach.", name: "Helicobacter pylori", shape: "spiral", emoji: "🫃",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "spiral rod"},
@@ -619,7 +632,7 @@ window.TOUR_DATA = {
       ]},
     {id: "treponema", node: "treponema", title: "<i>Treponema pallidum</i>",
       orgs: [
-        {id: "tpallidum", node: "treponema", name: "Treponema pallidum", shape: "spirochete", emoji: "⚠️",
+        {id: "tpallidum", node: "treponema", cheat: "<b>Too thin to see</b> with a regular light microscope.", name: "Treponema pallidum", shape: "spirochete", emoji: "⚠️",
           tests: [
             {k: "gram", v: "− (stains poorly)", from: "spirochetes"},
             {k: "shape", v: "spirochete", note: "too thin to see well with a regular light microscope"},
@@ -638,7 +651,7 @@ window.TOUR_DATA = {
       ]},
     {id: "lyme", node: "b_burgdorferi", title: "<i>Borrelia burgdorferi</i>: Lyme disease", also: ["borrelia"],
       orgs: [
-        {id: "bburgdorferi", node: "b_burgdorferi", name: "Borrelia burgdorferi", shape: "spirochete", emoji: "🎯",
+        {id: "bburgdorferi", node: "b_burgdorferi", cheat: "<b>Bull's-eye rash</b> after a tick bite.", name: "Borrelia burgdorferi", shape: "spirochete", emoji: "🎯",
           tests: [
             {k: "gram", v: "− (stains poorly)", from: "spirochetes"},
             {k: "shape", v: "spirochete", from: "spirochetes"},
@@ -655,7 +668,7 @@ window.TOUR_DATA = {
       ]},
     {id: "relapsing-fever", node: "b_relapsing", title: "<i>Borrelia</i>: relapsing fever",
       orgs: [
-        {id: "brf", node: "b_relapsing", name: "Borrelia", sub: "(relapsing fever species)", shape: "spirochete", emoji: "🔁",
+        {id: "brf", node: "b_relapsing", spell: "Borrelia", cheat: "A fever that <b>goes away and comes back</b>.", name: "Borrelia", sub: "(relapsing fever species)", shape: "spirochete", emoji: "🔁",
           tests: [
             {k: "gram", v: "− (stains poorly)", from: "spirochetes"},
             {k: "shape", v: "spirochete", from: "spirochetes"},
@@ -686,7 +699,7 @@ window.TOUR_DATA = {
         "Memory hook: EB = the \"delivery vehicle,\" RB = the \"factory.\""
       ],
       orgs: [
-        {id: "ctrachomatis", node: "chlamydia", name: "Chlamydia trachomatis", shape: "intracellular", emoji: "⚠️",
+        {id: "ctrachomatis", node: "chlamydia", cheat: "The only one with a <b>two-form life cycle</b> (EB and RB).", name: "Chlamydia trachomatis", shape: "intracellular", emoji: "⚠️",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "media", v: "only inside host cells", from: "chlamydiae"},
@@ -707,7 +720,7 @@ window.TOUR_DATA = {
     /* ---------- The other phyla ---------- */
     {id: "planctomycetes", node: "planctomycetes", title: "Planctomycetes",
       orgs: [
-        {type: "phylum", id: "planct", node: "planctomycetes", name: "Planctomycetes", shape: "budding",
+        {type: "phylum", id: "planct", node: "planctomycetes", cheat: "Reproduces by <b>budding</b>.", name: "Planctomycetes", shape: "budding",
           boxes: [
             {ic: "🫧", t: "Gram-negative bacteria that reproduce by <b>budding</b>"},
             {ic: "🔬", t: "Examples: <i>Planctomyces</i>, <i>Gemmata</i>, <i>Brocadia</i>"}
@@ -716,7 +729,7 @@ window.TOUR_DATA = {
       ]},
     {id: "fusobacteria", node: "fusobacteria", title: "Fusobacteria",
       orgs: [
-        {type: "phylum", id: "fuso", node: "fusobacteria", name: "Fusobacteria", shape: "spindle",
+        {type: "phylum", id: "fuso", node: "fusobacteria", cheat: "<b>Spindle-shaped</b> rods.", name: "Fusobacteria", shape: "spindle",
           boxes: [
             {ic: "🚫", t: "Anaerobic, <b>spindle-shaped</b> rods"},
             {ic: "🦷", t: "Some cause periodontal (gum) disease and abscesses"},
@@ -726,7 +739,7 @@ window.TOUR_DATA = {
       ]},
     {id: "cyanobacteria", node: "cyanobacteria", title: "Cyanobacteria",
       orgs: [
-        {type: "phylum", id: "cyano", node: "cyanobacteria", name: "Cyanobacteria", shape: "filament",
+        {type: "phylum", id: "cyano", node: "cyanobacteria", cheat: "The only <b>photosynthetic</b> group: it makes O₂.", name: "Cyanobacteria", shape: "filament",
           boxes: [
             {ic: "☀️", t: "Photosynthetic: use chlorophyll <i>a</i> and release O₂"},
             {ic: "🌍", t: "They made the oxygen in early Earth's atmosphere"},
@@ -758,6 +771,12 @@ window.TOUR_DATA = {
         "In lab, work down the tree: Gram stain → shape → oxygen / oxidase → lactose → IMViC, H₂S, citrate, urease.",
         "Same branch = similar traits, but the leaves have different diseases."
       ]}
+  ],
+
+  /* ID cheat sheet: extra lines shown under "coming in the gram-positive tour" */
+  cheatPreview: [
+    {name: "Micrococcus", t: "the only <b>tetrads</b>"},
+    {name: "Clostridium", t: "the only <b>obligate anaerobe spore former</b>"}
   ],
 
   /* Section 8 of the brief. Motility is intentionally left out. */
