@@ -17,7 +17,8 @@ This takes about 10 minutes, once. Students never need an account.
    - Click the gear next to "Select type" and choose **Web app**.
    - **Execute as:** Me
    - **Who has access:** Anyone
-   - Click **Deploy**. Google will ask you to authorize it. Allow it (it only touches this one sheet).
+   - Click **Deploy**. Google will ask you to authorize it.
+   - You will see **"Google hasn't verified this app."** That is normal for a script you wrote yourself. Click **Advanced**, then **Go to (your project name) (unsafe)**, then **Allow**. The first line of the script (`@OnlyCurrentDoc`) limits it to this one sheet. Students never see this screen.
 5. Copy the **Web app URL** (it ends in `/exec`).
 6. Send the URL to Claude, or paste it into `leaderboard.js` on the line `var URL = "";`.
 
