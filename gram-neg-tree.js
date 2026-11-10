@@ -22,6 +22,7 @@
                cheat = a one-line ID shortcut (red box); also collected on the cheat sheet.
                life = "In your life" boxes. comic = 3-panel mini comic (scenes drawn in the page code).
                case = a patient case behind a button: story, tests to order, diagnosis (first option correct).
+               photos (card) / photo (stop) = real images from OpenStax Microbiology (CC BY 4.0), credited under each one.
      Organism card:
        tests   lab results, drawn as flip tiles. k = test (see TESTS in the
                page code), v = result, from = the branch it is inherited from.
@@ -205,7 +206,7 @@ window.TOUR_DATA = {
         "Gram stain groups aren't a perfect family tree, but they're the first branch point we use in lab, so we'll use them to organize this tour.",
         "Today: the <b>gram-negatives</b>. The gram-positives are coming in the next module."
       ]},
-    {id: "gram-negative", node: "gramneg", title: "Gram-negative bacteria", diagram: "gramwall",
+    {id: "gram-negative", node: "gramneg", photo: {"src": "images/gram-stain-b-cereus-e-coli.jpg", "alt": "Gram stain under the microscope: small pink cells and long violet chains", "cap": "A Gram stain: the small <b>pink</b> cells are gram-negative <i>E. coli</i>. The long violet chains are gram-positive <i>Bacillus cereus</i>.", "credit": "Credit: modification of work by \"Bibliomaniac 15\"/Wikimedia Commons, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.21)"}, title: "Gram-negative bacteria", diagram: "gramwall",
       lesson: [
         "Gram-negative cells have a <b>thin peptidoglycan layer</b> and an <b>outer membrane</b>. The crystal violet washes out during decolorizing, so the cells pick up the pink safranin.",
         "The outer membrane contains <b>LPS (endotoxin)</b>. When gram-negative cells die and break apart, LPS is released and can cause fever and septic shock.",
@@ -229,7 +230,7 @@ window.TOUR_DATA = {
       ]},
     {id: "rickettsia", node: "rickettsia", title: "<i>Rickettsia rickettsii</i>",
       orgs: [
-        {id: "rrickettsii", node: "rickettsia", cheat: "A tiny rod that <b>only grows inside host cells</b> and spreads by <b>tick bites</b>.", name: "Rickettsia rickettsii", shape: "rod", emoji: "🕷️",
+        {id: "rrickettsii", node: "rickettsia", photos: [{"src": "images/r-rickettsii-tick-cells.jpg", "alt": "Stained micrograph: tick cells with small dark red Rickettsia inside them", "cap": "<i>R. rickettsii</i> growing <b>inside</b> a tick's cells. It needs special stains to see.", "credit": "Credit: modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.4)"}], cheat: "A tiny rod that <b>only grows inside host cells</b> and spreads by <b>tick bites</b>.", name: "Rickettsia rickettsii", shape: "rod", emoji: "🕷️",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "tiny rod"},
@@ -305,7 +306,7 @@ window.TOUR_DATA = {
       ]},
     {id: "n-meningitidis", node: "nmen", title: "<i>Neisseria meningitidis</i>",
       orgs: [
-        {id: "nmen", node: "nmen", cheat: "A <i>Neisseria</i> (gram − diplococcus on chocolate agar) that also uses <b>maltose</b>.", name: "Neisseria meningitidis", shape: "diplococcus", emoji: "🧠",
+        {id: "nmen", node: "nmen", photos: [{"src": "images/n-meningitidis-chocolate-agar.jpg", "alt": "Round, creamy white colonies on brown-orange chocolate agar", "cap": "Colonies on <b>chocolate agar</b>", "credit": "Credit: CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.5)"}], cheat: "A <i>Neisseria</i> (gram − diplococcus on chocolate agar) that also uses <b>maltose</b>.", name: "Neisseria meningitidis", shape: "diplococcus", emoji: "🧠",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "diplococci", from: "neisseria"},
@@ -368,7 +369,7 @@ window.TOUR_DATA = {
         "In nature, it lives in water and <b>reproduces inside amoebae</b>."
       ],
       orgs: [
-        {id: "lpneumophila", node: "legionella", cheat: "<b>Reproduces inside amoebae</b>; outbreaks come from water systems, not person to person.", name: "Legionella pneumophila", shape: "rod", emoji: "🛁",
+        {id: "lpneumophila", node: "legionella", photos: [{"src": "images/legionella-micrograph.jpg", "alt": "Black and white micrograph of long rod-shaped cells", "cap": "Rods under the microscope", "credit": "Credit: modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.8)"}, {"src": "images/rooftop-ac-unit.jpg", "alt": "A large air conditioning unit on a building roof", "cap": "Outbreaks often start in the air conditioning units of large buildings when their water is contaminated", "credit": "<a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.8)"}], cheat: "<b>Reproduces inside amoebae</b>; outbreaks come from water systems, not person to person.", name: "Legionella pneumophila", shape: "rod", emoji: "🛁",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "rod"},
@@ -418,8 +419,7 @@ window.TOUR_DATA = {
           ],
           disease: {short: "#1 cause of UTIs and traveler's diarrhea", html: "the #1 cause of:", tags: ["uti", "gi"],
             boxes: [{ic: "🚽", t: "UTIs"}, {ic: "✈️", t: "traveler's diarrhea"}]},
-          facts: [{ic: "🏠", h: "Found in", t: "the intestines (normal flora)"}],
-          hook: "UTIs are more common in females because of the shorter urethra."}
+          facts: [{ic: "🏠", h: "Found in", t: "the intestines (normal flora)"}]}
           /* TODO: brief gives no treatment for E. coli */
       ]},
     {id: "klebsiella", node: "klebsiella", title: "<i>Klebsiella pneumoniae</i>", entericTable: true,
@@ -485,7 +485,7 @@ window.TOUR_DATA = {
       ]},
     {id: "s-typhi", node: "s_typhi", title: "<i>Salmonella</i> Typhi", entericTable: true,
       orgs: [
-        {id: "styphi", node: "s_typhi", spell: "Salmonella Typhi", cheat: "The <i>Salmonella</i> that breaks the rules: <b>citrate −</b>, <b>weak H₂S</b>.", name: "Salmonella", sub: "Typhi", shape: "rod", emoji: "🌡️",
+        {id: "styphi", node: "s_typhi", photos: [{"src": "images/salmonella-typhi-sem.jpg", "alt": "Colorized scanning electron micrograph of many rod-shaped cells", "cap": "Rods in a scanning electron micrograph (color added)", "credit": "Credit: CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.9)"}], spell: "Salmonella Typhi", cheat: "The <i>Salmonella</i> that breaks the rules: <b>citrate −</b>, <b>weak H₂S</b>.", name: "Salmonella", sub: "Typhi", shape: "rod", emoji: "🌡️",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "rod", from: "enterics"},
@@ -609,7 +609,7 @@ window.TOUR_DATA = {
       ]},
     {id: "helicobacter", node: "helicobacter", title: "<i>Helicobacter pylori</i>",
       orgs: [
-        {id: "hpylori", node: "helicobacter", cheat: "The <b>urease + spiral</b> that lives in the stomach.", name: "Helicobacter pylori", shape: "spiral", emoji: "🫃",
+        {id: "hpylori", node: "helicobacter", photos: [{"src": "images/h-pylori-tem.jpg", "alt": "Electron micrograph of one curved rod with several long flagella at one end", "cap": "A spiral rod with its flagella", "credit": "<a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.11)"}], cheat: "The <b>urease + spiral</b> that lives in the stomach.", name: "Helicobacter pylori", shape: "spiral", emoji: "🫃",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "spiral rod"},
@@ -627,7 +627,7 @@ window.TOUR_DATA = {
       }},
 
     /* ---------- Spirochetes ---------- */
-    {id: "spirochetes", node: "spirochetes", life: [{"ic": "🌲", "t": "Lyme disease is named after Lyme, Connecticut, where a cluster of cases was studied in the 1970s."}], title: "Spirochetes", diagram: "axial",
+    {id: "spirochetes", node: "spirochetes", photo: {"src": "images/spirochete-axial-filaments.jpg", "alt": "Spirochetes: a darkfield view of thin wavy cells, an electron micrograph cross-section showing axial filaments between the cell membrane and outer membrane, and a drawing of a twisted cell", "cap": "Spirochetes in a darkfield microscope (left). Electron micrographs show the <b>axial filaments</b> (endoflagella) sitting between the cell membrane and the outer membrane.", "credit": "Credit: micrograph, modification of work by CDC; SEM/TEM, modification of work by Guyard C, Raffel SJ, Schrumpf ME, et al.; via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.13)"}, life: [{"ic": "🌲", "t": "Lyme disease is named after Lyme, Connecticut, where a cluster of cases was studied in the 1970s."}], title: "Spirochetes", diagram: "axial",
       lesson: [
         "Spirochetes have <b>axial filaments</b>: flagella that run <b>inside</b> the cell, between the inner and outer membranes.",
         "When the filaments rotate, the whole cell twists like a corkscrew. This lets spirochetes move well through thick, viscous environments.",
@@ -695,7 +695,7 @@ window.TOUR_DATA = {
       }},
 
     /* ---------- Chlamydiae ---------- */
-    {id: "chlamydiae", node: "chlamydiae", life: [{"ic": "🔎", "t": "Many people with chlamydia have no symptoms, which is why routine testing matters."}], title: "Chlamydiae", also: ["chlamydia"], diagram: "chlamydia",
+    {id: "chlamydiae", node: "chlamydiae", life: [{"ic": "🔎", "t": "Many people with chlamydia have no symptoms, which is why routine testing matters."}], title: "Chlamydiae", also: ["chlamydia"], photo: {"src": "images/chlamydia-life-cycle.png", "alt": "Life cycle of Chlamydia: elementary bodies enter an epithelial cell, become reticulate bodies inside an inclusion, multiply, turn back into elementary bodies, and are released at about 72 hours", "cap": "Life cycle of <i>Chlamydia</i>: EB enters (12 h) → RBs in an inclusion (24 h) → RBs multiply and turn back into EBs (48 h) → EBs released (72 h)", "credit": "Credit: modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.12)"},
       lesson: [
         "<i>Chlamydia</i> can only reproduce <b>inside host cells</b>. It switches between two forms:<ul><li><b>Elementary body (EB):</b> infectious, but can't reproduce. Survives outside the host cell. Metabolically limited.</li><li><b>Reticulate body (RB):</b> reproduces, but not infectious. Can't survive outside the host cell. Metabolically active.</li></ul>",
         "Life cycle: EB enters the cell → becomes an RB → multiplies → turns back into EBs → EBs are released to infect new cells.",
@@ -742,7 +742,7 @@ window.TOUR_DATA = {
       ]},
     {id: "cyanobacteria", node: "cyanobacteria", life: [{"ic": "🌿", "t": "The chloroplasts in plant cells are thought to come from ancient cyanobacteria."}], title: "Cyanobacteria",
       orgs: [
-        {type: "phylum", id: "cyano", node: "cyanobacteria", cheat: "The only <b>photosynthetic</b> group: it makes O₂.", name: "Cyanobacteria", shape: "filament",
+        {type: "phylum", id: "cyano", node: "cyanobacteria", photos: [{"src": "images/cyanobacteria-bloom.jpg", "alt": "Aerial photo of a lake turned bright green by a cyanobacteria bloom", "cap": "A cyanobacteria <b>bloom</b> turns a lake green", "credit": "Credit: modification of work by NOAA, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.17)"}], cheat: "The only <b>photosynthetic</b> group: it makes O₂.", name: "Cyanobacteria", shape: "filament",
           boxes: [
             {ic: "☀️", t: "Photosynthetic: use chlorophyll <i>a</i> and release O₂"},
             {ic: "🌍", t: "They made the oxygen in early Earth's atmosphere"},
