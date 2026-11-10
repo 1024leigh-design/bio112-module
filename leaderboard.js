@@ -14,7 +14,7 @@
    ===================================================================== */
 (function(){
   "use strict";
-  var URL = "";   /* paste the Apps Script web app URL here (ends in /exec) */
+  var URL = "https://script.google.com/macros/s/AKfycbzy0Uunj9GLfymzj1S7cRxeBLmvZ9rVjKBwvK6x6HGskgvdNBJSD-d_G-Jt1YuR-nEKcg/exec";   /* Apps Script web app (see leaderboard/SETUP.md) */
 
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;"}[c]; }); }
   function withTimeout(p, ms){ return Promise.race([p, new Promise(function(_, rej){ setTimeout(function(){ rej(new Error("timeout")); }, ms); })]); }
