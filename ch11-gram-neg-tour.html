@@ -444,6 +444,19 @@ table.ent tr.grp td{background:color-mix(in srgb, var(--c) 12%, var(--surface))}
 .photo figcaption{padding:8px 10px; font-size:15.5px; display:flex; flex-direction:column; gap:3px}
 .photo figcaption small{font-size:12.5px; color:var(--muted)}
 .photo figcaption a{color:var(--muted)}
+/* fun-fact pop-up and cross-unit link */
+.fun{border:2px dashed var(--warn); border-radius:14px; background:var(--warn-soft)}
+.fun summary{cursor:pointer; padding:10px 14px; font-family:var(--f-display); font-weight:700; font-size:18px; list-style:none}
+.fun summary::-webkit-details-marker{display:none}
+.fun summary:focus-visible{outline:3px solid var(--arrow); outline-offset:2px; border-radius:12px}
+.fun[open] summary{border-bottom:1.5px solid var(--line)}
+.funbody{padding:12px 14px; display:flex; flex-direction:column; gap:10px}
+.xlink{margin:0}
+.xlink a{display:inline-block; font-weight:700; color:var(--ink); text-decoration:none; border:1.5px solid var(--line); background:var(--surface); border-radius:999px; padding:8px 14px}
+.xlink a:hover{border-color:var(--arrow)}
+.credits{margin-top:28px; padding-top:14px; border-top:1.5px solid var(--line); font-size:15px; color:var(--muted); max-width:80ch}
+.credits a{color:var(--muted)}
+.credits h2{font-size:18px; color:var(--ink); margin:0 0 6px}
 /* tree + map: one color per level; oxygen / lactose kept small and gray */
 .ranks span{border:1.5px solid var(--c); background:color-mix(in srgb, var(--c) 16%, var(--surface))}
 .ranks span.lab{border-style:dashed}
@@ -537,6 +550,10 @@ table.ent tr.grp td{background:color-mix(in srgb, var(--c) 12%, var(--surface))}
     <div class="mapbox"><svg id="map" role="group" aria-label="Overview map. Every branch is a button."></svg></div>
   </section>
 </section>
+<footer class="credits" aria-labelledby="credH">
+  <h2 id="credH">📷 Image credits</h2>
+  <p>Photos and figures are from <a href="https://openstax.org/details/books/microbiology" target="_blank" rel="noopener"><i>Microbiology</i></a> by OpenStax (Nina Parker, Mark Schneegurt, Anh-Hue Thi Tu, Philip Lister, and Brian M. Forster), licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. Access for free at <a href="https://openstax.org/books/microbiology/pages/1-introduction" target="_blank" rel="noopener">openstax.org</a>. Each picture lists its original creator and figure number. Some were cropped to one panel and resized. Thank you to all the photographers, scientists, and illustrators! 💖</p>
+</footer>
 </div>
 
 <dialog id="cheatDlg" aria-labelledby="cheatTitle">
@@ -1246,6 +1263,7 @@ function orgCard(o){
       o.tests.map(function(x, k){ return tileHtml(o, x, k); }).join("") + "</div></section>";
   }
   if (o.photos) h += '<section class="sec"><h4 class="sech">📷 Real look</h4><div class="photos n' + o.photos.length + '">' + o.photos.map(photoHtml).join("") + "</div></section>";
+  if (o.fun) h += '<details class="fun"><summary>🤩 Fun fact: tap to open</summary><div class="funbody"><p>' + o.fun.t + "</p>" + (o.fun.photo ? '<div class="photos n1 big">' + photoHtml(o.fun.photo) + "</div>" : "") + "</div></details>";
   /* Disease */
   if (o.disease){
     var d = o.disease, detail = (d.boxes ? boxesHtml(d.boxes, "small") : "") + (d.flips ? flipsHtml(o.id, d.flips, "d") : "") + (d.flow ? flowHtml(o.id, d.flow) : "");
@@ -1358,7 +1376,8 @@ function renderLesson(){
   h += '<header class="mhead"><div class="mbadge" style="--c:' + c + '">' + (s.n + 1) + "</div><div><h2>" + s.title + "</h2></div></header>";
   if (s.lesson) h += '<ul class="lesson">' + s.lesson.map(function(p){ return "<li>" + p + "</li>"; }).join("") + "</ul>";
   if (s.diagram && DIAGRAMS[s.diagram]){ var dg = DIAGRAMS[s.diagram](); h += '<figure class="figure' + (dg.small ? " smallfig" : "") + '" style="margin:0">' + dg.svg + "<figcaption>" + dg.cap + "</figcaption></figure>"; }
-  if (s.photo) h += '<div class="photos n1 big">' + photoHtml(s.photo) + "</div>";
+  [].concat(s.photo || [], s.photos || []).forEach(function(p){ h += '<div class="photos n1 big">' + photoHtml(p) + "</div>"; });
+  if (s.link) h += '<p class="xlink"><a href="' + s.link.href + '" target="_blank" rel="noopener">' + s.link.t + ' ↗</a></p>';
   if (s.life) h += '<section class="life"><h4 class="sech">🌍 In your life</h4>' + boxesHtml(s.life, "small") + "</section>";
   if (s.entericTable) h += '<div><button class="btn ghost" type="button" data-act="table">📋 Open the enteric ID table</button></div>';
   if (s.comic) h += comicHtml(s.comic);
