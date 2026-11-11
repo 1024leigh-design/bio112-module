@@ -189,6 +189,12 @@ var DECK = [];
 D.stops.forEach(function(s){ (s.orgs || []).forEach(function(o){ o.set = setOf(o); DECK.push(o); }); });
 var BY = {}; DECK.forEach(function(o){ BY[o.id] = o; });
 function nameHtml(o){ return o.type === "phylum" ? esc(o.name) : "<i>" + esc(o.name) + "</i>" + (o.sub ? " " + esc(o.sub) : ""); }
+/* during a challenge, hide a subtitle that gives away the disease, e.g. "(relapsing fever species)" */
+function quizName(o){ return o.sub && o.disease && o.sub.toLowerCase().indexOf(o.disease.short.toLowerCase()) >= 0 ? "<i>" + esc(o.name) + "</i>" : nameHtml(o); }
+/* lab results (minus the Gram stain) as one string, to spot cards the clues can't tell apart */
+function labSig(o){ return (o.tests || []).filter(function(t){ return t.k !== "gram"; }).map(function(t){ return t.k + "=" + t.v; }).sort().join("|"); }
+function genus(o){ return String(o.name).split(" ")[0]; }
+function twins(a, b){ return a.type !== "phylum" && genus(a) === genus(b) && labSig(a) === labSig(b); }
 
 /* ---------- clues from the lab tests ---------- */
 function pm(v){ return String(v).charAt(0); }
@@ -226,7 +232,8 @@ function diseaseOpts(o){
   return shuffle([o.disease.short].concat(pool.slice(0, 3)));
 }
 function nameOpts(o){
-  var same = shuffle(DECK.filter(function(x){ return x !== o && x.set === o.set && x.name !== o.name && x.type === o.type; }));
+  /* never offer a same-genus card with identical lab results (the two Borrelia): the clues can't tell them apart */
+  var same = shuffle(DECK.filter(function(x){ return x !== o && x.set === o.set && x.name !== o.name && x.type === o.type && !twins(o, x); }));
   var rest = shuffle(DECK.filter(function(x){ return x !== o && x.set !== o.set && x.name !== o.name && x.type === o.type; }));
   var picks = same.slice(0, 2).concat(rest).slice(0, 3);
   return shuffle([o].concat(picks));
@@ -278,9 +285,9 @@ function renderChallenge(){
   h += '<div class="steps">' + C.steps.map(function(_, i){ return '<span class="' + (i < C.step ? "ok" : i === C.step ? "on" : "") + '"></span>'; }).join("") + "</div>";
   if (kind === "who"){
     h += "<h4>🔬 Who am I?</h4><div class=\"clues\">" + C.clues.map(function(c){ return '<span class="clue">' + c + "</span>"; }).join("") + '</div><div class="opts">' +
-      C.names.map(function(x){ return '<button type="button" class="opt' + (C.wrong[x.id] ? " wrong" : "") + '" data-who="' + x.id + '"' + (C.wrong[x.id] ? " disabled" : "") + ">" + nameHtml(x) + "</button>"; }).join("") + "</div>";
+      C.names.map(function(x){ return '<button type="button" class="opt' + (C.wrong[x.id] ? " wrong" : "") + '" data-who="' + x.id + '"' + (C.wrong[x.id] ? " disabled" : "") + ">" + quizName(x) + "</button>"; }).join("") + "</div>";
   } else if (kind === "disease"){
-    h += "<h4>🦠 Correct! Now: what disease does " + nameHtml(o) + " cause?</h4><div class=\"opts\">" +
+    h += "<h4>🦠 Correct! Now: what disease does " + quizName(o) + " cause?</h4><div class=\"opts\">" +
       C.dis.map(function(dz, i){ return '<button type="button" class="opt' + (C.wrong["d" + i] ? " wrong" : "") + '" data-dz="' + i + '"' + (C.wrong["d" + i] ? " disabled" : "") + ">" + esc(dz) + "</button>"; }).join("") + "</div>";
   } else if (kind === "spell"){
     var words = (o.spell || o.name).split(" ");
