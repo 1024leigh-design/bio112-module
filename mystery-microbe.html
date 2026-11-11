@@ -205,6 +205,7 @@ canvas#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:200}
 </div>
 
 <script src="leaderboard.js"></script>
+<script src="spelling.js"></script>
 <script>
 // ─────────────────────────────────────────────────────────────
 // ORGANISM DATA
@@ -457,7 +458,7 @@ const ORGANISMS = [
 ]},
 {name:"Neisseria gonorrhoeae",tests:[
 ["Gram stain","Gram-negative","M",1],
-["Cell shape","Coccus","M",1],
+["Cell shape","Diplococcus (cocci in pairs)","M",1],
 ["G+C content / Phylum","Phylum Proteobacteria: Class Betaproteobacteria, Order Neisseriales","M",1],
 ["Oxygen requirement","Aerobic","P",1],
 ["Spore forming?","Non-spore-forming","P",1],
@@ -477,7 +478,7 @@ const ORGANISMS = [
 ]},
 {name:"Neisseria meningitidis",tests:[
 ["Gram stain","Gram-negative","M",1],
-["Cell shape","Coccus","M",1],
+["Cell shape","Diplococcus (cocci in pairs)","M",1],
 ["G+C content / Phylum","Phylum Proteobacteria: Class Betaproteobacteria, Order Neisseriales","M",1],
 ["Oxygen requirement","Aerobic","P",1],
 ["Spore forming?","Non-spore-forming","P",1],
@@ -926,17 +927,19 @@ function checkGuess() {
     return;
   }
 
+  /* right microbe, spelling slip: say so (and name the classic mix-ups like meningitis vs. meningitidis) */
+  const tip = window.BIO112_SPELL && BIO112_SPELL.hint(guess, correct);
+  if (tip) {
+    setFeedback(tip, 'negative');
+    return;
+  }
+
   if (guessGenus === correctGenus && guess !== correct) {
     setFeedback("You've got the genus right! Now check your species. 🔬", 'negative');
     return;
   }
 
   if (levenshtein(guess, correct) <= 2) {
-    setFeedback("Almost there! Check your spelling. ✏️", 'negative');
-    return;
-  }
-
-  if (levenshtein(guessGenus, correctGenus) <= 2 && guessGenus !== correctGenus) {
     setFeedback("Almost there! Check your spelling. ✏️", 'negative');
     return;
   }

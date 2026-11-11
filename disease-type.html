@@ -235,6 +235,7 @@ canvas#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:200}
 </div>
 
 <script src="leaderboard.js"></script>
+<script src="spelling.js"></script>
 <script>
 // ─────────────────────────────────────────────────────────────
 // DATA: 40 disease-to-organism pairs
@@ -523,6 +524,13 @@ function submitAnswer(raw){
   if(guess === correct){
     document.getElementById('close-spell').style.display='none';
     handleCorrect();
+    return;
+  }
+  // Right microbe with a spelling slip: say exactly that
+  const tip = window.BIO112_SPELL && BIO112_SPELL.hint(guess, correct);
+  if(tip){
+    setFeedback(tip,'negative');
+    showCloseSpell();
     return;
   }
   // Right genus, wrong species
