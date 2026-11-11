@@ -133,6 +133,7 @@ dialog::backdrop{background:rgba(10,20,30,.6)}
 
 <script src="gram-neg-tree.js"></script>
 <script src="leaderboard.js"></script>
+<script src="spelling.js"></script>
 <script>
 (function(){
 "use strict";
@@ -292,7 +293,7 @@ function renderChallenge(){
   } else if (kind === "spell"){
     var words = (o.spell || o.name).split(" ");
     h += '<h4>✏️ Last step: spell it!</h4><div class="spellrow">' + words.map(function(w, i){ return '<label class="sw' + (C.spellBad ? " bad" : "") + '"><b>' + esc(w.charAt(0)) + '</b><input type="text" data-sp="' + i + '" size="' + Math.max(4, w.length) + '" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Rest of word ' + (i + 1) + '"></label>'; }).join("") +
-      '</div>' + (C.spellBad ? '<div class="msg bad">Not quite. Check each letter and try again (it cost a star).</div>' : "") + '<div class="btnrow"><button class="btn" type="button" data-x="spell">Check spelling</button></div>';
+      '</div>' + (C.spellBad ? '<div class="msg bad">' + (C.spellNear && C.spellNear.length ? "So close! You know this one: check the letters in word " + C.spellNear.map(function(i){ return i + 1; }).join(" and ") + ". (It cost a star.)" : "Not quite. Check each letter and try again (it cost a star).") + "</div>" : "") + '<div class="btnrow"><button class="btn" type="button" data-x="spell">Check spelling</button></div>';
   } else if (kind === "done"){
     h += '<div class="reveal"><h4>🎉 You earned it!</h4>' + cardHtml(o, {isNew: true}) + '<p><b>+' + (C.gain) + " points</b>" + (C.setBonus ? " · ✅ Set complete! +25" : "") + '</p><div class="btnrow"><button class="btn" type="button" data-x="next">🎲 Next random card</button><button class="btn ghost" type="button" data-x="close">Back to my collection</button></div></div>';
   }
@@ -362,11 +363,16 @@ document.addEventListener("click", function(e){
   else if (x === "replay"){ setDoneBefore = setDone(C.o.set); startChallenge(C.o); }
 });
 function checkSpell(){
-  var words = (C.o.spell || C.o.name).split(" "), ok = true;
+  var words = (C.o.spell || C.o.name).split(" "), ok = true, near = [];
   document.querySelectorAll("#dlgBody input[data-sp]").forEach(function(inp){
-    var w = words[Number(inp.getAttribute("data-sp"))], v = inp.value.trim().toLowerCase();
-    if (v !== w.slice(1).toLowerCase() && v !== w.toLowerCase()) ok = false;
+    var i = Number(inp.getAttribute("data-sp")), w = words[i], v = inp.value.trim().toLowerCase();
+    if (v !== w.slice(1).toLowerCase() && v !== w.toLowerCase()){
+      ok = false;
+      var full = v.charAt(0) === w.charAt(0).toLowerCase() && v.length >= w.length ? v : w.charAt(0).toLowerCase() + v;
+      if (window.BIO112_SPELL && v && BIO112_SPELL.close(full, w)) near.push(i);
+    }
   });
+  C.spellNear = near;
   if (ok){ C.spellBad = false; advance(); }
   else { if (!C.spellBad) C.miss++; C.spellBad = true; renderChallenge(); }
 }
