@@ -132,6 +132,21 @@ dialog::backdrop{background:rgba(10,20,30,.6)}
 .dish .col{transform-origin:center; transform-box:fill-box; animation:grow 1.3s ease-out both}
 @keyframes grow{from{transform:scale(0); opacity:0} to{transform:scale(1); opacity:1}}
 .big{font-family:var(--f-display); font-size:26px; font-weight:800}
+.medium{font-size:15.5px; color:var(--muted); max-width:42ch}
+.medium b{color:var(--ink); font-size:17px}
+/* swab mini-games */
+.mg{display:flex; flex-direction:column; gap:12px; align-items:center; text-align:center}
+.track{position:relative; width:100%; max-width:440px; height:70px; border-radius:18px; background:var(--surface-2); border:2px solid var(--line); overflow:hidden; cursor:pointer}
+.track .zone{position:absolute; top:0; bottom:0; background:color-mix(in srgb, var(--good) 22%, transparent); border-left:2px solid var(--good); border-right:2px solid var(--good)}
+.track .zone i{position:absolute; top:0; bottom:0; left:32%; right:32%; background:color-mix(in srgb, var(--good) 45%, transparent)}
+.swabber{position:absolute; top:8px; left:0; width:14px; height:54px; margin-left:-7px}
+.swabber::before{content:""; position:absolute; left:5px; top:16px; width:4px; height:38px; border-radius:2px; background:#c8a97e}
+.swabber b{position:absolute; left:0; top:0; width:14px; height:20px; border-radius:7px; background:#fff; border:2px solid #94a3b8}
+.grade{font-family:var(--f-display); font-size:22px; font-weight:800; min-height:1.3em}
+.spots{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; width:100%; max-width:330px}
+.spot{aspect-ratio:1; border-radius:50%; border:2px dashed var(--line); background:var(--surface-2); font-size:30px; cursor:pointer; opacity:.55; transition:transform .12s, background .12s}
+.spot.lit{opacity:1; background:#fde68a; border:3px solid var(--gold); transform:scale(1.08); box-shadow:0 0 0 6px color-mix(in srgb, var(--gold) 35%, transparent)}
+.spot.hit{opacity:1; background:var(--good-soft); border:3px solid var(--good)}
 .confetti{position:fixed; inset:0; pointer-events:none; z-index:100; overflow:hidden}
 .confetti i{position:absolute; top:-20px; width:10px; height:14px; border-radius:2px; animation:fall 1.8s linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
@@ -156,6 +171,7 @@ dialog::backdrop{background:rgba(10,20,30,.6)}
   <div class="how"><b>How to play</b>
     <ul>
       <li>🧫 Tap a spot to swab it. You'll grow one random microbe. You can grow the same one many times in a row!</li>
+      <li>🎯 Swab well! Tap when the swab hits the glowing zone, or tap each spot as it lights up. A perfect swab makes rare microbes 3× as likely.</li>
       <li>🔬 Answer its questions to catch it: up to 3 stars (lose one per wrong answer). Catch it again to level it up (max Lv 5) with new questions.</li>
       <li>🏆 Score: 10 points per star, a bonus for <span class="rar r-uncommon">◆ uncommon</span> <span class="rar r-rare">★ rare</span> <span class="rar r-legendary">👑 legendary</span> finds, and +25 for every full set.</li>
     </ul>
@@ -515,28 +531,214 @@ function renderBook(newId){
 /* ---------- swabbing ---------- */
 function openDlg(){ var d = $("#dlg"); if (!d.open){ if (d.showModal) d.showModal(); else d.setAttribute("open", ""); } }
 function closeDlg(){ var d = $("#dlg"); if (d.close) d.close(); else d.removeAttribute("open"); }
-function pick(site){
-  var total = 0; site.orgs.forEach(function(id){ total += WEIGHT[BY[id].rar]; });
+/* a better swab = a better sample = better odds of rare finds */
+function pick(site, luck){
+  luck = luck || 1;
+  function w(id){ var r = BY[id].rar; return WEIGHT[r] * (r === "rare" || r === "legendary" ? luck : r === "uncommon" ? Math.sqrt(luck) : 1); }
+  var total = 0; site.orgs.forEach(function(id){ total += w(id); });
   var r = Math.random() * total;
-  for (var i = 0; i < site.orgs.length; i++){ r -= WEIGHT[BY[site.orgs[i]].rar]; if (r < 0) return BY[site.orgs[i]]; }
+  for (var i = 0; i < site.orgs.length; i++){ r -= w(site.orgs[i]); if (r < 0) return BY[site.orgs[i]]; }
   return BY[site.orgs[site.orgs.length - 1]];
 }
-function dishSvg(o, grown){
-  var col = o.gram === "+" ? "var(--gp-edge)" : "var(--gn-edge)", pts = [[60, 62], [98, 54], [118, 88], [72, 104], [100, 120], [52, 90], [86, 82]], h = '<svg class="dish" viewBox="0 0 170 170" aria-hidden="true"><circle cx="85" cy="85" r="76" fill="var(--agar)" stroke="#94a3b8" stroke-width="5"/>';
-  if (grown) pts.forEach(function(p, i){ h += '<circle class="col" style="animation-delay:' + (i * 0.12) + 's" cx="' + p[0] + '" cy="' + p[1] + '" r="' + (7 + (i % 3) * 2) + '" fill="' + col + '" opacity=".85"/>'; });
+
+/* ================= what each microbe looks like on a plate =================
+   m = medium, col = colony color, look = colony style, halo = hemolysis on blood agar,
+   tint = color the medium turns. "cells" = grows only inside host cells (no colonies);
+   "none" = doesn't form colonies on a plate. */
+var MEDIA = {
+  mac: {name: "MacConkey agar", c: "#c98da0"},
+  blood: {name: "Blood agar", c: "#a3141f"},
+  bloodan: {name: "Blood agar (no O₂)", c: "#a3141f"},
+  choc: {name: "Chocolate agar", c: "#6b3f22"},
+  nutrient: {name: "Nutrient agar", c: "#ead9a8"},
+  special: {name: "Special media", c: "#ddd3bd"},
+  lowo2: {name: "Special media, low O₂", c: "#ddd3bd"},
+  tcbs: {name: "TCBS agar", c: "#3f7f4f"},
+  ccfa: {name: "CCFA agar (no O₂)", c: "#e9b949"},
+  mrs: {name: "MRS agar", c: "#d8c08c"},
+  light: {name: "Water + light", c: "#e7efd9"},
+  cells: {name: "Cell culture", c: "#f3e8ee"},
+  none: {name: "Plate", c: "#ead9a8"}
+};
+var PLATES = {
+  /* gram − */
+  ecoli: {m: "mac", col: "#e0457b", note: "Pink colonies: lactose +"},
+  kpneumoniae: {m: "mac", col: "#e0457b", look: "mucoid", note: "Big, shiny, mucoid pink colonies: lactose +"},
+  enterobacter: {m: "mac", col: "#e0457b", note: "Pink colonies: lactose +"},
+  salmonella: {m: "mac", col: "#f4e7d7", note: "Colorless colonies: lactose −"},
+  styphi: {m: "mac", col: "#f4e7d7", note: "Colorless colonies: lactose −"},
+  shigella: {m: "mac", col: "#f4e7d7", note: "Colorless colonies: lactose −"},
+  ypestis: {m: "mac", col: "#f4e7d7", look: "small", note: "Small colorless colonies: lactose −"},
+  proteus: {m: "blood", col: "#d9c7a7", look: "swarm", note: "Swarms in waves across the whole plate"},
+  smarcescens: {m: "nutrient", col: "#d62828", note: "Red pigment (grown at room temperature)"},
+  paeruginosa: {m: "nutrient", col: "#9fc7a0", tint: "#b9d9a7", note: "Greenish, pearly colonies; green pigment spreads into the agar"},
+  vcholerae: {m: "tcbs", col: "#f2d22e", note: "Yellow colonies on TCBS"},
+  cjejuni: {m: "lowo2", col: "#b9b2a5", look: "spread", note: "Flat gray colonies; needs a little O₂"},
+  hpylori: {m: "lowo2", col: "#c9c3b6", look: "small", note: "Tiny gray colonies; needs a little O₂"},
+  ngon: {m: "choc", col: "#efe9dc", look: "small", note: "Small gray-white colonies on chocolate agar (+ CO₂)"},
+  nmen: {m: "choc", col: "#f3eee3", note: "Creamy white colonies on chocolate agar (+ CO₂)"},
+  bpertussis: {m: "special", col: "#c9ced6", look: "small", note: "Tiny shiny colonies; needs special media"},
+  lpneumophila: {m: "special", col: "#e8e4dc", look: "small", note: "Small gray-white colonies; needs special media"},
+  rrickettsii: {m: "cells", note: "No colonies: it only grows inside host cells"},
+  ctrachomatis: {m: "cells", note: "No colonies: it only grows inside host cells"},
+  cpneumoniae: {m: "cells", note: "No colonies: it only grows inside host cells"},
+  tpallidum: {m: "none", note: "No colonies: it can't be grown on a lab plate. Spot it with darkfield microscopy."},
+  bburgdorferi: {m: "none", note: "No colonies on a regular plate. Spot it with darkfield microscopy."},
+  brf: {m: "none", note: "No colonies on a regular plate. Spot it in a blood smear."},
+  planct: {m: "special", col: "#e2d6c2", look: "small", note: "Slow-growing small colonies"},
+  fuso: {m: "bloodan", col: "#c9c3b6", look: "small", note: "Small gray colonies; grown without O₂"},
+  bactero: {m: "bloodan", col: "#c9c3b6", note: "Gray colonies; grown without O₂"},
+  cyano: {m: "light", col: "#3f8f3a", note: "Green growth: it photosynthesizes"},
+  /* gram + */
+  saureus: {m: "blood", col: "#f2b705", halo: "beta", note: "Golden colonies with clear (beta) hemolysis"},
+  sepi: {m: "blood", col: "#f7f5ef", note: "White colonies, no hemolysis"},
+  ssapro: {m: "blood", col: "#f7f5ef", note: "White colonies, no hemolysis"},
+  banthracis: {m: "blood", col: "#e9e6de", look: "medusa", note: "Gray-white, rough colonies with wavy edges; no hemolysis"},
+  bcereus: {m: "blood", col: "#d9d4c8", look: "big", halo: "beta", note: "Large gray colonies with clear (beta) hemolysis"},
+  bsubtilis: {m: "nutrient", col: "#efe2c2", look: "wrinkly", note: "Dry, wrinkled cream colonies"},
+  lmono: {m: "blood", col: "#d8dde2", look: "small", halo: "betaThin", note: "Small gray colonies with a thin clear (beta) halo"},
+  lactobacillus: {m: "mrs", col: "#f6f1e3", look: "small", note: "Small white colonies on MRS agar"},
+  spyogenes: {m: "blood", col: "#eef0ee", look: "small", halo: "beta", note: "Tiny colonies with big clear (beta) halos"},
+  sagalactiae: {m: "blood", col: "#e2e2dc", halo: "betaThin", note: "Gray colonies with a thin clear (beta) halo"},
+  spneumoniae: {m: "blood", col: "#d7dbd3", look: "small", halo: "alpha", note: "Small colonies with green (alpha) hemolysis"},
+  enterococcus: {m: "blood", col: "#d8d8d2", note: "Gray colonies, usually no hemolysis"},
+  cperfringens: {m: "bloodan", col: "#d6d0c4", halo: "double", note: "Double zone of hemolysis; grown without O₂"},
+  cbotulinum: {m: "bloodan", col: "#cfc9bd", look: "irregular", note: "Irregular gray colonies; grown without O₂"},
+  ctetani: {m: "bloodan", col: "#d8d2c6", look: "film", note: "A thin film that swarms over the plate; grown without O₂"},
+  cdiff: {m: "ccfa", col: "#fff7d6", look: "glass", tint: "#f0c94a", note: "Yellow \"ground glass\" colonies on CCFA"}
+};
+function plateOf(o){ return PLATES[o.id] || {m: "nutrient", col: "#efe7d6", note: ""}; }
+function plateSvg(o, grown){
+  var pl = plateOf(o), md = MEDIA[pl.m], agar = grown && pl.tint ? pl.tint : md.c, h = '<svg class="dish" viewBox="0 0 170 170" role="img" aria-label="' + esc(md.name + (grown ? ": " + plateOf(o).note : "")) + '">';
+  h += '<circle cx="85" cy="85" r="78" fill="#e5e7eb" stroke="#94a3b8" stroke-width="4"/><circle cx="85" cy="85" r="71" fill="' + agar + '"/>';
+  if (!grown) return h + "</svg>";
+  var pts = [[58, 60], [98, 50], [120, 86], [70, 104], [104, 122], [48, 92], [86, 80], [128, 112], [66, 128], [112, 64]], k = 0;
+  function delay(){ return 'style="animation-delay:' + (k++ * 0.09).toFixed(2) + 's"'; }
+  if (pl.m === "cells"){
+    [[60, 66], [104, 60], [82, 100], [120, 104], [54, 112]].forEach(function(p){
+      h += '<g class="col" ' + delay() + '><ellipse cx="' + p[0] + '" cy="' + p[1] + '" rx="17" ry="12" fill="#f9d5e5" stroke="#c084a5" stroke-width="1.5"/><circle cx="' + p[0] + '" cy="' + p[1] + '" r="4" fill="#a8628a"/>' +
+        [[-8, -4], [7, 5], [-6, 6], [9, -5]].map(function(d){ return '<circle cx="' + (p[0] + d[0]) + '" cy="' + (p[1] + d[1]) + '" r="1.6" fill="#7e1f4f"/>'; }).join("") + "</g>";
+    });
+    return h + "</svg>";
+  }
+  if (pl.m === "none") return h + '<text x="85" y="91" text-anchor="middle" font-size="15" font-weight="700" fill="#64748b">no colonies</text></svg>';
+  if (pl.look === "swarm" || pl.look === "film"){
+    [62, 50, 38, 26].forEach(function(r){ h += '<circle class="col" ' + delay() + ' cx="85" cy="85" r="' + r + '" fill="' + pl.col + '" opacity="' + (pl.look === "film" ? .28 : .42) + '" stroke="' + pl.col + '" stroke-width="2"/>'; });
+    return h + "</svg>";
+  }
+  if (pl.m === "light"){
+    pts.forEach(function(p, i){ h += '<path class="col" ' + delay() + ' d="M' + (p[0] - 9) + " " + p[1] + " q 9 " + (i % 2 ? -8 : 8) + " 18 0" + '" stroke="' + pl.col + '" stroke-width="4" fill="none" stroke-linecap="round"/>'; });
+    return h + "</svg>";
+  }
+  var base = pl.look === "small" ? 4.5 : pl.look === "big" || pl.look === "mucoid" ? 9 : 6.5;
+  pts.forEach(function(p, i){
+    var r = base + (i % 3) * (base * 0.18);
+    var halo = pl.halo === "beta" ? '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="' + (r + 7) + '" fill="#f6c9c9" opacity=".9"/>' :
+      pl.halo === "betaThin" ? '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="' + (r + 3) + '" fill="#f6c9c9" opacity=".9"/>' :
+      pl.halo === "alpha" ? '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="' + (r + 5) + '" fill="#5f8f2f" opacity=".75"/>' :
+      pl.halo === "double" ? '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="' + (r + 9) + '" fill="#d98f8f" opacity=".75"/><circle cx="' + p[0] + '" cy="' + p[1] + '" r="' + (r + 4) + '" fill="#f6d5d5"/>' : "";
+    var shape = pl.look === "medusa" || pl.look === "irregular" || pl.look === "wrinkly" ?
+      '<path d="' + blob(p[0], p[1], r + 1, pl.look === "wrinkly" ? 9 : 7, i) + '" fill="' + pl.col + '" stroke="#00000033" stroke-width="1"/>' :
+      '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="' + r + '" fill="' + pl.col + '" stroke="#00000026" stroke-width="1"/>' +
+      (pl.look === "mucoid" || pl.look === "glass" ? '<circle cx="' + (p[0] - r * .35) + '" cy="' + (p[1] - r * .35) + '" r="' + (r * .3) + '" fill="#ffffff" opacity=".55"/>' : "");
+    h += '<g class="col" ' + delay() + ">" + halo + shape + "</g>";
+  });
   return h + "</svg>";
 }
-var SW = null;
+/* a lumpy colony outline (rough or wrinkled colonies) */
+function blob(cx, cy, r, n, seed){
+  var d = "";
+  for (var i = 0; i <= n * 2; i++){
+    var a = i / (n * 2) * 6.2832, rr = r * (i % 2 ? 0.78 : 1.12) * (1 + 0.08 * Math.sin(seed * 7 + i));
+    d += (i ? "L" : "M") + (cx + Math.cos(a) * rr).toFixed(1) + " " + (cy + Math.sin(a) * rr).toFixed(1);
+  }
+  return d + "Z";
+}
+
+/* ================= the swab: a quick skill mini-game =================
+   Timing: tap when the swab is in the glowing zone. Lights: tap each spot while it's lit.
+   Perfect = rare finds 3x as likely, Good = 1.5x, Miss = a normal sample. */
+var SW = null, TOKEN = 0;
+var LUCK = {perfect: 3, good: 1.5, miss: 1};
+var GRADE = {perfect: "✨ Perfect swab!", good: "👍 Good swab!", miss: "😅 Sloppy swab, but you still got a sample."};
+function head(t){ return '<div class="dlghead"><h3>' + t + '</h3><button class="btn ghost" type="button" data-x="close">✕</button></div>'; }
 function swab(siteId){
-  var site = SITES.filter(function(s){ return s.id === siteId; })[0], o = pick(site);
-  SW = {site: site, o: o};
-  $("#dlgBody").innerHTML = '<div class="dlghead"><h3>' + site.em + " Swabbing: " + site.name + '</h3><button class="btn ghost" type="button" data-x="close">✕</button></div><div class="reveal">' + dishSvg(o, false) + '<p class="big">Incubating overnight… 🌙</p></div>';
+  var site = SITES.filter(function(s){ return s.id === siteId; })[0];
+  SW = {site: site, o: null, luck: 1, grade: null, token: ++TOKEN};
   openDlg();
-  setTimeout(function(){ if (SW && SW.o === o) showGrowth(); }, reduced ? 0 : 1200);
+  if (Math.random() < 0.5) startTiming(); else startLights();
+}
+function skipRow(){ return '<button class="btn ghost small" type="button" data-x="skipskill" style="font-size:14px;padding:6px 12px">Skip (normal sample)</button>'; }
+function startTiming(){
+  var s = SW, z = 18 + Math.random() * 56;
+  s.mode = "timing"; s.zone = z; s.pos = 0; s.dir = 1; s.done = false;
+  $("#dlgBody").innerHTML = head(s.site.em + " Swab the " + s.site.name.toLowerCase()) +
+    '<div class="mg"><p>Tap <b>Swab!</b> (or press Space) when the swab is over the <b style="color:var(--good)">glowing zone</b>. The middle is perfect.</p>' +
+    '<div class="track" data-x="hit" aria-hidden="true"><span class="zone" style="left:' + (z - 10) + '%;width:20%"><i></i></span><span class="swabber" id="swabber"><b></b></span></div>' +
+    '<button class="btn" type="button" data-x="hit" id="hitBtn">🧽 Swab!</button><p class="grade" id="grade" aria-live="polite"></p>' + skipRow() + "</div>";
+  var last = performance.now(), speed = reduced ? 45 : 85;
+  function step(t){
+    if (s.token !== TOKEN || s.done) return;
+    var dt = Math.min(50, t - last); last = t;
+    s.pos += s.dir * speed * dt / 1000;
+    if (s.pos >= 100){ s.pos = 100; s.dir = -1; } else if (s.pos <= 0){ s.pos = 0; s.dir = 1; }
+    var el = $("#swabber"); if (el) el.style.left = s.pos + "%";
+    requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+  var b = $("#hitBtn"); if (b) b.focus();
+}
+function timingHit(){
+  var s = SW; if (!s || s.mode !== "timing" || s.done) return;
+  s.done = true;
+  var d = Math.abs(s.pos - s.zone), g = d <= 3.5 ? "perfect" : d <= 10 ? "good" : "miss";
+  var el = $("#grade"); if (el) el.textContent = GRADE[g];
+  var b = $("#hitBtn"); if (b) b.disabled = true;
+  setTimeout(function(){ if (s.token === TOKEN) finishSkill(g); }, 900);
+}
+function startLights(){
+  var s = SW;
+  s.mode = "lights"; s.round = 0; s.hits = 0; s.lit = -1; s.prev = -1;
+  $("#dlgBody").innerHTML = head(s.site.em + " Swab the " + s.site.name.toLowerCase()) +
+    '<div class="mg"><p>Tap each spot <b>while it lights up</b> to swab it. 3 spots!</p><div class="spots">' +
+    [0, 1, 2, 3, 4, 5].map(function(i){ return '<button type="button" class="spot" data-spot="' + i + '" aria-label="Spot ' + (i + 1) + '">' + s.site.em + "</button>"; }).join("") +
+    '</div><p class="grade" id="grade" aria-live="polite">Get ready…</p>' + skipRow() + "</div>";
+  setTimeout(nextLight, 700);
+}
+function nextLight(){
+  var s = SW; if (!s || s.token !== TOKEN || s.mode !== "lights") return;
+  if (s.round >= 3){
+    var g = s.hits === 3 ? "perfect" : s.hits === 2 ? "good" : "miss";
+    $("#grade").textContent = s.hits + " / 3 · " + GRADE[g];
+    setTimeout(function(){ if (s.token === TOKEN) finishSkill(g); }, 900);
+    return;
+  }
+  var i; do { i = Math.floor(Math.random() * 6); } while (i === s.prev);
+  s.lit = i; s.prev = i; s.round++;
+  var el = document.querySelector('[data-spot="' + i + '"]'); if (el) el.classList.add("lit");
+  $("#grade").textContent = "Spot " + s.round + " of 3";
+  var my = s.round;
+  setTimeout(function(){
+    if (s.token !== TOKEN || s.round !== my || s.lit !== i) return;
+    if (el) el.classList.remove("lit");
+    s.lit = -1; setTimeout(nextLight, 300);
+  }, reduced ? 1500 : 950);
+}
+function lightHit(i){
+  var s = SW; if (!s || s.mode !== "lights" || s.lit < 0) return;
+  var el = document.querySelector('[data-spot="' + i + '"]');
+  if (i === s.lit){ s.hits++; el.classList.remove("lit"); el.classList.add("hit"); s.lit = -1; setTimeout(nextLight, 300); }
+}
+function finishSkill(g){
+  var s = SW; s.mode = null; s.grade = g; s.luck = LUCK[g];
+  s.o = pick(s.site, s.luck);
+  $("#dlgBody").innerHTML = head(s.site.em + " Incubating…") + '<div class="reveal">' + plateSvg(s.o, false) + '<p class="big">Incubating overnight… 🌙</p><p>' + GRADE[g] + (g !== "miss" ? " Rare microbes are " + s.luck + "× as likely." : "") + "</p></div>";
+  setTimeout(function(){ if (s.token === TOKEN) showGrowth(); }, reduced ? 300 : 1300);
 }
 function showGrowth(){
-  var o = SW.o, got = P.cards[o.id];
-  var h = '<div class="dlghead"><h3>' + SW.site.em + " Something grew!</h3>" + '<button class="btn ghost" type="button" data-x="close">✕</button></div><div class="reveal">' + dishSvg(o, true) +
+  var o = SW.o, got = P.cards[o.id], pl = plateOf(o);
+  var h = head(SW.site.em + " Something grew!") + '<div class="reveal">' + plateSvg(o, true) +
+    '<p class="medium"><b>' + MEDIA[pl.m].name + "</b><br>" + pl.note + "</p>" +
     rarHtml(o.rar) + '<p class="big">' + (got ? "You've caught this one before (Lv " + got.lv + ")" : "A NEW microbe! ✨") + "</p>" +
     "<p>" + (got ? (got.lv >= 5 ? "It's maxed out at Lv 5, but you can still catch it for points." : "Catch it again to level it up, with different questions.") : "Identify it to add it to your book.") + "</p></div>" +
     '<div class="btnrow" style="justify-content:center"><button class="btn" type="button" data-x="catch">🔬 Identify it</button><button class="btn ghost" type="button" data-x="close">Let it go</button></div>';
@@ -638,6 +840,7 @@ document.addEventListener("click", function(e){
     else toast("🔒 Not found yet. Try swabbing: " + o.sites.map(function(s){ return s.em + " " + s.name; }).join(" or "));
     return;
   }
+  if ((el = e.target.closest("[data-spot]"))){ lightHit(Number(el.getAttribute("data-spot"))); return; }
   if ((el = e.target.closest("[data-who]"))){
     if (el.getAttribute("data-who") === C.o.id){ el.classList.add("right"); setTimeout(advance, 450); }
     else { miss(el.getAttribute("data-who")); renderChallenge(); }
@@ -660,6 +863,8 @@ document.addEventListener("click", function(e){
   if (x === "close") closeDlg();
   else if (x === "spell") checkSpell();
   else if (x === "catch") startChallenge(SW.o);
+  else if (x === "hit") timingHit();
+  else if (x === "skipskill"){ if (SW && SW.mode){ SW.token = ++TOKEN; SW.mode = null; finishSkill("miss"); } }
   else if (x === "again") swab(SW.site.id);
 });
 function checkSpell(){
@@ -676,7 +881,12 @@ function checkSpell(){
   if (ok){ C.spellBad = false; advance(); }
   else { if (!C.spellBad) C.miss++; C.spellBad = true; renderChallenge(); }
 }
-document.addEventListener("keydown", function(e){ if (e.key === "Enter" && e.target.closest && e.target.closest("#dlgBody input[data-sp]")){ e.preventDefault(); checkSpell(); } });
+document.addEventListener("keydown", function(e){
+  if (e.key === "Enter" && e.target.closest && e.target.closest("#dlgBody input[data-sp]")){ e.preventDefault(); checkSpell(); }
+  else if ((e.key === " " || e.key === "Spacebar") && SW && SW.mode === "timing"){ e.preventDefault(); timingHit(); }
+});
+/* closing the dialog stops any running mini-game */
+$("#dlg").addEventListener("close", function(){ TOKEN++; if (SW) SW.mode = null; });
 $("#lbBtn").addEventListener("click", function(){ $("#lbSec").scrollIntoView({behavior: reduced ? "auto" : "smooth"}); });
 $("#dlg").addEventListener("click", function(e){ if (e.target === e.currentTarget) closeDlg(); });
 
@@ -686,7 +896,7 @@ if (window.BIO112_LB){
   BIO112_LB.widget($("#lb"), {game: "collector", title: "Microbe Collector leaderboard", score: function(){ var t = totals(); return {score: t.score, details: t.cards + " microbes, " + t.catches + " catches"}; }});
 }
 /* for testing */
-window.__collector = {DECK: DECK, SITES: SITES, P: P, QSETS: QSETS, nameOpts: nameOpts, fitsClues: fitsClues, cur: function(){ return C; }};
+window.__collector = {DECK: DECK, SITES: SITES, P: P, QSETS: QSETS, nameOpts: nameOpts, fitsClues: fitsClues, cur: function(){ return C; }, sw: function(){ return SW; }, plateSvg: plateSvg, PLATES: PLATES};
 })();
 </script>
 </body>
