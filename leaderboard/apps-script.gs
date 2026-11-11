@@ -9,7 +9,7 @@
 
 var SHEET_NAME = "Scores";
 /* highest believable score per game; anything above is rejected */
-var MAX_SCORE = {collector: 2000, mystery: 100000, disease: 100000};
+var MAX_SCORE = {collector: 100000, mystery: 100000, disease: 100000};
 
 function sheet_(){
   var ss = SpreadsheetApp.getActiveSpreadsheet();
