@@ -36,3 +36,13 @@ This takes about 10 minutes, once. Students never need an account.
 ## Turning it off
 
 - In Apps Script: **Deploy > Manage deployments > Archive**. The games keep working without a leaderboard.
+
+## Updating the script later
+
+If the script in this repo changes (for example, a new score limit), update your copy:
+
+1. Open the Sheet, then **Extensions > Apps Script**.
+2. Make the same change (or paste in the whole new `leaderboard/apps-script.gs`). Click **Save**.
+3. Click **Deploy > Manage deployments**, click the pencil (Edit), set **Version** to **New version**, and click **Deploy**.
+
+The web app URL stays the same, so nothing else needs to change.

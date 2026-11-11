@@ -7,12 +7,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;600&display=swap">
 <style>
-/* Microbe Collector: earn a trading card for every gram-negative organism.
-   Organism data comes from gram-neg-tree.js (the same file the tour uses). */
+/* Microbe Collector: swab a spot, see what grows, ID it to collect its card.
+   Organism data comes from gram-neg-tree.js and gram-pos-tree.js (the same files the tours use).
+   Swab spots, rarity, and extra question sets live in this file (SITES, RARITY, QSETS). */
 :root{
   --bg:#f2f5f8; --surface:#ffffff; --surface-2:#e8eef4; --ink:#14223a; --muted:#53657b; --line:#d3dde7;
   --arrow:#1683cc; --arrow-soft:#dcecf9; --good:#1f8a55; --good-soft:#dcf2e5; --bad:#c43a2b; --bad-soft:#fbe0db; --gold:#e3a008;
-  --gn-fill:#f7b6cf; --gn-edge:#c2185b; --scope:#fdf2f6; --locked:#cbd5e1;
+  --gn-fill:#f7b6cf; --gn-edge:#c2185b; --gp-fill:#d8c8f5; --gp-edge:#6d28d9; --scope:#fdf2f6; --locked:#cbd5e1; --agar:#fdf0d5;
+  --r-common:#64748b; --r-uncommon:#15803d; --r-rare:#1d4ed8; --r-legendary:#b45309;
   --f-display:'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
   --f-body:'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
   --f-mono:'IBM Plex Mono', ui-monospace, Menlo, monospace;
@@ -21,13 +23,15 @@
   :root:not([data-theme="light"]){
     --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
     --arrow:#4aa9ee; --arrow-soft:#173450; --good:#4ccb8b; --good-soft:#153a29; --bad:#ff7d6d; --bad-soft:#46211d; --gold:#f5c542;
-    --gn-fill:#9c3d68; --gn-edge:#f48fb6; --scope:#2b1d26; --locked:#334155; color-scheme:dark;
+    --gn-fill:#9c3d68; --gn-edge:#f48fb6; --gp-fill:#4c3a7a; --gp-edge:#c4b0f5; --scope:#2b1d26; --locked:#334155; --agar:#3a3220;
+    --r-common:#94a3b8; --r-uncommon:#4ade80; --r-rare:#60a5fa; --r-legendary:#fbbf24; color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
   --arrow:#4aa9ee; --arrow-soft:#173450; --good:#4ccb8b; --good-soft:#153a29; --bad:#ff7d6d; --bad-soft:#46211d; --gold:#f5c542;
-  --gn-fill:#9c3d68; --gn-edge:#f48fb6; --scope:#2b1d26; --locked:#334155; color-scheme:dark;
+  --gn-fill:#9c3d68; --gn-edge:#f48fb6; --gp-fill:#4c3a7a; --gp-edge:#c4b0f5; --scope:#2b1d26; --locked:#334155; --agar:#3a3220;
+  --r-common:#94a3b8; --r-uncommon:#4ade80; --r-rare:#60a5fa; --r-legendary:#fbbf24; color-scheme:dark;
 }
 *{box-sizing:border-box}
 body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:18px; line-height:1.5; overflow-x:hidden}
@@ -41,36 +45,57 @@ button,input{font:inherit; color:inherit}
 .brand{font-family:var(--f-display); font-weight:700}
 .hero{display:flex; flex-wrap:wrap; gap:14px 24px; align-items:flex-end; justify-content:space-between; margin-bottom:16px}
 .hero h1{font-size:clamp(34px,6vw,52px); line-height:1}
-.hero p{color:var(--muted); font-size:18px; max-width:52ch; margin-top:6px}
+.hero p{color:var(--muted); font-size:18px; max-width:54ch; margin-top:6px}
 .stats{display:flex; flex-wrap:wrap; gap:8px}
 .stat{background:var(--surface); border:1.5px solid var(--line); border-radius:14px; padding:8px 14px; min-width:110px}
 .stat small{display:block; font:600 12px var(--f-mono); text-transform:uppercase; letter-spacing:.06em; color:var(--muted)}
-.stat b{font-family:var(--f-display); font-size:26px}
+.stat b{font-family:var(--f-display); font-size:26px; font-variant-numeric:tabular-nums}
 .bar{height:10px; border-radius:99px; background:var(--surface-2); overflow:hidden; margin:6px 0 20px}
-.bar i{display:block; height:100%; background:linear-gradient(90deg, var(--gn-edge), var(--gold)); transition:width .6s}
+.bar i{display:block; height:100%; background:linear-gradient(90deg, var(--gn-edge), var(--gp-edge), var(--gold)); transition:width .6s}
 .btn{display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:10px 18px; font-weight:700; font-size:16px; cursor:pointer; border:1.5px solid var(--arrow); background:var(--arrow); color:#fff}
 .btn.ghost{background:transparent; color:var(--arrow)}
 .btn:disabled{opacity:.5; cursor:not-allowed}
 .btnrow{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
 .how{background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:12px 16px; font-size:16.5px; margin-bottom:22px}
+.how ul{margin:6px 0 0; padding-left:22px}
+.secttl{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin:6px 0 12px}
+.secttl h2{font-size:28px}
+.secttl span{color:var(--muted); font-size:16px}
+/* swab spots */
+.sites{display:grid; grid-template-columns:repeat(auto-fill,minmax(155px,1fr)); gap:12px; margin-bottom:30px}
+.site{display:flex; flex-direction:column; align-items:flex-start; gap:4px; text-align:left; border:2px solid var(--line); background:var(--surface); border-radius:18px; padding:14px 16px; cursor:pointer; transition:transform .15s, border-color .15s, box-shadow .15s}
+.site:hover{transform:translateY(-3px); border-color:var(--arrow); box-shadow:0 10px 24px rgba(0,0,0,.1)}
+.site .em{font-size:38px; line-height:1}
+.site b{font-family:var(--f-display); font-size:21px}
+.site small{color:var(--muted); font-size:15px; line-height:1.3}
+.site .found{font:600 12.5px var(--f-mono); text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-top:4px}
+/* rarity */
+.rar{display:inline-flex; align-items:center; gap:4px; font:700 12px var(--f-mono); text-transform:uppercase; letter-spacing:.05em; padding:2px 9px; border-radius:999px; border:1.5px solid var(--rc); color:var(--rc); background:var(--surface)}
+.r-common{--rc:var(--r-common)} .r-uncommon{--rc:var(--r-uncommon)} .r-rare{--rc:var(--r-rare)} .r-legendary{--rc:var(--r-legendary)}
+/* the book */
+.gramhead{font-size:24px; margin:8px 0 10px}
 .set{margin-bottom:26px}
 .sethead{display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap}
-.sethead h2{font-size:24px}
+.sethead h3{font-size:21px}
 .sethead .cnt{font:600 14px var(--f-mono); color:var(--muted)}
 .sethead .done{font-weight:700; color:var(--good); font-size:15px}
-.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(168px,1fr)); gap:12px}
-.card{position:relative; aspect-ratio:5/7; border-radius:16px; border:3px solid var(--c); background:var(--surface); cursor:pointer; padding:10px; display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center; font:inherit; color:inherit; transition:transform .15s, box-shadow .15s; overflow:hidden}
+.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px}
+.card{position:relative; aspect-ratio:5/7; border-radius:16px; border:3px solid var(--c); background:var(--surface); cursor:pointer; padding:10px; display:flex; flex-direction:column; align-items:center; gap:5px; text-align:center; font:inherit; color:inherit; transition:transform .15s, box-shadow .15s; overflow:hidden}
 .card:hover{transform:translateY(-3px); box-shadow:0 10px 24px rgba(0,0,0,.12)}
-.card .scope{width:72%; height:auto}
+.card.r-legendary:not(.locked){box-shadow:0 0 0 3px var(--r-legendary) inset}
+.card .scope{width:68%; height:auto}
 .card .nm{font-family:var(--f-display); font-weight:700; font-size:16px; line-height:1.15; font-style:italic}
 .card .nm.np{font-style:normal}
-.card .stars{font-size:18px; letter-spacing:2px; color:var(--gold)}
+.card .stars{font-size:16px; letter-spacing:2px; color:var(--gold)}
 .card .tag{font:600 11px var(--f-mono); text-transform:uppercase; color:var(--muted)}
+.card .lv{position:absolute; top:7px; left:7px; font:700 11.5px var(--f-mono); background:var(--ink); color:var(--surface); padding:2px 7px; border-radius:999px}
+.card .rar{font-size:10.5px; padding:1px 7px}
 .card.locked{border-color:var(--locked); border-style:dashed; background:var(--surface-2)}
 .card.locked .scope{filter:grayscale(1) brightness(.35) opacity(.45)}
 .card.locked .nm{font-style:normal; color:var(--muted)}
 .card.new{animation:pop .7s ease}
 @keyframes pop{0%{transform:scale(.6) rotateY(90deg)} 60%{transform:scale(1.08) rotateY(0)} 100%{transform:scale(1)}}
+/* dialog */
 dialog{border:0; border-radius:22px; padding:0; width:min(640px, calc(100vw - 20px)); max-height:calc(100vh - 20px); background:var(--surface); color:var(--ink); box-shadow:0 20px 60px rgba(0,0,0,.4)}
 dialog::backdrop{background:rgba(10,20,30,.6)}
 .dlg{padding:18px; display:flex; flex-direction:column; gap:14px}
@@ -95,13 +120,18 @@ dialog::backdrop{background:rgba(10,20,30,.6)}
 .sw.bad{border-color:var(--bad); background:var(--bad-soft)}
 .msg{border-radius:12px; padding:10px 12px; font-size:16.5px; background:var(--surface-2)}
 .msg.good{background:var(--good-soft)} .msg.bad{background:var(--bad-soft)}
-.reveal{display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center}
-.reveal .card{width:220px; cursor:default}
+.reveal{display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center}
+.reveal .card{width:210px; cursor:default}
 .reveal .card:hover{transform:none; box-shadow:none}
 .back{display:flex; flex-direction:column; gap:8px}
 .back .row{display:flex; gap:10px; align-items:flex-start; background:var(--surface-2); border-radius:12px; padding:9px 12px; font-size:16.5px}
 .back .row b{min-width:92px; font:600 12.5px var(--f-mono); text-transform:uppercase; color:var(--muted); padding-top:3px}
 .cheat{border:2px solid var(--bad); background:var(--bad-soft); border-radius:12px; padding:9px 12px}
+/* swab + incubate animation */
+.dish{width:170px; height:170px}
+.dish .col{transform-origin:center; transform-box:fill-box; animation:grow 1.3s ease-out both}
+@keyframes grow{from{transform:scale(0); opacity:0} to{transform:scale(1); opacity:1}}
+.big{font-family:var(--f-display); font-size:26px; font-weight:800}
 .confetti{position:fixed; inset:0; pointer-events:none; z-index:100; overflow:hidden}
 .confetti i{position:absolute; top:-20px; width:10px; height:14px; border-radius:2px; animation:fall 1.8s linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
@@ -115,40 +145,241 @@ dialog::backdrop{background:rgba(10,20,30,.6)}
 <div class="wrap">
   <header class="top"><span class="brand">🧫 BIO 112 · Ch. 11</span><a href="unit-bacteria.html">← Bacteria unit</a></header>
   <section class="hero">
-    <div><h1>Microbe Collector 🃏</h1><p>Earn a card for every gram-negative organism. ID it from lab clues, name its disease, and spell it. Fewer mistakes = more stars.</p></div>
+    <div><h1>Microbe Collector 🧫</h1><p>Pick a spot to swab and see what grows. Every swab is a surprise! ID your microbe to add its card to your book. Some microbes are everywhere. Some are very, very rare.</p></div>
     <div class="stats">
-      <div class="stat"><small>Cards</small><b id="sCards">0</b></div>
-      <div class="stat"><small>Stars</small><b id="sStars">0</b></div>
+      <div class="stat"><small>Microbes found</small><b id="sCards">0</b></div>
+      <div class="stat"><small>Catches</small><b id="sCatches">0</b></div>
       <div class="stat"><small>Score</small><b id="sScore">0</b></div>
     </div>
   </section>
   <div class="bar" aria-hidden="true"><i id="barFill" style="width:0"></i></div>
-  <div class="btnrow" style="margin-bottom:14px"><button class="btn" type="button" id="randomBtn">🎲 Random challenge</button><button class="btn ghost" type="button" id="lbBtn">🏆 Leaderboard</button></div>
-  <p class="how">⭐ Each card: up to 3 stars (lose one per wrong answer). ✅ Finish a whole set for a +25 bonus. Score = 10 per star + set bonuses. Tap an earned card to see it, or play it again for more stars.</p>
+  <div class="how"><b>How to play</b>
+    <ul>
+      <li>🧫 Tap a spot to swab it. You'll grow one random microbe. You can grow the same one many times in a row!</li>
+      <li>🔬 Answer its questions to catch it: up to 3 stars (lose one per wrong answer). Catch it again to level it up (max Lv 5) with new questions.</li>
+      <li>🏆 Score: 10 points per star, a bonus for <span class="rar r-uncommon">◆ uncommon</span> <span class="rar r-rare">★ rare</span> <span class="rar r-legendary">👑 legendary</span> finds, and +25 for every full set.</li>
+    </ul>
+  </div>
+  <div class="secttl"><h2>Where do you want to swab?</h2><span>Each spot has its own microbes.</span></div>
+  <div class="sites" id="sites"></div>
+  <div class="secttl"><h2>📖 Your collection</h2><span>Locked card? Tap it for a hint about where it lives.</span><button class="btn ghost" type="button" id="lbBtn" style="margin-left:auto">🏆 Leaderboard</button></div>
   <main id="book"></main>
   <section class="lbbox" id="lbSec"><div id="lb"></div></section>
 </div>
 <dialog id="dlg"><div class="dlg" id="dlgBody"></div></dialog>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<!-- both tour data files set window.TOUR_DATA, so keep a copy of each -->
 <script src="gram-neg-tree.js"></script>
+<script>window.TOUR_NEG = window.TOUR_DATA;</script>
+<script src="gram-pos-tree.js"></script>
+<script>window.TOUR_POS = window.TOUR_DATA;</script>
 <script src="leaderboard.js"></script>
 <script src="spelling.js"></script>
 <script>
 (function(){
 "use strict";
-var D = window.TOUR_DATA;
 function $(s, r){ return (r || document).querySelector(s); }
 function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;"}[c]; }); }
 function shuffle(a){ a = a.slice(); for (var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
 function store(k, v){ try { if (v === undefined) return JSON.parse(localStorage.getItem(k)); localStorage.setItem(k, JSON.stringify(v)); } catch (e) { return null; } }
 var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-/* ---------- shapes (same drawings as the tour) ---------- */
+/* ================= where microbes live =================
+   Each spot lists the microbes you can grow there. How often each one shows up
+   depends on its rarity (weights below), so commons flood in and legendaries hide. */
+var SITES = [
+  {id: "poop", em: "💩", name: "Poop sample", blurb: "The gut is packed with microbes.",
+    orgs: ["ecoli", "enterobacter", "bactero", "enterococcus", "proteus", "lactobacillus", "kpneumoniae", "salmonella", "shigella", "cjejuni", "cdiff", "cperfringens", "vcholerae", "styphi"]},
+  {id: "dirt", em: "🌱", name: "Garden dirt", blurb: "Soil is full of spore formers.",
+    orgs: ["bsubtilis", "paeruginosa", "bcereus", "lmono", "cperfringens", "kpneumoniae", "ctetani", "cbotulinum", "banthracis"]},
+  {id: "water", em: "💧", name: "Pond & hot tub", blurb: "Lakes, ponds, pools, and building water.",
+    orgs: ["cyano", "paeruginosa", "planct", "lpneumophila", "cjejuni", "vcholerae"]},
+  {id: "mouth", em: "👄", name: "Mouth & throat", blurb: "Normal flora and some troublemakers.",
+    orgs: ["fuso", "lactobacillus", "bactero", "spyogenes", "spneumoniae", "nmen", "cpneumoniae", "bpertussis"]},
+  {id: "nose", em: "👃", name: "Nose & skin", blurb: "Your skin and nostrils have flora too.",
+    orgs: ["sepi", "saureus", "spneumoniae", "nmen"]},
+  {id: "bugs", em: "🕷️", name: "Ticks & fleas", blurb: "Vector-borne microbes hitch a ride.",
+    orgs: ["bburgdorferi", "brf", "rrickettsii", "ypestis"]},
+  {id: "kitchen", em: "🍳", name: "Kitchen", blurb: "Raw meat, leftovers, the fridge.",
+    orgs: ["ecoli", "lactobacillus", "saureus", "salmonella", "cjejuni", "lmono", "bcereus", "cperfringens", "cbotulinum"]},
+  {id: "hospital", em: "🏥", name: "Hospital", blurb: "Medical devices, surfaces, and water systems.",
+    orgs: ["sepi", "saureus", "enterococcus", "paeruginosa", "kpneumoniae", "proteus", "smarcescens", "cdiff", "lpneumophila"]},
+  {id: "clinic", em: "🧪", name: "Clinic lab", blurb: "Urine samples, swabs, and biopsies.",
+    orgs: ["ecoli", "proteus", "ssapro", "ngon", "ctrachomatis", "sagalactiae", "tpallidum", "hpylori"]}
+];
+var RARITY = {
+  common: ["ecoli", "enterobacter", "bactero", "enterococcus", "proteus", "lactobacillus", "bsubtilis", "paeruginosa", "cyano", "fuso", "sepi", "saureus"],
+  uncommon: ["kpneumoniae", "salmonella", "shigella", "cjejuni", "cdiff", "cperfringens", "bcereus", "lmono", "planct", "lpneumophila", "spyogenes", "spneumoniae", "nmen", "cpneumoniae", "bburgdorferi", "smarcescens", "ssapro", "ngon", "ctrachomatis", "sagalactiae", "hpylori"],
+  rare: ["vcholerae", "styphi", "ctetani", "cbotulinum", "bpertussis", "brf", "rrickettsii", "tpallidum"],
+  legendary: ["ypestis", "banthracis"]
+};
+var WEIGHT = {common: 50, uncommon: 20, rare: 7, legendary: 1};
+var BONUS = {common: 0, uncommon: 5, rare: 15, legendary: 40};
+var RLABEL = {common: "● Common", uncommon: "◆ Uncommon", rare: "★ Rare", legendary: "👑 Legendary"};
+var RAR = {}; Object.keys(RARITY).forEach(function(r){ RARITY[r].forEach(function(id){ RAR[id] = r; }); });
+
+/* ================= extra question sets =================
+   Catching a microbe again gives a different set. First option is always correct (shuffled on screen). */
+function Q(q, o, w){ return {q: q, o: o, w: w || ""}; }
+var QSETS = {
+  ecoli: [
+    [Q("<i>E. coli</i> is the only coliform with which IMViC pattern?", ["++−−", "−−++", "−+−+", "−+−−"]),
+     Q("On MacConkey agar, <i>E. coli</i> colonies are...", ["pink (lactose +)", "colorless (lactose −)", "black (H₂S +)", "red pigment"])],
+    [Q("Where is <i>E. coli</i> normally found?", ["the intestines (normal flora)", "the stomach lining", "inside tick cells", "the nasopharynx"]),
+     Q("<i>E. coli</i> is the #1 cause of...", ["UTIs and traveler's diarrhea", "whooping cough", "peptic ulcers", "Lyme disease"])]
+  ],
+  salmonella: [
+    [Q("<i>Salmonella</i> is the only non-coliform that is...", ["H₂S + but urease −", "H₂S − but urease +", "lactose +", "oxidase +"]),
+     Q("Where does <i>Salmonella</i> food poisoning usually come from?", ["poultry and other animals (raw meat)", "stale rice", "tick bites", "honey"])],
+    [Q("Which <i>Salmonella</i> causes typhoid fever?", ["<i>S.</i> Typhi", "<i>S.</i> Enteritidis", "<i>S. aureus</i>", "<i>S. pneumoniae</i>"]),
+     Q("<i>Salmonella</i> on MacConkey agar?", ["colorless (lactose −)", "pink (lactose +)", "golden", "green and pearly"])]
+  ],
+  ngon: [
+    [Q("<i>N. gonorrhoeae</i> uses which sugars?", ["glucose only", "glucose + maltose", "lactose", "none at all"]),
+     Q("Treatment for gonorrhea?", ["ceftriaxone", "penicillin G", "oral vancomycin", "botulinum antitoxin"])],
+    [Q("Why is there no gonorrhea vaccine?", ["high antigenic variation: it keeps changing its surface proteins", "it only grows inside host cells", "it has no cell wall", "it forms endospores"]),
+     Q("How can a newborn get <i>N. gonorrhoeae</i>?", ["from the mother during birth (eye infection)", "from honey", "from a tick bite", "from the hospital water system"])]
+  ],
+  nmen: [
+    [Q("<i>N. meningitidis</i> uses which sugars?", ["glucose + maltose", "glucose only", "lactose", "none at all"]),
+     Q("Who is most at risk?", ["young children, teens, people in dorms or the military", "infants under 6 months only", "people on long courses of antibiotics", "people who eat raw poultry"])],
+    [Q("Which is the microbe and which is the disease?", ["meningitidis = the bacterium; meningitis = the disease", "meningitis = the bacterium; meningitidis = the disease", "they mean the same thing", "both are diseases"]),
+     Q("How does <i>N. meningitidis</i> spread?", ["respiratory droplets and close contact", "tick bites", "contaminated water", "deep puncture wounds"])]
+  ],
+  paeruginosa: [
+    [Q("<i>Pseudomonas</i> colonies look...", ["greenish and pearly", "bright pink", "golden yellow", "black"]),
+     Q("<i>Pseudomonas</i> is oxidase ___ and lactose ___.", ["+ and −", "− and +", "+ and +", "− and −"])],
+    [Q("Where is <i>Pseudomonas</i> found?", ["soil, water, and hospitals", "only inside host cells", "only in ticks", "only in the stomach"]),
+     Q("<i>Pseudomonas</i> oxygen needs?", ["obligate aerobe", "obligate anaerobe", "microaerophilic", "facultative anaerobe"])]
+  ],
+  hpylori: [
+    [Q("How does <i>H. pylori</i> survive stomach acid?", ["urease makes ammonia, which neutralizes the acid", "it forms endospores", "it hides inside red blood cells", "it has an outer membrane made of chalk"]),
+     Q("Treatment for <i>H. pylori</i>?", ["2 antibiotics + a proton pump inhibitor", "penicillin G alone", "rehydration only", "botulinum antitoxin"])],
+    [Q("<i>H. pylori</i> oxygen needs?", ["microaerophilic (a little O₂)", "obligate aerobe", "obligate anaerobe", "facultative anaerobe"]),
+     Q("Which test result gives <i>H. pylori</i> away?", ["urease +", "coagulase +", "lactose +", "H₂S +"])]
+  ],
+  vcholerae: [
+    [Q("<i>Vibrio</i> is oxidase ___, unlike the enterics.", ["+", "−", "variable", "never tested"]),
+     Q("The first treatment for cholera is...", ["rehydration", "antitoxin", "surgery", "a fecal transplant"])],
+    [Q("Cholera toxin causes...", ["\"rice water\" diarrhea and severe dehydration", "lockjaw", "a bull's-eye rash", "honey-crusted skin sores"]),
+     Q("How does cholera spread?", ["fecal-oral: contaminated water and food", "tick bites", "respiratory droplets", "sexual contact"])]
+  ],
+  bburgdorferi: [
+    [Q("Which tick spreads Lyme disease?", ["<i>Ixodes</i>, the blacklegged (\"deer\") tick", "soft ticks", "body lice", "rat fleas"]),
+     Q("An early sign of Lyme disease is...", ["a bull's-eye rash (erythema migrans)", "lockjaw", "\"rice water\" diarrhea", "a 100-day cough"])],
+    [Q("Early treatment for Lyme disease?", ["doxycycline", "ceftriaxone", "oral vancomycin", "antitoxin"]),
+     Q("How long does a tick usually need to be attached to spread it?", ["24 to 48+ hours", "a few seconds", "exactly 5 minutes", "it can't spread it at all"])]
+  ],
+  ctrachomatis: [
+    [Q("Which <i>Chlamydia</i> form is infectious?", ["elementary body (EB)", "reticulate body (RB)", "endospore", "biofilm"]),
+     Q("How is chlamydia diagnosed?", ["PCR or antigen detection", "standard culture on agar", "the coagulase test", "the bile-esculin test"])],
+    [Q("Treatment for chlamydia?", ["azithromycin or doxycycline", "nafcillin", "oral vancomycin", "antitoxin"]),
+     Q("<i>Chlamydia</i> can only reproduce...", ["inside host cells", "on chocolate agar", "in the fridge", "in soil"])]
+  ],
+  ypestis: [
+    [Q("How does plague reach people?", ["rats → their fleas → people", "deer → ticks → people", "water → amoebae → people", "soil → wounds → people"]),
+     Q("Which form of plague infects the lymph nodes (bubos)?", ["bubonic", "septicemic", "pneumonic", "cutaneous"])],
+    [Q("Which form of plague infects the lungs and is nearly always fatal if untreated?", ["pneumonic", "bubonic", "cutaneous", "congenital"]),
+     Q("Treatment for plague?", ["streptomycin, gentamicin, or doxycycline", "penicillin G alone", "oral vancomycin", "rehydration only"])]
+  ],
+  tpallidum: [
+    [Q("Which stage of syphilis has a painless chancre?", ["primary", "secondary", "tertiary", "congenital"]),
+     Q("Treatment for syphilis?", ["penicillin G", "ceftriaxone", "oral vancomycin", "fidaxomicin"])],
+    [Q("The secondary syphilis rash can show up on...", ["the palms and soles", "only the scalp", "only the face", "nowhere: there's no rash"]),
+     Q("Why is <i>T. pallidum</i> hard to see?", ["it's too thin for a regular light microscope", "it's invisible to all microscopes", "it's gram +", "it lives only in soil"])]
+  ],
+  bpertussis: [
+    [Q("<i>Bordetella</i>'s shape?", ["coccobacillus", "diplococci", "spirochete", "cocci in chains"]),
+     Q("Who is most at risk from whooping cough?", ["infants under 6 months", "teens in dorms", "people on antibiotics", "pregnant people eating soft cheese"])],
+    [Q("The \"whoop\" in whooping cough is...", ["the gasp for air after a coughing fit", "a high fever", "a skin rash", "a jaw spasm"]),
+     Q("How is whooping cough prevented?", ["vaccine (DTaP / Tdap)", "no honey for infants", "soap and water", "cooking poultry well"])]
+  ],
+  saureus: [
+    [Q("What sets <i>S. aureus</i> apart from the other staphs?", ["coagulase +", "catalase +", "gram +", "grows in clusters"]),
+     Q("Which <i>S. aureus</i> toxin causes scalded skin syndrome?", ["exfoliatin", "TSST-1", "enterotoxin", "Panton-Valentine leukocidin"])],
+    [Q("What makes MRSA resistant?", ["the <i>mecA</i> gene changes the drug's target", "an outer membrane with LPS", "endospores", "it has no cell wall"]),
+     Q("Treatment for MRSA?", ["vancomycin, daptomycin, or clindamycin", "nafcillin or oxacillin", "penicillin", "methicillin"])]
+  ],
+  spneumoniae: [
+    [Q("<i>S. pneumoniae</i>'s shape?", ["lancet-shaped diplococci", "grape-like clusters", "spore-forming rods", "spirochete"]),
+     Q("Its main virulence factor?", ["a polysaccharide capsule", "coagulase", "endospores", "tetanospasmin"])],
+    [Q("The Quellung reaction is when...", ["the capsule swells (used for ID)", "bubbles form with H₂O₂", "plasma clots", "the colony turns golden"]),
+     Q("How is pneumococcal disease prevented?", ["pneumococcal vaccines", "no honey for infants", "soap instead of sanitizer", "cooking poultry well"])]
+  ],
+  cdiff: [
+    [Q("What usually triggers C. diff?", ["broad-spectrum antibiotics wipe out the gut flora", "eating stale rice", "a tick bite", "a deep puncture wound"]),
+     Q("Why doesn't alcohol hand sanitizer work on C. diff?", ["it doesn't kill the spores", "C. diff is gram −", "C. diff has no cell wall", "alcohol feeds it"])],
+    [Q("Treatment for repeat C. diff infections?", ["fecal transplant", "hyperbaric oxygen", "botulinum antitoxin", "nafcillin"]),
+     Q("C. diff oxygen needs?", ["obligate anaerobe", "obligate aerobe", "microaerophilic", "needs extra O₂"])]
+  ],
+  cbotulinum: [
+    [Q("Botulinum toxin blocks...", ["acetylcholine release → flaccid (floppy) paralysis", "inhibitory neurotransmitters → stiff muscles", "red blood cells", "the immune system"]),
+     Q("Why no honey for babies under 1 year?", ["spores can grow in the infant gut and release toxin", "honey contains tetanus toxin", "honey is too acidic", "honey kills the gut flora"])],
+    [Q("Where is <i>C. botulinum</i> found?", ["soil, water, and improperly canned foods", "only inside host cells", "the human nose", "ticks"]),
+     Q("Treatment for botulism?", ["botulinum antitoxin and supportive care", "penicillin G alone", "rehydration only", "a fecal transplant"])]
+  ],
+  ctetani: [
+    [Q("Tetanospasmin blocks...", ["inhibitory neurotransmitters → spasms and lockjaw", "acetylcholine release → floppy paralysis", "red blood cells", "the immune system"]),
+     Q("Why are rusty nails the classic tetanus example?", ["they're dirty and cause deep puncture wounds", "rust contains the toxin", "iron feeds the bacteria", "rust kills the normal flora"])],
+    [Q("How is tetanus prevented?", ["vaccination", "no honey for infants", "hand sanitizer", "cooking food well"]),
+     Q("Tetanus fatality rate, even with treatment?", ["10 to 20%", "less than 1%", "about 50%", "100%"])]
+  ],
+  lmono: [
+    [Q("What's unusual about where <i>Listeria</i> grows?", ["it grows at refrigerator temperatures", "it only grows in boiling water", "it only grows inside ticks", "it only grows without oxygen"]),
+     Q("Who is most at risk from listeriosis?", ["pregnant people, newborns, elderly, immunocompromised", "teens in dorms", "infants under 6 months only", "healthy athletes"])],
+    [Q("Common sources of <i>Listeria</i>?", ["unpasteurized dairy, soft cheeses, deli meats", "stale rice", "home-canned food", "tick bites"]),
+     Q("<i>Listeria</i> motility at room temperature?", ["tumbling motility", "swarming across the plate", "non-motile", "axial filaments"])]
+  ]
+};
+
+/* ================= the deck: every organism card in both tours ================= */
+var TOURS = [{key: "neg", D: window.TOUR_NEG, gram: "−"}, {key: "pos", D: window.TOUR_POS, gram: "+"}];
+var SETS = [
+  {id: "alpha", name: "Alpha", c: "#b45309", g: "neg"}, {id: "beta", name: "Beta", c: "#0e7490", g: "neg"}, {id: "gamma", name: "Gamma (non-enterics)", c: "#7c3aed", g: "neg"},
+  {id: "enterics", name: "Enterics", c: "#ea580c", g: "neg"}, {id: "epsilon", name: "Epsilon", c: "#be123c", g: "neg"}, {id: "spirochetes", name: "Spirochetes", c: "#a16207", g: "neg"},
+  {id: "chlamydiae", name: "Chlamydiae", c: "#a21caf", g: "neg"}, {id: "other", name: "Other phyla", c: "#15803d", g: "neg"},
+  {id: "bacillales", name: "Bacillus & Listeria", c: "#0f766e", g: "pos"}, {id: "staph", name: "Staphylococci", c: "#ca8a04", g: "pos"},
+  {id: "lactobacillales", name: "Lactobacillales", c: "#2563eb", g: "pos"}, {id: "clostridia", name: "Clostridia", c: "#9333ea", g: "pos"}
+];
+function setOf(o, tour){
+  if (o.type === "phylum") return "other";
+  var N = tour.N, p = [], n = N[o.node];
+  while (n){ p.unshift(n.id); n = n.parent ? N[n.parent] : null; }
+  if (tour.key === "pos"){
+    if (p.indexOf("staph") >= 0) return "staph";
+    if (p.indexOf("bacillales") >= 0) return "bacillales";
+    if (p.indexOf("lactobacillales") >= 0) return "lactobacillales";
+    return "clostridia";
+  }
+  if (p.indexOf("enterics") >= 0) return "enterics";
+  for (var i = 0; i < 8; i++) if (p.indexOf(SETS[i].id) >= 0) return SETS[i].id;
+  return "other";
+}
+var DECK = [], BY = {};
+TOURS.forEach(function(tour){
+  tour.N = {}; tour.D.tree.forEach(function(n){ tour.N[n.id] = n; });
+  tour.D.stops.forEach(function(s){ (s.orgs || []).forEach(function(o){
+    if (BY[o.id]) return;
+    o.gram = tour.gram; o.set = setOf(o, tour); o.rar = RAR[o.id] || "common";
+    DECK.push(o); BY[o.id] = o;
+  }); });
+});
+/* every microbe needs a swab spot, and every spot entry must be a real card */
+SITES.forEach(function(s){ s.orgs = s.orgs.filter(function(id){ if (!BY[id] && window.console) console.warn("unknown microbe in " + s.id + ": " + id); return !!BY[id]; }); });
+DECK.forEach(function(o){ o.sites = SITES.filter(function(s){ return s.orgs.indexOf(o.id) >= 0; }); if (!o.sites.length && window.console) console.warn("no swab spot for " + o.id); });
+
+function nameHtml(o){ return o.type === "phylum" ? esc(o.name) : "<i>" + esc(o.name) + "</i>" + (o.sub ? " " + esc(o.sub) : ""); }
+/* during a challenge, hide a subtitle that gives away the disease, e.g. "(relapsing fever species)" */
+function quizName(o){ return o.sub && o.disease && o.sub.toLowerCase().indexOf(o.disease.short.toLowerCase()) >= 0 ? "<i>" + esc(o.name) + "</i>" : nameHtml(o); }
+function rarHtml(r){ return '<span class="rar r-' + r + '">' + RLABEL[r] + "</span>"; }
+
+/* ---------- shapes (same drawings as the tours; gram + cells are purple) ---------- */
 function wavePath(x0, x1, cy, amp, periods, steps){ var d = ""; for (var i = 0; i <= steps; i++){ var x = x0 + (x1 - x0) * i / steps, y = cy + amp * Math.sin(i / steps * periods * 2 * Math.PI); d += (i ? "L" : "M") + x.toFixed(1) + " " + y.toFixed(1); } return d; }
 function iconInner(shape){
-  var f = 'fill="var(--gn-fill)" stroke="var(--gn-edge)" stroke-width="2"';
-  function tube(d, w){ return '<path d="' + d + '" fill="none" stroke="var(--gn-edge)" stroke-width="' + (w + 4) + '" stroke-linecap="round"/><path d="' + d + '" fill="none" stroke="var(--gn-fill)" stroke-width="' + w + '" stroke-linecap="round"/>'; }
+  var f = 'fill="var(--cf)" stroke="var(--ce)" stroke-width="2"';
+  function tube(d, w){ return '<path d="' + d + '" fill="none" stroke="var(--ce)" stroke-width="' + (w + 4) + '" stroke-linecap="round"/><path d="' + d + '" fill="none" stroke="var(--cf)" stroke-width="' + w + '" stroke-linecap="round"/>'; }
+  function dots(list, r){ return list.map(function(p){ return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="' + r + '" ' + f + '/>'; }).join(""); }
   switch (shape){
     case "coccobacillus": return '<rect x="18" y="11" width="28" height="22" rx="11" ' + f + '/>';
     case "diplococcus": return '<path d="M28.5 9 A13 13 0 1 0 28.5 35 Q21 22 28.5 9Z" ' + f + '/><path d="M35.5 9 A13 13 0 1 1 35.5 35 Q43 22 35.5 9Z" ' + f + '/>';
@@ -157,45 +388,25 @@ function iconInner(shape){
     case "spiral": return tube(wavePath(8, 56, 22, 9, 2, 40), 7);
     case "spirochete": return tube(wavePath(6, 58, 22, 6, 6, 90), 3);
     case "spindle": return '<path d="M5 22 Q32 6 59 22 Q32 38 5 22Z" ' + f + '/>';
-    case "filament": return [8, 19, 30, 41].map(function(x){ return '<circle cx="' + x + '" cy="22" r="5.6" ' + f + '/>'; }).join("") + '<circle cx="53.5" cy="22" r="7.2" fill="var(--surface)" stroke="var(--gn-edge)" stroke-width="3"/>';
+    case "filament": return dots([[8, 22], [19, 22], [30, 22], [41, 22]], 5.6) + '<circle cx="53.5" cy="22" r="7.2" fill="var(--surface)" stroke="var(--ce)" stroke-width="3"/>';
     case "budding": return '<circle cx="25" cy="24" r="14" ' + f + '/><circle cx="45" cy="13" r="7.5" ' + f + '/>';
-    case "intracellular": return '<ellipse cx="32" cy="22" rx="28" ry="18" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="4 3"/>' + [[22, 17], [30, 26], [39, 18], [44, 27], [26, 29]].map(function(p){ return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3.6" ' + f + '/>'; }).join("");
+    case "intracellular": return '<ellipse cx="32" cy="22" rx="28" ry="18" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="4 3"/>' + dots([[22, 17], [30, 26], [39, 18], [44, 27], [26, 29]], 3.6);
+    case "rodspore": return '<rect x="8" y="14" width="48" height="16" rx="8" ' + f + '/><ellipse cx="44" cy="22" rx="6.5" ry="4.6" fill="var(--surface)" stroke="var(--ce)" stroke-width="2"/>';
+    case "clusters": return dots([[20, 12], [32, 10], [44, 13], [14, 23], [26, 22], [38, 23], [50, 23], [22, 33], [34, 33], [46, 32]], 6);
+    case "chains": return dots([[7, 26], [18, 21], [29, 19], [40, 21], [51, 25], [61, 30]], 5.6);
+    case "pairchain": return dots([[9, 13], [21, 13], [30, 31], [42, 31], [54, 31]], 6);
+    case "lancet": return '<path d="M4 22 Q15 9 30 22 Q15 35 4 22Z" ' + f + '/><path d="M60 22 Q49 9 34 22 Q49 35 60 22Z" ' + f + '/>';
     case "rod": return '<rect x="8" y="14" width="48" height="16" rx="8" ' + f + '/>';
     default: return '<rect x="14" y="13" width="36" height="18" rx="9" ' + f + '/>';
   }
 }
-function scope(shape){
-  var pos = [[42, 46, 20], [80, 38, -15], [108, 62, 40], [58, 78, -30], [88, 96, 10], [40, 104, 60], [112, 104, -40], [70, 120, 25]];
-  var sc = shape === "spirochete" ? 0.62 : shape === "intracellular" ? 0.9 : 0.42, h = '<svg class="scope" viewBox="0 0 150 150" aria-hidden="true"><circle cx="75" cy="75" r="70" fill="var(--scope)" stroke="#33415c" stroke-width="7"/>';
+function scope(o){
+  var shape = o.shape, pos = [[42, 46, 20], [80, 38, -15], [108, 62, 40], [58, 78, -30], [88, 96, 10], [40, 104, 60], [112, 104, -40], [70, 120, 25]];
+  var sc = shape === "spirochete" ? 0.62 : shape === "intracellular" ? 0.9 : 0.42, g = o.gram === "+";
+  var h = '<svg class="scope" viewBox="0 0 150 150" aria-hidden="true" style="--cf:var(' + (g ? "--gp-fill" : "--gn-fill") + ");--ce:var(" + (g ? "--gp-edge" : "--gn-edge") + ')"><circle cx="75" cy="75" r="70" fill="var(--scope)" stroke="#33415c" stroke-width="7"/>';
   (shape === "intracellular" ? pos.slice(0, 3) : pos).forEach(function(p){ h += '<g transform="translate(' + p[0] + " " + p[1] + ") rotate(" + p[2] + ") scale(" + sc + ') translate(-32 -22)">' + iconInner(shape) + "</g>"; });
   return h + "</svg>";
 }
-
-/* ---------- the deck: every organism card in the tour ---------- */
-var N = {}; D.tree.forEach(function(n){ N[n.id] = n; });
-function path(id){ var p = [], n = N[id]; while (n){ p.unshift(n.id); n = n.parent ? N[n.parent] : null; } return p; }
-var SETS = [
-  {id: "alpha", name: "Alpha", c: "#b45309"}, {id: "beta", name: "Beta", c: "#0e7490"}, {id: "gamma", name: "Gamma (non-enterics)", c: "#7c3aed"},
-  {id: "enterics", name: "Enterics", c: "#ea580c"}, {id: "epsilon", name: "Epsilon", c: "#be123c"}, {id: "spirochetes", name: "Spirochetes", c: "#a16207"},
-  {id: "chlamydiae", name: "Chlamydiae", c: "#a21caf"}, {id: "other", name: "Other phyla", c: "#15803d"}
-];
-function setOf(o){
-  if (o.type === "phylum") return "other";
-  var p = path(o.node);
-  if (p.indexOf("enterics") >= 0) return "enterics";
-  for (var i = 0; i < SETS.length; i++) if (p.indexOf(SETS[i].id) >= 0) return SETS[i].id;
-  return "other";
-}
-var DECK = [];
-D.stops.forEach(function(s){ (s.orgs || []).forEach(function(o){ o.set = setOf(o); DECK.push(o); }); });
-var BY = {}; DECK.forEach(function(o){ BY[o.id] = o; });
-function nameHtml(o){ return o.type === "phylum" ? esc(o.name) : "<i>" + esc(o.name) + "</i>" + (o.sub ? " " + esc(o.sub) : ""); }
-/* during a challenge, hide a subtitle that gives away the disease, e.g. "(relapsing fever species)" */
-function quizName(o){ return o.sub && o.disease && o.sub.toLowerCase().indexOf(o.disease.short.toLowerCase()) >= 0 ? "<i>" + esc(o.name) + "</i>" : nameHtml(o); }
-/* lab results (minus the Gram stain) as one string, to spot cards the clues can't tell apart */
-function labSig(o){ return (o.tests || []).filter(function(t){ return t.k !== "gram"; }).map(function(t){ return t.k + "=" + t.v; }).sort().join("|"); }
-function genus(o){ return String(o.name).split(" ")[0]; }
-function twins(a, b){ return a.type !== "phylum" && genus(a) === genus(b) && labSig(a) === labSig(b); }
 
 /* ---------- clues from the lab tests ---------- */
 function pm(v){ return String(v).charAt(0); }
@@ -203,7 +414,8 @@ function clueOf(t){
   switch (t.k){
     case "shape": return "shape: " + t.v;
     case "oxygen": return t.v;
-    case "oxidase": case "catalase": case "lactose": case "citrate": case "urease": return t.k + " " + t.v;
+    case "oxidase": case "catalase": case "lactose": case "citrate": case "urease": case "coagulase": return t.k + " " + t.v;
+    case "spores": return pm(t.v) === "+" ? "forms endospores" : "no endospores";
     case "h2s": return "H₂S " + t.v;
     case "imvic": return "IMViC " + t.v;
     case "sugars": return "uses " + t.v;
@@ -213,14 +425,23 @@ function clueOf(t){
     default: return "";
   }
 }
-var PRI = ["sugars", "pigment", "imvic", "h2s", "citrate", "urease", "lactose", "oxidase", "feature", "shape", "oxygen", "media", "catalase"];
-function clues(o){
-  if (o.type === "phylum") return [o.boxes[0].t];
+var PRI = ["sugars", "coagulase", "pigment", "imvic", "h2s", "citrate", "urease", "lactose", "oxidase", "feature", "spores", "shape", "oxygen", "media", "catalase"];
+function clueTests(o){
+  if (o.type === "phylum") return [];
   var ts = (o.tests || []).filter(function(t){ return t.k !== "gram" && clueOf(t); });
   ts.sort(function(a, b){ return ((a.from ? 100 : 0) + PRI.indexOf(a.k)) - ((b.from ? 100 : 0) + PRI.indexOf(b.k)); });
-  var out = ts.slice(0, 3).map(clueOf);
-  if (out.length < 3 && o.facts && o.facts[0]) out.push(o.facts[0].h.toLowerCase() + ": " + o.facts[0].t);
-  return out.slice(0, 3);
+  return ts.slice(0, 3);
+}
+function clues(o){
+  if (o.type === "phylum") return [o.boxes[0].t];
+  var out = ["gram " + o.gram].concat(clueTests(o).map(clueOf));
+  if (out.length < 4 && o.facts && o.facts[0]) out.push(o.facts[0].h.toLowerCase() + ": " + o.facts[0].t);
+  return out.slice(0, 4);
+}
+/* a wrong option is unfair if it matches every clue (e.g. the two Borrelia, the Bacillus species, the coagulase − staphs) */
+function fitsClues(x, o){
+  if (x.type === "phylum" || o.type === "phylum" || x.gram !== o.gram) return false;
+  return clueTests(o).every(function(t){ return (x.tests || []).some(function(u){ return u.k === t.k && u.v === t.v; }); });
 }
 function diseaseOpts(o){
   var tags = o.disease.tags || [], seen = {}, pool = [];
@@ -233,69 +454,132 @@ function diseaseOpts(o){
   return shuffle([o.disease.short].concat(pool.slice(0, 3)));
 }
 function nameOpts(o){
-  /* never offer a same-genus card with identical lab results (the two Borrelia): the clues can't tell them apart */
-  var same = shuffle(DECK.filter(function(x){ return x !== o && x.set === o.set && x.name !== o.name && x.type === o.type && !twins(o, x); }));
-  var rest = shuffle(DECK.filter(function(x){ return x !== o && x.set !== o.set && x.name !== o.name && x.type === o.type; }));
-  var picks = same.slice(0, 2).concat(rest).slice(0, 3);
-  return shuffle([o].concat(picks));
+  var ok = function(x){ return x !== o && x.name !== o.name && x.type === o.type && !fitsClues(x, o); };
+  var same = shuffle(DECK.filter(function(x){ return ok(x) && x.set === o.set; }));
+  var rest = shuffle(DECK.filter(function(x){ return ok(x) && x.set !== o.set; }));
+  return shuffle([o].concat(same.slice(0, 2).concat(rest).slice(0, 3)));
 }
 
 /* ---------- progress ---------- */
-var KEY = "bio112-collector-v1";
-var P = store(KEY) || {cards: {}};
+var KEY = "bio112-collector-v2";
+var P = store(KEY);
+if (!P){
+  /* carry over the old (v1) book: each earned card becomes a Lv 1 catch */
+  P = {cards: {}, points: 0, catches: 0};
+  var old = store("bio112-collector-v1");
+  if (old && old.cards) Object.keys(old.cards).forEach(function(id){
+    if (!BY[id]) return;
+    var s = old.cards[id].stars || 1;
+    P.cards[id] = {lv: 1, best: s, catches: 1, last: 0}; P.points += s * 10; P.catches++;
+  });
+}
 function save(){ store(KEY, P); }
 function setDone(sid){ return DECK.filter(function(o){ return o.set === sid; }).every(function(o){ return P.cards[o.id]; }); }
 function totals(){
-  var cards = 0, stars = 0;
-  DECK.forEach(function(o){ var c = P.cards[o.id]; if (c){ cards++; stars += c.stars; } });
+  var cards = DECK.filter(function(o){ return P.cards[o.id]; }).length;
   var bonus = SETS.filter(function(st){ return setDone(st.id); }).length * 25;
-  return {cards: cards, stars: stars, score: stars * 10 + bonus};
+  return {cards: cards, catches: P.catches, score: P.points + bonus};
 }
 
-/* ---------- the collection book ---------- */
+/* ---------- swab spots and the collection book ---------- */
+function renderSites(){
+  $("#sites").innerHTML = SITES.map(function(s){
+    var got = s.orgs.filter(function(id){ return P.cards[id]; }).length;
+    return '<button type="button" class="site" data-site="' + s.id + '"><span class="em">' + s.em + "</span><b>" + s.name + "</b><small>" + s.blurb + '</small><span class="found">found ' + got + " / " + s.orgs.length + " here</span></button>";
+  }).join("");
+}
 function cardHtml(o, opts){
   var got = P.cards[o.id], set = SETS.filter(function(s){ return s.id === o.set; })[0];
-  return '<button type="button" class="card' + (got ? "" : " locked") + (opts && opts.isNew ? " new" : "") + '" data-card="' + o.id + '" style="--c:' + set.c + '" aria-label="' + (got ? esc(o.name) + ", " + got.stars + " stars" : "Locked card. Tap to earn it") + '">' +
-    scope(o.shape) + '<span class="nm' + (o.type === "phylum" ? " np" : "") + '">' + (got ? nameHtml(o) : "???") + "</span>" +
-    (got ? '<span class="stars">' + "★".repeat(got.stars) + "☆".repeat(3 - got.stars) + "</span>" : '<span class="tag">tap to earn</span>') +
+  return '<button type="button" class="card r-' + o.rar + (got ? "" : " locked") + (opts && opts.isNew ? " new" : "") + '" data-card="' + o.id + '" style="--c:' + set.c + '" aria-label="' + (got ? esc(o.name) + ", level " + got.lv : "Locked card") + '">' +
+    (got ? '<span class="lv">Lv ' + got.lv + "</span>" : "") + scope(o) + '<span class="nm' + (o.type === "phylum" ? " np" : "") + '">' + (got ? nameHtml(o) : "???") + "</span>" +
+    (got ? '<span class="stars">' + "★".repeat(got.best) + "☆".repeat(3 - got.best) + "</span>" + rarHtml(o.rar) : '<span class="tag">not found yet</span>') +
     '<span class="tag">' + set.name + "</span></button>";
 }
 function renderBook(newId){
   var h = "";
-  SETS.forEach(function(st){
-    var cs = DECK.filter(function(o){ return o.set === st.id; }), got = cs.filter(function(o){ return P.cards[o.id]; }).length;
-    h += '<section class="set"><div class="sethead"><h2 style="color:' + st.c + '">' + st.name + '</h2><span class="cnt">' + got + " / " + cs.length + "</span>" + (got === cs.length ? '<span class="done">✅ Set complete! +25</span>' : "") + '</div><div class="cards">' +
-      cs.map(function(o){ return cardHtml(o, {isNew: o.id === newId}); }).join("") + "</div></section>";
+  [["neg", "Gram-negative 🩷"], ["pos", "Gram-positive 💜"]].forEach(function(g){
+    h += '<h2 class="gramhead">' + g[1] + "</h2>";
+    SETS.filter(function(st){ return st.g === g[0]; }).forEach(function(st){
+      var cs = DECK.filter(function(o){ return o.set === st.id; }), got = cs.filter(function(o){ return P.cards[o.id]; }).length;
+      h += '<section class="set"><div class="sethead"><h3 style="color:' + st.c + '">' + st.name + '</h3><span class="cnt">' + got + " / " + cs.length + "</span>" + (got === cs.length ? '<span class="done">✅ Set complete! +25</span>' : "") + '</div><div class="cards">' +
+        cs.map(function(o){ return cardHtml(o, {isNew: o.id === newId}); }).join("") + "</div></section>";
+    });
   });
   $("#book").innerHTML = h;
   var t = totals();
-  $("#sCards").textContent = t.cards + " / " + DECK.length; $("#sStars").textContent = t.stars; $("#sScore").textContent = t.score;
+  $("#sCards").textContent = t.cards + " / " + DECK.length; $("#sCatches").textContent = t.catches; $("#sScore").textContent = t.score;
   $("#barFill").style.width = (t.cards / DECK.length * 100) + "%";
+  renderSites();
 }
 
-/* ---------- a challenge: 1) who am I, 2) disease, 3) spelling ---------- */
+/* ---------- swabbing ---------- */
+function openDlg(){ var d = $("#dlg"); if (!d.open){ if (d.showModal) d.showModal(); else d.setAttribute("open", ""); } }
+function closeDlg(){ var d = $("#dlg"); if (d.close) d.close(); else d.removeAttribute("open"); }
+function pick(site){
+  var total = 0; site.orgs.forEach(function(id){ total += WEIGHT[BY[id].rar]; });
+  var r = Math.random() * total;
+  for (var i = 0; i < site.orgs.length; i++){ r -= WEIGHT[BY[site.orgs[i]].rar]; if (r < 0) return BY[site.orgs[i]]; }
+  return BY[site.orgs[site.orgs.length - 1]];
+}
+function dishSvg(o, grown){
+  var col = o.gram === "+" ? "var(--gp-edge)" : "var(--gn-edge)", pts = [[60, 62], [98, 54], [118, 88], [72, 104], [100, 120], [52, 90], [86, 82]], h = '<svg class="dish" viewBox="0 0 170 170" aria-hidden="true"><circle cx="85" cy="85" r="76" fill="var(--agar)" stroke="#94a3b8" stroke-width="5"/>';
+  if (grown) pts.forEach(function(p, i){ h += '<circle class="col" style="animation-delay:' + (i * 0.12) + 's" cx="' + p[0] + '" cy="' + p[1] + '" r="' + (7 + (i % 3) * 2) + '" fill="' + col + '" opacity=".85"/>'; });
+  return h + "</svg>";
+}
+var SW = null;
+function swab(siteId){
+  var site = SITES.filter(function(s){ return s.id === siteId; })[0], o = pick(site);
+  SW = {site: site, o: o};
+  $("#dlgBody").innerHTML = '<div class="dlghead"><h3>' + site.em + " Swabbing: " + site.name + '</h3><button class="btn ghost" type="button" data-x="close">✕</button></div><div class="reveal">' + dishSvg(o, false) + '<p class="big">Incubating overnight… 🌙</p></div>';
+  openDlg();
+  setTimeout(function(){ if (SW && SW.o === o) showGrowth(); }, reduced ? 0 : 1200);
+}
+function showGrowth(){
+  var o = SW.o, got = P.cards[o.id];
+  var h = '<div class="dlghead"><h3>' + SW.site.em + " Something grew!</h3>" + '<button class="btn ghost" type="button" data-x="close">✕</button></div><div class="reveal">' + dishSvg(o, true) +
+    rarHtml(o.rar) + '<p class="big">' + (got ? "You've caught this one before (Lv " + got.lv + ")" : "A NEW microbe! ✨") + "</p>" +
+    "<p>" + (got ? (got.lv >= 5 ? "It's maxed out at Lv 5, but you can still catch it for points." : "Catch it again to level it up, with different questions.") : "Identify it to add it to your book.") + "</p></div>" +
+    '<div class="btnrow" style="justify-content:center"><button class="btn" type="button" data-x="catch">🔬 Identify it</button><button class="btn ghost" type="button" data-x="close">Let it go</button></div>';
+  $("#dlgBody").innerHTML = h;
+}
+
+/* ---------- a challenge ---------- */
 var C = null;
 function startChallenge(o){
-  C = {o: o, step: 0, miss: 0, steps: o.type === "phylum" ? ["who", "spell"] : ["who", "disease", "spell"], names: nameOpts(o), dis: o.disease ? diseaseOpts(o) : null, clues: clues(o), wrong: {}};
+  var got = P.cards[o.id], sets = QSETS[o.id] || [], setIdx = 0;
+  /* first catch: the classic ID challenge. Repeat catches rotate through the extra question sets. */
+  if (got && sets.length) setIdx = ((got.last || 0) + 1) % (sets.length + 1);
+  var steps = setIdx === 0 ? (o.type === "phylum" ? ["who", "spell"] : o.disease ? ["who", "disease", "spell"] : ["who", "spell"]) : sets[setIdx - 1].map(function(_, i){ return "q" + i; }).concat(["spell"]);
+  C = {o: o, step: 0, miss: 0, steps: steps, setIdx: setIdx, qs: setIdx ? sets[setIdx - 1].map(function(q){ return {q: q.q, w: q.w, a: q.o[0], o: shuffle(q.o)}; }) : null,
+       names: nameOpts(o), dis: o.disease ? diseaseOpts(o) : null, clues: clues(o), wrong: {}, setWasDone: setDone(o.set)};
   renderChallenge();
-  var d = $("#dlg"); if (!d.open){ if (d.showModal) d.showModal(); else d.setAttribute("open", ""); }
+  openDlg();
 }
 function stars(){ return Math.max(1, 3 - C.miss); }
+function optBtns(list, attr, prefix, render){
+  return '<div class="opts">' + list.map(function(x, i){ var k = prefix + i; return '<button type="button" class="opt' + (C.wrong[k] ? " wrong" : "") + '" ' + attr + '="' + i + '"' + (C.wrong[k] ? " disabled" : "") + ">" + render(x) + "</button>"; }).join("") + "</div>";
+}
 function renderChallenge(){
-  var o = C.o, kind = C.steps[C.step], h = '<div class="dlghead"><h3>🃏 Earn this card</h3><span class="hearts" aria-label="' + stars() + ' stars left">' + "★".repeat(stars()) + "☆".repeat(3 - stars()) + '</span><button class="btn ghost" type="button" data-x="close">✕</button></div>';
+  var o = C.o, kind = C.steps[C.step], h = '<div class="dlghead"><h3>🔬 Catch it!</h3><span class="hearts" aria-label="' + stars() + ' stars left">' + "★".repeat(stars()) + "☆".repeat(3 - stars()) + '</span><button class="btn ghost" type="button" data-x="close">✕</button></div>';
   h += '<div class="steps">' + C.steps.map(function(_, i){ return '<span class="' + (i < C.step ? "ok" : i === C.step ? "on" : "") + '"></span>'; }).join("") + "</div>";
   if (kind === "who"){
-    h += "<h4>🔬 Who am I?</h4><div class=\"clues\">" + C.clues.map(function(c){ return '<span class="clue">' + c + "</span>"; }).join("") + '</div><div class="opts">' +
-      C.names.map(function(x){ return '<button type="button" class="opt' + (C.wrong[x.id] ? " wrong" : "") + '" data-who="' + x.id + '"' + (C.wrong[x.id] ? " disabled" : "") + ">" + quizName(x) + "</button>"; }).join("") + "</div>";
+    h += '<h4>🔬 Who am I?</h4><div class="clues">' + C.clues.map(function(c){ return '<span class="clue">' + c + "</span>"; }).join("") + "</div>" +
+      '<div class="opts">' + C.names.map(function(x){ return '<button type="button" class="opt' + (C.wrong[x.id] ? " wrong" : "") + '" data-who="' + x.id + '"' + (C.wrong[x.id] ? " disabled" : "") + ">" + quizName(x) + "</button>"; }).join("") + "</div>";
   } else if (kind === "disease"){
-    h += "<h4>🦠 Correct! Now: what disease does " + quizName(o) + " cause?</h4><div class=\"opts\">" +
-      C.dis.map(function(dz, i){ return '<button type="button" class="opt' + (C.wrong["d" + i] ? " wrong" : "") + '" data-dz="' + i + '"' + (C.wrong["d" + i] ? " disabled" : "") + ">" + esc(dz) + "</button>"; }).join("") + "</div>";
+    h += "<h4>🦠 Correct! Now: what disease does " + quizName(o) + " cause?</h4>" + optBtns(C.dis, "data-dz", "d", esc);
+  } else if (kind && kind.charAt(0) === "q"){
+    var qi = Number(kind.slice(1)), q = C.qs[qi];
+    if (qi === 0) h += '<p class="msg">It\'s ' + nameHtml(o) + "! 🎉 Answer to catch it.</p>";
+    h += "<h4>" + q.q + "</h4>" + optBtns(q.o, "data-qa", "q" + qi + ":", function(x){ return x; });
   } else if (kind === "spell"){
     var words = (o.spell || o.name).split(" ");
-    h += '<h4>✏️ Last step: spell it!</h4><div class="spellrow">' + words.map(function(w, i){ return '<label class="sw' + (C.spellBad ? " bad" : "") + '"><b>' + esc(w.charAt(0)) + '</b><input type="text" data-sp="' + i + '" size="' + Math.max(4, w.length) + '" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Rest of word ' + (i + 1) + '"></label>'; }).join("") +
+    h += '<h4>✏️ Last step: spell it!</h4><div class="spellrow">' + words.map(function(w, i){ return '<label class="sw' + (C.spellBad ? " bad" : "") + '"><b>' + esc(w.charAt(0)) + '</b><input type="text" data-sp="' + i + '" size="' + Math.max(4, w.length) + '" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Word ' + (i + 1) + ', after the first letter"></label>'; }).join("") +
       '</div>' + (C.spellBad ? '<div class="msg bad">' + (C.spellNear && C.spellNear.length ? "So close! You know this one: check the letters in word " + C.spellNear.map(function(i){ return i + 1; }).join(" and ") + ". (It cost a star.)" : "Not quite. Check each letter and try again (it cost a star).") + "</div>" : "") + '<div class="btnrow"><button class="btn" type="button" data-x="spell">Check spelling</button></div>';
   } else if (kind === "done"){
-    h += '<div class="reveal"><h4>🎉 You earned it!</h4>' + cardHtml(o, {isNew: true}) + '<p><b>+' + (C.gain) + " points</b>" + (C.setBonus ? " · ✅ Set complete! +25" : "") + '</p><div class="btnrow"><button class="btn" type="button" data-x="next">🎲 Next random card</button><button class="btn ghost" type="button" data-x="close">Back to my collection</button></div></div>';
+    var cd = P.cards[o.id];
+    h += '<div class="reveal"><h4>🎉 ' + (C.firstCatch ? "New card!" : C.leveled ? "Level up! Lv " + cd.lv : "Caught again!") + "</h4>" + cardHtml(o, {isNew: true}) +
+      "<p><b>+" + C.gain + " points</b>" + (C.rarBonus ? " (incl. " + RLABEL[o.rar] + " bonus +" + C.rarBonus + ")" : "") + (C.setBonus ? " · ✅ Set complete! +25" : "") + "</p></div>" +
+      '<div class="btnrow" style="justify-content:center">' + (SW ? '<button class="btn" type="button" data-x="again">' + SW.site.em + " Swab " + SW.site.name + " again</button>" : "") + '<button class="btn ghost" type="button" data-x="close">Pick another spot</button></div>';
   }
   $("#dlgBody").innerHTML = h;
   var first = $("#dlgBody input"); if (first) first.focus();
@@ -304,46 +588,56 @@ function miss(key){ C.wrong[key] = true; C.miss++; }
 function advance(){
   C.step++;
   if (C.step >= C.steps.length){
-    var o = C.o, before = totals(), prev = P.cards[o.id];
-    if (!prev || stars() > prev.stars) P.cards[o.id] = {stars: stars()};
+    var o = C.o, before = totals(), cd = P.cards[o.id], s = stars();
+    C.firstCatch = !cd;
+    if (!cd) cd = P.cards[o.id] = {lv: 0, best: 0, catches: 0, last: 0};
+    C.leveled = cd.lv < 5;
+    cd.lv = Math.min(5, cd.lv + 1); cd.best = Math.max(cd.best, s); cd.catches++; cd.last = C.setIdx;
+    C.rarBonus = BONUS[o.rar];
+    P.points += s * 10 + C.rarBonus; P.catches++;
     save();
-    var after = totals();
-    C.gain = after.score - before.score; C.setBonus = setDoneBefore === false && setDone(o.set);
+    C.gain = totals().score - before.score; C.setBonus = !C.setWasDone && setDone(o.set);
     C.steps.push("done"); C.step = C.steps.length - 1;
     renderBook(o.id);
-    if (C.gain > 0) confetti();
+    confetti(o.rar === "legendary" || o.rar === "rare" || C.firstCatch);
     if (window.BIO112_LB && BIO112_LB.refresh) BIO112_LB.refresh();
   }
   renderChallenge();
 }
-var setDoneBefore = null;
-function confetti(){
-  if (reduced) return;
+function confetti(on){
+  if (reduced || !on) return;
   var box = document.createElement("div"), cols = ["#c2185b", "#e3a008", "#1683cc", "#1f8a55", "#7c3aed"];
   box.className = "confetti";
   for (var i = 0; i < 60; i++){ var c = document.createElement("i"); c.style.left = Math.random() * 100 + "%"; c.style.background = cols[i % cols.length]; c.style.animationDelay = Math.random() * .6 + "s"; box.appendChild(c); }
   document.body.appendChild(box); setTimeout(function(){ box.remove(); }, 2600);
 }
-function toast(m){ var t = $("#toast"); t.textContent = m; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(function(){ t.classList.remove("show"); }, 2400); }
+function toast(m){ var t = $("#toast"); t.textContent = m; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(function(){ t.classList.remove("show"); }, 3200); }
 
-/* an earned card's back side */
+/* a caught card's back side */
 function showCard(o){
-  var got = P.cards[o.id], h = '<div class="dlghead"><h3>' + nameHtml(o) + '</h3><button class="btn ghost" type="button" data-x="close">✕</button></div><div class="reveal">' + cardHtml(o) + "</div><div class=\"back\">";
+  var cd = P.cards[o.id], h = '<div class="dlghead"><h3>' + nameHtml(o) + '</h3><button class="btn ghost" type="button" data-x="close">✕</button></div><div class="reveal">' + cardHtml(o) +
+    "<p>Lv " + cd.lv + " · caught " + cd.catches + " time" + (cd.catches > 1 ? "s" : "") + "</p></div><div class=\"back\">";
   if (o.cheat) h += '<div class="cheat">🎯 <b>ID cheat:</b> ' + o.cheat + "</div>";
   if (o.disease) h += '<div class="row"><b>Disease</b><span>' + o.disease.html + "</span></div>";
   (o.facts || []).forEach(function(f){ h += '<div class="row"><b>' + esc(f.h) + "</b><span>" + f.t + "</span></div>"; });
   if (o.treat) h += '<div class="row"><b>Treatment</b><span>' + o.treat.html + "</span></div>";
   if (o.boxes) o.boxes.forEach(function(b){ h += '<div class="row"><b>' + b.ic + "</b><span>" + b.t + "</span></div>"; });
-  h += '</div><div class="btnrow">' + (got.stars < 3 ? '<button class="btn" type="button" data-x="replay">⭐ Play again for more stars</button>' : '<span>⭐ Perfect card!</span>') + "</div>";
-  C = {o: o};
+  h += '<div class="row"><b>Swab spots</b><span>' + o.sites.map(function(s){ return s.em + " " + s.name; }).join(", ") + "</span></div></div>";
   $("#dlgBody").innerHTML = h;
-  var d = $("#dlg"); if (!d.open){ if (d.showModal) d.showModal(); else d.setAttribute("open", ""); }
+  openDlg();
 }
 
 /* ---------- events ---------- */
 document.addEventListener("click", function(e){
   var el;
-  if ((el = e.target.closest("[data-card]"))){ var o = BY[el.getAttribute("data-card")]; if (P.cards[o.id]) showCard(o); else { setDoneBefore = setDone(o.set); startChallenge(o); } return; }
+  if ((el = e.target.closest("[data-site]"))){ swab(el.getAttribute("data-site")); return; }
+  if ((el = e.target.closest("[data-card]"))){
+    var o = BY[el.getAttribute("data-card")];
+    if (!o || el.closest(".reveal")) return;
+    if (P.cards[o.id]) showCard(o);
+    else toast("🔒 Not found yet. Try swabbing: " + o.sites.map(function(s){ return s.em + " " + s.name; }).join(" or "));
+    return;
+  }
   if ((el = e.target.closest("[data-who]"))){
     if (el.getAttribute("data-who") === C.o.id){ el.classList.add("right"); setTimeout(advance, 450); }
     else { miss(el.getAttribute("data-who")); renderChallenge(); }
@@ -355,12 +649,18 @@ document.addEventListener("click", function(e){
     else { miss("d" + i); renderChallenge(); }
     return;
   }
+  if ((el = e.target.closest("[data-qa]"))){
+    var qi = Number(C.steps[C.step].slice(1)), q = C.qs[qi], j = Number(el.getAttribute("data-qa"));
+    if (q.o[j] === q.a){ el.classList.add("right"); setTimeout(advance, 450); }
+    else { miss("q" + qi + ":" + j); renderChallenge(); }
+    return;
+  }
   if (!(el = e.target.closest("[data-x]"))) return;
-  var x = el.getAttribute("data-x"), d = $("#dlg");
-  if (x === "close"){ if (d.close) d.close(); else d.removeAttribute("open"); }
+  var x = el.getAttribute("data-x");
+  if (x === "close") closeDlg();
   else if (x === "spell") checkSpell();
-  else if (x === "next" || x === "random") randomChallenge();
-  else if (x === "replay"){ setDoneBefore = setDone(C.o.set); startChallenge(C.o); }
+  else if (x === "catch") startChallenge(SW.o);
+  else if (x === "again") swab(SW.site.id);
 });
 function checkSpell(){
   var words = (C.o.spell || C.o.name).split(" "), ok = true, near = [];
@@ -377,21 +677,16 @@ function checkSpell(){
   else { if (!C.spellBad) C.miss++; C.spellBad = true; renderChallenge(); }
 }
 document.addEventListener("keydown", function(e){ if (e.key === "Enter" && e.target.closest && e.target.closest("#dlgBody input[data-sp]")){ e.preventDefault(); checkSpell(); } });
-function randomChallenge(){
-  var left = DECK.filter(function(o){ return !P.cards[o.id]; });
-  var pool = left.length ? left : DECK.filter(function(o){ return P.cards[o.id].stars < 3; });
-  if (!pool.length){ toast("You collected every card with 3 stars! 🏆"); return; }
-  var o = pool[Math.floor(Math.random() * pool.length)];
-  setDoneBefore = setDone(o.set); startChallenge(o);
-}
-$("#randomBtn").addEventListener("click", randomChallenge);
 $("#lbBtn").addEventListener("click", function(){ $("#lbSec").scrollIntoView({behavior: reduced ? "auto" : "smooth"}); });
-$("#dlg").addEventListener("click", function(e){ if (e.target === e.currentTarget && e.currentTarget.close) e.currentTarget.close(); });
+$("#dlg").addEventListener("click", function(e){ if (e.target === e.currentTarget) closeDlg(); });
 
+save();
 renderBook();
 if (window.BIO112_LB){
-  BIO112_LB.widget($("#lb"), {game: "collector", title: "Microbe Collector leaderboard", score: function(){ var t = totals(); return {score: t.score, details: t.cards + " cards, " + t.stars + " stars"}; }});
+  BIO112_LB.widget($("#lb"), {game: "collector", title: "Microbe Collector leaderboard", score: function(){ var t = totals(); return {score: t.score, details: t.cards + " microbes, " + t.catches + " catches"}; }});
 }
+/* for testing */
+window.__collector = {DECK: DECK, SITES: SITES, P: P, QSETS: QSETS, nameOpts: nameOpts, fitsClues: fitsClues, cur: function(){ return C; }};
 })();
 </script>
 </body>
