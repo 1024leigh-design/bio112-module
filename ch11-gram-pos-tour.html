@@ -1,0 +1,1689 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gram-Positive Family Tree Tour</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Family Tree Tour page. Design tokens, fonts, buttons, quiz and step-nav styles are copied from ch9-cloning-a-gene.html so the modules match.
+   All tour content lives in the data file loaded below (gram-pos-tree.js).
+   Copy of the gram-negative tour engine, recolored purple, with gram-positive tests
+   (spores, coagulase, anaerobes, hemolysis). */
+:root{
+  --bg:#f2f5f8; --surface:#ffffff; --surface-2:#e8eef4; --ink:#14223a; --muted:#53657b; --line:#d3dde7;
+  --arrow:#1683cc; --arrow-soft:#dcecf9;
+  --good:#1f8a55; --good-soft:#dcf2e5; --warn:#a96c05; --warn-soft:#fbefd4; --bad:#c43a2b; --bad-soft:#fbe0db;
+  --gn-fill:#d8c8f5; --gn-edge:#6d28d9; --mac:#f3c9d3; --col-pink:#d81b60; --col-clear:#fffaf2; --col-clear-edge:#b9a493;
+  --f-display:'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --f-body:'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
+  --f-mono:'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Menlo, monospace;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
+    --arrow:#4aa9ee; --arrow-soft:#173450;
+    --good:#4ccb8b; --good-soft:#153a29; --warn:#ecb54e; --warn-soft:#3c3016; --bad:#ff7d6d; --bad-soft:#46211d;
+    --gn-fill:#4c3a7a; --gn-edge:#c4b0f5; --mac:#5b3241; --col-pink:#ff5c9a; --col-clear:#efe6da; --col-clear-edge:#8d7b6c;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
+  --arrow:#4aa9ee; --arrow-soft:#173450;
+  --good:#4ccb8b; --good-soft:#153a29; --warn:#ecb54e; --warn-soft:#3c3016; --bad:#ff7d6d; --bad-soft:#46211d;
+  --gn-fill:#4c3a7a; --gn-edge:#c4b0f5; --mac:#5b3241; --col-pink:#ff5c9a; --col-clear:#efe6da; --col-clear-edge:#8d7b6c;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:18px; line-height:1.55; overflow-x:hidden}
+.wrap{max-width:1400px; margin:0 auto; padding-inline:16px; padding-block:0 60px}
+h1,h2,h3,h4{font-family:var(--f-display); margin:0; text-wrap:balance; letter-spacing:-.01em}
+p{margin:0}
+button,select{font:inherit; color:inherit}
+:focus-visible{outline:3px solid var(--arrow); outline-offset:2px; border-radius:6px}
+b,strong{font-weight:700}
+[hidden]{display:none!important}
+
+/* top bar (from ch9) */
+.topbar{position:sticky; top:0; z-index:30; background:var(--bg); display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; padding-block:10px; border-bottom:1px solid var(--line); margin-bottom:18px}
+.brand{font-family:var(--f-display); font-weight:700; font-size:17px; white-space:nowrap; display:flex; align-items:center; gap:8px; cursor:pointer; background:none; border:0; padding:0}
+.brand svg{width:26px; height:26px}
+.crumb{font-size:15px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; flex:1 1 0}
+.topright{margin-left:auto; display:flex; align-items:center; gap:8px}
+.homebtn{display:inline-flex; align-items:center; gap:6px; font-weight:700; font-size:15px; padding:8px 13px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface); cursor:pointer; white-space:nowrap; text-decoration:none; color:var(--ink)}
+.homebtn:hover{border-color:var(--arrow); color:var(--arrow)}
+@media (max-width:560px){ .crumb{display:none} .homebtn .long{display:none} }
+
+/* Learn / Test toggle */
+.seg{display:inline-flex; padding:3px; border-radius:999px; background:var(--surface-2); border:1.5px solid var(--line)}
+.seg button{border:0; background:transparent; border-radius:999px; padding:6px 13px; font-weight:700; font-size:15px; cursor:pointer; color:var(--muted); white-space:nowrap}
+.seg button[aria-checked="true"]{background:var(--ink); color:var(--bg)}
+
+/* views */
+.view{display:none}
+.view.active{display:block; animation:fadein .25s ease}
+@keyframes fadein{from{opacity:.4; transform:translateY(4px)}to{opacity:1; transform:none}}
+
+/* tabs (from ch9) */
+.tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px}
+.tabs button{display:flex; align-items:center; gap:8px; border:1.5px solid var(--line); background:var(--surface); border-radius:999px; padding:9px 16px; font-weight:700; cursor:pointer; font-size:16px}
+.tabs button.on{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+.tabs button.soon{color:var(--muted); border-style:dashed; background:var(--surface-2)}
+
+/* start screen */
+.hero{display:flex; flex-wrap:wrap; align-items:flex-end; gap:10px 28px; margin-bottom:18px}
+.hero h1{font-size:clamp(34px,5vw,54px); line-height:1.02; font-weight:800}
+.hero h1 span{color:var(--gn-edge)}
+.eyebrow{font-family:var(--f-mono); font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--arrow); margin-bottom:8px; font-weight:600}
+.hero p{color:var(--muted); font-size:19px; max-width:46ch; padding-bottom:4px}
+.startgrid{display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); gap:16px; align-items:start}
+@media (max-width:860px){ .startgrid{grid-template-columns:minmax(0,1fr)} }
+.panel{background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:20px}
+.panel h2{font-size:24px; margin-bottom:12px}
+.goals{margin:0; padding-left:0; list-style:none; counter-reset:g; display:grid; gap:12px}
+.goals li{counter-increment:g; display:flex; gap:12px; align-items:flex-start; font-size:18.5px}
+.goals li::before{content:counter(g); flex-shrink:0; width:30px; height:30px; border-radius:50%; background:var(--gn-edge); color:#fff; display:inline-flex; align-items:center; justify-content:center; font:700 14px var(--f-mono); margin-top:1px}
+.modes{display:grid; gap:10px}
+.modes div{background:var(--surface-2); border-radius:12px; padding:12px 14px; font-size:17px}
+.modes b{display:block; font-family:var(--f-display); font-size:19px}
+.btn{display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:11px 19px; font-weight:700; font-size:17px; cursor:pointer; border:1.5px solid var(--arrow); background:var(--arrow); color:#fff; text-decoration:none}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent; color:var(--arrow)}
+.btn.small{padding:7px 13px; font-size:15px}
+.btn:disabled,.btn.disabled{opacity:.5; cursor:not-allowed; filter:none}
+.btnrow{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.msg{border-radius:12px; padding:12px 14px; font-size:17px; background:var(--surface-2)}
+.msg.good{background:var(--good-soft)} .msg.good > b:first-child{color:var(--good)}
+.msg.bad{background:var(--bad-soft)} .msg.bad > b:first-child{color:var(--bad)}
+
+/* tour layout: tree beside the lesson on wide screens, stacked on phones */
+.tour{display:flex; flex-direction:column; gap:18px}
+@media (min-width:1000px){
+  .tour{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:24px; align-items:start}
+  .treepanel{position:sticky; top:76px}
+  .treebox{height:calc(100vh - 170px)!important; min-height:420px}
+}
+.treepanel{display:flex; flex-direction:column; gap:10px; min-width:0}
+.treehead{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.treehead .lbl{font:600 13px var(--f-mono); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-right:auto}
+.treebox{position:relative; height:380px; overflow:auto; background:var(--surface); border:1px solid var(--line); border-radius:20px; overscroll-behavior:contain; -webkit-overflow-scrolling:touch}
+.treebox.drag{cursor:grabbing; user-select:none}
+#tree{display:block; margin:0 auto}
+#tree .edges path{fill:none; stroke:var(--line); stroke-width:2.5; transition:stroke .3s, stroke-width .3s, opacity .3s}
+#tree .edges path.on{stroke:var(--c); stroke-width:5}
+#tree .edges path.fade{opacity:.3}
+.tn{cursor:pointer; transition:opacity .35s}
+.tn:focus{outline:none}
+.tn rect{fill:var(--surface); fill:color-mix(in srgb, var(--c) 13%, var(--surface)); stroke:var(--c); stroke-width:1.5; transition:stroke-width .2s, fill .2s}
+.tn.leaf rect{fill:var(--surface); stroke:var(--line); stroke:color-mix(in srgb, var(--c) 50%, var(--line))}
+.tn text{font:700 17px var(--f-body); fill:var(--ink); text-anchor:middle; dominant-baseline:central; pointer-events:none}
+.tn.it text{font-style:italic}
+.tn.path rect{stroke-width:3; stroke:var(--c)}
+.tn.cur rect{stroke-width:5; fill:color-mix(in srgb, var(--c) 32%, var(--surface))}
+.tn.fade{opacity:.3}
+.tn.off rect{fill:var(--surface-2); stroke:var(--muted); stroke-dasharray:5 4; stroke-width:1.5}
+.tn.off text{fill:var(--muted)}
+.tn.hid text{fill:var(--muted); letter-spacing:.2em}
+.tn:hover rect, .tn:focus-visible rect{stroke-width:4.5}
+#map .tn text{font-size:15px}
+.treehint{font-size:15px; color:var(--muted)}
+.tools{display:flex; gap:6px; flex-wrap:wrap}
+.tool{min-width:40px; height:40px; padding:0 12px; border-radius:12px; border:1.5px solid var(--line); background:var(--surface); font-weight:700; font-size:16px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px}
+.tool:hover{border-color:var(--arrow); color:var(--arrow)}
+.tool.big{font-size:22px; line-height:1; padding:0}
+.tool.on{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+/* overview map */
+.mapsec{margin-top:26px; background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:14px; scroll-margin-top:80px}
+.maphead{display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; margin-bottom:8px}
+.maphead h3{font-size:22px; margin-right:auto}
+.mapbox{overflow-x:auto; -webkit-overflow-scrolling:touch}
+#map{display:block; width:100%; min-width:1100px; height:auto}
+.maphead p{flex-basis:100%; font-size:15px; color:var(--muted)}
+#map .rowband{fill:var(--surface-2); opacity:.55}
+#map .rowlbl{font:700 13px var(--f-mono); fill:var(--muted); text-transform:uppercase; letter-spacing:.04em}
+#map .edges path{fill:none; stroke:var(--line); stroke-width:2}
+#map .edges path.on{stroke:var(--c); stroke-width:4}
+#map .here-pin{font-size:20px; text-anchor:middle}
+.ranks{position:sticky; top:0; z-index:2; height:46px; margin:0 auto; background:var(--surface); border-bottom:1px solid var(--line)}
+.ranks span{position:absolute; top:8px; height:30px; display:flex; align-items:center; justify-content:center; text-align:center; font-family:var(--f-mono); font-weight:700; font-size:inherit; text-transform:uppercase; letter-spacing:.04em; line-height:1.1; color:var(--ink); border-radius:8px; background:var(--surface-2); padding:0 4px; overflow:hidden}
+.ranks span.lab{background:transparent; border:1.5px dashed var(--line); color:var(--muted); font-weight:600}
+#tree .bands rect{fill:var(--surface-2); opacity:.5}
+
+/* progress */
+.progress{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.progress .count{font:600 14px var(--f-mono); color:var(--muted); text-transform:uppercase; letter-spacing:.05em}
+.bar{flex:1 1 120px; height:8px; border-radius:99px; background:var(--surface-2); overflow:hidden; min-width:80px}
+.bar i{display:block; height:100%; background:var(--gn-edge); border-radius:99px; transition:width .4s}
+
+/* trait ribbon */
+.ribbon{background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:14px 16px; min-width:0}
+.traits{background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:14px; min-width:0}
+.ribbon .rl{font:600 12.5px var(--f-mono); text-transform:uppercase; letter-spacing:.07em; color:var(--muted)}
+.crumbs{display:flex; flex-wrap:wrap; align-items:center; gap:4px 6px; font-weight:700; font-size:17px}
+.crumbs .sep{color:var(--muted); font-weight:400}
+.crumbs button{border:0; background:none; padding:2px 4px; cursor:pointer; border-radius:6px; text-decoration:underline; text-decoration-color:var(--c); text-decoration-thickness:3px; text-underline-offset:4px}
+.crumbs button:hover{background:var(--surface-2)}
+.crumbs .it{font-style:italic}
+.tgroups{display:flex; flex-direction:column; gap:7px}
+.tg{display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px; padding:7px 10px; border-left:6px solid var(--c); background:color-mix(in srgb, var(--c) 6%, var(--surface)); border-radius:0 12px 12px 0}
+.tgl{font-weight:700; font-size:15.5px; margin-right:2px}
+.chip{display:inline-flex; flex-wrap:wrap; align-items:center; gap:4px; background:var(--surface-2); background:color-mix(in srgb, var(--c) 16%, var(--surface)); border:1.5px solid color-mix(in srgb, var(--c) 45%, transparent); border-radius:999px; padding:3px 12px; font-size:16.5px; line-height:1.35}
+.chip.strong{font-weight:700; border-width:2.5px; border-color:var(--c)}
+.tg.only{--c:var(--ink); border-left-style:dashed; background:var(--surface)}
+.tg.only .chip{background:var(--surface); border-style:dashed; border-color:var(--muted)}
+.tg.note{font-size:16px; color:var(--muted)}
+.hint{font-size:15.5px; color:var(--muted)}
+
+/* blanks (Test mode) */
+select.blank{font-size:16.5px; padding:3px 6px; border-radius:8px; border:2px solid var(--arrow); background:var(--surface); color:var(--ink); max-width:100%; cursor:pointer}
+select.blank:disabled{opacity:1; cursor:default}
+.good select.blank, select.blank.good{border-color:var(--good); background:var(--good-soft)}
+.bad select.blank, select.blank.bad{border-color:var(--bad); background:var(--bad-soft)}
+.mark{font-weight:700}
+.good > .mark, .mark.good{color:var(--good)}
+.bad > .mark, .mark.bad{color:var(--bad)}
+.ans{font-weight:700; color:var(--good)}
+
+/* lesson */
+.lessoncol{display:flex; flex-direction:column; gap:18px; min-width:0; width:100%; max-width:880px; margin-inline:auto}
+.mhead{display:flex; gap:16px; align-items:flex-start}
+.mbadge{flex-shrink:0; width:58px; height:58px; border-radius:50%; background:var(--c, var(--arrow)); color:#fff; display:flex; align-items:center; justify-content:center; font:700 22px var(--f-mono)}
+.mhead > div{min-width:0}
+.mhead h2{font-size:clamp(26px,4vw,40px); line-height:1.08; font-weight:800; overflow-wrap:break-word; hyphens:auto}
+.lesson{margin:0; padding-left:22px; display:flex; flex-direction:column; gap:10px; font-size:19px}
+.lesson ul{margin:6px 0 0; padding-left:22px; display:flex; flex-direction:column; gap:4px}
+.lesson li::marker{color:var(--gn-edge)}
+.figure{background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:12px}
+.figure svg{display:block; width:100%; height:auto; max-width:560px; margin:0 auto}
+.figure.smallfig svg{max-width:340px}
+.figure figcaption{font-size:15px; color:var(--muted); text-align:center; margin-top:4px}
+.dg-t{font:400 22px var(--f-body); fill:var(--ink)}
+.dg-b{font:700 22px var(--f-body); fill:var(--ink)}
+.dg-m{font:400 20px var(--f-body); fill:var(--muted)}
+.dg-head{fill:var(--gn-edge)}
+.dg-tail{stroke:var(--gn-edge); stroke-width:1.6; fill:none}
+.dg-lps{stroke:var(--warn); stroke-width:3; fill:none; stroke-linecap:round}
+.dg-pg{fill:var(--gn-fill); stroke:var(--gn-edge); stroke-width:1.5}
+.dg-pgl{stroke:var(--gn-edge); stroke-width:1.5}
+.dg-lead{stroke:var(--muted); stroke-width:1.5; fill:none}
+.dg-box{fill:var(--surface-2); stroke:var(--line); stroke-width:1.5}
+.dg-arrow{fill:none; stroke:var(--arrow); stroke-width:4; stroke-linecap:round}
+
+/* organism cards */
+.orgs{display:grid; gap:16px}
+.org{background:var(--surface); border:1.5px solid var(--line); border-top:7px solid var(--c); border-radius:18px; padding:16px 18px; min-width:0; scroll-margin-top:90px; transition:box-shadow .2s, border-color .2s}
+.org.on{border-color:var(--c); box-shadow:0 0 0 3px color-mix(in srgb, var(--c) 30%, transparent)}
+.org header{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:10px; cursor:pointer}
+.org header svg{width:64px; height:44px; flex-shrink:0}
+.org h3{font-size:24px; line-height:1.15; flex:1 1 180px}
+.org h3 small{font-family:var(--f-body); font-weight:400; font-size:17px; color:var(--muted)}
+.org dl{margin:0; display:flex; flex-direction:column; gap:12px}
+.org dt{font:600 12.5px var(--f-mono); text-transform:uppercase; letter-spacing:.07em; color:var(--muted); margin-bottom:2px}
+.org dd{margin:0; font-size:18px}
+.org .num{display:inline-flex; width:22px; height:22px; border-radius:50%; background:var(--surface-2); color:var(--muted); align-items:center; justify-content:center; font:700 11.5px var(--f-mono); margin-right:6px; vertical-align:2px}
+.bul{margin:4px 0 0; padding-left:22px; display:flex; flex-direction:column; gap:3px}
+.idlist{margin:0; padding:0; list-style:none; display:flex; flex-wrap:wrap; gap:6px}
+.idlist li{background:var(--surface-2); border-radius:10px; padding:4px 10px; font-size:17px; display:flex; flex-wrap:wrap; align-items:center; gap:6px}
+.idlist li.good{background:var(--good-soft)} .idlist li.bad{background:var(--bad-soft)}
+.idlist .q{font-weight:700}
+.idlist .full{flex-basis:100%; font-size:15.5px; color:var(--muted)}
+.moreh{font-weight:700; margin-top:8px}
+.hook{background:var(--warn-soft); border-radius:12px; padding:8px 12px}
+.mc{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:4px}
+@media (max-width:640px){ .mc{grid-template-columns:1fr} }
+.mcopt{text-align:left; border:1.5px solid var(--line); background:var(--bg); border-radius:12px; padding:9px 12px; cursor:pointer; font-size:16.5px; line-height:1.35}
+.mcopt:hover:not(:disabled){border-color:var(--arrow)}
+.mcopt.sel{border-color:var(--arrow); background:var(--arrow-soft); font-weight:700}
+.mcopt.right{border-color:var(--good); background:var(--good-soft)}
+.mcopt.wrong{border-color:var(--bad); background:var(--bad-soft)}
+.mcopt:disabled{cursor:default}
+.reveal{margin-top:8px; padding-top:8px; border-top:1px dashed var(--line)}
+
+/* check bar (Test mode) */
+.checkbar{background:var(--surface); border:2px solid var(--arrow); border-radius:18px; padding:16px; display:flex; flex-direction:column; gap:12px}
+.checkbar h3{font-size:21px}
+.checklist{margin:0; padding-left:20px; display:flex; flex-direction:column; gap:6px; font-size:17px}
+
+/* check-in quiz (from ch9) */
+.quiz{background:var(--surface); border:1.5px solid var(--line); border-radius:20px; padding:20px}
+.quiz .qhead{display:flex; align-items:center; gap:10px; margin-bottom:12px}
+.quiz .qhead h3{font-size:23px}
+.quiz .qhead .tag{margin-left:auto; font:600 13px var(--f-mono); color:var(--muted); text-transform:uppercase; letter-spacing:.05em}
+.qq{font-weight:700; font-size:19px; margin-bottom:10px}
+.qopts{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+@media (max-width:640px){ .qopts{grid-template-columns:1fr} }
+.qopt{text-align:left; border:1.5px solid var(--line); background:var(--bg); border-radius:12px; padding:11px 14px; cursor:pointer; font-size:17px; line-height:1.35}
+.qopt:hover:not(:disabled){border-color:var(--arrow)}
+.qopt.right{border-color:var(--good); background:var(--good-soft)}
+.qopt.wrong{border-color:var(--bad); background:var(--bad-soft)}
+.qopt:disabled{cursor:default}
+.qwhy{margin-top:10px}
+
+/* step nav (from ch9) */
+.stepnav{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap}
+.stepnav button{display:flex; flex-direction:column; gap:2px; text-align:left; border:1.5px solid var(--line); background:var(--surface); border-radius:var(--r); padding:12px 16px; cursor:pointer; flex:1 1 200px; max-width:100%}
+.stepnav button:hover{border-color:var(--arrow)}
+.stepnav button.next{text-align:right}
+.stepnav small{font:600 12.5px var(--f-mono); color:var(--muted); text-transform:uppercase; letter-spacing:.05em}
+.stepnav b{font-family:var(--f-display); font-size:19px}
+
+/* finale */
+.takeaways{margin:0; padding-left:0; list-style:none; counter-reset:t; display:grid; gap:12px}
+.takeaways li{counter-increment:t; display:flex; gap:12px; align-items:flex-start; background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:14px 16px; font-size:19px}
+.takeaways li::before{content:counter(t); flex-shrink:0; width:32px; height:32px; border-radius:50%; background:var(--gn-edge); color:#fff; display:inline-flex; align-items:center; justify-content:center; font:700 15px var(--f-mono)}
+.tiles{display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.tile{display:flex; flex-direction:column; gap:4px; text-align:left; background:var(--surface); border:1.5px solid var(--line); border-radius:var(--r); padding:14px 16px; text-decoration:none; color:var(--ink); font-size:17px}
+a.tile:hover{border-color:var(--arrow)}
+.tile b{font-family:var(--f-display); font-size:20px}
+.tile .tag{font:600 12px var(--f-mono); text-transform:uppercase; letter-spacing:.05em; color:var(--arrow)}
+.tile.soon{background:var(--surface-2); border-style:dashed; color:var(--muted)}
+.tile.soon .tag{color:var(--muted)}
+.sech{font-size:22px; margin-bottom:10px}
+
+/* enteric table */
+dialog{border:0; border-radius:20px; padding:0; max-width:min(760px, calc(100vw - 24px)); width:100%; background:var(--surface); color:var(--ink); box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,20,30,.55)}
+.dlghead{display:flex; align-items:center; gap:10px; padding:16px 18px; border-bottom:1px solid var(--line)}
+.dlghead h2{font-size:24px; margin-right:auto}
+.dlgbody{padding:14px 18px 18px; display:flex; flex-direction:column; gap:10px}
+.tablewrap{overflow-x:auto; border:1px solid var(--line); border-radius:12px}
+table.ent{border-collapse:collapse; width:100%; min-width:560px; font-size:17px}
+table.ent th, table.ent td{padding:8px 10px; text-align:center; border-bottom:1px solid var(--line)}
+table.ent th{font:700 14px var(--f-mono); background:var(--surface-2)}
+table.ent td:first-child, table.ent th:first-child{text-align:left; white-space:nowrap}
+table.ent td:first-child{font-style:italic; font-weight:700; border-left:6px solid var(--c)}
+table.ent tr.grp td{background:color-mix(in srgb, var(--c) 12%, var(--surface))}
+.legend{display:flex; flex-wrap:wrap; gap:6px 18px; font-size:16px; color:var(--muted)}
+.legend span{display:inline-flex; align-items:center; gap:8px}
+.legend i{width:16px; height:16px; border-radius:4px; display:inline-block; background:var(--c)}
+
+/* toast */
+.toast{position:fixed; left:50%; bottom:22px; transform:translate(-50%, 20px); opacity:0; background:var(--ink); color:var(--bg); padding:12px 18px; border-radius:14px; font-weight:700; font-size:17px; z-index:60; transition:opacity .25s, transform .25s; pointer-events:none; max-width:calc(100vw - 32px); text-align:center}
+.toast.show{opacity:1; transform:translate(-50%, 0)}
+
+/* ---- organism card v2: microscope view, flip tiles, flows, icon boxes, quick sort ---- */
+:root{--scope:#fdf2f6}
+:root[data-theme="dark"]{--scope:#2b1d26}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--scope:#2b1d26} }
+.org.v2{display:flex; flex-direction:column; gap:20px; padding:20px}
+.org.v2 .hero{display:grid; grid-template-columns:132px minmax(0,1fr); gap:16px; align-items:center}
+.org.v2 .hero > div{display:flex; flex-direction:column; align-items:flex-start; gap:8px}
+.org.v2 .hero{margin:0}
+.org.v2 .hero h3{font-size:30px; line-height:1.05; flex:none; text-align:left}
+.scope{width:132px; height:132px}
+@media (max-width:560px){ .org.v2 .hero{grid-template-columns:96px minmax(0,1fr)} .scope{width:96px; height:96px} .org.v2 .hero h3{font-size:24px} }
+.badges{display:flex; flex-wrap:wrap; gap:6px}
+.badge{font-weight:700; font-size:14.5px; padding:4px 11px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface-2)}
+.badge.gram{background:var(--gn-fill); border-color:var(--gn-edge); color:var(--ink); font-family:var(--f-mono)}
+.sec{display:flex; flex-direction:column; gap:8px; min-width:0}
+.sechead{display:flex; align-items:center; gap:10px; justify-content:space-between; flex-wrap:wrap}
+.sech{font-size:21px; font-family:var(--f-display); margin:0}
+.sec .hint{font-size:15.5px; color:var(--muted); margin:0}
+.tiles{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px}
+.tile{position:relative; height:184px; perspective:900px; cursor:pointer; text-align:center}
+.tile .in{position:absolute; inset:0; transition:transform .5s; transform-style:preserve-3d}
+.tile.on .in{transform:rotateY(180deg)}
+.tile .f, .tile .b{position:absolute; inset:0; border-radius:16px; backface-visibility:hidden; -webkit-backface-visibility:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:10px; overflow:hidden}
+.tile .f{background:var(--surface-2); border:2px dashed var(--line)}
+.tile .f .tq{font-family:var(--f-display); font-weight:700; font-size:18px; line-height:1.15}
+.tile .f .qm{font-size:24px; color:var(--muted); font-weight:800}
+.tile .f small{font-size:12.5px; color:var(--muted)}
+.tile .f select.blank{font-size:15px; max-width:100%}
+.tile .b{transform:rotateY(180deg); border:2.5px solid var(--k); background:var(--surface); background:color-mix(in srgb, var(--k) 12%, var(--surface))}
+.tile .b svg{width:62px; height:42px; flex-shrink:0}
+.tile .b b{font-size:17px; color:var(--ink); line-height:1.15}
+.tile .b small{font-size:13px; color:var(--muted); line-height:1.25}
+.tile .b .tnote{color:var(--ink); font-style:italic}
+.tile .b .temoji{font-size:30px; line-height:1}
+.tile .from{font:600 11px var(--f-mono); text-transform:uppercase; letter-spacing:.03em; padding:2px 7px; border-radius:999px; background:var(--surface); border:1px solid var(--line); color:var(--muted)}
+.tile .tmark{font-size:12.5px; font-weight:700}
+.tile .tmark.good{color:var(--good)} .tile .tmark.bad{color:var(--bad)}
+.dzname{display:flex; align-items:center; gap:10px; font-size:20px}
+.dzname > span{font-size:32px; line-height:1}
+.iboxes{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px}
+.iboxes.small{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
+.ibox{border:2px solid var(--line); border-radius:16px; padding:12px 14px; background:var(--surface); display:flex; flex-direction:column; gap:4px}
+.ibox .ic{font-size:28px; line-height:1}
+.ibox h5{margin:0; font:700 12.5px var(--f-mono); text-transform:uppercase; letter-spacing:.05em; color:var(--muted)}
+.ibox p{margin:0; font-size:17px}
+.ibox.warn{border-color:var(--bad); background:var(--bad-soft)}
+.iboxes.small .ibox{flex-direction:row; align-items:center; gap:10px}
+.iboxes.small .ibox .ic{font-size:24px}
+.flips{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px}
+.flipc{position:relative; min-height:118px; perspective:900px; border:0; background:none; padding:0; cursor:pointer; font:inherit; color:inherit}
+.flipc .in{position:absolute; inset:0; transition:transform .5s; transform-style:preserve-3d; display:block}
+.flipc.on .in{transform:rotateY(180deg)}
+.flipc .fa, .flipc .fb{position:absolute; inset:0; border-radius:16px; backface-visibility:hidden; -webkit-backface-visibility:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:12px; text-align:center}
+.flipc .fa{background:var(--surface-2); border:2px solid var(--c); font-family:var(--f-display); font-weight:700; font-size:18px; line-height:1.2}
+.flipc .fa small{font:600 12px var(--f-body); color:var(--muted)}
+.flipc .fb{transform:rotateY(180deg); background:var(--surface); border:2px solid var(--line); font-size:16.5px}
+.flowbox{border:2px solid var(--line); border-radius:16px; padding:12px; display:flex; flex-direction:column; gap:10px; background:var(--surface)}
+.flowbox h5{margin:0; font-family:var(--f-display); font-size:17px}
+.flow{display:flex; flex-wrap:wrap; align-items:stretch; gap:6px}
+.flow .step{flex:1 1 120px; border-radius:12px; padding:10px; background:var(--surface-2); border:2px solid var(--line); opacity:.2; transform:translateY(6px); transition:opacity .4s, transform .4s; font-size:16px}
+.flow .step.on{opacity:1; transform:none}
+.flow .step.first{border-color:var(--gn-edge); background:color-mix(in srgb, var(--gn-edge) 10%, var(--surface))}
+.flow .arr{align-self:center; font-weight:800; font-size:22px; color:var(--arrow); opacity:.2; transition:opacity .4s}
+.flow .arr.on{opacity:1}
+.flowside{border-left:5px solid var(--gn-edge); padding:6px 10px; background:var(--surface-2); border-radius:0 10px 10px 0; font-size:16px}
+.hook{background:var(--warn-soft); border-radius:14px; padding:12px 14px; font-size:17px}
+.sortsec .spool{display:flex; flex-wrap:wrap; gap:6px; min-height:44px; padding:8px; border-radius:12px; background:var(--surface-2)}
+.sbins{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+@media (max-width:520px){ .sbins{grid-template-columns:1fr} }
+.sbin{border:2px dashed var(--line); border-radius:14px; padding:10px; min-height:96px; display:flex; flex-wrap:wrap; align-content:flex-start; gap:6px; cursor:pointer}
+.sbin h5{flex-basis:100%; margin:0 0 2px; font:700 13px var(--f-mono); text-transform:uppercase; color:var(--muted)}
+.schip{border:1.5px solid var(--line); background:var(--surface); border-radius:999px; padding:7px 13px; font-size:16px; font-weight:700; cursor:grab; touch-action:none; user-select:none; position:relative}
+.schip.sel{border-color:var(--arrow); background:var(--arrow-soft)}
+.schip.dragging{z-index:50; box-shadow:0 10px 26px rgba(0,0,0,.2); cursor:grabbing; transition:none}
+.schip.right{border-color:var(--good); background:var(--good-soft)}
+.schip.wrong{border-color:var(--bad); background:var(--bad-soft)}
+.schip:disabled{cursor:default; opacity:1; color:inherit}
+.iboxes.n1{grid-template-columns:minmax(0,1fr)}
+.iboxes.n2, .iboxes.n4{grid-template-columns:repeat(2,minmax(0,1fr))}
+.iboxes.n3, .iboxes.n5, .iboxes.n6{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:640px){ .iboxes.n3, .iboxes.n5, .iboxes.n6{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:420px){ .iboxes:not(.small){grid-template-columns:minmax(0,1fr)} }
+.cheat{display:flex; gap:12px; align-items:flex-start; border:2.5px solid var(--bad); background:var(--bad-soft); border-radius:16px; padding:12px 14px; font-size:17.5px}
+.cheat .ci{font-size:26px; line-height:1}
+.cheat b:first-child{color:var(--bad)}
+.linkbtn{border:0; background:none; padding:0; color:var(--arrow); font-weight:700; text-decoration:underline; cursor:pointer; font-size:15.5px; white-space:nowrap}
+.cheatlist{display:flex; flex-direction:column; gap:6px}
+.crow{display:grid; grid-template-columns:minmax(120px,190px) minmax(0,1fr); gap:10px; text-align:left; border:1.5px solid var(--line); background:var(--surface); border-radius:12px; padding:9px 12px; cursor:pointer; font-size:16px; align-items:start}
+.crow:hover{border-color:var(--bad)}
+.crow.soon{cursor:default; background:var(--surface-2); border-style:dashed}
+@media (max-width:520px){ .crow{grid-template-columns:minmax(0,1fr)} }
+.spellrow{display:flex; flex-wrap:wrap; gap:10px}
+.sw{display:inline-flex; align-items:baseline; border:2px solid var(--line); border-radius:12px; padding:6px 10px; background:var(--surface); font-size:20px; font-style:italic}
+.sw b{font-size:22px}
+.sw input{border:0; border-bottom:2px dashed var(--muted); background:transparent; font:italic 600 20px var(--f-body); color:var(--ink); padding:0 2px; outline:none; max-width:60vw}
+.sw input:focus{border-bottom-color:var(--arrow)}
+.sw.good{border-color:var(--good); background:var(--good-soft)}
+.sw.bad{border-color:var(--bad); background:var(--bad-soft)}
+/* animations: oxidase bloom, catalase bubbles, Proteus swarm */
+:root{--agar2:#f3e7c4}
+:root[data-theme="dark"]{--agar2:#4a3f26}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--agar2:#4a3f26} }
+.tile.on .oxdot{transform-box:fill-box; transform-origin:center; animation:bloom 1.1s ease-out .35s both}
+@keyframes bloom{from{transform:scale(0); opacity:.2} to{transform:scale(1); opacity:1}}
+.tile.on .bubs circle{animation:bub 1.6s ease-in infinite}
+.tile.on .bubs circle:nth-child(2){animation-delay:.4s} .tile.on .bubs circle:nth-child(3){animation-delay:.8s} .tile.on .bubs circle:nth-child(4){animation-delay:1.2s}
+@keyframes bub{0%{transform:translateY(6px); opacity:0} 30%{opacity:1} 100%{transform:translateY(-10px); opacity:0}}
+.swarmbox{display:flex; flex-wrap:wrap; align-items:center; gap:14px; border:2px solid var(--line); border-radius:16px; padding:12px; background:var(--surface)}
+.swarmbox svg{width:220px; max-width:100%; height:auto}
+.swarmbox p{flex:1 1 180px; margin:0; font-size:17px}
+.swarmbox .ring{transform-box:fill-box; transform-origin:center; animation:swarm 3.6s ease-out infinite; opacity:0}
+@keyframes swarm{0%{transform:scale(.06); opacity:.95} 85%{opacity:.5} 100%{transform:scale(1); opacity:0}}
+/* in your life, comics, cases */
+.life{display:flex; flex-direction:column; gap:8px; border-left:6px solid var(--good); padding:4px 0 4px 12px}
+.comic{display:flex; flex-direction:column; gap:10px}
+.panels{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px}
+@media (max-width:700px){ .panels{grid-template-columns:minmax(0,1fr)} }
+.panel{position:relative; margin:0; border:3px solid var(--ink); border-radius:6px; background:var(--surface); overflow:hidden; display:flex; flex-direction:column}
+.panel svg{display:block; width:100%; height:auto; aspect-ratio:300/190; border-bottom:3px solid var(--ink)}
+.panel figcaption{padding:8px 10px; font-size:15.5px; line-height:1.4}
+.panel .pnum{position:absolute; top:6px; left:6px; width:26px; height:26px; border-radius:50%; background:var(--ink); color:var(--bg); font:700 13px var(--f-mono); display:flex; align-items:center; justify-content:center}
+.casebtn{background:var(--good); border-color:var(--good)}
+.case{display:flex; flex-direction:column; gap:10px; border:2.5px solid var(--good); border-radius:18px; padding:16px; background:var(--surface)}
+.case h5{margin:4px 0 0; font-family:var(--f-display); font-size:17px}
+.case .story{background:var(--good-soft); border-radius:12px; padding:12px; font-size:17.5px}
+.ctests{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:8px}
+.ctest{display:flex; flex-direction:column; align-items:flex-start; gap:2px; text-align:left; border:2px dashed var(--line); background:var(--surface-2); border-radius:12px; padding:10px 12px; cursor:pointer; font:inherit; color:inherit}
+.ctest span{font-size:22px} .ctest b{font-size:16px} .ctest em{font-style:normal; font-size:15px; color:var(--muted)}
+.ctest.on{border-style:solid; border-color:var(--arrow); background:var(--arrow-soft); cursor:default}
+.ctest.on em{color:var(--ink)}
+@media (prefers-reduced-motion: reduce){ .tile.on .oxdot, .tile.on .bubs circle, .swarmbox .ring{animation:none!important; opacity:1} }
+/* real photos (OpenStax, CC BY 4.0) */
+.photos{display:grid; gap:10px; grid-template-columns:repeat(2,minmax(0,1fr))}
+.photos.n1{grid-template-columns:minmax(0,1fr); max-width:420px}
+.photos.big{max-width:600px}
+@media (max-width:520px){ .photos{grid-template-columns:minmax(0,1fr)} }
+.photo{margin:0; background:var(--surface); border:1.5px solid var(--line); border-radius:14px; overflow:hidden; display:flex; flex-direction:column}
+.photo img{display:block; width:100%; height:auto; background:#fff}
+.photo figcaption{padding:8px 10px; font-size:15.5px; display:flex; flex-direction:column; gap:3px}
+.photo figcaption small{font-size:12.5px; color:var(--muted)}
+.photo figcaption a{color:var(--muted)}
+/* fun-fact pop-up and cross-unit link */
+.fun{border:2px dashed var(--warn); border-radius:14px; background:var(--warn-soft)}
+.fun summary{cursor:pointer; padding:10px 14px; font-family:var(--f-display); font-weight:700; font-size:18px; list-style:none}
+.fun summary::-webkit-details-marker{display:none}
+.fun summary:focus-visible{outline:3px solid var(--arrow); outline-offset:2px; border-radius:12px}
+.fun[open] summary{border-bottom:1.5px solid var(--line)}
+.funbody{padding:12px 14px; display:flex; flex-direction:column; gap:10px}
+.xlink{margin:0}
+.xlink a{display:inline-block; font-weight:700; color:var(--ink); text-decoration:none; border:1.5px solid var(--line); background:var(--surface); border-radius:999px; padding:8px 14px}
+.xlink a:hover{border-color:var(--arrow)}
+.credits{margin-top:28px; padding-top:14px; border-top:1.5px solid var(--line); font-size:15px; color:var(--muted); max-width:80ch}
+.credits a{color:var(--muted)}
+.credits h2{font-size:18px; color:var(--ink); margin:0 0 6px}
+/* tree + map: one color per level; oxygen / lactose kept small and gray */
+.ranks span{border:1.5px solid var(--c); background:color-mix(in srgb, var(--c) 16%, var(--surface))}
+.ranks span.lab{border-style:dashed}
+.ranks span.min{background:transparent; border-color:var(--line); color:var(--muted); font-weight:500; font-size:.85em}
+.tn.min rect{fill:var(--surface)!important; stroke:var(--line)!important; stroke-dasharray:3 3; stroke-width:1.2!important}
+.tn.min text{font-size:14px; font-weight:500; fill:var(--muted); font-style:italic}
+.tn.min.cur rect, .tn.min.path rect{stroke:var(--muted)!important}
+#map .rowchip{fill:color-mix(in srgb, var(--c) 16%, var(--surface)); stroke:var(--c); stroke-width:1.5}
+#map .rowlbl{fill:var(--ink)}
+
+@media (prefers-reduced-motion: reduce){ *{transition:none!important; animation:none!important} html{scroll-behavior:auto} }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="topbar">
+  <button class="brand" type="button" data-act="start" aria-label="Back to the start screen">
+    <svg viewBox="0 0 26 26" aria-hidden="true"><rect x="3" y="9" width="20" height="9" rx="4.5" fill="var(--gn-fill)" stroke="var(--gn-edge)" stroke-width="2"/></svg>
+    <span id="brandTxt"></span>
+  </button>
+  <span class="crumb" id="crumb"></span>
+  <div class="topright">
+    <div class="seg" role="radiogroup" aria-label="Mode">
+      <button type="button" role="radio" data-mode="learn" aria-checked="true">Learn</button>
+      <button type="button" role="radio" data-mode="test" aria-checked="false">Test</button>
+    </div>
+    <a class="homebtn" href="index.html" aria-label="All BIO 112 modules">&#9776;<span class="long"> All modules</span></a>
+  </div>
+</header>
+
+<div class="tabs" role="tablist" aria-label="Tours" id="tabs"></div>
+
+<!-- ===================== START ===================== -->
+<section class="view active" id="view-start">
+  <div class="hero">
+    <div>
+      <div class="eyebrow" id="startEyebrow"></div>
+      <h1 id="startTitle"></h1>
+    </div>
+  </div>
+  <div class="startgrid">
+    <div class="panel">
+      <h2>By the end, you can:</h2>
+      <ol class="goals" id="goals"></ol>
+    </div>
+    <div class="panel">
+      <h2>Two ways to use it</h2>
+      <div class="modes">
+        <div><b>Learn</b>Everything is filled in. Read each stop and follow the traits down the tree.</div>
+        <div><b>Test</b>Branch names, defining traits, ID results, diseases, and treatments become blanks. Fill them in, then tap Check.</div>
+      </div>
+      <div class="btnrow" style="margin-top:16px">
+        <button class="btn" type="button" data-act="begin">Start the tour &rarr;</button>
+        <button class="btn ghost" type="button" data-act="explore">Explore the tree</button>
+        <button class="btn ghost" type="button" data-act="cheats">🎯 ID cheat sheet</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== TOUR ===================== -->
+<section class="view" id="view-tour">
+  <div class="tour">
+    <aside class="treepanel" aria-label="Family tree">
+      <div class="treehead">
+        <span class="lbl">Family tree</span>
+        <div class="tools" role="toolbar" aria-label="Move around the tree">
+          <button class="tool big" type="button" data-act="zoomout" aria-label="Zoom out" title="Zoom out">&minus;</button>
+          <button class="tool big" type="button" data-act="zoomin" aria-label="Zoom in" title="Zoom in">+</button>
+          <button class="tool" type="button" data-act="full" id="fullBtn" title="Show the full tree">&#10530; Full tree</button>
+          <button class="tool" type="button" data-act="refocus" id="focusBtn" title="Back to this stop">&#9678; This stop</button>
+        </div>
+      </div>
+      <div class="treebox" id="treebox"><div class="ranks" id="ranks" aria-hidden="true"></div><svg id="tree" role="group" aria-label="Bacterial family tree. Every branch is a button."></svg></div>
+      <p class="treehint">Dashed headings are lab-test groups, not taxonomic ranks.</p>
+    </aside>
+    <div class="lessoncol">
+      <div class="progress">
+        <span class="count" id="count"></span>
+        <div class="bar" aria-hidden="true"><i id="barFill"></i></div>
+        <button class="btn small ghost" type="button" data-act="restart" aria-label="Start tour from the beginning" title="Start tour from the beginning">&#8634;</button>
+        <button class="btn small ghost" type="button" data-act="prev" aria-label="Previous stop">&larr; Back</button>
+        <button class="btn small" type="button" data-act="next" aria-label="Next stop">Next &rarr;</button>
+      </div>
+      <nav class="ribbon crumbs" id="ribbon" aria-label="Path from the top of the tree"></nav>
+      <article id="lesson" class="lessoncol"></article>
+    </div>
+  </div>
+  <section class="mapsec" id="mapsec" hidden aria-label="Overview map of the whole tree">
+    <div class="maphead"><h3>🗺️ The whole tree</h3><button class="btn small ghost" type="button" data-act="map">Hide the map</button><p>Scroll sideways to see it all. 📍 = where you are.</p></div>
+    <div class="mapbox"><svg id="map" role="group" aria-label="Overview map. Every branch is a button."></svg></div>
+  </section>
+</section>
+</div>
+
+<dialog id="cheatDlg" aria-labelledby="cheatTitle">
+  <div class="dlghead"><h2 id="cheatTitle">🎯 ID cheat sheet</h2><button class="btn small ghost" type="button" data-act="closeCheats">Close &times;</button></div>
+  <div class="dlgbody" id="cheatBody"></div>
+</dialog>
+<dialog id="entDlg" aria-labelledby="entTitle">
+  <div class="dlghead"><h2 id="entTitle">Enteric ID table</h2><button class="btn small ghost" type="button" data-act="closeDlg">Close &times;</button></div>
+  <div class="dlgbody" id="entBody"></div>
+</dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- Tour content. Swap this one line to reuse the page for another tour. -->
+<script src="gram-pos-tree.js"></script>
+<script>
+(function(){
+"use strict";
+var D = window.TOUR_DATA;
+var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ================= helpers (from ch9) ================= */
+function $(s, r){ return (r || document).querySelector(s); }
+function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+function store(k, v){ try { if (v === undefined) return JSON.parse(localStorage.getItem(k)); localStorage.setItem(k, JSON.stringify(v)); } catch (e) { return null; } }
+function rng(seed){ return function(){ seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function shuffle(a, R){ R = R || Math.random; a = a.slice(); for (var i = a.length - 1; i > 0; i--){ var j = Math.floor(R() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function hashStr(s){ var h = 2166136261; for (var i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;"}[c]; }); }
+function plain(html){ var d = document.createElement("div"); d.innerHTML = html; return d.textContent; }
+function ease(t){ return t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+
+/* ================= index the data ================= */
+var N = {}, ROOT = D.tree[0];
+var TREE = D.tree.filter(function(n){ return !n.overviewOnly; });   /* nodes on the side tree; overviewOnly nodes are map-only */
+D.tree.forEach(function(n){ N[n.id] = n; n.kids = []; });
+TREE.forEach(function(n){ if (n.parent) N[n.parent].kids.push(n); });
+function pathTo(id){ var p = [], n = N[id]; while (n){ p.unshift(n); n = n.parent ? N[n.parent] : null; } return p; }
+var RCOL = {}, RMIN = {};
+(D.ranks || []).forEach(function(r){ RCOL[r.id] = r.color; RMIN[r.id] = !!r.minimal; });
+function colorOf(n){ return (n && RCOL[n.rank]) || "#64748b"; }   /* every box on a level shares that level's color */
+function subtree(id, acc){ acc = acc || []; acc.push(id); N[id].kids.forEach(function(k){ subtree(k.id, acc); }); return acc; }
+var ORG = {}, OPEN = {}, ALLORGS = [];
+D.stops.forEach(function(s, i){ s.n = i; (s.orgs || []).forEach(function(o){ o.stop = i; ORG[o.id] = o; if (o.type !== "phylum") ALLORGS.push(o); if (!OPEN[o.node]) OPEN[o.node] = {stop: i, org: o.id}; }); });
+D.stops.forEach(function(s, i){ [s.node].concat(s.also || []).forEach(function(id){ if (!OPEN[id]) OPEN[id] = {stop: i}; }); });
+var LAST = D.stops.length - 1;
+
+/* ================= state ================= */
+var CHEATLIST = [];
+var CASES = {};
+var st = {spell: {}, cases: {}, mode: store(D.id + "-mode") === "test" ? "test" : "learn", view: "start", i: 0, org: null, full: false, map: false, ans: {}, chk: {}, ci: {}, flip: {}, flow: {}, sort: {}, sortSel: null};
+var KEYS = {};   // answer key for every blank currently on screen
+
+function stop(){ return D.stops[st.i]; }
+function testOn(){ return st.mode === "test" && !stop().finale; }
+function labelHidden(n){ return testOn() && n.blankLabel && !st.chk["l:" + n.id]; }
+function shownLabel(n){ return labelHidden(n) ? "?" : n.label; }
+
+/* ================= SVG icons (drawn from scratch, gram-negative = pink) ================= */
+function wavePath(x0, x1, cy, amp, periods, dy, steps){
+  var d = "", n = steps || 120;
+  for (var i = 0; i <= n; i++){ var x = x0 + (x1 - x0) * i / n, y = cy + (dy || 0) + amp * Math.sin(i / n * periods * 2 * Math.PI); d += (i ? "L" : "M") + x.toFixed(1) + " " + y.toFixed(1); }
+  return d;
+}
+function wavePhase(x0, x1, cy, amp, periods, dy, steps, ph){
+  var d = "";
+  for (var i = 0; i <= steps; i++){ var x = x0 + (x1 - x0) * i / steps, y = cy + dy + amp * Math.sin(i / steps * periods * 2 * Math.PI + ph); d += (i ? "L" : "M") + x.toFixed(1) + " " + y.toFixed(1); }
+  return d;
+}
+var axialAnim = 0;
+function startAxial(){
+  var paths = $$("#lesson [data-wave]"); if (!paths.length || reduced) return;
+  var id = ++axialAnim, t0 = performance.now();
+  (function step(now){
+    if (id !== axialAnim || !paths[0].isConnected) return;
+    var ph = -((now - t0) / 1000) * 2.2;
+    paths.forEach(function(pth){ pth.setAttribute("d", wavePhase(40, 480, 92, 32, 3, Number(pth.getAttribute("data-wave")), 160, ph)); });
+    requestAnimationFrame(step);
+  })(t0);
+}
+function icon(shape){ return '<svg viewBox="0 0 64 44" aria-hidden="true">' + iconInner(shape) + "</svg>"; }
+function iconInner(shape){
+  var f = 'fill="var(--gn-fill)" stroke="var(--gn-edge)" stroke-width="2"', s = "";
+  function tube(d, w){ return '<path d="' + d + '" fill="none" stroke="var(--gn-edge)" stroke-width="' + (w + 4) + '" stroke-linecap="round"/><path d="' + d + '" fill="none" stroke="var(--gn-fill)" stroke-width="' + w + '" stroke-linecap="round"/>'; }
+  switch (shape){
+    case "rod": s += '<rect x="8" y="14" width="48" height="16" rx="8" ' + f + '/>'; break;
+    case "rodspore": s += '<rect x="8" y="14" width="48" height="16" rx="8" ' + f + '/><ellipse cx="44" cy="22" rx="6.5" ry="4.6" fill="var(--surface)" stroke="var(--gn-edge)" stroke-width="2"/>'; break;
+    case "clusters": s += [[20, 12], [32, 10], [44, 13], [14, 23], [26, 22], [38, 23], [50, 23], [22, 33], [34, 33], [46, 32]].map(function(p){ return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="6" ' + f + '/>'; }).join(""); break;
+    case "chains": s += [[7, 26], [18, 21], [29, 19], [40, 21], [51, 25], [61, 30]].map(function(p){ return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="5.6" ' + f + '/>'; }).join(""); break;
+    case "pairchain": s += [[9, 13], [21, 13], [30, 31], [42, 31], [54, 31]].map(function(p){ return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="6" ' + f + '/>'; }).join(""); break;
+    case "lancet": s += '<path d="M4 22 Q15 9 30 22 Q15 35 4 22Z" ' + f + '/><path d="M60 22 Q49 9 34 22 Q49 35 60 22Z" ' + f + '/>'; break;
+    case "coccobacillus": s += '<rect x="18" y="11" width="28" height="22" rx="11" ' + f + '/>'; break;
+    case "diplococcus": s += '<path d="M28.5 9 A13 13 0 1 0 28.5 35 Q21 22 28.5 9Z" ' + f + '/><path d="M35.5 9 A13 13 0 1 1 35.5 35 Q43 22 35.5 9Z" ' + f + '/>'; break;
+    case "curved": s += tube("M14 32 Q32 2 50 32", 10); break;
+    case "gullwing": s += tube("M8 30 Q19 8 32 24 Q45 8 56 30", 8); break;
+    case "spiral": s += tube(wavePath(8, 56, 22, 9, 2, 0, 40), 7); break;
+    case "spirochete": s += tube(wavePath(6, 58, 22, 6, 6, 0, 90), 3); break;
+    case "spindle": s += '<path d="M5 22 Q32 6 59 22 Q32 38 5 22Z" ' + f + '/>'; break;
+    case "filament": s += [8, 19, 30, 41].map(function(x){ return '<circle cx="' + x + '" cy="22" r="5.6" ' + f + '/>'; }).join("") + '<circle cx="53.5" cy="22" r="7.2" fill="var(--surface)" stroke="var(--gn-edge)" stroke-width="3"/>'; break;
+    case "budding": s += '<circle cx="25" cy="24" r="14" ' + f + '/><circle cx="45" cy="13" r="7.5" ' + f + '/>'; break;
+    case "intracellular": s += '<ellipse cx="32" cy="22" rx="28" ry="18" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="4 3"/>' + [[22, 17], [30, 26], [39, 18], [44, 27], [26, 29]].map(function(p){ return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3.6" ' + f + '/>'; }).join(""); break;
+    default: s += '<rect x="14" y="13" width="36" height="18" rx="9" ' + f + '/>'; /* generic cell: TODO no shape given in the brief */
+  }
+  return s;
+}
+
+/* ================= diagrams (drawn from scratch) ================= */
+function bilayer(x0, x1, y){
+  var s = "";
+  for (var x = x0 + 7; x < x1; x += 14){
+    s += '<circle class="dg-head" cx="' + x + '" cy="' + (y + 5) + '" r="5"/><circle class="dg-head" cx="' + x + '" cy="' + (y + 25) + '" r="5"/>' +
+      '<path class="dg-tail" d="M' + (x - 1.6) + " " + (y + 10) + " V" + (y + 20) + " M" + (x + 1.6) + " " + (y + 10) + " V" + (y + 20) + '"/>';
+  }
+  return s;
+}
+var DIAGRAMS = {
+  hemolysis: function(){
+    var P = [["Alpha", "partial", "greenish halo", "#65a30d", .55], ["Beta", "complete", "clear halo", "#fde2e2", .9], ["Gamma", "none", "no change", null, 0]], R = rng(11);
+    var s = '<svg viewBox="0 0 540 282" role="img" aria-label="Three blood agar plates. Alpha hemolysis: a greenish halo around the colonies (partial). Beta hemolysis: a clear halo (complete). Gamma: no change.">';
+    P.forEach(function(p, i){
+      var cx = 95 + i * 175;
+      s += '<ellipse cx="' + cx + '" cy="105" rx="78" ry="78" fill="#b91c1c" stroke="#7f1d1d" stroke-width="3"/>';
+      for (var k = 0; k < 7; k++){
+        var a = R() * 6.283, d = 18 + R() * 40, x = (cx + Math.cos(a) * d).toFixed(1), y = (105 + Math.sin(a) * d).toFixed(1);
+        if (p[3]) s += '<circle cx="' + x + '" cy="' + y + '" r="11" fill="' + p[3] + '" opacity="' + p[4] + '"/>';
+        s += '<circle cx="' + x + '" cy="' + y + '" r="4.5" fill="#f5f5f4" stroke="#78716c" stroke-width="1"/>';
+      }
+      s += '<text class="dg-b" x="' + cx + '" y="214" text-anchor="middle">' + p[0] + '</text><text class="dg-t" x="' + cx + '" y="242" text-anchor="middle">' + p[1] + '</text><text class="dg-t" x="' + cx + '" y="268" text-anchor="middle">' + p[2] + "</text>";
+    });
+    return {svg: s + "</svg>", cap: "Hemolysis on blood agar: <b>alpha</b> = partial, <b>beta</b> = complete, <b>gamma</b> = none"};
+  },
+  diplococci: function(){
+    var pos = [[70, 60, 10], [130, 45, -30], [190, 70, 40], [100, 110, 80], [165, 125, -10], [225, 115, 20], [60, 150, -45], [130, 175, 15], [200, 170, 60], [255, 160, -20], [245, 65, 70]];
+    var h = '<svg viewBox="0 0 300 230" role="img" aria-label="Microscope view of a Gram stain: pink cells in pairs, each pair like two kidney beans facing each other."><defs><clipPath id="dpc"><circle cx="150" cy="112" r="100"/></clipPath></defs><circle cx="150" cy="112" r="104" fill="var(--scope)" stroke="#33415c" stroke-width="7"/><g clip-path="url(#dpc)">';
+    pos.forEach(function(p){ h += '<g transform="translate(' + p[0] + " " + p[1] + ") rotate(" + p[2] + ') scale(.62) translate(-32 -22)">' + iconInner("diplococcus") + "</g>"; });
+    return {svg: h + "</g></svg>", cap: "Gram stain view: pink <b>diplococci</b>, pairs of kidney beans facing each other", small: true};
+  },
+  gramwall: function(){
+    var x0 = 16, x1 = 250, s = '<svg viewBox="0 0 520 290" role="img" aria-label="Gram-negative cell wall: LPS sticks out from the outer membrane, then a thin peptidoglycan layer, then the plasma membrane.">';
+    s += '<text class="dg-m" x="' + x0 + '" y="28">Outside the cell</text>';
+    for (var x = x0 + 10; x < x1; x += 22) s += '<path class="dg-lps" d="M' + x + " 80 V60 M" + x + " 66 l-6 -8 M" + x + ' 66 l6 -8"/>';
+    s += bilayer(x0, x1, 80);
+    s += '<rect class="dg-pg" x="' + x0 + '" y="134" width="' + (x1 - x0) + '" height="14" rx="3"/>';
+    for (x = x0 + 8; x < x1; x += 12) s += '<path class="dg-pgl" d="M' + x + ' 136 v10"/>';
+    s += bilayer(x0, x1, 176);
+    s += '<text class="dg-m" x="' + x0 + '" y="250">Inside the cell</text>';
+    [[62, "LPS (endotoxin)"], [95, "Outer membrane"], [141, "Thin peptidoglycan"], [191, "Plasma membrane"]].forEach(function(l){
+      s += '<path class="dg-lead" d="M' + (x1 + 4) + " " + l[0] + ' H268"/><text class="dg-t" x="274" y="' + l[0] + '" dominant-baseline="central">' + l[1] + "</text>";
+    });
+    return {svg: s + "</svg>", cap: "Gram-negative cell wall, outside to inside"};
+  },
+  macconkey: function(){
+    var s = '<svg viewBox="0 0 520 300" role="img" aria-label="Two MacConkey plates. Coliforms grow as pink colonies. Non-coliforms grow as colorless colonies.">', R = rng(7);
+    [[130, true], [390, false]].forEach(function(p){
+      s += '<circle cx="' + p[0] + '" cy="122" r="104" fill="var(--surface-2)" stroke="var(--line)" stroke-width="4"/><circle cx="' + p[0] + '" cy="122" r="96" fill="var(--mac)"/>';
+      for (var k = 0; k < 13; k++){
+        var a = R() * Math.PI * 2, d = Math.sqrt(R()) * 74, r = 6 + R() * 5;
+        s += '<circle cx="' + (p[0] + Math.cos(a) * d).toFixed(1) + '" cy="' + (122 + Math.sin(a) * d).toFixed(1) + '" r="' + r.toFixed(1) + '" ' + (p[1] ? 'fill="var(--col-pink)"' : 'fill="var(--col-clear)" stroke="var(--col-clear-edge)" stroke-width="1.5"') + "/>";
+      }
+      s += '<text class="dg-b" x="' + p[0] + '" y="256" text-anchor="middle">' + (p[1] ? "Coliform" : "Non-coliform") + '</text><text class="dg-t" x="' + p[0] + '" y="284" text-anchor="middle">' + (p[1] ? "lactose +: pink" : "lactose −: colorless") + "</text>";
+    });
+    return {svg: s + "</svg>", cap: "MacConkey agar"};
+  },
+  axial: function(){
+    var d = wavePath(40, 480, 92, 32, 3, 0, 160);
+    var s = '<svg viewBox="0 0 520 290" role="img" aria-label="Spirochete with axial filaments running inside the cell, under the outer membrane. It twists like a corkscrew.">' +
+      '<path data-wave="0" d="' + d + '" fill="none" stroke="var(--gn-edge)" stroke-width="40" stroke-linecap="round"/>' +
+      '<path data-wave="0" d="' + d + '" fill="none" stroke="var(--gn-fill)" stroke-width="33" stroke-linecap="round"/>' +
+      '<path data-wave="-7" d="' + wavePath(40, 480, 92, 32, 3, -7, 160) + '" fill="none" stroke="var(--arrow)" stroke-width="3.5"/>' +
+      '<path data-wave="7" d="' + wavePath(40, 480, 92, 32, 3, 7, 160) + '" fill="none" stroke="var(--arrow)" stroke-width="3.5"/>' +
+      '<path d="M24 184 H56" stroke="var(--arrow)" stroke-width="4"/><text class="dg-t" x="66" y="184" dominant-baseline="central">Axial filaments: flagella inside the cell</text>' +
+      '<path d="M24 222 H56" stroke="var(--gn-edge)" stroke-width="8" stroke-linecap="round"/><text class="dg-t" x="66" y="222" dominant-baseline="central">Outer membrane</text>' +
+      '<text class="dg-m" x="24" y="268">Filaments rotate → the whole cell twists</text>';
+    return {svg: s + "</svg>", cap: "Spirochete axial filaments"};
+  },
+  chlamydia: function(){
+    function eb(x, y){ return '<circle cx="' + x + '" cy="' + y + '" r="6" fill="var(--gn-edge)"/>'; }
+    function rb(x, y){ return '<circle cx="' + x + '" cy="' + y + '" r="12" fill="var(--gn-fill)" stroke="var(--gn-edge)" stroke-width="2"/>'; }
+    var boxes = [
+      {x: 260, y: 66, l: ["1. EB enters", "the cell"], ic: function(x, y){ return eb(x - 22, y) + '<path d="M' + (x - 10) + " " + y + " H" + (x + 6) + '" stroke="var(--muted)" stroke-width="2.5"/><path d="M' + (x + 16) + " " + (y - 14) + " V" + (y + 14) + '" stroke="var(--muted)" stroke-width="2.5" stroke-dasharray="4 3"/>' + eb(x + 28, y); }},
+      {x: 432, y: 236, l: ["2. Becomes", "an RB"], ic: function(x, y){ return eb(x - 24, y) + '<path d="M' + (x - 12) + " " + y + " H" + (x + 4) + '" stroke="var(--muted)" stroke-width="2.5"/>' + rb(x + 22, y); }},
+      {x: 260, y: 406, l: ["3. RB", "multiplies"], ic: function(x, y){ return rb(x - 28, y) + rb(x, y) + rb(x + 28, y); }},
+      {x: 88, y: 236, l: ["4. New EBs,", "released"], ic: function(x, y){ return eb(x - 30, y + 2) + eb(x - 12, y - 6) + eb(x + 6, y + 4) + eb(x + 24, y - 4); }}
+    ];
+    var s = '<svg viewBox="0 0 520 470" role="img" aria-label="Chlamydia life cycle in four steps: an elementary body enters the cell, becomes a reticulate body, the reticulate body multiplies, then new elementary bodies form and are released.">' +
+      '<defs><marker id="dgah" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--arrow)"/></marker></defs>';
+    boxes.forEach(function(b){
+      s += '<rect class="dg-box" x="' + (b.x - 85) + '" y="' + (b.y - 56) + '" width="170" height="112" rx="16"/>' + b.ic(b.x, b.y - 24) +
+        '<text class="dg-b" x="' + b.x + '" y="' + (b.y + 14) + '" text-anchor="middle" style="font-size:20px">' + b.l[0] + '</text><text class="dg-t" x="' + b.x + '" y="' + (b.y + 39) + '" text-anchor="middle" style="font-size:20px">' + b.l[1] + "</text>";
+    });
+    [["M350 66 Q432 66 432 172"], ["M432 300 Q432 406 350 406"], ["M170 406 Q88 406 88 300"], ["M88 172 Q88 66 170 66"]].forEach(function(a){ s += '<path class="dg-arrow" d="' + a[0] + '" marker-end="url(#dgah)"/>'; });
+    s += '<text class="dg-m" x="260" y="226" text-anchor="middle" style="font-size:17px">EB = delivery vehicle</text><text class="dg-m" x="260" y="252" text-anchor="middle" style="font-size:17px">RB = factory</text>';
+    return {svg: s + "</svg>", cap: "<i>Chlamydia</i> life cycle"};
+  }
+};
+
+/* ================= tree layout ================= */
+var T = {W: 0, H: 0, s: 1, laid: false};
+var FONT = 17, ROWH = 44, NODEH = 34, GAPX = 34, PAD = 20, HEADH = 46;
+var measureCtx = document.createElement("canvas").getContext("2d");
+function nodeText(n){ return (n.locked ? "🔒 " : "") + n.label; }
+function textW(n){ measureCtx.font = (n.italic ? "italic " : "") + "700 " + FONT + "px 'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif"; return measureCtx.measureText(nodeText(n)).width; }
+/* columns: one per rank in D.ranks (falls back to tree depth if a tour has no ranks) */
+var RANKI = {};
+(D.ranks || []).forEach(function(r, i){ RANKI[r.id] = i; });
+function colOf(n){ return D.ranks ? RANKI[n.rank] : n.d; }
+function layout(){
+  var colW = [], row = 0;
+  (function walk(n, d){
+    n.d = d; n.w = Math.ceil(textW(n)) + 26;
+    if (!n.kids.length){ n.y = PAD + row * ROWH + NODEH / 2; row++; }
+    else { n.kids.forEach(function(k){ walk(k, d + 1); }); n.y = (n.kids[0].y + n.kids[n.kids.length - 1].y) / 2; }
+  })(ROOT, 0);
+  TREE.forEach(function(n){ var c = colOf(n); colW[c] = Math.max(colW[c] || 90, n.w); });
+  var xs = [PAD];
+  for (var c = 1; c < colW.length; c++) xs[c] = xs[c - 1] + (colW[c - 1] || 90) + GAPX;
+  TREE.forEach(function(n){ n.x = xs[colOf(n)]; });
+  T.cols = colW.map(function(w, c){ return {x: xs[c], w: w || 90}; });
+  T.W = xs[colW.length - 1] + colW[colW.length - 1] + PAD;
+  T.H = PAD * 2 + (row - 1) * ROWH + NODEH;
+}
+function placeRanks(sc){
+  var el = $("#ranks"); if (!D.ranks){ el.hidden = true; return; }
+  el.style.width = (T.W * sc) + "px";
+  el.style.fontSize = Math.max(9, Math.min(13, 15 * sc)) + "px";
+  if (!el.children.length) el.innerHTML = D.ranks.map(function(r){ return '<span class="' + (r.lab ? "lab" : "") + (r.minimal ? " min" : "") + '" style="--c:' + r.color + '">' + esc(r.label) + "</span>"; }).join("");
+  $$("span", el).forEach(function(sp, c){ var col = T.cols[c]; sp.style.left = ((col.x - GAPX / 2 + 3) * sc) + "px"; sp.style.width = ((col.w + GAPX - 6) * sc) + "px"; });
+}
+function drawTree(){
+  layout();
+  var svg = $("#tree"), h = '<g class="bands">';
+  svg.setAttribute("viewBox", "0 0 " + T.W + " " + T.H);
+  if (D.ranks) T.cols.forEach(function(col, c){ if (c % 2) h += '<rect x="' + (col.x - GAPX / 2) + '" y="0" width="' + (col.w + GAPX) + '" height="' + T.H + '"/>'; });
+  h += '</g><g class="edges">';
+  TREE.forEach(function(n){
+    if (!n.parent) return;
+    var p = N[n.parent], mx = p.x + p.w + GAPX / 2;
+    h += '<path data-e="' + n.id + '" style="--c:' + colorOf(n) + '" d="M' + (p.x + p.w) + " " + p.y + " H" + mx + " V" + n.y + " H" + n.x + '"/>';
+  });
+  h += '</g><g class="nodes">';
+  TREE.forEach(function(n){
+    var cls = "tn" + (n.italic ? " it" : "") + (n.locked || n.muted ? " off" : "") + (n.kids.length ? "" : " leaf") + (RMIN[n.rank] ? " min" : "");
+    h += '<g class="' + cls + '" data-node="' + n.id + '" tabindex="0" role="button" style="--c:' + colorOf(n) + '" transform="translate(' + n.x + " " + (n.y - NODEH / 2) + ')">' +
+      '<rect width="' + n.w + '" height="' + NODEH + '" rx="' + (n.kids.length ? 10 : 17) + '"/><text x="' + (n.w / 2) + '" y="' + (NODEH / 2) + '"></text></g>';
+  });
+  svg.innerHTML = h + "</g>";
+  T.laid = true;
+}
+
+/* which nodes stay bright, and which box the camera frames */
+function viewInfo(){
+  var s = stop(), cur = st.org ? ORG[st.org].node : s.node, lit = null, ids;
+  if (!(s.full || st.full)){
+    lit = {};
+    pathTo(cur).forEach(function(n){ lit[n.id] = 1; });
+    (s.focusTree || subtree(s.node)).forEach(function(id){ lit[id] = 1; });
+    if (s.focusTree) s.focusTree.forEach(function(id){ subtree(id).forEach(function(x){ lit[x] = 1; }); });
+    if (s.focusTree) ids = s.focusTree.concat([s.node]);
+    else {
+      var n = N[s.node]; ids = [n.id];
+      if (n.parent) ids.push(n.parent);
+      n.kids.forEach(function(k){ ids.push(k.id); k.kids.forEach(function(g){ ids.push(g.id); }); });
+    }
+    if (st.org) ids.push(ORG[st.org].node);
+  }
+  return {cur: cur, lit: lit, ids: ids};
+}
+function updateTree(animate){
+  if (!T.laid) drawTree();
+  var s = stop(), v = viewInfo(), onPath = {};
+  pathTo(v.cur).forEach(function(n){ onPath[n.id] = 1; });
+  $$("#tree .tn").forEach(function(g){
+    var id = g.getAttribute("data-node"), n = N[id], hid = labelHidden(n) && !s.finale;
+    g.classList.toggle("cur", id === v.cur);
+    g.classList.toggle("path", !!onPath[id]);
+    g.classList.toggle("fade", !!(v.lit && !v.lit[id]));
+    g.classList.toggle("hid", hid);
+    $("text", g).textContent = hid ? "?" : nodeText(n);
+    g.setAttribute("aria-label", (hid ? "Hidden branch name" : n.label) + (n.locked ? ", coming soon" : n.muted ? ", not covered" : ""));
+    g.setAttribute("aria-current", id === v.cur ? "true" : "false");
+  });
+  $$("#tree .edges path").forEach(function(p){
+    var id = p.getAttribute("data-e");
+    p.classList.toggle("on", !!(onPath[id] && onPath[N[id].parent]));
+    p.classList.toggle("fade", !!(v.lit && !v.lit[id]));
+  });
+  $("#fullBtn").classList.toggle("on", !!(s.full || st.full));
+  frame(v, animate);
+}
+
+/* ================= camera: zoom + pan the scrollable tree box ================= */
+var camAnim = 0;
+function viewSize(){ var box = $("#treebox"); return {W: box.clientWidth, H: box.clientHeight - (D.ranks ? HEADH : 0)}; }
+function fitScale(){ var z = viewSize(); return Math.min(z.W / T.W, z.H / T.H); }
+var MAXS = 1.8;
+function frame(v, animate){
+  var z = viewSize(), W = z.W, H = z.H, b, sc;
+  if (!W || !H) return;
+  var minS = W < 500 ? 0.74 : 0.8;
+  if (!v.ids){ b = {x: 0, y: 0, w: T.W, h: T.H}; sc = fitScale(); }
+  else {
+    var x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    v.ids.forEach(function(id){ var n = N[id]; x0 = Math.min(x0, n.x); x1 = Math.max(x1, n.x + n.w); y0 = Math.min(y0, n.y - NODEH / 2); y1 = Math.max(y1, n.y + NODEH / 2); });
+    b = {x: x0 - 20, y: y0 - 20, w: x1 - x0 + 40, h: y1 - y0 + 40};
+    sc = Math.max(minS, Math.min(1.15, Math.min(W / b.w, H / b.h)));
+  }
+  var curN = N[v.cur];
+  var left = b.w * sc <= W ? (b.x + b.w / 2) * sc - W / 2 : Math.min(curN.x * sc - 8, (b.x + b.w) * sc - W);
+  var top = b.h * sc <= H ? (b.y + b.h / 2) * sc - H / 2 : curN.y * sc - H / 2;
+  if (!v.ids){ left = 0; top = 0; }
+  camTo(sc, left, top, animate);
+}
+/* move the camera: sc = zoom, left/top = scroll position of the tree box */
+function camTo(sc, left, top, animate){
+  var box = $("#treebox"), z = viewSize(), W = z.W, H = z.H;
+  left = Math.max(0, Math.min(left, T.W * sc - W)); top = Math.max(0, Math.min(top, T.H * sc - H));
+  var s0 = T.s, l0 = box.scrollLeft, t0 = box.scrollTop, svg = $("#tree"), id = ++camAnim;
+  function apply(sv, l, t){ svg.style.width = (T.W * sv) + "px"; svg.style.height = (T.H * sv) + "px"; placeRanks(sv); box.scrollLeft = l; box.scrollTop = t; T.s = sv; }
+  if (!animate || reduced){ apply(sc, left, top); return; }
+  var start = performance.now();
+  (function step(now){
+    if (id !== camAnim) return;
+    var k = ease(Math.min(1, (now - start) / 650));
+    apply(s0 + (sc - s0) * k, l0 + (left - l0) * k, t0 + (top - t0) * k);
+    if (k < 1) requestAnimationFrame(step);
+  })(start);
+}
+/* zoom about a point (px, py) in the visible tree area; defaults to its center */
+function zoomTo(s2, px, py, animate){
+  var box = $("#treebox"), z = viewSize(), s1 = T.s;
+  s2 = Math.max(Math.min(fitScale(), 0.6), Math.min(MAXS, s2));
+  if (px == null){ px = z.W / 2; py = z.H / 2; }
+  var ox1 = Math.max(0, (z.W - T.W * s1) / 2), ox2 = Math.max(0, (z.W - T.W * s2) / 2);
+  var X = (box.scrollLeft + px - ox1) / s1, Y = (box.scrollTop + py) / s1;
+  camTo(s2, X * s2 - px + ox2, Y * s2 - py, animate);
+}
+function boxPoint(clientX, clientY){ var r = $("#treebox").getBoundingClientRect(); return {x: clientX - r.left, y: clientY - r.top - (D.ranks ? HEADH : 0)}; }
+(function pinchZoom(){
+  var box = $("#treebox"), pinch = null;
+  function dist(t){ return Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY); }
+  box.addEventListener("touchstart", function(e){ if (e.touches.length === 2){ pinch = {d: dist(e.touches), s: T.s}; camAnim++; } }, {passive: true});
+  box.addEventListener("touchmove", function(e){
+    if (!pinch || e.touches.length !== 2) return;
+    e.preventDefault();
+    var m = boxPoint((e.touches[0].clientX + e.touches[1].clientX) / 2, (e.touches[0].clientY + e.touches[1].clientY) / 2);
+    zoomTo(pinch.s * dist(e.touches) / pinch.d, m.x, m.y, false);
+  }, {passive: false});
+  box.addEventListener("touchend", function(e){ if (e.touches.length < 2) pinch = null; });
+  box.addEventListener("gesturestart", function(e){ e.preventDefault(); });
+  box.addEventListener("wheel", function(e){
+    if (!e.ctrlKey && !e.metaKey) return;
+    e.preventDefault(); camAnim++;
+    var m = boxPoint(e.clientX, e.clientY);
+    zoomTo(T.s * Math.exp(-e.deltaY * 0.01), m.x, m.y, false);
+  }, {passive: false});
+})();
+(function dragPan(){
+  var box = $("#treebox"), down = null;
+  box.addEventListener("pointerdown", function(e){ if (e.pointerType !== "mouse" || e.button !== 0) return; down = {x: e.clientX, y: e.clientY, l: box.scrollLeft, t: box.scrollTop, moved: false}; });
+  window.addEventListener("pointermove", function(e){
+    if (!down) return;
+    var dx = e.clientX - down.x, dy = e.clientY - down.y;
+    if (!down.moved && Math.abs(dx) + Math.abs(dy) > 5){ down.moved = true; box.classList.add("drag"); camAnim++; }
+    if (down.moved){ box.scrollLeft = down.l - dx; box.scrollTop = down.t - dy; }
+  });
+  window.addEventListener("pointerup", function(){ if (down && down.moved){ T.justDragged = true; setTimeout(function(){ T.justDragged = false; }, 0); } down = null; box.classList.remove("drag"); });
+})();
+
+/* ================= overview map: top-down, real ranks only, staggered leaves ================= */
+var MAP = {laid: false};
+var MSKIP = (D.overview && D.overview.skipRanks) || [];
+function mapVisible(n){ return MSKIP.indexOf(n.rank) < 0; }
+function mapParent(n){ var p = n.mapParent ? N[n.mapParent] : n.parent ? N[n.parent] : null; while (p && !mapVisible(p)) p = p.parent ? N[p.parent] : null; return p; }
+function mapPath(n){ var p = []; while (n){ p.unshift(n); n = mapParent(n); } return p; }
+function mapNodeFor(id){ var n = N[id]; while (n && !mapVisible(n)) n = n.parent ? N[n.parent] : null; return n; }
+function layoutMap(){
+  /* Rows = ranks. Each row has two lanes (one slightly lower) so labels can overlap side to side.
+     Spacing rules keep every connector clear: boxes in the same lane never touch, and no box covers
+     the center of a box in the other lane, where its vertical connector runs. */
+  var MF = 15, MH = 32, ROWGAP = 40, LANE = 36, GAP = 12, M = 10, STEP = 18, LBLW = 172, MP = 16;
+  var vis = D.tree.filter(mapVisible), rows = (D.ranks || []).filter(function(r){ return MSKIP.indexOf(r.id) < 0; });
+  vis.forEach(function(n){ n.mk = []; });
+  vis.forEach(function(n){ var p = mapParent(n); if (p) p.mk.push(n); });
+  vis.forEach(function(n){ measureCtx.font = (n.italic ? "italic " : "") + "700 " + MF + "px 'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif"; n.mw = Math.ceil(measureCtx.measureText(nodeText(n)).width) + 22; });
+  var placed = {}, count = {}, prevX = LBLW, hasLane = {};
+  function minX(n, x){
+    var need = Math.max(x, LBLW + n.mw / 2);
+    (placed[n.rank] || []).forEach(function(p){
+      var req = p.mlane === n.mlane ? (p.mw + n.mw) / 2 + GAP : Math.max(p.mw, n.mw) / 2 + M;
+      need = Math.max(need, p.mx + req);
+    });
+    return need;
+  }
+  function place(n, x){
+    n.mlane = (count[n.rank] = (count[n.rank] || 0) + 1) % 2 ? 0 : 1;
+    if (n.mlane) hasLane[n.rank] = 1;
+    n.mx = minX(n, x);
+    (placed[n.rank] = placed[n.rank] || []).push(n);
+    prevX = Math.max(prevX, n.mx);
+  }
+  (function walk(n){
+    if (!n.mk.length){ place(n, prevX + STEP); return; }
+    n.mk.forEach(walk);
+    place(n, (n.mk[0].mx + n.mk[n.mk.length - 1].mx) / 2);
+  })(ROOT);
+  var rowY = {}, rowBottom = {}, y = MP + 24;
+  rows.forEach(function(r){ rowY[r.id] = y; rowBottom[r.id] = y + MH + (hasLane[r.id] ? LANE : 0); y = rowBottom[r.id] + ROWGAP; });
+  vis.forEach(function(n){ n.my = rowY[n.rank] + MH / 2 + n.mlane * LANE; });
+  var W = 0; vis.forEach(function(n){ W = Math.max(W, n.mx + n.mw / 2); });
+  MAP.W = W + MP; MAP.H = y - ROWGAP + 24; MAP.vis = vis; MAP.rows = rows; MAP.rowY = rowY; MAP.rowBottom = rowBottom; MAP.hasLane = hasLane; MAP.MH = MH; MAP.LANE = LANE;
+}
+function drawMap(){
+  layoutMap();
+  var svg = $("#map"), h = "", MH = MAP.MH;
+  svg.setAttribute("viewBox", "0 0 " + MAP.W + " " + MAP.H);
+  svg.style.minWidth = Math.round(MAP.W * 0.8) + "px";   /* readable text; the box scrolls sideways */
+  MAP.rows.forEach(function(r, i){
+    var y0 = MAP.rowY[r.id] - 10, hh = MAP.rowBottom[r.id] - MAP.rowY[r.id] + 20;
+    if (i % 2 === 0) h += '<rect class="rowband" x="0" y="' + y0 + '" width="' + MAP.W + '" height="' + hh + '" rx="10"/>';
+    h += '<rect class="rowchip" x="8" y="' + (MAP.rowY[r.id] + 2) + '" width="' + (r.label.length * 9.2 + 18) + '" height="' + (MH - 4) + '" rx="8" style="--c:' + r.color + '"/>' +
+      '<text class="rowlbl" x="17" y="' + (MAP.rowY[r.id] + MH / 2) + '" dominant-baseline="central">' + esc(r.label) + "</text>";
+  });
+  h += '<g class="edges">';
+  MAP.vis.forEach(function(n){
+    var p = mapParent(n); if (!p) return;
+    var y1 = p.my + MH / 2, mid = MAP.rowBottom[p.rank] + 12;
+    h += '<path data-e="' + n.id + '" style="--c:' + colorOf(n) + '" d="M' + p.mx + " " + y1 + " V" + mid + " H" + n.mx + " V" + (n.my - MH / 2) + '"/>';
+  });
+  h += '</g><g class="nodes">';
+  MAP.vis.forEach(function(n){
+    var cls = "tn" + (n.italic ? " it" : "") + (n.locked || n.muted ? " off" : "") + (n.mk.length ? "" : " leaf");
+    h += '<g class="' + cls + '" data-node="' + n.id + '" tabindex="0" role="button" style="--c:' + colorOf(n) + '" transform="translate(' + (n.mx - n.mw / 2) + " " + (n.my - MH / 2) + ')">' +
+      '<rect width="' + n.mw + '" height="' + MH + '" rx="' + (n.mk.length ? 9 : 16) + '"/><text x="' + (n.mw / 2) + '" y="' + (MH / 2) + '"></text></g>';
+  });
+  h += '</g><text class="here-pin" id="mapPin" aria-hidden="true">📍</text>';
+  svg.innerHTML = h;
+  MAP.laid = true;
+}
+function updateMap(){
+  var sec = $("#mapsec"); sec.hidden = !st.map;
+  if (!st.map) return;
+  if (!MAP.laid) drawMap();
+  var s = stop(), here = null, onPath = {};
+  if (st.org) MAP.vis.forEach(function(n){ if (!here && n.card === st.org) here = n; });
+  if (!here) here = mapNodeFor(viewInfo().cur);
+  mapPath(here).forEach(function(n){ onPath[n.id] = 1; });
+  $$("#map .tn").forEach(function(g){
+    var id = g.getAttribute("data-node"), n = N[id], hid = labelHidden(n) && !s.finale;
+    g.classList.toggle("cur", id === here.id);
+    g.classList.toggle("path", !!onPath[id]);
+    g.classList.toggle("hid", hid);
+    $("text", g).textContent = hid ? "?" : nodeText(n);
+    g.setAttribute("aria-label", (hid ? "Hidden branch name" : n.label) + (id === here.id ? ", you are here" : "") + (n.locked ? ", coming soon" : n.muted ? ", not covered" : ""));
+  });
+  $$("#map .edges path").forEach(function(p){ var id = p.getAttribute("data-e"), par = mapParent(N[id]); p.classList.toggle("on", !!(onPath[id] && par && onPath[par.id])); });
+  var pin = $("#mapPin"); pin.setAttribute("x", here.mx); pin.setAttribute("y", here.my - MAP.MH / 2 - 4);
+  var mb = $(".mapbox"), k = $("#map").clientWidth / MAP.W;
+  mb.scrollTo({left: Math.max(0, here.mx * k - mb.clientWidth / 2), behavior: reduced ? "auto" : "smooth"});
+}
+
+/* ================= blanks ================= */
+function register(key, info){ KEYS[key] = info; }
+function markCls(key){ if (!st.chk[key]) return ""; return st.ans[key] === KEYS[key].a ? "good" : "bad"; }
+function markIcon(key){ if (!st.chk[key]) return ""; return st.ans[key] === KEYS[key].a ? '<span class="mark" aria-label="correct">✓</span>' : '<span class="mark" aria-label="incorrect">✗</span> <span class="ans">' + esc(KEYS[key].a) + "</span>"; }
+function selectHtml(key, opts, label){
+  var v = st.ans[key], h = '<select class="blank ' + markCls(key) + '" data-key="' + key + '" aria-label="' + esc(label) + '"' + (st.chk[key] ? " disabled" : "") + '><option value="">choose…</option>';
+  opts.forEach(function(o){ h += "<option" + (v === o ? " selected" : "") + ">" + esc(o) + "</option>"; });
+  return h + "</select>";
+}
+function mcHtml(key, opts){
+  var h = '<div class="mc" role="group">', v = st.ans[key], done = st.chk[key], a = KEYS[key].a;
+  opts.forEach(function(o){
+    var c = "mcopt" + (v === o ? " sel" : "") + (done ? (o === a ? " right" : v === o ? " wrong" : "") : "");
+    h += '<button type="button" class="' + c + '" data-mc="' + key + '" data-val="' + esc(o) + '"' + (done ? " disabled" : "") + ">" + esc(o) + "</button>";
+  });
+  return h + "</div>";
+}
+function diseaseOpts(o){
+  var R = rng(hashStr("d" + o.id)), tags = o.disease.tags || [], seen = {}, pool = [];
+  seen[o.disease.short] = 1;
+  shuffle(ALLORGS, R).forEach(function(x){
+    var sh = x.disease && x.disease.short;
+    if (!sh || seen[sh] || (x.disease.tags || []).some(function(t){ return tags.indexOf(t) >= 0; })) return;
+    seen[sh] = 1; pool.push(sh);
+  });
+  return shuffle([o.disease.short].concat(pool.slice(0, 3)), R);
+}
+function treatOpts(o){
+  var R = rng(hashStr("t" + o.id)), drugs = o.treat.drugs || [], seen = {}, pool = [];
+  seen[o.treat.short] = 1;
+  shuffle(ALLORGS, R).forEach(function(x){
+    if (!x.treat || seen[x.treat.short] || (x.treat.drugs || []).some(function(d){ return drugs.indexOf(d) >= 0; })) return;
+    seen[x.treat.short] = 1; pool.push(x.treat.short);
+  });
+  return shuffle([o.treat.short].concat(pool.slice(0, 3)), R);
+}
+
+/* ================= ribbon ================= */
+function crumbHtml(n){
+  if (labelHidden(n) || (testOn() && n.blankLabel)){
+    var key = "l:" + n.id;
+    register(key, {a: n.label, kind: "label", why: "This branch is <b>" + n.label + "</b>" + (n.full ? " (" + n.full + ")" : "") + "."});
+    var opts = shuffle(D.wordBank, rng(hashStr("wb" + n.id)));
+    return '<span class="' + markCls(key) + '" style="--c:' + colorOf(n) + '">' + selectHtml(key, opts, "Branch name") + " " + markIcon(key) + "</span>";
+  }
+  return '<button type="button" data-node="' + n.id + '" class="' + (n.italic ? "it" : "") + '" style="--c:' + colorOf(n) + '">' + esc(n.label) + "</button>";
+}
+function traitChip(n, t, k){
+  if (testOn() && t.blank){
+    var key = "t:" + n.id + ":" + k, b = t.blank;
+    register(key, {a: b.a, kind: "trait", why: "<b>" + n.label + ":</b> " + esc(t.t) + ". " + (b.why || "")});
+    return '<span class="chip blank ' + markCls(key) + (t.strong ? " strong" : "") + '">' + esc(b.pre) + selectHtml(key, b.o, n.label + " trait") + esc(b.post) + " " + markIcon(key) + "</span>";
+  }
+  return '<span class="chip' + (t.strong ? " strong" : "") + '">' + esc(t.t) + "</span>";
+}
+function renderRibbon(){
+  var h = "";
+  pathTo(viewInfo().cur).forEach(function(n, k){ if (k) h += '<span class="sep" aria-hidden="true">→</span>'; h += crumbHtml(n); });
+  $("#ribbon").innerHTML = h;
+}
+function traitsHtml(){
+  var s = stop(), v = viewInfo(), p = pathTo(v.cur), h = '<section class="traits" aria-label="Traits along this path"><div class="tgroups">';
+  p.forEach(function(n){
+    var lbl = labelHidden(n) ? "this branch" : (n.italic ? "<i>" + esc(n.label) + "</i>" : esc(n.label));
+    if (n.traits && n.traits.length){
+      h += '<div class="tg" style="--c:' + colorOf(n) + '"><span class="tgl">From ' + lbl + ":</span>" + n.traits.map(function(t, k){ return traitChip(n, t, k); }).join("") + "</div>";
+    } else if (n.note && n.id === s.node){
+      h += '<div class="tg note" style="--c:' + colorOf(n) + '"><span class="tgl">' + lbl + ":</span> " + esc(n.note) + "</div>";
+    }
+  });
+  var o = st.org ? ORG[st.org] : (s.orgs && s.orgs.length === 1 ? s.orgs[0] : null);
+  if (o && o.tests){
+    var own = o.tests.filter(function(x){ return !x.from; });
+    var hide = testOn() && own.some(function(x){ return testable(x) && !st.chk["i:" + o.id + ":" + o.tests.indexOf(x)]; });
+    var chips = own.map(function(x){ var T0 = testOf(x); return (T0.chip && T0.chip(x.v)) || x.v; }).filter(Boolean);
+    if (chips.length) h += '<div class="tg only"><span class="tgl"><i>' + esc(o.name) + "</i>" + (o.sub ? " " + esc(o.sub) : "") + " only:</span>" +
+      chips.map(function(c){ return '<span class="chip">' + (hide ? "?" : esc(c)) + "</span>"; }).join("") + "</div>";
+  }
+  return h + "</div></section>";
+}
+
+/* ================= lab tests: what each result looks like (colors match the real tests) ================= */
+var IMVIC = ["++−−", "−−++", "−+−+", "−+−−"];
+var NEG = "#64748b";
+function tubeG(x, liquid, opts){
+  /* a small test tube 12 wide, 30 tall, at x. opts: ring (color at top), dots, band, bottom */
+  opts = opts || {};
+  var g = '<path d="M' + x + ' 6 V30 a6 6 0 0 0 12 0 V6" fill="' + liquid + '" stroke="#64748b" stroke-width="1.6"/>';
+  if (opts.ring) g += '<rect x="' + x + '" y="6" width="12" height="5" fill="' + opts.ring + '"/>';
+  if (opts.bottom) g += '<path d="M' + x + ' 26 V30 a6 6 0 0 0 12 0 V26 Z" fill="' + opts.bottom + '"/>';
+  if (opts.dots) opts.dots.forEach(function(p){ g += '<circle cx="' + (x + p[0]) + '" cy="' + p[1] + '" r="1.4" fill="#1e3a8a"/>'; });
+  if (opts.band) g += '<rect x="' + x + '" y="' + opts.band + '" width="12" height="3" fill="#1e3a8a" opacity=".75"/>';
+  return g;
+}
+function svgBox(inner){ return '<svg viewBox="0 0 64 44" aria-hidden="true">' + inner + "</svg>"; }
+function plateG(colony, edge){
+  var g = '<ellipse cx="32" cy="23" rx="26" ry="17" fill="var(--mac)" stroke="#94a3b8" stroke-width="1.6"/>';
+  [[22, 19], [34, 16], [42, 25], [28, 28], [18, 27], [38, 32]].forEach(function(p){ g += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3.4" fill="' + colony + '"' + (edge ? ' stroke="' + edge + '" stroke-width="1"' : "") + "/>"; });
+  return g;
+}
+function shapeKey(v){ return {"rods": "rod", "spore-forming rods": "rodspore", "cocci in clusters": "clusters", "cocci in chains": "chains", "lancet-shaped diplococci": "lancet", "cocci in pairs or short chains": "pairchain"}[v] || "rod"; }
+var SHAPES = ["rods", "spore-forming rods", "cocci in clusters", "cocci in chains", "lancet-shaped diplococci", "cocci in pairs or short chains"];
+function pm(v){ return String(v).charAt(0) === "+" ? "+" : String(v).charAt(0) === "−" ? "−" : v; }
+var TESTS = {
+  gram: {name: "Gram stain", opts: ["pink (−)", "purple (+)"], ans: function(){ return "purple (+)"; },
+    back: function(v){ return {txt: "Purple (+)", sub: "crystal violet stays", col: "#6d28d9", svg: svgBox(iconInner("rod"))}; },
+    chip: function(){ return "gram +"; }, opp: function(){ return "gram −"; }},
+  shape: {name: "Shape", opts: SHAPES, ans: function(v){ return v; },
+    back: function(v){ return {txt: v, sub: "", col: "#6d28d9", svg: svgBox(iconInner(shapeKey(v)))}; },
+    chip: function(v){ return v; }, opp: function(v){ return /clusters/.test(v) ? "cocci in chains" : /cocc/.test(v) ? "cocci in clusters" : /rod/.test(v) ? "cocci in clusters" : "rods"; }},
+  oxygen: {name: "Oxygen", opts: ["needs O₂ (aerobe)", "with or without O₂", "no O₂ (obligate anaerobe)"],
+    ans: function(v){ return /obligate anaerobe/.test(v) ? "no O₂ (obligate anaerobe)" : /facultative/.test(v) ? "with or without O₂" : "needs O₂ (aerobe)"; },
+    back: function(v){
+      var an = /obligate anaerobe/.test(v), fa = /facultative/.test(v);
+      var o = an ? {dots: [[4, 27], [8, 29], [5, 32], [8, 34], [3, 31], [7, 25]]} : fa ? {dots: [[4, 10], [8, 13], [5, 18], [8, 23], [4, 28], [7, 31]]} : {dots: [[3, 9], [6, 8], [9, 9], [5, 11], [8, 11]]};
+      return {txt: v, sub: an ? "grows only at the bottom: O₂ is toxic" : fa ? "grows with or without O₂" : "grows at the top: needs O₂", col: "#1d4ed8", svg: svgBox(tubeG(26, "#fdf6e3", o))};
+    },
+    chip: function(v){ return v; }, opp: function(v){ return /obligate anaerobe/.test(v) ? "grows with O₂" : "obligate anaerobe"; }},
+  spores: {name: "Endospores", opts: ["+", "−"], ans: pm,
+    back: function(v){ var p = pm(v) === "+"; return {txt: p ? "Spores (+)" : "No spores (−)", sub: p ? "tough endospores" : "never makes spores", col: p ? "#6d28d9" : NEG, svg: svgBox(iconInner(p ? "rodspore" : "rod"))}; },
+    chip: function(v){ return pm(v) === "+" ? "spore former" : "no spores"; }, opp: function(v){ return pm(v) === "+" ? "no spores" : "spore former"; }},
+  coagulase: {name: "Coagulase", opts: ["+", "−"], ans: pm,
+    back: function(v){ var p = pm(v) === "+"; return {txt: p ? "Positive (+)" : "Negative (−)", sub: p ? "plasma clots (fibrin)" : "plasma stays liquid", col: p ? "#b91c1c" : NEG, svg: svgBox(tubeG(26, "#fde68a", p ? {bottom: "#b91c1c"} : {}) + (p ? '<rect x="26" y="16" width="12" height="12" fill="#b91c1c" opacity=".55"/>' : ""))}; },
+    chip: function(v){ return "coagulase " + pm(v); }, opp: function(v){ return "coagulase " + (pm(v) === "+" ? "−" : "+"); }},
+  oxidase: {name: "Oxidase", opts: ["+", "−"], ans: pm,
+    back: function(v){ var p = pm(v) === "+"; return {txt: p ? "Positive (+)" : "Negative (−)", sub: p ? "turns purple" : "no color change", col: p ? "#6b21a8" : NEG, svg: svgBox('<rect x="10" y="12" width="44" height="20" rx="4" fill="#fff" stroke="#94a3b8"/><circle class="' + (p ? "oxdot" : "") + '" cx="32" cy="22" r="7" fill="' + (p ? "#6b21a8" : "#f1f5f9") + '" stroke="#94a3b8" stroke-width="' + (p ? 0 : 1) + '"/>')}; },
+    chip: function(v){ return "oxidase " + pm(v); }, opp: function(v){ return "oxidase " + (pm(v) === "+" ? "−" : "+"); }},
+  catalase: {name: "Catalase", opts: ["+", "−"], ans: pm,
+    back: function(v){ var p = pm(v) === "+"; return {txt: p ? "Positive (+)" : "Negative (−)", sub: p ? "bubbles" : "no bubbles", col: p ? "#0f766e" : NEG, svg: svgBox('<ellipse cx="32" cy="32" rx="20" ry="6" fill="#e0f2fe" stroke="#94a3b8"/>' + (p ? '<g class="bubs" fill="none" stroke="#0f766e" stroke-width="2"><circle cx="26" cy="24" r="5"/><circle cx="37" cy="19" r="4"/><circle cx="40" cy="28" r="3"/><circle cx="30" cy="12" r="3"/></g>' : ""))}; },
+    chip: function(v){ return "catalase " + pm(v); }, opp: function(v){ return "catalase " + (pm(v) === "+" ? "−" : "+"); }},
+  lactose: {name: "Lactose", opts: ["+", "−"], ans: pm,
+    back: function(v){ var p = pm(v) === "+"; return {txt: p ? "Positive (+)" : "Negative (−)", sub: p ? "pink colonies on MacConkey" : "colorless colonies on MacConkey", col: p ? "#be185d" : NEG, svg: svgBox(plateG(p ? "var(--col-pink)" : "var(--col-clear)", p ? null : "var(--col-clear-edge)"))}; },
+    chip: function(v){ return "lactose " + pm(v); }, opp: function(v){ return "lactose " + (pm(v) === "+" ? "−" : "+"); }},
+  imvic: {name: "IMViC", opts: IMVIC, ans: function(v){ return v; },
+    back: function(v){
+      var cols = [["#dc2626", "#facc15"], ["#dc2626", "#facc15"], ["#e11d48", "#fde68a"], ["#2563eb", "#16a34a"]], g = "";
+      for (var i = 0; i < 4; i++){ var r = v.charAt(i), c = r === "+" ? cols[i][0] : r === "−" ? cols[i][1] : "#cbd5e1"; g += i === 0 ? tubeG(6 + i * 14, "#fef9c3", {ring: c}) : tubeG(6 + i * 14, c); }
+      return {txt: v, sub: "I · M · V · C", col: "#b45309", svg: svgBox(g)};
+    },
+    chip: function(v){ return "IMViC " + v; }, opp: function(v){ return "IMViC " + (v === "++−−" ? "−−++" : "++−−"); }},
+  h2s: {name: "H₂S", opts: ["+", "−"], ans: pm,
+    back: function(v){ var p = pm(v) === "+", w = v === "weak"; return {txt: w ? "Weak" : p ? "Positive (+)" : "Negative (−)", sub: w ? "a little black" : p ? "black precipitate" : "no black", col: p || w ? "#1f2937" : NEG, svg: svgBox(tubeG(26, "#e7d7b1", p ? {bottom: "#111827"} : w ? {bottom: "#6b7280"} : {}))}; },
+    chip: function(v){ return v === "weak" ? "" : "H₂S " + pm(v); }, opp: function(v){ return v === "weak" ? "" : "H₂S " + (pm(v) === "+" ? "−" : "+"); }},
+  citrate: {name: "Citrate", opts: ["+", "−"], ans: pm,
+    back: function(v){ var p = pm(v) === "+"; return {txt: p ? "Positive (+)" : "Negative (−)", sub: p ? "turns blue" : "stays green", col: p ? "#2563eb" : NEG, svg: svgBox(tubeG(26, p ? "#2563eb" : "#16a34a"))}; },
+    chip: function(v){ return "citrate " + pm(v); }, opp: function(v){ return "citrate " + (pm(v) === "+" ? "−" : "+"); }},
+  urease: {name: "Urease", opts: ["+", "−"], ans: pm,
+    back: function(v){ var p = pm(v) === "+", slow = /slow/.test(v); return {txt: p ? (slow ? "Positive (slow)" : "Positive (+)") : "Negative (−)", sub: p ? "turns hot pink" : "stays yellow", col: p ? "#db2777" : NEG, svg: svgBox(tubeG(26, p ? (slow ? "#f9a8d4" : "#db2777") : "#fcd34d"))}; },
+    chip: function(v){ return "urease " + pm(v); }, opp: function(v){ return "urease " + (pm(v) === "+" ? "−" : "+"); }},
+  sugars: {name: "Sugars used", opts: ["glucose only", "glucose + maltose"], ans: function(v){ return v; },
+    back: function(v){ var m = /maltose/.test(v); return {txt: v, sub: "yellow = acid made (sugar used)", col: "#ca8a04", svg: svgBox(tubeG(17, "#facc15") + tubeG(35, m ? "#facc15" : "#ef4444") + '<text x="23" y="43" font-size="7" text-anchor="middle" fill="#64748b">glu</text><text x="41" y="43" font-size="7" text-anchor="middle" fill="#64748b">mal</text>')}; },
+    chip: function(v){ return "uses " + v; }, opp: function(v){ return "uses " + (/maltose/.test(v) ? "glucose only" : "glucose + maltose"); }},
+  media: {name: "Grows on", opts: null,
+    back: function(v){ var host = /host/.test(v); return {txt: v, sub: "", col: "#a16207", svg: svgBox(host ? '<ellipse cx="32" cy="22" rx="27" ry="17" fill="#fef3c7" stroke="#a16207" stroke-width="1.6"/><circle cx="34" cy="21" r="7" fill="#fde68a" stroke="#a16207"/>' + [[18, 16], [22, 28], [46, 15], [47, 27], [28, 33]].map(function(p){ return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="2.6" fill="var(--gn-fill)" stroke="var(--gn-edge)"/>'; }).join("") : '<ellipse cx="32" cy="23" rx="26" ry="17" fill="' + (/chocolate/.test(v) ? "#8b5a2b" : "#f3dfa9") + '" stroke="#a16207" stroke-width="1.6"/><circle cx="24" cy="20" r="2.6" fill="#fff"/><circle cx="36" cy="26" r="2.6" fill="#fff"/>')}; }},
+  pigment: {name: "Colonies", opts: null,
+    back: function(v){ var c = /gold|yellow/.test(v) ? "#eab308" : /white/.test(v) ? "#f8fafc" : /red/.test(v) ? "#dc2626" : "#65a30d"; return {txt: v, sub: "", col: /white/.test(v) ? "#64748b" : c, svg: svgBox(plateG(c, /white/.test(v) ? "#94a3b8" : null))}; },
+    chip: function(v){ return v + " colonies"; }, opp: function(v){ return (/gold/.test(v) ? "white" : "golden") + " colonies"; }},
+  feature: {name: "Look for", opts: null,
+    back: function(v, t){ return {txt: v, sub: "", col: "#475569", emoji: t.ic || "🔎"}; }}
+};
+function testOf(t){ return TESTS[t.k]; }
+function testable(t){ var T0 = testOf(t); return !t.from && !!(T0 && T0.opts && T0.opts.indexOf(T0.ans(t.v)) >= 0); }
+function tileFront(t){ return t.label || testOf(t).name; }
+
+/* ================= microscope view: many small cells of the organism's shape ================= */
+function scopeSvg(shape){
+  var pos = [[42, 46, 20], [80, 38, -15], [108, 62, 40], [58, 78, -30], [88, 96, 10], [40, 104, 60], [112, 104, -40], [70, 120, 25]];
+  var inner = iconInner(shape), sc = shape === "spirochete" ? 0.62 : shape === "intracellular" ? 0.9 : 0.42;
+  var h = '<svg class="scope" viewBox="0 0 150 150" aria-hidden="true"><circle cx="75" cy="75" r="70" fill="var(--scope)" stroke="#33415c" stroke-width="7"/>';
+  (shape === "intracellular" ? pos.slice(0, 3) : pos).forEach(function(p){ h += '<g transform="translate(' + p[0] + " " + p[1] + ") rotate(" + p[2] + ") scale(" + sc + ') translate(-32 -22)">' + inner + "</g>"; });
+  return h + "</svg>";
+}
+
+/* ================= lesson + cards ================= */
+function boxesHtml(list, cls){ return '<div class="iboxes n' + Math.min(list.length, 6) + " " + (cls || "") + '">' + list.map(function(b){ return '<div class="ibox' + (b.warn ? " warn" : "") + '"><span class="ic">' + (b.ic || "") + "</span>" + (b.h ? "<h5>" + b.h + "</h5>" : "") + "<p>" + b.t + "</p></div>"; }).join("") + "</div>"; }
+function flipsHtml(oid, list, tag){
+  return '<div class="flips">' + list.map(function(f, i){
+    var key = "f:" + oid + ":" + tag + ":" + i, on = st.flip[key];
+    return '<button type="button" class="flipc' + (on ? " on" : "") + '" data-flip="' + key + '"><span class="in"><span class="fa">' + f.f + '<small>tap to reveal</small></span><span class="fb">' + f.b + "</span></span></button>";
+  }).join("") + "</div>";
+}
+function flowHtml(oid, fl){
+  var n = st.flow[oid] || 1, h = '<div class="flowbox" data-flowbox="' + oid + '"><h5>' + fl.title + '</h5><div class="flow">';
+  fl.steps.forEach(function(stp, i){
+    if (i) h += '<span class="arr' + (i < n ? " on" : "") + '" aria-hidden="true">→</span>';
+    h += '<div class="step' + (i < n ? " on" : "") + (i === 0 ? " first" : "") + '">' + stp + "</div>";
+  });
+  if (fl.loop) h += '<span class="arr loop' + (n >= fl.steps.length ? " on" : "") + '" aria-hidden="true">↺</span>';
+  h += "</div>";
+  if (fl.side) h += '<div class="flowside">' + fl.side + "</div>";
+  h += '<div class="btnrow">' + (n < fl.steps.length ? '<button class="btn small" type="button" data-flow="' + oid + '" data-dir="next">Next step →</button><button class="btn small ghost" type="button" data-flow="' + oid + '" data-dir="all">Show all</button>' : '<button class="btn small ghost" type="button" data-flow="' + oid + '" data-dir="reset">↺ Start over</button>') + "</div>";
+  return h + "</div>";
+}
+function tileHtml(o, t, k){
+  var T0 = testOf(t), key = "i:" + o.id + ":" + k, b = T0.back(t.v, t), canTest = testOn() && testable(t);
+  var on = canTest ? !!st.chk[key] : !!st.flip[key];
+  var from = t.from ? '<span class="from">from ' + esc(N[t.from].label) + "</span>" : "";
+  var front;
+  if (canTest){
+    register(key, {a: T0.ans(t.v), kind: "id", why: "<b><i>" + esc(o.name) + "</i>, " + plain(tileFront(t)) + ":</b> " + esc(b.txt) + (t.note ? " (" + t.note + ")" : "")});
+    front = '<span class="tq">' + tileFront(t) + "</span>" + selectHtml(key, T0.opts, o.name + " " + plain(tileFront(t)));
+  } else front = '<span class="tq">' + tileFront(t) + '</span><span class="qm">?</span><small>tap to flip</small>';
+  var mark = canTest && st.chk[key] ? '<span class="tmark ' + markCls(key) + '">' + (st.ans[key] === T0.ans(t.v) ? "✓ you got it" : "✗ you said " + esc(st.ans[key] || "nothing")) + "</span>" : "";
+  return '<div class="tile' + (on ? " on" : "") + '" style="--k:' + b.col + '"' + (canTest ? "" : ' role="button" tabindex="0" data-tile="' + key + '"') + '><div class="in"><div class="f">' + front + '</div><div class="b">' +
+    (b.emoji ? '<span class="temoji">' + b.emoji + "</span>" : b.svg) + "<b>" + esc(b.txt) + "</b>" + (b.sub ? "<small>" + esc(b.sub) + "</small>" : "") + (t.note ? '<small class="tnote">' + t.note + "</small>" : "") + from + mark + "</div></div></div>";
+}
+function sortItems(o){
+  /* own results first, then the tests that best tell organisms apart; skip the Gram stain (everything here is gram +) */
+  var PRI = ["coagulase", "pigment", "spores", "oxygen", "catalase", "urease", "shape"];
+  var cands = (o.tests || []).filter(function(t){ var T0 = testOf(t); return t.k !== "gram" && T0 && T0.chip && T0.chip(t.v) && T0.opp(t.v); });
+  cands.sort(function(a, b){ return ((a.from ? 100 : 0) + PRI.indexOf(a.k)) - ((b.from ? 100 : 0) + PRI.indexOf(b.k)); });
+  cands = cands.slice(0, 3);
+  if (cands.length < 2) return null;
+  var items = [];
+  cands.forEach(function(t){ var T0 = testOf(t); items.push({t: T0.chip(t.v), yes: true}); items.push({t: T0.opp(t.v), yes: false}); });
+  return shuffle(items, rng(hashStr("sort" + o.id)));
+}
+function sortHtml(o){
+  var items = sortItems(o); if (!items) return "";
+  var S = st.sort[o.id] || (st.sort[o.id] = {at: {}, chk: false}), sel = st.sortSel && st.sortSel.o === o.id ? st.sortSel.i : -1;
+  function chip(it, i){
+    var c = "schip" + (i === sel ? " sel" : "") + (S.chk && S.at[i] ? ((S.at[i] === "yes") === it.yes ? " right" : " wrong") : "");
+    return '<button type="button" class="' + c + '" data-schip="' + o.id + '" data-i="' + i + '"' + (S.chk ? " disabled" : "") + ">" + esc(it.t) + "</button>";
+  }
+  var pool = "", yes = "", no = "", placed = 0;
+  items.forEach(function(it, i){ var w = S.at[i]; if (w) placed++; if (w === "yes") yes += chip(it, i); else if (w === "no") no += chip(it, i); else pool += chip(it, i); });
+  var nm = "<i>" + esc(o.name) + "</i>" + (o.sub ? " " + esc(o.sub) : "");
+  var h = '<section class="sec sortsec" data-sortsec="' + o.id + '"><h4 class="sech">✋ Quick sort</h4><p class="hint">Drag each result into a bin (or tap a result, then tap a bin).</p>' +
+    '<div class="spool">' + (pool || '<span class="hint">All sorted!</span>') + "</div>" +
+    '<div class="sbins"><div class="sbin" data-sbin="yes" data-o="' + o.id + '"><h5>✅ ' + nm + "</h5>" + yes + '</div><div class="sbin" data-sbin="no" data-o="' + o.id + '"><h5>❌ Not ' + nm + "</h5>" + no + "</div></div>";
+  if (S.chk){
+    var right = items.filter(function(it, i){ return (S.at[i] === "yes") === it.yes; }).length;
+    h += '<div class="msg ' + (right === items.length ? "good" : "bad") + '"><b>' + right + " of " + items.length + " sorted right.</b> " + (right === items.length ? "✨" : "Red ones are in the wrong bin.") + "</div>";
+  }
+  h += '<div class="btnrow">' + (S.chk ? '<button class="btn small ghost" type="button" data-sort="' + o.id + '" data-dir="reset">↺ Try again</button>' : '<button class="btn small" type="button" data-sort="' + o.id + '" data-dir="check"' + (placed < items.length ? " disabled" : "") + ">Check</button>") + "</div>";
+  return h + "</section>";
+}
+function photoHtml(p){ return '<figure class="photo"><img src="' + p.src + '" alt="' + esc(p.alt) + '" loading="lazy"><figcaption><span>' + p.cap + "</span><small>" + p.credit + "</small></figcaption></figure>"; }
+function cheatHtml(c, o){ return c ? '<div class="cheat"><span class="ci">🎯</span><div><b>ID cheat' + (o ? " (<i>" + esc(o.name) + "</i>)" : "") + ':</b> ' + c + ' <button type="button" class="linkbtn" data-act="cheats">See all ID cheats →</button></div></div>' : ""; }
+function spellWords(o){ return (o.spell || o.name).split(" "); }
+function spellHtml(o){
+  var words = spellWords(o), S = st.spell[o.id] || (st.spell[o.id] = {v: [], chk: false, open: false});
+  if (!S.open) return '<div data-spellsec="' + o.id + '"><button class="btn ghost small" type="button" data-spell="' + o.id + '" data-dir="open">✏️ Practice spelling</button></div>';
+  var ok = words.map(function(w, i){ var v = (S.v[i] || "").trim().toLowerCase(); return v === w.slice(1).toLowerCase() || v === w.toLowerCase(); });
+  var h = '<section class="sec spell" data-spellsec="' + o.id + '"><h4 class="sech">✏️ Practice spelling</h4><p class="hint">Type the rest of each word.</p><div class="spellrow">';
+  words.forEach(function(w, i){
+    var cls = S.chk ? (ok[i] ? " good" : " bad") : "";
+    h += '<label class="sw' + cls + '"><b>' + esc(w.charAt(0)) + '</b><input type="text" data-sp="' + o.id + '" data-w="' + i + '" value="' + esc(S.v[i] || "") + '" size="' + Math.max(4, w.length) + '" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Rest of word ' + (i + 1) + '"' + (S.chk ? " disabled" : "") + "></label>";
+  });
+  h += "</div>";
+  if (S.chk){
+    var all = ok.every(Boolean);
+    h += '<div class="msg ' + (all ? "good" : "bad") + '"><b>' + (all ? "Perfect spelling! ✨" : "Almost!") + "</b> " + (all ? "" : "It's spelled <b><i>" + esc(words.join(" ")) + "</i></b>.") + "</div>";
+  }
+  h += '<div class="btnrow">' + (S.chk ? '<button class="btn small ghost" type="button" data-spell="' + o.id + '" data-dir="reset">↺ Try again</button>' : '<button class="btn small" type="button" data-spell="' + o.id + '" data-dir="check">Check spelling</button>') + "</div>";
+  return h + "</section>";
+}
+function orgCard(o){
+  var t = testOn(), sel = st.org === o.id;
+  var nm = o.type === "phylum" ? esc(o.name) : "<i>" + esc(o.name) + "</i>" + (o.sub ? " " + esc(o.sub) : "");
+  var h = '<article class="org v2' + (sel ? " on" : "") + '" id="org-' + o.id + '" data-org="' + o.id + '" style="--c:' + colorOf(N[o.node]) + '">';
+  h += '<div class="hero">' + scopeSvg(o.shape) + '<div><h3>' + nm + '</h3><div class="badges">';
+  if (o.type !== "phylum"){
+    h += '<span class="badge gram">GRAM +</span>';
+    var sh = (o.tests || []).filter(function(x){ return x.k === "shape"; })[0];
+    if (sh) h += '<span class="badge">' + esc(sh.v) + "</span>";
+    if (!t && o.disease) h += '<span class="badge">' + (o.emoji || "") + " " + esc(o.disease.short) + "</span>";
+  }
+  h += '</div><button type="button" class="btn small ghost" data-focus="' + o.id + '">' + (sel ? "📍 On the tree" : "Show on tree") + "</button></div></div>";
+  if (o.type === "phylum") return h + boxesHtml(o.boxes) + (o.photos ? '<div class="photos n' + o.photos.length + '">' + o.photos.map(photoHtml).join("") + "</div>" : "") + (o.flips ? flipsHtml(o.id, o.flips, "p") : "") + "</article>";
+
+  /* Lab ID tiles */
+  if (o.tests && o.tests.length){
+    h += '<section class="sec"><div class="sechead"><h4 class="sech">🧪 Lab ID</h4>' + (t ? "" : '<button class="btn small ghost" type="button" data-flipall="' + o.id + '">Flip all</button>') + "</div>" +
+      '<p class="hint">' + (t ? "Pick each result. Gray tiles flip when you tap them." : "Predict each result, then tap to flip.") + '</p><div class="tiles">' +
+      o.tests.map(function(x, k){ return tileHtml(o, x, k); }).join("") + "</div></section>";
+  }
+  if (o.photos) h += '<section class="sec"><h4 class="sech">📷 Real look</h4><div class="photos n' + o.photos.length + '">' + o.photos.map(photoHtml).join("") + "</div></section>";
+  if (o.fun) h += '<details class="fun"><summary>🤩 Fun fact: tap to open</summary><div class="funbody"><p>' + o.fun.t + "</p>" + (o.fun.photo ? '<div class="photos n1 big">' + photoHtml(o.fun.photo) + "</div>" : "") + "</div></details>";
+  /* Disease */
+  if (o.disease){
+    var d = o.disease, detail = (d.boxes ? boxesHtml(d.boxes, "small") : "") + (d.flips ? flipsHtml(o.id, d.flips, "d") : "") + (d.flow ? flowHtml(o.id, d.flow) : "");
+    h += '<section class="sec"><h4 class="sech">🦠 Disease</h4>';
+    if (t){
+      var dk = "d:" + o.id;
+      register(dk, {a: d.short, kind: "disease", why: "<b><i>" + esc(o.name) + "</i> disease:</b> " + d.html});
+      h += mcHtml(dk, diseaseOpts(o)) + (st.chk[dk] ? '<div class="reveal"><div class="dzname"><span>' + (o.emoji || "") + "</span><b>" + d.html + "</b></div>" + detail + "</div>" : "");
+    } else h += '<div class="dzname"><span>' + (o.emoji || "") + "</span><b>" + d.html + "</b></div>" + detail;
+    h += "</section>";
+  }
+  /* Spread, found in, at risk, prevention, treatment */
+  var facts = (o.facts || []).slice();
+  if (o.treat && !t) facts.push({ic: "💊", h: "Treatment", t: o.treat.html});
+  if (facts.length) h += '<section class="sec">' + boxesHtml(facts) + "</section>";
+  if (o.treat && t){
+    var tk = "x:" + o.id;
+    register(tk, {a: o.treat.short, kind: "treat", why: "<b><i>" + esc(o.name) + "</i> treatment:</b> " + o.treat.html});
+    h += '<section class="sec"><h4 class="sech">💊 Treatment</h4>' + mcHtml(tk, treatOpts(o)) + (st.chk[tk] ? '<div class="reveal">' + o.treat.html + "</div>" : "") + "</section>";
+  }
+  (o.extra || []).forEach(function(e, i){ h += '<section class="sec"><h4 class="sech">' + e.h + "</h4>" + (e.boxes ? boxesHtml(e.boxes, "small") : "") + (e.flips ? flipsHtml(o.id, e.flips, "x" + i) : "") + "</section>"; });
+  if (o.anim === "swarm") h += '<section class="sec"><h4 class="sech">🌊 Watch it swarm</h4><div class="swarmbox"><svg viewBox="0 0 220 160" role="img" aria-label="A Proteus colony spreading across the agar in waves of rings"><ellipse cx="110" cy="80" rx="100" ry="70" fill="var(--agar2)" stroke="#94a3b8" stroke-width="2"/>' +
+    [0, 1, 2, 3].map(function(k){ return '<ellipse class="ring" style="animation-delay:' + (k * 0.9) + 's" cx="110" cy="80" rx="96" ry="66" fill="none" stroke="#a16207" stroke-width="3"/>'; }).join("") +
+    '<circle cx="110" cy="80" r="6" fill="#a16207"/></svg><p>Each wave of cells spreads out across the whole plate.</p></div></section>';
+  if (o.hook) h += '<div class="hook">💡 <b>Memory hook:</b> ' + o.hook + "</div>";
+  h += sortHtml(o);
+  h += spellHtml(o);
+  return h + "</article>";
+}
+function checkinHtml(s){
+  var c = s.checkin; if (!c) return "";
+  var order = shuffle(c.o.map(function(_, i){ return i; }), rng(hashStr("ci" + s.id))), pick = st.ci[s.n], h = "";
+  h += '<section class="quiz" id="checkin"><div class="qhead"><svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="15" fill="var(--good-soft)"/><path d="M10 17 l5 5 l9 -10" fill="none" stroke="var(--good)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>Check-in</h3><span class="tag">★ quick question</span></div>';
+  h += '<p class="qq">' + c.q + '</p><div class="qopts">';
+  order.forEach(function(i){
+    var cls = "qopt" + (pick != null ? (i === 0 ? " right" : i === pick ? " wrong" : "") : "");
+    h += '<button type="button" class="' + cls + '" data-ci="' + i + '"' + (pick != null ? " disabled" : "") + ">" + c.o[i] + "</button>";
+  });
+  h += "</div>";
+  if (pick != null) h += '<div class="msg qwhy ' + (pick === 0 ? "good" : "bad") + '"><b>' + (pick === 0 ? "Yes!" : "Not quite.") + "</b> " + c.w + "</div>";
+  return h + "</section>";
+}
+function checkbarHtml(keys){
+  if (!keys.length) return "";
+  var done = keys.filter(function(k){ return st.chk[k]; }), right = done.filter(function(k){ return st.ans[k] === KEYS[k].a; });
+  var all = done.length === keys.length, h = '<section class="checkbar" id="checkbar"><h3>✏️ Fill in the blanks, then check</h3>';
+  if (done.length){
+    h += '<div class="msg ' + (right.length === done.length ? "good" : "bad") + '"><b>' + right.length + " of " + done.length + " correct.</b>" + (right.length === done.length ? " Nice work! ✨" : " Here's what to fix:") + "</div>";
+    var wrong = done.filter(function(k){ return st.ans[k] !== KEYS[k].a; });
+    if (wrong.length) h += '<ul class="checklist">' + wrong.map(function(k){ return "<li>" + KEYS[k].why + "</li>"; }).join("") + "</ul>";
+  }
+  h += '<div class="btnrow">' + (all ? "" : '<button class="btn" type="button" data-act="check">Check my answers</button>') +
+    (done.length ? '<button class="btn ghost" type="button" data-act="retry">Try again</button>' : "") + "</div>";
+  return h + "</section>";
+}
+/* ---- mini comics: simple scenes drawn from shapes and emoji ---- */
+function sceneSvg(name){
+  var E = function(x, y, sz, e){ return '<text x="' + x + '" y="' + y + '" font-size="' + sz + '" text-anchor="middle" dominant-baseline="central">' + e + "</text>"; };
+  var flea = function(x, y){ return '<g transform="translate(' + x + " " + y + ')"><ellipse rx="5" ry="3.6" fill="#3f2a14"/><path d="M-3 2 l-3 4 M0 3 l0 5 M3 2 l3 4" stroke="#3f2a14" stroke-width="1.2"/></g>'; };
+  var h = '<svg viewBox="0 0 300 190" preserveAspectRatio="xMidYMid slice" aria-hidden="true">';
+  switch (name){
+    case "hotel":
+      h += '<rect width="300" height="190" fill="#dbeafe"/><rect x="70" y="40" width="160" height="150" fill="#cbd5e1" stroke="#334155" stroke-width="3"/>';
+      for (var r = 0; r < 4; r++) for (var c = 0; c < 5; c++) h += '<rect x="' + (82 + c * 29) + '" y="' + (52 + r * 26) + '" width="18" height="14" fill="#fde68a" stroke="#334155" stroke-width="1.5"/>';
+      h += '<rect x="40" y="14" width="220" height="26" rx="4" fill="#1d4ed8"/><text x="150" y="27" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="700" fill="#fff">AMERICAN LEGION 1976</text>' + E(40, 168, 30, "🧍") + E(262, 168, 30, "🧍‍♀️") + E(235, 172, 26, "🧍‍♂️"); break;
+    case "sick":
+      h += '<rect width="300" height="190" fill="#fef3c7"/>' + E(80, 100, 64, "🤒") + E(210, 100, 64, "🤧") + '<path d="M150 30 q40 -20 80 0 q10 25 -20 30 l-10 14 l-2 -14 q-40 -2 -48 -30z" fill="#fff" stroke="#334155" stroke-width="2"/><text x="190" y="40" text-anchor="middle" font-size="16" font-weight="700" fill="#334155">*cough*</text>' + E(150, 160, 28, "❓ ❓ ❓"); break;
+    case "tower":
+      h += '<rect width="300" height="190" fill="#e0f2fe"/><path d="M40 170 L60 70 L120 70 L140 170 Z" fill="#94a3b8" stroke="#334155" stroke-width="3"/><text x="90" y="182" text-anchor="middle" font-size="12" font-weight="700" fill="#334155">cooling tower</text>';
+      [[90, 55], [78, 40], [104, 36], [92, 22]].forEach(function(q){ h += E(q[0], q[1], 16, "💧"); });
+      h += '<circle cx="215" cy="95" r="58" fill="#fff" stroke="#334155" stroke-width="5"/><line x1="256" y1="136" x2="285" y2="170" stroke="#334155" stroke-width="10" stroke-linecap="round"/>';
+      [[195, 80, 20], [225, 75, -25], [215, 105, 60], [190, 110, -10], [240, 102, 15]].forEach(function(q){ h += '<rect x="' + (q[0] - 12) + '" y="' + (q[1] - 4) + '" width="24" height="8" rx="4" fill="var(--gn-fill)" stroke="var(--gn-edge)" stroke-width="1.5" transform="rotate(' + q[2] + " " + q[0] + " " + q[1] + ')"/>'; });
+      break;
+    case "rats":
+      h += '<rect width="300" height="190" fill="#e7e5e4"/><path d="M20 120 L60 80 L100 120 Z M180 120 L230 70 L280 120 Z" fill="#a8a29e" stroke="#44403c" stroke-width="3"/><rect x="30" y="120" width="60" height="50" fill="#d6d3d1" stroke="#44403c" stroke-width="3"/><rect x="190" y="120" width="80" height="50" fill="#d6d3d1" stroke="#44403c" stroke-width="3"/>' +
+        E(130, 160, 40, "🐀") + E(155, 120, 30, "🐀") + flea(120, 140) + flea(150, 150) + flea(165, 105) + '<text x="150" y="25" text-anchor="middle" font-size="15" font-weight="700" fill="#44403c">rats + fleas</text>'; break;
+    case "bite":
+      h += '<rect width="300" height="190" fill="#fde2e4"/>' + E(110, 105, 90, "🧍") + flea(160, 80) + '<path d="M162 84 l-24 10" stroke="#3f2a14" stroke-width="2" stroke-dasharray="3 3"/>' +
+        '<circle cx="128" cy="128" r="12" fill="#b91c1c" opacity=".75"/><text x="215" y="125" font-size="14" font-weight="700" fill="#7f1d1d">bubo</text><path d="M205 122 L142 128" stroke="#7f1d1d" stroke-width="2"/><text x="215" y="80" font-size="14" font-weight="700" fill="#3f2a14">flea bite</text>'; break;
+    case "europe":
+      h += '<rect width="300" height="190" fill="#f5f5f4"/>';
+      for (var i = 0; i < 10; i++) h += E(42 + (i % 5) * 54, 60 + Math.floor(i / 5) * 62, 38, i < 4 ? "💀" : "🧍");
+      h += '<text x="150" y="172" text-anchor="middle" font-size="16" font-weight="800" fill="#7f1d1d">30 to 60% of Europe</text>'; break;
+  }
+  return h + "</svg>";
+}
+function comicHtml(c){
+  return '<section class="comic"><h4 class="sech">💬 ' + c.title + '</h4><div class="panels">' + c.panels.map(function(pn, i){
+    return '<figure class="panel"><span class="pnum">' + (i + 1) + "</span>" + sceneSvg(pn.scene) + "<figcaption>" + pn.t + "</figcaption></figure>";
+  }).join("") + "</div></section>";
+}
+/* ---- patient cases: order tests, then diagnose ---- */
+function caseHtml(s){
+  var C = s.case, S = st.cases[s.n] || (st.cases[s.n] = {open: false, rev: {}, pick: null});
+  if (!S.open) return '<div id="casebox"><button class="btn casebtn" type="button" data-case="open">🩺 Try a patient case</button></div>';
+  var order = shuffle(C.o.map(function(_, i){ return i; }), rng(hashStr("case" + s.id)));
+  var h = '<section class="case" id="casebox"><h4 class="sech">🩺 Patient case</h4><div class="story">📋 ' + C.story + '</div><h5>Order tests (tap each one):</h5><div class="ctests">';
+  C.tests.forEach(function(t, i){
+    h += S.rev[i] ? '<div class="ctest on"><span>' + t.ic + "</span><b>" + t.name + "</b><em>" + t.r + "</em></div>" : '<button type="button" class="ctest" data-case="test" data-i="' + i + '"><span>' + t.ic + "</span><b>" + t.name + "</b><em>tap to run</em></button>";
+  });
+  h += "</div><h5>" + C.q + '</h5><div class="qopts">';
+  order.forEach(function(i){ var cls = "qopt" + (S.pick != null ? (i === 0 ? " right" : i === S.pick ? " wrong" : "") : ""); h += '<button type="button" class="' + cls + '" data-case="pick" data-i="' + i + '"' + (S.pick != null ? " disabled" : "") + ">" + C.o[i] + "</button>"; });
+  h += "</div>";
+  if (S.pick != null) h += '<div class="msg ' + (S.pick === 0 ? "good" : "bad") + '"><b>' + (S.pick === 0 ? "Case solved! 🎉" : "Not quite.") + "</b> " + C.w + "</div>";
+  return h + "</section>";
+}
+function stepTitle(i){ return i < 0 ? "Start screen" : D.stops[i].title; }
+function renderLesson(){
+  var s = stop(), h = "", c = colorOf(N[s.node]);
+  h += '<header class="mhead"><div class="mbadge" style="--c:' + c + '">' + (s.n + 1) + "</div><div><h2>" + s.title + "</h2></div></header>";
+  if (s.lesson) h += '<ul class="lesson">' + s.lesson.map(function(p){ return "<li>" + p + "</li>"; }).join("") + "</ul>";
+  if (s.diagram && DIAGRAMS[s.diagram]){ var dg = DIAGRAMS[s.diagram](); h += '<figure class="figure' + (dg.small ? " smallfig" : "") + '" style="margin:0">' + dg.svg + "<figcaption>" + dg.cap + "</figcaption></figure>"; }
+  [].concat(s.photo || [], s.photos || []).forEach(function(p){ h += '<div class="photos n1 big">' + photoHtml(p) + "</div>"; });
+  if (s.link) h += '<p class="xlink"><a href="' + s.link.href + '" target="_blank" rel="noopener">' + s.link.t + ' ↗</a></p>';
+  (s.sections || []).forEach(function(x, i){ h += '<section class="sec"><h4 class="sech">' + x.h + "</h4>" + (x.flow ? flowHtml(s.id + "-" + i, x.flow) : "") + (x.boxes ? boxesHtml(x.boxes, "small") : "") + (x.flips ? flipsHtml(s.id, x.flips, "s" + i) : "") + "</section>"; });
+  if (s.life) h += '<section class="life"><h4 class="sech">🌍 In your life</h4>' + boxesHtml(s.life, "small") + "</section>";
+  if (s.entericTable) h += '<div><button class="btn ghost" type="button" data-act="table">📋 Open the enteric ID table</button></div>';
+  if (s.comic) h += comicHtml(s.comic);
+  if (s.orgs && s.orgs.length) h += '<div class="orgs">' + s.orgs.map(orgCard).join("") + "</div>";
+  if (s.case) h += caseHtml(s);
+  if (s.finale) h += finaleHtml(s);
+  h += cheatHtml(s.cheat);
+  (s.orgs || []).forEach(function(o){ if (o.cheat) h += cheatHtml(o.cheat, s.orgs.length > 1 ? o : null); });
+  h += traitsHtml();
+  var keys = Object.keys(KEYS);
+  if (testOn()) h += checkbarHtml(keys);
+  h += checkinHtml(s);
+  h += '<div><button class="btn ghost" type="button" data-act="map" aria-controls="mapsec">🗺️ ' + (st.map ? "Hide the map" : "Show the map") + "</button></div>";
+  h += '<nav class="stepnav" aria-label="Tour navigation">' +
+    '<button type="button" data-act="prev"><small>&larr; Back</small><b>' + stepTitle(s.n - 1) + "</b></button>" +
+    (s.n < LAST ? '<button type="button" class="next" data-act="next"><small>Next &rarr;</small><b>' + stepTitle(s.n + 1) + "</b></button>" : '<button type="button" class="next" data-act="restart"><small>Again? &#8634;</small><b>Start from the beginning</b></button>') + "</nav>";
+  $("#lesson").innerHTML = h;
+  if (s.diagram === "axial") startAxial();
+}
+function finaleHtml(s){
+  var h = '<ol class="takeaways">' + s.takeaways.map(function(t){ return '<li><span style="min-width:0">' + t + "</span></li>"; }).join("") + "</ol>";
+  h += '<div class="btnrow"><button class="btn" type="button" data-act="testmode">✏️ Switch to Test mode</button><button class="btn ghost" type="button" data-act="explore">🌳 Explore the tree</button><button class="btn ghost" type="button" data-act="cheats">🎯 ID cheat sheet</button></div>';
+  h += '<div><h3 class="sech">Keep practicing</h3><div class="tiles">';
+  D.games.forEach(function(g){
+    h += g.href ? '<a class="tile" href="' + esc(g.href) + '"><span class="tag">Game</span><b>' + esc(g.title) + "</b></a>"
+                : '<div class="tile soon"><span class="tag">Game · link coming soon</span><b>' + esc(g.title) + "</b></div>";
+  });
+  h += '<div class="tile soon"><span class="tag">Learn · coming soon</span><b>Gram-positive tour</b>Firmicutes and Actinobacteria</div>';
+  return h + "</div></div>";
+}
+
+/* ================= ID cheat sheet ================= */
+function renderCheats(){
+  var h = '<p class="hint">One quick clue that sets each organism apart on our gram-positive list. Tap a row to jump there.</p><div class="cheatlist">';
+  D.stops.forEach(function(s){
+    if (s.cheat) h += '<button type="button" class="crow" data-gostop="' + s.n + '"><b>' + s.title + "</b><span>" + s.cheat + "</span></button>";
+    (s.orgs || []).forEach(function(o){
+      if (!o.cheat) return;
+      var nm = o.type === "phylum" ? esc(o.name) : "<i>" + esc(o.name) + "</i>" + (o.sub ? " " + esc(o.sub) : "");
+      h += '<button type="button" class="crow" data-gostop="' + s.n + '" data-org="' + o.id + '"><b>' + nm + "</b><span>" + o.cheat + "</span></button>";
+    });
+  });
+  h += "</div>";
+  if (D.cheatPreview && D.cheatPreview.length) h += '<h3 class="sech" style="margin-top:12px">🔒 Coming with Actinobacteria</h3><div class="cheatlist">' + D.cheatPreview.map(function(c){ return '<div class="crow soon"><b><i>' + esc(c.name) + "</i></b><span>" + c.t + "</span></div>"; }).join("") + "</div>";
+  $("#cheatBody").innerHTML = h;
+}
+
+/* ================= enteric table ================= */
+function renderTable(){
+  var E = D.enteric, GC = E.groupColors, h = '<div class="legend"><span style="--c:' + GC.coliforms + '"><i></i>Coliforms (lactose +)</span><span style="--c:' + GC.noncoliforms + '"><i></i>Non-coliforms (lactose −)</span><span>' + esc(E.key) + "</span></div>";
+  h += '<div class="tablewrap"><table class="ent"><thead><tr><th scope="col">Organism</th>' + E.cols.map(function(c){ return '<th scope="col">' + c + "</th>"; }).join("") + "</tr></thead><tbody>";
+  E.rows.forEach(function(r){ h += '<tr class="grp" style="--c:' + GC[r.group] + '"><td>' + esc(r.name) + "</td>" + r.v.map(function(x){ return "<td>" + x + "</td>"; }).join("") + "</tr>"; });
+  h += '</tbody></table></div><p style="font-size:16px">' + E.footnote + "</p>";
+  $("#entBody").innerHTML = h;
+}
+
+/* ================= render + navigation ================= */
+function renderAll(animate){
+  KEYS = {};
+  $$(".seg button").forEach(function(b){ b.setAttribute("aria-checked", b.getAttribute("data-mode") === st.mode ? "true" : "false"); });
+  $("#view-start").classList.toggle("active", st.view === "start");
+  $("#view-tour").classList.toggle("active", st.view === "tour");
+  if (st.view !== "tour"){ $("#crumb").textContent = ""; return; }
+  var s = stop();
+  $("#crumb").textContent = "/ " + plain(s.title);
+  $("#count").textContent = "Stop " + (s.n + 1) + " of " + D.stops.length;
+  $("#barFill").style.width = ((s.n + 1) / D.stops.length * 100) + "%";
+  $(".progress [data-act=next]").disabled = s.n === LAST;
+  renderRibbon();
+  renderLesson();
+  updateTree(animate);
+  updateMap();
+}
+function go(i, opts){
+  opts = opts || {};
+  var wasTour = st.view === "tour";
+  st.view = "tour"; st.i = Math.max(0, Math.min(LAST, i)); st.org = opts.org || null; st.full = !!opts.full;
+  renderAll(wasTour);
+  if (!opts.fromHistory){ try { history.pushState({i: st.i}, "", "#stop-" + (st.i + 1)); } catch (e) {} }
+  if (opts.scroll === "top") window.scrollTo({top: 0, behavior: reduced ? "auto" : "smooth"});
+  if (opts.org && opts.scroll === "card"){ var el = document.getElementById("org-" + opts.org); if (el) el.scrollIntoView({behavior: reduced ? "auto" : "smooth", block: "start"}); }
+  if (!wasTour) window.scrollTo(0, 0);
+}
+function showStart(fromHistory){
+  st.view = "start"; renderAll(false);
+  if (!fromHistory){ try { history.pushState({start: 1}, "", location.pathname + location.search); } catch (e) {} }
+  window.scrollTo(0, 0);
+}
+function openNode(id){
+  var n = N[id];
+  if (n.card && ORG[n.card] && !OPEN[id]) OPEN[id] = {stop: ORG[n.card].stop, org: n.card};
+  if (n.locked){ toast(n.locked); return; }
+  if (n.muted){ toast(n.muted); return; }
+  var o = OPEN[id]; if (!o) return;
+  if (o.stop === st.i && st.view === "tour"){
+    st.org = o.org || null; st.full = false; renderAll(true);
+    if (o.org){ var el = document.getElementById("org-" + o.org); if (el && window.innerWidth >= 1000) el.scrollIntoView({behavior: reduced ? "auto" : "smooth", block: "start"}); }
+    return;
+  }
+  go(o.stop, {org: o.org, scroll: o.org && window.innerWidth >= 1000 ? "card" : null});
+}
+function setMode(m){ st.mode = m; store(D.id + "-mode", m); renderAll(false); }
+var toastT;
+function toast(msg){ var t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(function(){ t.classList.remove("show"); }, 2600); }
+
+function stopKeys(){ return Object.keys(KEYS); }
+document.addEventListener("click", function(e){
+  var el;
+  if ((el = e.target.closest("#tree .tn"))){ if (T.justDragged) return; openNode(el.getAttribute("data-node")); return; }
+  if ((el = e.target.closest("#map .tn"))){ openNode(el.getAttribute("data-node")); if (!N[el.getAttribute("data-node")].locked && !N[el.getAttribute("data-node")].muted) window.scrollTo({top: 0, behavior: reduced ? "auto" : "smooth"}); return; }
+  if ((el = e.target.closest(".crumbs button[data-node]"))){ openNode(el.getAttribute("data-node")); return; }
+  if ((el = e.target.closest("[data-mode]"))){ setMode(el.getAttribute("data-mode")); return; }
+  if ((el = e.target.closest("[data-mc]"))){
+    var key = el.getAttribute("data-mc"); if (st.chk[key]) return;
+    st.ans[key] = el.getAttribute("data-val");
+    $$('[data-mc="' + key + '"]').forEach(function(b){ b.classList.toggle("sel", b === el); });
+    return;
+  }
+  if ((el = e.target.closest("[data-ci]"))){
+    var s = stop(); if (st.ci[s.n] != null) return;
+    st.ci[s.n] = Number(el.getAttribute("data-ci"));
+    $("#checkin").outerHTML = checkinHtml(s);
+    return;
+  }
+  if ((el = e.target.closest("[data-case]"))){
+    var cs = stop(), CS = st.cases[cs.n], ca = el.getAttribute("data-case");
+    if (ca === "open") CS.open = true;
+    else if (ca === "test") CS.rev[Number(el.getAttribute("data-i"))] = true;
+    else if (ca === "pick" && CS.pick == null) CS.pick = Number(el.getAttribute("data-i"));
+    $("#casebox").outerHTML = caseHtml(cs);
+    return;
+  }
+  if ((el = e.target.closest("[data-gostop]"))){
+    var cdl = $("#cheatDlg"); if (cdl.close) cdl.close(); else cdl.removeAttribute("open");
+    go(Number(el.getAttribute("data-gostop")), {org: el.getAttribute("data-org") || null, scroll: "top"}); return;
+  }
+  if ((el = e.target.closest("[data-spell]"))){
+    var spo = el.getAttribute("data-spell"), SP = st.spell[spo];
+    var sdir = el.getAttribute("data-dir");
+    if (sdir === "open") SP.open = true; else if (sdir === "check") SP.chk = true; else st.spell[spo] = {v: [], chk: false, open: true};
+    var ssec = $('[data-spellsec="' + spo + '"]'); if (ssec) ssec.outerHTML = spellHtml(ORG[spo]);
+    return;
+  }
+  if ((el = e.target.closest("[data-tile]"))){ var tk = el.getAttribute("data-tile"); st.flip[tk] = !st.flip[tk]; el.classList.toggle("on", st.flip[tk]); return; }
+  if ((el = e.target.closest("[data-flip]"))){ var fk = el.getAttribute("data-flip"); st.flip[fk] = !st.flip[fk]; el.classList.toggle("on", st.flip[fk]); return; }
+  if ((el = e.target.closest("[data-flipall]"))){
+    var card = el.closest(".org"), tiles = $$("[data-tile]", card), allOn = tiles.every(function(x){ return x.classList.contains("on"); });
+    tiles.forEach(function(x){ st.flip[x.getAttribute("data-tile")] = !allOn; x.classList.toggle("on", !allOn); });
+    el.textContent = allOn ? "Flip all" : "Hide all";
+    return;
+  }
+  if ((el = e.target.closest("[data-flow]"))){
+    var fo = el.getAttribute("data-flow"), fdir = el.getAttribute("data-dir"), fl = ORG[fo] ? ORG[fo].disease.flow : null;
+    /* stop-level sections use "<stop id>-<index>" */
+    if (!fl) D.stops.forEach(function(x){ (x.sections || []).forEach(function(sec, i){ if (x.id + "-" + i === fo) fl = sec.flow; }); });
+    if (!fl) return;
+    st.flow[fo] = fdir === "reset" ? 1 : fdir === "all" ? fl.steps.length : Math.min(fl.steps.length, (st.flow[fo] || 1) + 1);
+    var fb = $('[data-flowbox="' + fo + '"]'); if (fb) fb.outerHTML = flowHtml(fo, fl);
+    return;
+  }
+  if ((el = e.target.closest("[data-schip]"))){
+    if (sortDrag.moved) return;
+    var so = el.getAttribute("data-schip"), si = Number(el.getAttribute("data-i"));
+    st.sortSel = st.sortSel && st.sortSel.o === so && st.sortSel.i === si ? null : {o: so, i: si};
+    redrawSort(so); return;
+  }
+  if ((el = e.target.closest("[data-sbin]"))){
+    if (st.sortSel && st.sortSel.o === el.getAttribute("data-o")){ placeSort(st.sortSel.o, st.sortSel.i, el.getAttribute("data-sbin")); }
+    return;
+  }
+  if ((el = e.target.closest("[data-sort]"))){
+    var sto = el.getAttribute("data-sort"), SS = st.sort[sto];
+    if (el.getAttribute("data-dir") === "check") SS.chk = true; else { st.sort[sto] = {at: {}, chk: false}; st.sortSel = null; }
+    redrawSort(sto); return;
+  }
+  if ((el = e.target.closest("[data-focus]"))){
+    if (e.target.closest("select")) return;
+    var id = el.getAttribute("data-focus");
+    st.org = id; st.full = false;
+    renderAll(true);
+    if (window.innerWidth < 1000) $("#treebox").scrollIntoView({behavior: reduced ? "auto" : "smooth", block: "center"});
+    return;
+  }
+  if ((el = e.target.closest("[data-tab-soon]"))){ toast(el.getAttribute("data-tab-soon")); return; }
+  if (!(el = e.target.closest("[data-act]"))) return;
+  var act = el.getAttribute("data-act");
+  if (act === "start") showStart();
+  else if (act === "begin") go(0, {scroll: "top"});
+  else if (act === "restart") go(0, {scroll: "top"});
+  else if (act === "explore"){ go(st.view === "tour" ? st.i : 0, {full: true}); $("#treebox").scrollIntoView({behavior: reduced ? "auto" : "smooth", block: "center"}); }
+  else if (act === "next") go(st.i + 1, {scroll: "top"});
+  else if (act === "prev"){ if (st.i === 0) showStart(); else go(st.i - 1, {scroll: "top"}); }
+  else if (act === "full"){ st.full = true; updateTree(true); }
+  else if (act === "refocus"){ st.full = false; updateTree(true); }
+  else if (act === "zoomin") zoomTo(T.s * 1.35, null, null, true);
+  else if (act === "zoomout") zoomTo(T.s / 1.35, null, null, true);
+  else if (act === "map"){ st.map = !st.map; renderAll(false); if (st.map) $("#mapsec").scrollIntoView({behavior: reduced ? "auto" : "smooth", block: "start"}); }
+  else if (act === "testmode"){ setMode("test"); go(0, {scroll: "top"}); }
+  else if (act === "table"){ renderTable(); var dl = $("#entDlg"); if (dl.showModal) dl.showModal(); else dl.setAttribute("open", ""); }
+  else if (act === "cheats"){ renderCheats(); var cd = $("#cheatDlg"); if (cd.showModal) cd.showModal(); else cd.setAttribute("open", ""); }
+  else if (act === "closeCheats"){ var cd2 = $("#cheatDlg"); if (cd2.close) cd2.close(); else cd2.removeAttribute("open"); }
+  else if (act === "closeDlg"){ var d2 = $("#entDlg"); if (d2.close) d2.close(); else d2.removeAttribute("open"); }
+  else if (act === "check"){
+    stopKeys().forEach(function(k){ st.chk[k] = true; });
+    renderAll(false);
+    var cb = $("#checkbar"); if (cb) cb.scrollIntoView({behavior: reduced ? "auto" : "smooth", block: "center"});
+  }
+  else if (act === "retry"){ stopKeys().forEach(function(k){ delete st.chk[k]; delete st.ans[k]; }); renderAll(false); }
+});
+document.addEventListener("input", function(e){
+  var inp = e.target.closest && e.target.closest("input[data-sp]"); if (!inp) return;
+  st.spell[inp.getAttribute("data-sp")].v[Number(inp.getAttribute("data-w"))] = inp.value;
+});
+document.addEventListener("keydown", function(e){
+  var inp = e.target.closest && e.target.closest("input[data-sp]");
+  if (inp && e.key === "Enter"){ e.preventDefault(); var b = $('[data-spell="' + inp.getAttribute("data-sp") + '"][data-dir="check"]'); if (b) b.click(); }
+});
+document.addEventListener("change", function(e){
+  var s = e.target.closest("select[data-key]"); if (!s) return;
+  st.ans[s.getAttribute("data-key")] = s.value;
+});
+/* quick sort: drag a result chip into a bin (mouse, pen or finger); a tap without moving selects it instead */
+var sortDrag = {el: null, moved: false};
+function redrawSort(oid){ var sec = $('[data-sortsec="' + oid + '"]'); if (sec) sec.outerHTML = sortHtml(ORG[oid]); }
+function placeSort(oid, i, bin){ var S = st.sort[oid]; if (!S || S.chk) return; S.at[i] = bin; st.sortSel = null; redrawSort(oid); }
+document.addEventListener("pointerdown", function(e){
+  var c = e.target.closest && e.target.closest("[data-schip]"); if (!c || c.disabled) return;
+  sortDrag = {el: c, moved: false, x: e.clientX, y: e.clientY, id: e.pointerId};
+});
+document.addEventListener("pointermove", function(e){
+  var d = sortDrag; if (!d.el || e.pointerId !== d.id) return;
+  var dx = e.clientX - d.x, dy = e.clientY - d.y;
+  if (!d.moved && Math.abs(dx) + Math.abs(dy) > 8){ d.moved = true; d.el.classList.add("dragging"); try { d.el.setPointerCapture(e.pointerId); } catch (er) {} }
+  if (d.moved){ e.preventDefault(); d.el.style.transform = "translate(" + dx + "px," + dy + "px)"; }
+}, {passive: false});
+document.addEventListener("pointerup", function(e){
+  var d = sortDrag; if (!d.el || e.pointerId !== d.id) return;
+  if (d.moved){
+    d.el.style.visibility = "hidden";
+    var under = document.elementFromPoint(e.clientX, e.clientY), bin = under && under.closest("[data-sbin]");
+    d.el.style.visibility = ""; d.el.style.transform = ""; d.el.classList.remove("dragging");
+    if (bin && bin.getAttribute("data-o") === d.el.getAttribute("data-schip")) placeSort(bin.getAttribute("data-o"), Number(d.el.getAttribute("data-i")), bin.getAttribute("data-sbin"));
+    setTimeout(function(){ sortDrag = {el: null, moved: false}; }, 0);
+  } else sortDrag = {el: null, moved: false};
+});
+document.addEventListener("keydown", function(e){
+  var tl = e.target.closest && e.target.closest("[data-tile]");
+  if (tl && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); tl.click(); return; }
+  var g = e.target.closest && e.target.closest("#tree .tn, #map .tn"); if (!g) return;
+  if (e.key === "Enter" || e.key === " "){ e.preventDefault(); openNode(g.getAttribute("data-node")); }
+});
+$("#entDlg").addEventListener("click", function(e){ if (e.target === e.currentTarget) e.currentTarget.close(); });
+$("#cheatDlg").addEventListener("click", function(e){ if (e.target === e.currentTarget) e.currentTarget.close(); });
+window.addEventListener("resize", function(){ if (st.view === "tour") frame(viewInfo(), false); });
+function fromHash(fromHistory){
+  var hsh = location.hash || "", m = /^#stop-(\d+)$/.exec(hsh);
+  if (m){ go(Number(m[1]) - 1, {fromHistory: true}); return; }
+  showStart(fromHistory);
+  /* links from the unit page: #cheats opens the ID cheat sheet, #table the enteric ID table */
+  if (hsh === "#cheats"){ renderCheats(); var cd = $("#cheatDlg"); if (cd.showModal) cd.showModal(); else cd.setAttribute("open", ""); }
+  if (hsh === "#table"){ renderTable(); var td = $("#entDlg"); if (td.showModal) td.showModal(); else td.setAttribute("open", ""); }
+}
+window.addEventListener("popstate", function(){ fromHash(true); });
+
+/* ================= static text from the data ================= */
+document.title = D.plainTitle;
+$("#brandTxt").textContent = D.brand;
+$("#startEyebrow").textContent = D.eyebrow;
+$("#startTitle").innerHTML = D.title;
+$("#goals").innerHTML = D.goals.map(function(g){ return "<li><span>" + g + "</span></li>"; }).join("");
+$("#tabs").innerHTML = D.tabs.map(function(t){
+  return t.current ? '<button type="button" role="tab" aria-selected="true" class="on">' + esc(t.label) + "</button>"
+                   : '<button type="button" role="tab" aria-selected="false" class="soon" data-tab-soon="' + esc(t.soon) + '">🔒 ' + esc(t.label) + "</button>";
+}).join("");
+
+drawTree();
+fromHash(true);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ drawTree(); MAP.laid = false; if (st.view === "tour"){ updateTree(false); updateMap(); } });
+})();
+</script>
+</body>
+</html>
