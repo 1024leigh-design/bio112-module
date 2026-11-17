@@ -452,6 +452,9 @@ table.ent tr.grp td{background:color-mix(in srgb, var(--c) 12%, var(--surface))}
 .fun[open] summary{border-bottom:1.5px solid var(--line)}
 .funbody{padding:12px 14px; display:flex; flex-direction:column; gap:10px}
 .xlink{margin:0}
+.practice1{margin:0; font-size:15.5px; display:flex; flex-wrap:wrap; gap:6px 8px; align-items:center}
+.practice1 a{text-decoration:none; color:var(--ink); border:1.5px solid var(--line); border-radius:999px; padding:3px 11px; background:var(--surface); font-weight:700; font-size:14.5px}
+.practice1 a:hover{border-color:var(--arrow)}
 .practice .plinks{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px}
 .plink{display:flex; flex-direction:column; gap:2px; text-decoration:none; color:var(--ink); border:1.5px solid var(--line); border-left:6px solid var(--gn-edge); border-radius:14px; padding:10px 12px; background:var(--surface)}
 .plink:hover{border-color:var(--arrow)}
@@ -1390,13 +1393,13 @@ function renderLesson(){
   if (s.orgs && s.orgs.length) h += '<div class="orgs">' + s.orgs.map(orgCard).join("") + "</div>";
   if (s.case) h += caseHtml(s);
   if (s.finale) h += finaleHtml(s);
-  if (s.links) h += '<section class="practice"><h4 class="sech">🎮 Practice this</h4><div class="plinks">' + s.links.map(function(l){ return '<a class="plink" href="' + l.href + '"><span>' + (l.ic || "🎮") + "</span><b>" + l.t + "</b>" + (l.sub ? "<small>" + l.sub + "</small>" : "") + "</a>"; }).join("") + "</div></section>";
   h += cheatHtml(s.cheat);
   (s.orgs || []).forEach(function(o){ if (o.cheat) h += cheatHtml(o.cheat, s.orgs.length > 1 ? o : null); });
   h += traitsHtml();
   var keys = Object.keys(KEYS);
   if (testOn()) h += checkbarHtml(keys);
   h += checkinHtml(s);
+  if (s.links) h += '<p class="practice1"><b>Practice:</b> ' + s.links.map(function(l){ return '<a href="' + l.href + '">' + l.t + "</a>"; }).join("") + "</p>";
   h += '<div><button class="btn ghost" type="button" data-act="map" aria-controls="mapsec">🗺️ ' + (st.map ? "Hide the map" : "Show the map") + "</button></div>";
   h += '<nav class="stepnav" aria-label="Tour navigation">' +
     '<button type="button" data-act="prev"><small>&larr; Back</small><b>' + stepTitle(s.n - 1) + "</b></button>" +
@@ -1412,7 +1415,7 @@ function finaleHtml(s){
     h += g.href ? '<a class="tile" href="' + esc(g.href) + '"><span class="tag">Game</span><b>' + esc(g.title) + "</b></a>"
                 : '<div class="tile soon"><span class="tag">Game · link coming soon</span><b>' + esc(g.title) + "</b></div>";
   });
-  h += '<div class="tile soon"><span class="tag">Learn · coming soon</span><b>Gram-positive tour</b>Firmicutes and Actinobacteria</div>';
+  (D.tabs || []).forEach(function(t){ if (t.href) h += '<a class="tile" href="' + esc(t.href) + '"><span class="tag">Learn</span><b>' + esc(t.label) + " tour</b></a>"; });
   return h + "</div></div>";
 }
 

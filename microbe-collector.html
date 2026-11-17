@@ -214,7 +214,7 @@ var SITES = [
   {id: "mouth", em: "👄", name: "Mouth & throat", blurb: "Normal flora and some troublemakers.",
     orgs: ["fuso", "lactobacillus", "bactero", "spyogenes", "spneumoniae", "nmen", "cpneumoniae", "bpertussis", "mluteus", "aisraelii", "cdiphtheriae"]},
   {id: "nose", em: "👃", name: "Nose & skin", blurb: "Your skin and nostrils have flora too.",
-    orgs: ["sepi", "saureus", "spneumoniae", "nmen", "mluteus", "cacnes"]},
+    orgs: ["sepi", "saureus", "spneumoniae", "nmen", "mluteus", "mroseus", "cacnes"]},
   {id: "bugs", em: "🕷️", name: "Ticks & fleas", blurb: "Vector-borne microbes hitch a ride.",
     orgs: ["bburgdorferi", "brf", "rrickettsii", "ypestis"]},
   {id: "kitchen", em: "🍳", name: "Kitchen", blurb: "Raw meat, leftovers, the fridge.",
@@ -226,7 +226,7 @@ var SITES = [
 ];
 var RARITY = {
   common: ["ecoli", "enterobacter", "bactero", "enterococcus", "proteus", "lactobacillus", "bsubtilis", "paeruginosa", "cyano", "fuso", "sepi", "saureus", "sgriseus", "mluteus", "cacnes"],
-  uncommon: ["kpneumoniae", "salmonella", "shigella", "cjejuni", "cdiff", "cperfringens", "bcereus", "lmono", "planct", "lpneumophila", "spyogenes", "spneumoniae", "nmen", "cpneumoniae", "bburgdorferi", "smarcescens", "ssapro", "ngon", "ctrachomatis", "sagalactiae", "hpylori", "aisraelii", "nasteroides", "cjeikeium", "mphlei"],
+  uncommon: ["kpneumoniae", "salmonella", "shigella", "cjejuni", "cdiff", "cperfringens", "bcereus", "lmono", "planct", "lpneumophila", "spyogenes", "spneumoniae", "nmen", "cpneumoniae", "bburgdorferi", "smarcescens", "ssapro", "ngon", "ctrachomatis", "sagalactiae", "hpylori", "aisraelii", "nasteroides", "cjeikeium", "mphlei", "mroseus"],
   rare: ["vcholerae", "styphi", "ctetani", "cbotulinum", "bpertussis", "brf", "rrickettsii", "tpallidum", "mtb", "cdiphtheriae", "mleprae"],
   legendary: ["ypestis", "banthracis"]
 };
@@ -320,7 +320,7 @@ var QSETS = {
      Q("Treatment for MRSA?", ["vancomycin, daptomycin, or clindamycin", "nafcillin or oxacillin", "penicillin", "methicillin"])]
   ],
   spneumoniae: [
-    [Q("<i>S. pneumoniae</i>'s shape?", ["lancet-shaped diplococci", "grape-like clusters", "spore-forming rods", "spirochete"]),
+    [Q("<i>S. pneumoniae</i>'s shape?", ["diplococci (cocci in pairs)", "grape-like clusters", "spore-forming rods", "spirochete"]),
      Q("Its main virulence factor?", ["a polysaccharide capsule", "coagulase", "endospores", "tetanospasmin"])],
     [Q("The Quellung reaction is when...", ["the capsule swells (used for ID)", "bubbles form with H₂O₂", "plasma clots", "the colony turns golden"]),
      Q("How is pneumococcal disease prevented?", ["pneumococcal vaccines", "no honey for infants", "soap instead of sanitizer", "cooking poultry well"])]
@@ -639,6 +639,7 @@ var PLATES = {
   aisraelii: {m: "bloodan", col: "#f3efe6", look: "irregular", note: "White, lumpy \"molar-like\" colonies (bacteria + calcium phosphate); slow growth, no O₂"},
   sgriseus: {m: "nutrient", col: "#f4f2ea", look: "wrinkly", note: "Dry, chalky colonies of filaments and conidia"},
   mluteus: {m: "nutrient", col: "#f2c40f", note: "Bright yellow colonies"},
+  mroseus: {m: "nutrient", col: "#ec7fa6", note: "Pink colonies"},
   cacnes: {m: "bloodan", col: "#eeeae0", look: "small", note: "Small white colonies; grown without O₂"},
   cdiphtheriae: {m: "tellurite", col: "#3a3a3a", note: "Gray-black colonies on selective tellurite agar"},
   cjeikeium: {m: "blood", col: "#eef0ee", look: "small", note: "Small gray-white colonies"},

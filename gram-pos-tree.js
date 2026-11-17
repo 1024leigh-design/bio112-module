@@ -109,7 +109,7 @@ window.TOUR_DATA = {
       traits: [{t: "chains", blank: {pre: "", post: "", a: "chains", o: ["chains", "grape-like clusters"], why: "Strepto = twisted chain: strep grow in chains."}}, {t: "sorted by hemolysis"}]},
     {id: "s_pyogenes", rank: "species", label: "S. pyogenes", parent: "strep", italic: true, traits: [{t: "group A strep"}]},
     {id: "s_agalactiae", rank: "species", label: "S. agalactiae", parent: "strep", italic: true, traits: [{t: "group B strep"}]},
-    {id: "s_pneumoniae", rank: "species", label: "S. pneumoniae", parent: "strep", italic: true, traits: [{t: "lancet-shaped diplococci"}, {t: "capsule"}]},
+    {id: "s_pneumoniae", rank: "species", label: "S. pneumoniae", parent: "strep", italic: true, traits: [{t: "diplococci (pairs)"}, {t: "capsule"}]},
     {id: "enterococcus", rank: "genus", label: "Enterococcus", parent: "lb_cocci", italic: true,
       traits: [{t: "pairs or short chains"}, {t: "salt- and bile-tolerant", blank: {pre: "", post: "-tolerant", a: "salt- and bile", o: ["salt- and bile", "cold"], why: "<i>Enterococcus</i> is extremely hardy: salt-tolerant, bile-tolerant, heat-resistant."}}, {t: "gut flora"}]},
     {id: "e_species", rank: "species", label: "E. faecalis, E. faecium", parent: "enterococcus", overviewOnly: true, italic: true, card: "enterococcus"},
@@ -142,11 +142,11 @@ window.TOUR_DATA = {
     {id: "streptomycetales", rank: "order", label: "Streptomycetales", parent: "actino"},
     {id: "streptomyces", rank: "genus", label: "Streptomyces", parent: "streptomycetales", italic: true,
       traits: [{t: "filamentous"}, {t: "spores (conidia), NOT endospores"}, {t: "aerobic soil bacteria"}, {t: "major antibiotic producers", blank: {pre: "major ", post: " producers", a: "antibiotic", o: ["antibiotic", "toxin"], why: "<i>Streptomyces</i> makes streptomycin, tetracyclines, and erythromycin."}}]},
-    {id: "s_griseus", rank: "species", label: "S. griseus", parent: "streptomyces", overviewOnly: true, italic: true, card: "sgriseus"},
     {id: "micrococcales", rank: "order", label: "Micrococcales", parent: "actino"},
     {id: "micrococcus", rank: "genus", label: "Micrococcus", parent: "micrococcales", italic: true,
       traits: [{t: "cocci in tetrads", blank: {pre: "cocci in ", post: "", a: "tetrads", o: ["tetrads", "chains", "clusters"], why: "<i>Micrococcus</i> is the only one on our list arranged in tetrads (groups of 4)."}}, {t: "obligate aerobes"}, {t: "catalase +, oxidase +"}, {t: "colorful colonies"}]},
     {id: "m_luteus", rank: "species", label: "M. luteus", parent: "micrococcus", overviewOnly: true, italic: true, card: "mluteus"},
+    {id: "m_roseus", rank: "species", label: "M. roseus", parent: "micrococcus", overviewOnly: true, italic: true, card: "mroseus"},
     {id: "propionibacteriales", rank: "order", label: "Propionibacteriales", parent: "actino"},
     {id: "cutibacterium", rank: "genus", label: "Cutibacterium", parent: "propionibacteriales", italic: true, traits: [{t: "skin commensal"}]},
     {id: "c_acnes", rank: "species", label: "C. acnes", parent: "cutibacterium", overviewOnly: true, italic: true, card: "cacnes"},
@@ -177,7 +177,7 @@ window.TOUR_DATA = {
         "Today: the <b>gram-positives</b>. They split into two phyla by <b>G+C content</b>: <b>Firmicutes</b> (low G+C) and <b>Actinobacteria</b> (high G+C).",
         "We start with the Firmicutes, then finish with the Actinobacteria."
       ]},
-    {id: "gram-positive", photos: [{"src": "images/cell-walls-gram-pos-vs-neg.png", "alt": "Diagram comparing a gram-positive wall (thick peptidoglycan with teichoic acid) and a gram-negative wall (thin peptidoglycan plus an outer membrane)", "cap": "Gram + wall (left): a <b>thick</b> peptidoglycan layer with teichoic acid and <b>no outer membrane</b>. Compare the gram − wall (right).", "credit": "Credit: modification of work by “Franciscosp2”/Wikimedia Commons, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 3.26)"}, {"src": "images/s-aureus-gram-stain.jpg", "alt": "Gram stain with many small purple round cells", "cap": "Gram stain of <i>S. aureus</i>: the thick wall keeps the crystal violet, so the cells stay <b>purple</b>", "credit": "<a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 2.34)"}], widgets: ["gc"], links: [{href: "virtual-lab.html#lab8", ic: "🔬", t: "Virtual Lab 8: Gram stain", sub: "stain a smear step by step"}], node: "grampos", title: "Gram-positive bacteria",
+    {id: "gram-positive", photos: [{"src": "images/cell-walls-gram-pos-vs-neg.png", "alt": "Diagram comparing a gram-positive wall (thick peptidoglycan with teichoic acid) and a gram-negative wall (thin peptidoglycan plus an outer membrane)", "cap": "Gram + wall (left): a <b>thick</b> peptidoglycan layer with teichoic acid and <b>no outer membrane</b>. Compare the gram − wall (right).", "credit": "Credit: modification of work by “Franciscosp2”/Wikimedia Commons, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 3.26)"}], widgets: ["gc"], links: [{href: "virtual-lab.html#lab8", ic: "🔬", t: "Virtual Lab 8: Gram stain", sub: "stain a smear step by step"}], node: "grampos", title: "Gram-positive bacteria",
       lesson: [
         "Gram-positive cells have a <b>thick peptidoglycan layer</b> and <b>no outer membrane</b>. The thick wall holds the crystal violet, so they stay <b>purple</b>.",
         "<b>G+C content</b> = the percentage of guanine (G) and cytosine (C) in a bacterium's DNA. It ranges from about 25% to 75%.",
@@ -192,15 +192,18 @@ window.TOUR_DATA = {
       lesson: [
         "Firmicutes (also called <b>Bacillota</b>) have <b>low G+C</b> (&lt;50%).",
         "They include <b>cocci and rods</b>, and some form <b>endospores</b>.",
-        "Two classes:<ul><li><b>Bacilli:</b> aerobes or facultative anaerobes; rods and cocci</li><li><b>Clostridia:</b> obligate anaerobes; spore-forming rods</li></ul>",
-        "Key genera: <i>Bacillus, Listeria, Staphylococcus, Streptococcus, Enterococcus, Lactobacillus, Clostridium</i>."
+        "Two classes:"
+      ],
+      cols: [
+        {h: "Class Bacilli", t: "Aerobes or facultative anaerobes; rods and cocci", items: ["Bacillus", "Listeria", "Staphylococcus", "Lactobacillus", "Streptococcus", "Enterococcus"]},
+        {h: "Class Clostridia", t: "Obligate anaerobes; spore-forming rods", items: ["Clostridium", "Clostridioides"], c: "#0e7490"}
       ],
       checkin: {
         q: "What sets the Firmicutes apart from the Actinobacteria?",
         o: ["Firmicutes have low G+C (&lt;50%)", "Firmicutes have high G+C (&gt;50%)", "Firmicutes are gram-negative", "Firmicutes have no cell wall"],
         w: "Both are gram-positive. Firmicutes: low G+C. Actinobacteria: high G+C."
       }},
-    {id: "mycoplasma", diagram: "nowall", photo: {"src": "images/mycoplasma-attaching.jpg", "alt": "Electron micrograph of small Mycoplasma cells attached to the surface of an airway cell", "cap": "<i>Mycoplasma pneumoniae</i> (arrow) attaching to airway cells", "credit": "Credit: modification of work by American Society for Microbiology, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 22.12)"}, node: "mycoplasma", title: "<i>Mycoplasma</i>: the odd cousin",
+    {id: "mycoplasma", photo: {"src": "images/mycoplasma-attaching.jpg", "alt": "Electron micrograph of small Mycoplasma cells attached to the surface of an airway cell", "cap": "<i>Mycoplasma pneumoniae</i> (arrow) attaching to airway cells", "credit": "Credit: modification of work by American Society for Microbiology, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 22.12)"}, node: "mycoplasma", title: "<i>Mycoplasma</i>: the odd cousin",
       cheat: "The only one with <b>no cell wall</b>; <b>sterols</b> in its membrane help hold it together.",
       lesson: [
         "<i>Mycoplasma</i> has <b>no cell wall</b>, so it is <b>not gram-positive</b>.",
@@ -218,20 +221,27 @@ window.TOUR_DATA = {
     {id: "bacilli", photo: {"src": "images/catalase-test.jpg", "alt": "Two drops on a glass slide: the left one is flat, the right one is full of bubbles", "cap": "A real catalase test: no bubbles (−, left) vs. bubbles (+, right)", "credit": "Credit: Centers for Disease Control and Prevention, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 9.23)"}, cheat: "In class Bacilli, the <b>catalase test</b> splits the orders: catalase + = <b>Bacillales</b>, catalase − = <b>Lactobacillales</b>.", node: "bacilli", title: "Class Bacilli",
       lesson: [
         "Class Bacilli are <b>aerobes or facultative anaerobes</b>. They include rods and cocci.",
-        "Two orders:<ul><li><b>Bacillales:</b> <i>Bacillus</i> (spore formers), <i>Listeria</i>, <i>Staphylococcus</i></li><li><b>Lactobacillales:</b> <i>Lactobacillus</i>, <i>Streptococcus</i>, <i>Enterococcus</i></li></ul>",
         "Bacilli vs. Clostridia: check the <b>oxygen</b>. Clostridia are obligate anaerobes.",
-        "Inside class Bacilli, we tell the two orders apart with the <b>catalase test</b>: catalase + = <b>Bacillales</b>, catalase − = <b>Lactobacillales</b>. (The photo shows a real catalase test.)"
+        "Two orders, told apart with the <b>catalase test</b> (photo below):"
+      ],
+      cols: [
+        {h: "Order Bacillales", t: "<b>Catalase +</b> (bubbles)", items: ["Bacillus (spore formers)", "Listeria", "Staphylococcus"]},
+        {h: "Order Lactobacillales", t: "<b>Catalase −</b> (no bubbles)", items: ["Lactobacillus", "Streptococcus", "Enterococcus"], c: "#0e7490"}
       ],
       checkin: {
         q: "How can you tell class Bacilli apart from class Clostridia?",
         o: ["Bacilli grow with O₂ (aerobes or facultative); Clostridia are obligate anaerobes", "Bacilli are gram-negative", "Only Clostridia are rods", "Only Bacilli form spores"],
         w: "Oxygen: Bacilli are aerobes or facultative anaerobes. Clostridia are obligate anaerobes."
       }},
-    {id: "bacillales", photo: {"src": "images/b-cereus-blood-agar.jpg", "alt": "Large white colonies on a red blood agar plate", "cap": "<i>Bacillus cereus</i> colonies on blood agar", "credit": "Credit: modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.21, panel b, cropped)"}, sections: [{h: "🔎 Meet the Bacillales", boxes: [{ic: "🥚", t: "<i>Bacillus</i>: spore-forming rods"}, {ic: "🧊", t: "<i>Listeria</i>: rods that grow in the fridge"}, {ic: "🍇", t: "<i>Staphylococcus</i>: grape-like clusters"}]}], node: "bacillales", title: "Order Bacillales",
+    {id: "bacillales", photo: {"src": "images/b-cereus-blood-agar.jpg", "alt": "Large white colonies on a red blood agar plate", "cap": "<i>Bacillus cereus</i> colonies on blood agar", "credit": "Credit: modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.21, panel b, cropped)"}, node: "bacillales", title: "Order Bacillales",
       lesson: [
         "Bacillales are <b>aerobic or facultatively anaerobic</b> environmental survivors.",
-        "They are <b>catalase +</b>. Spores: <b>sometimes</b> (only <i>Bacillus</i> on our list).",
-        "Our genera: <i>Bacillus</i> and <i>Listeria</i> (rods), <i>Staphylococcus</i> (cocci)."
+        "They are <b>catalase +</b>. Spores: <b>sometimes</b> (only <i>Bacillus</i> on our list)."
+      ],
+      cols: [
+        {h: "<i>Bacillus</i>", t: "Spore-forming rods"},
+        {h: "<i>Listeria</i>", t: "Rods that grow in the fridge"},
+        {h: "<i>Staphylococcus</i>", t: "Cocci in grape-like clusters"}
       ],
       checkin: {
         q: "Which test sorts Bacillales from Lactobacillales?",
@@ -240,7 +250,7 @@ window.TOUR_DATA = {
       }},
     {id: "bacillus", photo: {"src": "images/sporulation.jpg", "alt": "Diagram of the steps of endospore formation, an electron micrograph of an endospore, and Bacillus cells with green-stained endospores", "cap": "How an endospore forms: DNA copies → membranes surround it → cortex and protein coat → the spore is released", "credit": "Credit: modification of work by Jonathan Eisen (panel b), via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 3.20)"}, links: [{href: "virtual-lab.html#lab9", ic: "🥚", t: "Virtual Lab 9: Endospore stain", sub: "see spores turn green"}, {href: "microbe-collector.html#swab-dirt", ic: "🌱", t: "Microbe Collector: swab the garden dirt", sub: "catch these microbes"}], node: "bacillus", title: "<i>Bacillus</i>",
       cheat: "A <b>spore former</b> that's <b>aerobic or a facultative anaerobe</b>? On our list, that's <i>Bacillus</i>.",
-      life: [{ic: "🍚", t: "<i>B. cereus</i> is a common cause of food poisoning from rice left sitting out (stale rice)."}],
+      more: {title: "Bacillus is being split up!", html: "<p>A big 2020 study compared whole genomes of <i>Bacillus</i> species and found they actually form many separate groups. The authors proposed keeping the name <i>Bacillus</i> only for the <b>Subtilis</b> and <b>Cereus</b> groups (like <i>B. subtilis</i>, <i>B. anthracis</i>, and <i>B. cereus</i>), and moving other species into <b>17 new genera</b>.</p><p>For example, <i>Bacillus megaterium</i> is now <b><i>Priestia megaterium</i></b>. That's why you may see both names in labs and papers.</p>", link: {href: "https://doi.org/10.1099/ijsem.0.004475", t: "Gupta et al. 2020, Int J Syst Evol Microbiol 70:5753"}},
       lesson: [
         "<i>Bacillus</i> is <b>aerobic or facultatively anaerobic</b>, <b>catalase +</b>, <b>urease −</b>, and <b>spore-forming</b>!",
         "Our two gram-positive spore-forming genera: <i>Bacillus</i> and <i>Clostridium</i>."
@@ -265,7 +275,8 @@ window.TOUR_DATA = {
             {k: "spores", v: "+", from: "bacillus"},
             {k: "urease", v: "−", from: "bacillus"}
           ],
-          disease: {short: "food poisoning (stale rice)", html: "food poisoning, often from stale rice", tags: ["food poisoning"]}},
+          disease: {short: "food poisoning (stale rice)", html: "food poisoning, often from stale rice", tags: ["food poisoning"]},
+          extra: [{h: "🌍 In your life", boxes: [{t: "A common cause of food poisoning from rice left sitting out (stale rice)."}]}]},
         {id: "bsubtilis", node: "b_subtilis", name: "Bacillus subtilis", shape: "rodspore", emoji: "🏭",
           tests: [
             {k: "gram", v: "+", from: "grampos"},
@@ -275,7 +286,7 @@ window.TOUR_DATA = {
             {k: "spores", v: "+", from: "bacillus"},
             {k: "urease", v: "−", from: "bacillus"}
           ],
-          facts: [{ic: "🏭", h: "Uses", t: "probiotics and industry. Not a disease-causer."}]}
+          facts: [{h: "Uses", t: "probiotics and industry. Not a disease-causer."}]}
       ],
       checkin: {
         q: "Which two gram-positive genera on our list form endospores?",
@@ -297,7 +308,7 @@ window.TOUR_DATA = {
           ],
           disease: {short: "listeriosis", html: "listeriosis: can feel like the stomach flu, but can also cause <b>meningitis, miscarriage, and stillbirth</b>"},
           facts: [
-            {ic: "🧀", h: "Sources", t: "unpasteurized dairy, soft cheeses, deli meats"},
+            {h: "Sources", t: "unpasteurized dairy, soft cheeses, deli meats"},
             {ic: "🤰", h: "Most at risk", t: "pregnant people, newborns, elderly, immunocompromised", warn: true}
           ]}
       ],
@@ -326,7 +337,7 @@ window.TOUR_DATA = {
       life: [{ic: "👃", t: "About 1 in 4 people carry <i>S. aureus</i> on their skin or in their nose without being sick."}],
       orgs: [
         {id: "saureus", photos: [{"src": "images/s-aureus-vs-epidermidis-msa.jpg", "alt": "A mannitol salt agar plate: the left side turned yellow around the colonies, the right side stayed pink", "cap": "Mannitol salt agar: <i>S. aureus</i> (left) ferments mannitol and turns it <b>yellow</b>; <i>S. epidermidis</i> (right) does not", "credit": "Credit: modification of work by “ScienceProfOnline”/YouTube, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 21.9, panel a, cropped)"}], node: "s_aureus", name: "Staphylococcus aureus", shape: "clusters", emoji: "🟡",
-          cheat: "The only <b>coagulase +</b> staph, with <b>golden</b> colonies.",
+          cheat: "A staph that's <b>coagulase +</b> with <b>golden</b> colonies: <i>S. aureus</i>.",
           tests: [
             {k: "gram", v: "+", from: "grampos"},
             {k: "shape", v: "cocci in clusters", from: "staph"},
@@ -338,27 +349,27 @@ window.TOUR_DATA = {
           ],
           disease: {short: "skin infections, toxic shock, scalded skin, food poisoning", html: "skin and soft tissue infections, toxic shock syndrome, scalded skin syndrome, food poisoning, osteomyelitis", tags: ["food poisoning", "skin"],
             flips: [
-              {f: "<span class=\"fe\">🌡️</span>TSST-1", b: "Toxic shock syndrome toxin: overactivates the immune system → fever, rash, low blood pressure"},
-              {f: "<span class=\"fe\">⚔️</span>Panton-Valentine leukocidin", b: "Kills immune cells!"},
-              {f: "<span class=\"fe\">🩸</span>Hemolysin", b: "Destroys red blood cells (steals iron from hemoglobin)"},
-              {f: "<span class=\"fe\">🧴</span>Exfoliatin", b: "Causes staphylococcal scalded skin syndrome (SSSS): painful red skin with blisters"},
-              {f: "<span class=\"fe\">🍽️</span>Enterotoxin", b: "Causes food poisoning; survives high heat"}
+              {f: "TSST-1", b: "Toxic shock syndrome toxin: overactivates the immune system → fever, rash, low blood pressure"},
+              {f: "Panton-Valentine leukocidin", b: "Kills immune cells!"},
+              {f: "Hemolysin", b: "Destroys red blood cells (steals iron from hemoglobin)"},
+              {f: "Exfoliatin", b: "Causes staphylococcal scalded skin syndrome (SSSS): painful red skin with blisters"},
+              {f: "Enterotoxin", b: "Causes food poisoning; survives high heat"}
             ]},
           facts: [
-            {ic: "👃", h: "Found in", t: "nostrils, armpits, groin (skin flora). About 1 in 4 people are colonized."},
-            {ic: "🩹", h: "When it causes infection", t: "higher numbers plus a break in the skin (microfissures, trauma)"},
-            {ic: "🧼", h: "Prevention", t: "hand hygiene (most important!), wound care, clean surfaces, isolation in healthcare"}
+            {h: "Found in", t: "nostrils, armpits, groin (skin flora). About 1 in 4 people are colonized."},
+            {h: "When it causes infection", t: "higher numbers plus a break in the skin (microfissures, trauma)"},
+            {ic: "🧼", h: "Prevention", t: "<b>hand hygiene (most important!)</b>: S. aureus on hands is mostly picked up by touch (transient), so washing removes it before it spreads. Plus wound care, clean surfaces, and isolation in healthcare."}
           ],
           treat: {short: "MSSA: nafcillin, oxacillin, cephalexin. MRSA: vancomycin, daptomycin, clindamycin", html: "<b>MSSA:</b> nafcillin, oxacillin, or cephalexin. <b>MRSA:</b> vancomycin, daptomycin, or clindamycin. Localized infections may need incision and drainage.", drugs: ["nafcillin", "oxacillin", "cephalexin", "vancomycin", "daptomycin", "clindamycin"]},
           extra: [
-            {h: "🩹 Skin and soft tissue infections", flips: [
-              {f: "<span class=\"fe\">🧔</span>Folliculitis", b: "Hair follicle infection (topical antibiotics)"},
-              {f: "<span class=\"fe\">🔴</span>Furuncle (boil)", b: "Deep hair follicle infection (incision and drainage, oral antibiotics)"},
-              {f: "<span class=\"fe\">🔴🔴</span>Carbuncle", b: "Several connected boils"},
-              {f: "<span class=\"fe\">🍯</span>Impetigo", b: "Superficial infection with honey-crusted lesions (mupirocin or oral antibiotics)"},
-              {f: "<span class=\"fe\">💅</span>Paronychia", b: "Infection around the fingernail"},
-              {f: "<span class=\"fe\">🦵</span>Cellulitis", b: "Infection of the deeper skin layers (dermis and subcutaneous tissue): red, swollen, warm skin"},
-              {f: "<span class=\"fe\">🦴</span>Osteomyelitis", b: "Bone infection (systemic): 4 to 6 weeks of IV antibiotics, possible surgery"}
+            {h: "Skin and soft tissue infections", flips: [
+              {f: "Folliculitis", b: "Hair follicle infection (topical antibiotics)"},
+              {f: "Furuncle (boil)", b: "Deep hair follicle infection (incision and drainage, oral antibiotics)"},
+              {f: "Carbuncle", b: "Several connected boils"},
+              {f: "Impetigo", b: "Superficial infection with honey-crusted lesions (mupirocin or oral antibiotics)"},
+              {f: "Paronychia", b: "Infection around the fingernail"},
+              {f: "Cellulitis", b: "Infection of the deeper skin layers (dermis and subcutaneous tissue): red, swollen, warm skin"},
+              {f: "Osteomyelitis", b: "Bone infection (systemic): 4 to 6 weeks of IV antibiotics, possible surgery"}
             ]}
           ]}
       ],
@@ -373,24 +384,20 @@ window.TOUR_DATA = {
         "<b>MRSA</b> = methicillin-resistant <i>S. aureus</i>: strains resistant to methicillin and related antibiotics.",
         "The <b><i>mecA</i> gene</b> changes the antibiotic's target, so these drugs can't bind. (Methicillin itself isn't used anymore.)",
         "<b>How it spreads:</b> direct contact (person to person, contaminated hands) and indirect contact (contaminated surfaces, medical equipment).",
-        "<b>Where:</b> hospitals, nursing homes, the community, IV drug use. <b>Risk factors:</b> open wounds, invasive medical devices, crowded conditions."
+        "<b>Where:</b> hospitals and nursing homes (a major <b>nosocomial</b> infection), the community, IV drug use.",
+        "<b>Risk factors:</b> open wounds, invasive medical devices, crowded conditions."
       ],
       sections: [
-        {h: "🧬 Treatment: it JUST KEEPS EVOLVING!", flow: {title: "How staph beat our antibiotics", steps: [
+        {h: "Treatment: it JUST KEEPS EVOLVING!", flow: {title: "How staph beat our antibiotics", steps: [
           "penicillin worked at first",
           "staph evolved <b>beta-lactamase</b>, an enzyme that destroys penicillin",
           "methicillin was made to resist beta-lactamase",
           "staph evolved resistance to that too: <b>MRSA</b>"
         ]}},
-        {h: "🏥 Two major categories", boxes: [
-          {ic: "🏥", t: "<b>HA-MRSA</b> (healthcare-associated): hospitals and nursing homes, where antibiotic use is high"},
-          {ic: "🏘️", t: "<b>CA-MRSA</b> (community-associated): from rampant antibiotic use on factory farms and overprescription"}
-        ]},
-        {h: "💊 Treating MRSA", boxes: [
-          {ic: "🚫", t: "can't be treated with beta-lactam antibiotics"},
-          {ic: "💉", t: "glycopeptides like <b>vancomycin</b>: not as effective, with problem side effects"},
-          {ic: "⚠️", t: "<b>VISA</b>: intermediate resistance to vancomycin"},
-          {ic: "⛔", t: "<b>VRSA</b>: complete resistance to vancomycin"}
+        {h: "Treating MRSA vs. MSSA", boxes: [
+          {t: "<b>MRSA</b> (methicillin-resistant): vancomycin, daptomycin, or clindamycin"},
+          {t: "<b>MSSA</b> (methicillin-susceptible S. aureus): nafcillin, oxacillin, or cephalexin"},
+          {t: "Localized infections may also need incision and drainage"}
         ]}
       ],
       checkin: {
@@ -399,9 +406,9 @@ window.TOUR_DATA = {
         w: "<i>mecA</i> changes the target. (Beta-lactamase was the older trick that beat penicillin.)"
       }},
     {id: "coag-neg", node: "s_epi", also: ["s_sapro"], title: "Coagulase-negative staphs",
+      cheat: "A staph that's <b>coagulase −</b> with <b>white</b> colonies: <i>S. epidermidis</i> or <i>S. saprophyticus</i>.",
       orgs: [
         {id: "sepi", node: "s_epi", name: "Staphylococcus epidermidis", shape: "clusters", emoji: "🩺",
-          cheat: "The coagulase − staph that forms <b>biofilms on medical devices</b>.",
           tests: [
             {k: "gram", v: "+", from: "grampos"},
             {k: "shape", v: "cocci in clusters", from: "staph"},
@@ -410,20 +417,20 @@ window.TOUR_DATA = {
             {k: "pigment", v: "white"},
             {k: "feature", v: "forms biofilms on devices", ic: "🩺"}
           ],
-          disease: {short: "medical device infections", html: "prosthetic device infections, hospital bloodstream infections, endocarditis on artificial valves"},
-          facts: [{ic: "🧍", h: "Found in", t: "normal skin flora (the most abundant)"}]},
+          disease: {short: "medical device infections", html: "<b>not normally pathogenic</b>: it's normal skin flora. It's an <b>opportunistic pathogen</b> that causes <b>nosocomial</b> (hospital) infections: prosthetic device infections, bloodstream infections, and endocarditis on artificial valves"},
+          facts: [{h: "Found in", t: "normal skin flora (the most abundant)"}]},
         {id: "ssapro", node: "s_sapro", name: "Staphylococcus saprophyticus", shape: "clusters", emoji: "🚽",
-          cheat: "The coagulase − staph that causes <b>UTIs</b>.",
           fun: {t: "The name explains it: <b>staphylo</b> = grapes, <b>coccus</b> = round, <b>saprophyticus</b> = organisms that grow on decaying organic material."},
           tests: [
             {k: "gram", v: "+", from: "grampos"},
             {k: "shape", v: "cocci in clusters", from: "staph"},
             {k: "catalase", v: "+", from: "bacillales"},
             {k: "coagulase", v: "−"},
-            {k: "pigment", v: "white"}
+            {k: "pigment", v: "white"},
+            {k: "urease", v: "+"}
           ],
           disease: {short: "UTIs", html: "urinary tract infections (UTIs), especially in young, sexually active women. The 2nd most common cause of UTIs.", tags: ["uti"]},
-          facts: [{ic: "🧍", h: "Found in", t: "normal urogenital flora"}]}
+          facts: [{h: "Found in", t: "normal urogenital flora"}, {h: "Urease +", t: "urease makes ammonia, which helps it colonize and invade the bladder"}]}
       ],
       checkin: {
         q: "Which staph is the 2nd most common cause of UTIs?",
@@ -434,10 +441,10 @@ window.TOUR_DATA = {
     /* ---------- Lactobacillales ---------- */
     {id: "lactobacillales", node: "lactobacillales", title: "Order Lactobacillales",
       life: [
-        {ic: "🥛", t: "Yogurt, kefir, cheese, and buttermilk"},
-        {ic: "🍞", t: "Sourdough bread"},
-        {ic: "🥬", t: "Sauerkraut, kimchi, and pickles"},
-        {ic: "💊", t: "Probiotic supplements"}
+        {t: "Yogurt, kefir, cheese, and buttermilk"},
+        {t: "Sourdough bread"},
+        {t: "Sauerkraut, kimchi, and pickles"},
+        {t: "Probiotic supplements"}
       ],
       lesson: [
         "Lactobacillales are <b>facultatively anaerobic</b> and do <b>lactic acid fermentation</b>.",
@@ -453,7 +460,7 @@ window.TOUR_DATA = {
     {id: "lactobacillus", node: "lactobacillus", title: "<i>Lactobacillus</i>: the friendly bacteria",
       orgs: [
         {id: "lactobacillus", node: "lactobacillus", name: "Lactobacillus", shape: "rod", emoji: "🥛",
-          cheat: "The <b>catalase − rod</b>: the \"good bacteria\".",
+          cheat: "A <b>catalase −</b> rod that grows with O₂, makes <b>lactic acid</b>, and <b>never forms spores</b>: <i>Lactobacillus</i>.",
           tests: [
             {k: "gram", v: "+", from: "grampos"},
             {k: "shape", v: "rods", from: "lb_rods"},
@@ -462,9 +469,9 @@ window.TOUR_DATA = {
             {k: "feature", v: "makes lactic acid", ic: "🍋"}
           ],
           facts: [
-            {ic: "🧍", h: "Normal flora", t: "mouth, GI tract, vagina (keeps vaginal pH low and blocks pathogens)"},
-            {ic: "🥛", h: "Found in", t: "yogurt, fermented foods, probiotic supplements"},
-            {ic: "😇", h: "Disease", t: "rarely causes disease: the \"good bacteria\""}
+            {h: "Normal flora", t: "mouth, GI tract, vagina (keeps vaginal pH low and blocks pathogens)"},
+            {h: "Found in", t: "yogurt, fermented foods, probiotic supplements"},
+            {h: "Disease", t: "rarely causes disease: the \"good bacteria\""}
           ]}
       ]},
     {id: "streptococcus", photo: {"src": "images/s-pyogenes-chains-beta.jpg", "alt": "Left: purple cocci in long chains. Right: colonies on blood agar with clear zones around them.", "cap": "<i>S. pyogenes</i>: chains of cocci (left) and <b>beta</b> hemolysis on blood agar (right)", "credit": "Credit: modification of work by American Society for Microbiology, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.20)"}, node: "strep", title: "<i>Streptococcus</i>",
@@ -474,6 +481,12 @@ window.TOUR_DATA = {
         "<b>Catalase −</b> (vs. <i>Staphylococcus</i>), facultative anaerobes, no spores.",
         "Streptococci are classified by their <b>hemolysis</b> pattern on blood agar (picture below)."
       ],
+      cheat: "<b>Catalase −</b> cocci in <b>chains</b>: <i>Streptococcus</i>.",
+      cols: [
+        {h: "<i>S. pyogenes</i> (group A)", t: "The <b>main cause of strep throat</b>; also scarlet fever and necrotizing fasciitis"},
+        {h: "<i>S. agalactiae</i> (group B)", t: "Meningitis and sepsis in <b>newborns</b>"},
+        {h: "<i>S. pneumoniae</i>", t: "The leading cause of <b>pneumonia</b> (and meningitis). Next stop!", c: "#0e7490"}
+      ],
       orgs: [
         {id: "spyogenes", node: "s_pyogenes", name: "Streptococcus pyogenes", sub: "(group A strep)", shape: "chains", emoji: "🗣️",
           tests: [
@@ -482,7 +495,7 @@ window.TOUR_DATA = {
             {k: "catalase", v: "−", from: "lactobacillales"},
             {k: "feature", v: "group A strep", ic: "🅰️", label: "Group"}
           ],
-          disease: {short: "strep throat, scarlet fever, necrotizing fasciitis", html: "strep throat, scarlet fever, necrotizing fasciitis"}},
+          disease: {short: "strep throat, scarlet fever, necrotizing fasciitis", html: "the <b>main cause of strep throat</b>; also scarlet fever and necrotizing fasciitis"}},
         {id: "sagalactiae", node: "s_agalactiae", name: "Streptococcus agalactiae", sub: "(group B strep)", shape: "chains", emoji: "👶",
           tests: [
             {k: "gram", v: "+", from: "grampos"},
@@ -497,20 +510,19 @@ window.TOUR_DATA = {
         o: ["By their hemolysis pattern on blood agar", "By coagulase", "By whether they form spores", "By lactose fermentation"],
         w: "Hemolysis on blood agar: alpha (partial), beta (complete), or gamma (none)."
       }},
-    {id: "s-pneumoniae", photo: {"src": "images/s-pneumoniae-lancet.jpg", "alt": "Left: pink stained pairs of pointed cells. Right: colorized electron micrograph of pairs of oval cells.", "cap": "<i>S. pneumoniae</i>: <b>lancet-shaped diplococci</b>", "credit": "Credit: panel a, modification of work by CDC; panel b, modification of work by Janice Carr, CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 22.10)"}, node: "s_pneumoniae", title: "Pneumococcus (<i>Streptococcus pneumoniae</i>)",
+    {id: "s-pneumoniae", photo: {"src": "images/s-pneumoniae-lancet.jpg", "alt": "Left: pink stained pairs of pointed cells. Right: colorized electron micrograph of pairs of oval cells.", "cap": "<i>S. pneumoniae</i>: cocci in <b>pairs</b> (diplococci)", "credit": "Credit: panel a, modification of work by CDC; panel b, modification of work by Janice Carr, CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 22.10)"}, node: "s_pneumoniae", title: "Pneumococcus (<i>Streptococcus pneumoniae</i>)",
       orgs: [
         {id: "spneumoniae", node: "s_pneumoniae", name: "Streptococcus pneumoniae", shape: "lancet", emoji: "🫁",
-          cheat: "The <b>lancet-shaped diplococci</b> with a capsule (Quellung reaction).",
           tests: [
             {k: "gram", v: "+", from: "grampos"},
-            {k: "shape", v: "lancet-shaped diplococci"},
+            {k: "shape", v: "diplococci (pairs)"},
             {k: "catalase", v: "−", from: "lactobacillales"},
             {k: "feature", v: "polysaccharide capsule", ic: "🫧", label: "Capsule"},
             {k: "feature", v: "Quellung reaction: capsule swells", ic: "🎈", label: "ID test"}
           ],
           disease: {short: "pneumonia and meningitis", html: "the leading cause of <b>pneumonia</b> and <b>meningitis</b>", tags: ["meningitis", "pneumonia"]},
           facts: [
-            {ic: "🛡️", h: "Virulence factor", t: "polysaccharide capsule"},
+            {h: "Virulence factor", t: "polysaccharide capsule"},
             {ic: "💉", h: "Prevention", t: "pneumococcal vaccines"}
           ]}
       ],
@@ -522,7 +534,7 @@ window.TOUR_DATA = {
     {id: "enterococcus", node: "enterococcus", title: "<i>Enterococcus</i>",
       orgs: [
         {id: "enterococcus", node: "enterococcus", name: "Enterococcus", sub: "(E. faecalis, E. faecium)", spell: "Enterococcus", shape: "pairchain", emoji: "🏥",
-          cheat: "The super-hardy cocci: <b>salt- and bile-tolerant</b>, ID'd with the <b>bile-esculin test</b>.",
+          cheat: "<b>Catalase −</b> cocci that are <b>salt- and bile-tolerant</b> (bile-esculin test +): <i>Enterococcus</i>.",
           tests: [
             {k: "gram", v: "+", from: "grampos"},
             {k: "shape", v: "cocci in pairs or short chains", from: "enterococcus"},
@@ -532,8 +544,8 @@ window.TOUR_DATA = {
           ],
           disease: {short: "UTIs, wound infections, endocarditis", html: "opportunistic infections: UTIs, wound infections, endocarditis", tags: ["uti"]},
           facts: [
-            {ic: "🧍", h: "Found in", t: "normal intestinal flora"},
-            {ic: "🏥", h: "Hospitals", t: "a major cause of nosocomial (hospital) infections"},
+            {h: "Found in", t: "normal intestinal flora"},
+            {h: "Hospitals", t: "a major cause of nosocomial (hospital) infections"},
             {ic: "⚠️", h: "Resistance", t: "VRE: vancomycin-resistant enterococci", warn: true}
           ]}
       ],
@@ -545,15 +557,15 @@ window.TOUR_DATA = {
     {id: "review-bacilli", node: "bacilli", title: "Review: Class Bacilli",
       lesson: ["<b>Key test:</b> catalase + = <b>Bacillales</b>, catalase − = <b>Lactobacillales</b>."],
       sections: [
-        {h: "🫧 Bacillales: catalase +", boxes: [
-          {ic: "🥚", t: "<i>Bacillus</i>: spore-forming rods (anthrax, food poisoning from rice)"},
-          {ic: "🧊", t: "<i>Listeria</i>: non-spore-forming rod that grows in the fridge (listeriosis)"},
-          {ic: "🍇", t: "<i>Staphylococcus</i>: grape-like clusters; <i>S. aureus</i> is coagulase + (skin infections, toxins, MRSA)"}
+        {h: "Bacillales: catalase +", boxes: [
+          {t: "<i>Bacillus</i>: spore-forming rods (anthrax, food poisoning from rice)"},
+          {t: "<i>Listeria</i>: non-spore-forming rod that grows in the fridge (listeriosis)"},
+          {t: "<i>Staphylococcus</i>: grape-like clusters; <i>S. aureus</i> is coagulase + (skin infections, toxins, MRSA)"}
         ]},
-        {h: "🥛 Lactobacillales: catalase −, no spores, lactic acid", boxes: [
-          {ic: "😇", t: "<i>Lactobacillus</i>: rods; the \"good bacteria\" (probiotics, yogurt)"},
-          {ic: "⛓️", t: "<i>Streptococcus</i>: chains; sorted by hemolysis (strep throat, pneumonia)"},
-          {ic: "💪", t: "<i>Enterococcus</i>: pairs or short chains; super hardy; VRE in hospitals"}
+        {h: "Lactobacillales: catalase −, no spores, lactic acid", boxes: [
+          {t: "<i>Lactobacillus</i>: rods; the \"good bacteria\" (probiotics, yogurt)"},
+          {t: "<i>Streptococcus</i>: chains; sorted by hemolysis (strep throat, pneumonia)"},
+          {t: "<i>Enterococcus</i>: pairs or short chains; super hardy; VRE in hospitals"}
         ]}
       ],
       match: {title: "🧩 Match each genus to its clue", pairs: [
@@ -574,7 +586,13 @@ window.TOUR_DATA = {
         "They lack the enzymes <b>catalase</b> and <b>superoxide dismutase</b>, so O₂ is actually <b>toxic</b> to them.",
         "Spores make them resilient: they can even survive cooking.",
         "<b>Habitat:</b> soil, decaying matter, sewage, and the intestinal tracts of humans and animals.",
-        "Our species: <i>C. perfringens</i>, <i>C. botulinum</i>, <i>C. tetani</i>, and <i>Clostridioides difficile</i> (\"C. diff\", renamed from <i>Clostridium</i>)."
+        "Our species:"
+      ],
+      cols: [
+        {h: "<i>C. perfringens</i>", t: "Gas gangrene"},
+        {h: "<i>C. botulinum</i>", t: "Botulism"},
+        {h: "<i>C. tetani</i>", t: "Tetanus"},
+        {h: "<i>Clostridioides difficile</i>", t: "\"C. diff\": renamed from <i>Clostridium</i>. Antibiotic-associated diarrhea."}
       ],
       checkin: {
         q: "Why is oxygen toxic to Clostridia?",
@@ -584,7 +602,8 @@ window.TOUR_DATA = {
     {id: "c-perfringens", node: "c_perfringens", title: "<i>Clostridium perfringens</i>",
       orgs: [
         {id: "cperfringens", node: "c_perfringens", name: "Clostridium perfringens", shape: "rodspore", emoji: "🦵",
-          cheat: "The <b>non-motile</b>, <b>big gas producer</b> (Durham tube).",
+          cheat: "An <b>obligate anaerobe, spore-forming rod</b> that's <b>non-motile</b> and a <b>big gas producer</b> (Durham tube): <i>C. perfringens</i>.",
+          treatSteps: ["<b>Surgery:</b> remove the dead tissue", "<b>Antibiotics:</b> high-dose penicillin or clindamycin", "<b>Hyperbaric oxygen:</b> extra O₂ stops this anaerobe from growing and helps healing"],
           tests: [
             {k: "gram", v: "+", from: "grampos"},
             {k: "shape", v: "spore-forming rods", from: "clostridia"},
@@ -596,22 +615,22 @@ window.TOUR_DATA = {
           disease: {short: "gas gangrene", html: "gas gangrene (clostridial myonecrosis)",
             flow: {title: "How it happens", steps: ["spores contaminate a wound", "low-oxygen tissue", "spores germinate", "toxin production"]}},
           facts: [
-            {ic: "🌱", h: "Found in", t: "soil (it thrives there)"},
+            {h: "Found in", t: "soil (it thrives there)"},
             {ic: "🩹", h: "Prevention", t: "proper wound cleaning and debridement; avoid deep contamination during surgery or trauma"}
           ],
           treat: {short: "remove dead tissue, penicillin or clindamycin, hyperbaric oxygen", html: "surgical removal of dead tissue, high-dose antibiotics (penicillin, clindamycin), and <b>hyperbaric oxygen</b>: extra O₂ stops anaerobic growth and helps healing", drugs: ["penicillin", "clindamycin"]},
-          extra: [{h: "🍲 Spores can survive cooking", boxes: [{ic: "🔥", t: "spores survive cooking"}, {ic: "🐌", t: "food is slowly cooled or stored"}, {ic: "🦠", t: "spores turn back into full-fledged Clostridia"}]}]}
+          extra: [{h: "Spores can survive cooking", boxes: [{t: "spores survive cooking"}, {t: "food is slowly cooled or stored"}, {t: "spores turn back into full-fledged Clostridia"}]}]}
       ],
       checkin: {
         q: "Why does hyperbaric oxygen help treat gas gangrene?",
         o: ["Extra O₂ stops the growth of this obligate anaerobe", "O₂ kills the endospores directly", "O₂ neutralizes the gas", "O₂ makes the bacteria gram-negative"],
         w: "<i>C. perfringens</i> is an obligate anaerobe: extra O₂ stops its growth and helps healing."
       }},
-    {id: "c-botulinum", node: "c_botulinum", title: "<i>Clostridium botulinum</i>",
+    {id: "c-botulinum", node: "c_botulinum", photo: {"src": "images/botulinum-toxin.jpg", "alt": "Left: C. botulinum cells. Right: a nerve ending releasing acetylcholine normally; with botulinum toxin, no acetylcholine is released.", "cap": "Botulinum toxin <b>blocks acetylcholine</b> release → flaccid paralysis", "credit": "Credit: micrographs, modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 15.16, top half, cropped)"}, more: {title: "Why are babies at risk, but not adults?", html: "<p>Adults swallow <i>C. botulinum</i> spores all the time (they're in soil and dust) without getting sick. A mature gut is packed with normal flora that <b>outcompete</b> the spores, so they don't germinate and grow.</p><p>A baby's gut flora is still <b>immature</b>. The spores can germinate, grow in the intestine, and make toxin right there. That's infant botulism, and why there's no honey before age 1.</p>", link: {href: "https://doi.org/10.1186/s13099-024-00614-y", t: "Review: intestinal (infant) botulism, Gut Pathogens 2024"}}, title: "<i>Clostridium botulinum</i>",
       life: [{ic: "🍯", t: "No honey for babies under 1 year: it can carry <i>C. botulinum</i> spores."}],
       orgs: [
         {id: "cbotulinum", photos: [{"src": "images/c-botulinum-canner.jpg", "alt": "Left: rod-shaped cells under the microscope. Right: a pressure canner with jars of food.", "cap": "<i>C. botulinum</i> (left). A <b>pressure canner</b> (right) gets hot enough to kill its endospores.", "credit": "Credit: panel a, modification of work by CDC; panel b, modification of work by National Center for Home Food Preservation, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 13.11)"}], node: "c_botulinum", name: "Clostridium botulinum", shape: "rodspore", emoji: "🥫",
-          cheat: "<b>\"Botulinum blocks\"</b>: its toxin blocks acetylcholine → <b>flaccid</b> (floppy) paralysis.",
+          hook: "<b>\"Botulinum blocks\"</b>: its toxin blocks acetylcholine → <b>flaccid</b> (floppy) paralysis.",
           tests: [
             {k: "gram", v: "+", from: "grampos"},
             {k: "shape", v: "spore-forming rods", from: "clostridia"},
@@ -622,7 +641,7 @@ window.TOUR_DATA = {
           disease: {short: "botulism", html: "botulism (foodborne, infant, wound)",
             flow: {title: "How the toxin works", steps: ["botulinum neurotoxin", "blocks acetylcholine release", "muscles can't contract", "flaccid paralysis"]}},
           facts: [
-            {ic: "🥫", h: "Found in", t: "soil, water, improperly canned foods"},
+            {h: "Found in", t: "soil, water, improperly canned foods"},
             {ic: "👶", h: "Infant botulism", t: "swallowed spores (e.g., honey) → colonize the infant gut → toxin release", warn: true},
             {ic: "🫙", h: "Prevention", t: "proper food canning and heating; no honey for infants under 1 year"}
           ],
@@ -633,10 +652,9 @@ window.TOUR_DATA = {
         o: ["Honey can carry spores that grow in the infant gut and release toxin", "Honey contains the botulinum toxin itself", "Honey kills the normal gut flora", "Honey causes tetanus"],
         w: "Infant botulism: spores → colonize the infant gut → toxin release."
       }},
-    {id: "c-tetani", photo: {"src": "images/botulinum-tetanus-toxins.jpg", "alt": "Diagrams of a nerve ending and muscle: botulinum toxin blocks acetylcholine release; tetanus toxin blocks inhibitory signals", "cap": "<b>Botulinum</b> toxin blocks acetylcholine → flaccid paralysis. <b>Tetanus</b> toxin blocks inhibitory signals → spastic paralysis.", "credit": "Credit: micrographs, modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 15.16)"}, node: "c_tetani", title: "<i>Clostridium tetani</i>",
+    {id: "c-tetani", photo: {"src": "images/tetanus-toxin.jpg", "alt": "Left: C. tetani cells. Right: a nerve ending normally releases glycine and GABA; tetanus toxin blocks their release.", "cap": "Tetanus toxin <b>blocks glycine and GABA</b> (inhibitory signals) → spastic paralysis", "credit": "Credit: micrographs, modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 15.16, bottom half, cropped)"}, node: "c_tetani", title: "<i>Clostridium tetani</i>",
       orgs: [
         {id: "ctetani", node: "c_tetani", name: "Clostridium tetani", shape: "rodspore", emoji: "🔩",
-          cheat: "Its toxin blocks <b>inhibitory</b> neurotransmitters → stiff muscles and <b>lockjaw</b>.",
           fun: {t: "Rusty nails are the classic example, but <b>not because of the rust</b>! They are dirty and cause deep puncture wounds: perfect low-oxygen spots for spores."},
           tests: [
             {k: "gram", v: "+", from: "grampos"},
@@ -647,7 +665,7 @@ window.TOUR_DATA = {
           disease: {short: "tetanus", html: "tetanus: muscle stiffness, spasms, <b>lockjaw</b>, trouble swallowing, paralysis",
             flow: {title: "How it causes tetanus", steps: ["spores in soil and dirt get into a deep wound", "spores germinate (low O₂)", "release tetanospasmin (neurotoxin)", "blocks inhibitory neurotransmitters", "muscles can't relax: spasms"]}},
           facts: [
-            {ic: "☠️", h: "Fatality rate", t: "10 to 20%, even with treatment", warn: true},
+            {h: "Fatality rate", t: "10 to 20%, even with treatment", warn: true},
             {ic: "💉", h: "Prevention", t: "vaccination"}
           ],
           treat: {short: "tetanus immune globulin, wound cleaning, metronidazole or penicillin", html: "tetanus immune globulin (antitoxin), wound cleaning, metronidazole or penicillin, supportive care", drugs: ["tetanus immune globulin", "metronidazole", "penicillin"]}}
@@ -661,7 +679,6 @@ window.TOUR_DATA = {
       life: [{ic: "🧼", t: "Alcohol hand sanitizer doesn't kill C. diff spores. Wash with soap and water!"}],
       orgs: [
         {id: "cdiff", photos: [{"src": "images/c-difficile-sem.jpg", "alt": "Electron micrograph of many rod-shaped cells", "cap": "<i>C. difficile</i> (SEM)", "credit": "Credit: modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.19)"}], node: "clostridioides", name: "Clostridioides difficile", sub: "(C. diff)", spell: "Clostridioides difficile", shape: "rodspore", emoji: "💊",
-          cheat: "The one that strikes <b>after antibiotics</b> wipe out the gut flora.",
           tests: [
             {k: "gram", v: "+", from: "grampos"},
             {k: "shape", v: "spore-forming rods", from: "clostridia"},
@@ -671,7 +688,7 @@ window.TOUR_DATA = {
           disease: {short: "antibiotic-associated diarrhea and colitis", html: "antibiotic-associated diarrhea and colitis",
             flow: {title: "How it happens", steps: ["broad-spectrum antibiotics", "wipe out the normal gut flora", "C. diff overgrows", "toxins damage the colon lining"]}},
           facts: [
-            {ic: "🏥", h: "How it spreads", t: "spores on hands and surfaces. A top cause of hospital-acquired infections."},
+            {ic: "🏥", h: "How it spreads", t: "spores on hands and surfaces. A top cause of <b>nosocomial</b> (hospital-acquired) infections."},
             {ic: "🧼", h: "Prevention", t: "wash with soap and water: alcohol sanitizer doesn't kill spores", warn: true}
           ],
           treat: {short: "stop the trigger antibiotic; oral vancomycin or fidaxomicin; fecal transplant", html: "stop the trigger antibiotic if possible; oral vancomycin or fidaxomicin; fecal transplant for repeat infections", drugs: ["vancomycin", "fidaxomicin"]}}
@@ -702,7 +719,7 @@ window.TOUR_DATA = {
     {id: "actinomyces", node: "actinomyces", title: "<i>Actinomyces</i>",
       orgs: [
         {id: "aisraelii", photos: [{"src": "images/actinomyces-sem.jpg", "alt": "Colorized electron micrograph of orange branching filaments", "cap": "<i>Actinomyces israelii</i>: branching filaments (SEM)", "credit": "Credit: modification of work by “GrahamColm”/Wikimedia Commons, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.18, panel a, cropped)"}], node: "actinomyces", name: "Actinomyces israelii", shape: "branching", emoji: "🦷",
-          cheat: "The <b>anaerobic</b> branching filaments that cause <b>\"lumpy jaw\"</b> (sulfur granules in the pus).",
+          cheat: "<b>Anaerobic</b> (or microaerophilic), <b>non-acid-fast</b> branching filaments; look for <b>sulfur granules</b> in pus: <i>Actinomyces</i>.",
           tests: [
             {k: "gram", v: "+", from: "grampos"},
             {k: "shape", v: "filamentous rods", from: "actinomyces"},
@@ -714,9 +731,9 @@ window.TOUR_DATA = {
           disease: {short: "actinomycosis (\"lumpy jaw\")", html: "actinomycosis. <b>\"Lumpy jaw\"</b> = a painless swelling of the jaw or face with abscesses and draining sinus tracts.",
             flow: {title: "How it causes disease", steps: ["normal flora of the mouth, GI, and urogenital tract", "the mucosa is breached (like oral trauma or surgery)", "it invades deeper tissue", "abscesses with yellowish white pus (\"sulfur granules\")"]}},
           facts: [
-            {ic: "👄", h: "Normal flora", t: "oral cavity, GI tract, urogenital tract"},
-            {ic: "🐢", h: "Growth", t: "slow growth, low virulence; white \"molar-like\" colonies"},
-            {ic: "🦷", h: "Most common form", t: "cervicofacial: the jaw and face (\"lumpy jaw\")"}
+            {h: "Normal flora", t: "oral cavity, GI tract, urogenital tract"},
+            {h: "Growth", t: "slow growth, low virulence; white \"molar-like\" colonies"},
+            {h: "Most common form", t: "cervicofacial: the jaw and face (\"lumpy jaw\")"}
           ]}
       ],
       checkin: {
@@ -726,8 +743,8 @@ window.TOUR_DATA = {
       }},
     {id: "streptomyces", node: "streptomyces", title: "<i>Streptomyces</i>",
       orgs: [
-        {id: "sgriseus", node: "streptomyces", name: "Streptomyces griseus", shape: "branching", emoji: "💊",
-          cheat: "The filamentous soil bacterium that makes <b>antibiotics</b> (spores are conidia, not endospores).",
+        {id: "sgriseus", node: "streptomyces", name: "Streptomyces", shape: "branching", emoji: "💊",
+          cheat: "<b>Aerobic</b> branching filaments that make <b>conidia</b> (not endospores): <i>Streptomyces</i>.",
           fun: {t: "The antibiotic <b>streptomycin</b> is named after <i>Streptomyces</i>, the bacterium that makes it."},
           tests: [
             {k: "gram", v: "+", from: "grampos"},
@@ -738,8 +755,8 @@ window.TOUR_DATA = {
           ],
           disease: {short: "rarely disease: mycetoma", html: "generally <b>not</b> a human pathogen. Rare: <b>mycetoma</b> (a skin infection in immunocompromised people)."},
           facts: [
-            {ic: "🌱", h: "Found in", t: "soil"},
-            {ic: "💊", h: "Antibiotics it makes", t: "streptomycin, tetracyclines, erythromycin"}
+            {h: "Found in", t: "soil"},
+            {h: "Antibiotics it makes", t: "streptomycin, tetracyclines, erythromycin"}
           ]}
       ],
       checkin: {
@@ -750,7 +767,7 @@ window.TOUR_DATA = {
     {id: "micrococcus", node: "micrococcus", title: "<i>Micrococcus</i>",
       orgs: [
         {id: "mluteus", node: "micrococcus", name: "Micrococcus luteus", shape: "tetrads", emoji: "🟨",
-          cheat: "The only <b>tetrads</b> (groups of 4) on our list, with colorful colonies.",
+          cheat: "Cocci in <b>tetrads</b> (groups of 4), catalase + and oxidase +: <i>Micrococcus</i>.",
           tests: [
             {k: "gram", v: "+", from: "grampos"},
             {k: "shape", v: "cocci in tetrads", from: "micrococcus"},
@@ -760,11 +777,23 @@ window.TOUR_DATA = {
             {k: "spores", v: "−"},
             {k: "pigment", v: "yellow"}
           ],
-          disease: {short: "usually none (normal skin flora)", html: "usually <b>nonpathogenic</b> (a commensal). Opportunistic in immunocompromised people."},
+          disease: {short: "usually none (normal skin flora)", html: "usually <b>nonpathogenic</b> (a commensal). An <b>opportunistic pathogen</b> in immunocompromised people."},
           facts: [
-            {ic: "👄", h: "Found in", t: "the mouth and on the skin"},
-            {ic: "🎨", h: "Colorful!", t: "<i>M. luteus</i> (yellow) and <i>M. roseus</i> (pink)"}
-          ]}
+            {h: "Found in", t: "the mouth and on the skin"},
+            {h: "Colorful!", t: "<i>M. luteus</i> (yellow) and <i>M. roseus</i> (pink)"}
+          ]},
+        {id: "mroseus", node: "micrococcus", name: "Micrococcus roseus", shape: "tetrads", emoji: "🌸",
+          tests: [
+            {k: "gram", v: "+", from: "grampos"},
+            {k: "shape", v: "cocci in tetrads", from: "micrococcus"},
+            {k: "oxygen", v: "obligate aerobe", from: "micrococcus"},
+            {k: "catalase", v: "+", from: "micrococcus"},
+            {k: "oxidase", v: "+", from: "micrococcus"},
+            {k: "spores", v: "−"},
+            {k: "pigment", v: "pink"}
+          ],
+          disease: {short: "usually none (normal skin flora)", html: "usually <b>nonpathogenic</b> (a commensal). An <b>opportunistic pathogen</b> in immunocompromised people."},
+          facts: [{h: "Colonies", t: "<b>pink</b>, while <i>M. luteus</i> is yellow"}]}
       ],
       checkin: {
         q: "You see gram + cocci in groups of four. Which genus?",
@@ -774,21 +803,25 @@ window.TOUR_DATA = {
     {id: "cutibacterium", node: "cutibacterium", title: "<i>Cutibacterium acnes</i>",
       orgs: [
         {id: "cacnes", node: "cutibacterium", name: "Cutibacterium acnes", shape: "rod", emoji: "🧴",
-          cheat: "The skin commensal behind <b>acne</b>.",
           tests: [
             {k: "gram", v: "+", from: "grampos"},
             {k: "feature", v: "skin commensal", ic: "🧍", label: "Lives"}
           ],
-          disease: {short: "acne and device infections", html: "acne and device infections"},
-          facts: [{ic: "🧍", h: "Found in", t: "the skin (a commensal)"}]}
+          disease: {short: "acne and device infections", html: "acne, and device infections as an <b>opportunistic pathogen</b>"},
+          facts: [{h: "Found in", t: "the skin (a commensal)"}]}
       ]},
     {id: "corynebacteriales", photo: {"src": "images/acid-fast-cell-wall.jpg", "alt": "Left: diagram of a gram-positive acid-fast wall with mycolic acids on the outside. Right: an acid-fast stain with thin red rods.", "cap": "Mycolic acids sit outside the peptidoglycan (left), so acid-fast cells stay <b>red</b> (right)", "credit": "Credit: panel a, modification of work by “Franciscosp2”/Wikimedia Commons; panel b, modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 3.27)"}, links: [{href: "virtual-lab.html#lab10", ic: "🔴", t: "Virtual Lab 10: Acid-fast stain", sub: "why mycolic acids stay red"}], node: "corynebacteriales", title: "Order Corynebacteriales",
       diagram: "acidfast",
       lesson: [
         "High G+C, gram-positive actinobacteria with complex, <b>mycolic acid</b> rich cell walls (a lipid, arabinogalactan, and peptidoglycan envelope).",
         "<b>Acid-fast</b> = keeps the carbolfuchsin dye (red) even after acid-alcohol decolorization (the Ziehl-Neelsen stain).",
-        "Why? <b>Mycolic acids</b>. Longer chains = more acid-fast:<ul><li><i>Mycobacterium</i> (C60 to C90): <b>strongly</b> acid-fast</li><li><i>Nocardia</i> (C40 to C60): <b>weakly</b> acid-fast</li><li><i>Corynebacterium</i> (C22 to C36): <b>not</b> acid-fast</li></ul>"
+        "Why? <b>Mycolic acids</b>. Longer chains = more acid-fast:"
       ],
+      table: {head: ["Genus", "Mycolic acid chain length", "Acid-fast?"], rows: [
+        ["<i>Mycobacterium</i>", "C60 to C90 (longest)", "<b>Strongly</b> acid-fast"],
+        ["<i>Nocardia</i>", "C40 to C60", "<b>Weakly</b> acid-fast"],
+        ["<i>Corynebacterium</i>", "C22 to C36 (shortest)", "<b>Not</b> acid-fast"]
+      ]},
       checkin: {
         q: "Why is <i>Mycobacterium</i> strongly acid-fast but <i>Corynebacterium</i> isn't?",
         o: ["<i>Mycobacterium</i> has much longer mycolic acids in its wall", "<i>Corynebacterium</i> has no cell wall", "<i>Mycobacterium</i> is gram-negative", "<i>Corynebacterium</i> forms endospores"],
@@ -804,7 +837,7 @@ window.TOUR_DATA = {
       ],
       orgs: [
         {id: "cdiphtheriae", photos: [{"src": "images/corynebacterium-palisades.jpg", "alt": "Purple club-shaped rods lined up side by side and at angles", "cap": "<i>C. diphtheriae</i>: note the palisades", "credit": "Credit: modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.18, panel b, cropped)"}], node: "c_diphtheriae", name: "Corynebacterium diphtheriae", shape: "club", emoji: "🗣️",
-          cheat: "Club-shaped rods in <b>\"Chinese letters\"</b>; its toxin makes a gray <b>pseudomembrane</b> in the throat.",
+          cheat: "<b>Club-shaped</b> rods in <b>\"Chinese letters\"</b>, <b>not acid-fast</b>, with <b>metachromatic granules</b>: <i>Corynebacterium</i>.",
           tests: [
             {k: "gram", v: "+", from: "grampos"},
             {k: "shape", v: "club-shaped rods", from: "corynebacterium"},
@@ -821,7 +854,7 @@ window.TOUR_DATA = {
             {ic: "💉", h: "Prevention", t: "DTaP / Tdap vaccines (highly effective): antibodies neutralize the toxin"}
           ],
           treat: {short: "diphtheria antitoxin plus penicillin or erythromycin", html: "<b>diphtheria antitoxin</b> (neutralizes circulating toxin) plus antibiotics: penicillin or erythromycin", drugs: ["antitoxin", "penicillin", "erythromycin"]},
-          extra: [{h: "⚠️ The pseudomembrane", boxes: [{ic: "🧱", t: "sticks tightly to the throat → can block the airway"}, {ic: "🩸", t: "bleeds if it is scraped"}]}]},
+          extra: [{h: "The pseudomembrane", boxes: [{t: "sticks tightly to the throat → can block the airway"}, {t: "bleeds if it is scraped"}]}]},
         {id: "cjeikeium", node: "c_jeikeium", name: "Corynebacterium jeikeium", shape: "club", emoji: "🏥",
           tests: [
             {k: "gram", v: "+", from: "grampos"},
@@ -829,7 +862,7 @@ window.TOUR_DATA = {
             {k: "catalase", v: "+", from: "corynebacterium"},
             {k: "acidfast", v: "not acid-fast", from: "corynebacterium"}
           ],
-          disease: {short: "opportunistic infections", html: "opportunistic infections in immunocompromised hosts"}}
+          disease: {short: "opportunistic infections", html: "an <b>opportunistic pathogen</b>: infections in immunocompromised hosts, often <b>nosocomial</b>"}}
       ],
       checkin: {
         q: "What causes the damage in diphtheria?",
@@ -852,7 +885,7 @@ window.TOUR_DATA = {
             {k: "oxygen", v: "obligate aerobe", from: "mycobacterium"},
             {k: "feature", v: "rapid grower (for a mycobacterium)", ic: "🐇", label: "Growth"}
           ],
-          facts: [{ic: "🧪", h: "Disease", t: "nonpathogenic. Used in our lab!"}]}
+          facts: [{h: "Disease", t: "nonpathogenic. Used in our lab!"}]}
       ],
       checkin: {
         q: "How can you tell <i>Mycobacterium</i> from <i>Nocardia</i> under the microscope?",
@@ -861,13 +894,13 @@ window.TOUR_DATA = {
       }},
     {id: "m-tuberculosis", photo: {"src": "images/tb-infection-cycle.jpg", "alt": "Diagram: droplets are inhaled, bacteria multiply in the alveoli, immune cells wall them off in a tubercle (granuloma)", "cap": "TB infection: inhaled → multiply in the alveoli → walled off in a granuloma (tubercle)", "credit": "Credit: modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 22.13)"}, node: "m_tb", title: "<i>Mycobacterium tuberculosis</i>",
       sections: [
-        {h: "🫁 TB lifecycle and stages", flow: {title: "Inhaled droplets reach the alveoli, then...", steps: [
+        {h: "TB lifecycle and stages", flow: {title: "Inhaled droplets reach the alveoli, then...", steps: [
           "<b>1. Primary infection:</b> a small lung lesion; mild or no symptoms",
           "<b>2. Latent TB:</b> the immune system walls the bacteria off in granulomas. No symptoms, can't spread TB; can last decades.",
           "<b>3. Secondary (reactivated) TB:</b> immune suppression, poor nutrition, or aging lets the bacteria escape. Productive cough (often with blood), fever, night sweats, weight loss.",
           "<b>4. Disseminated (miliary) TB:</b> rare. Spreads through the blood to the brain, kidneys, bones."
         ]}},
-        {h: "📚 TB vocab: tap to reveal", flips: [
+        {h: "TB vocab: tap to reveal", flips: [
           {f: "Alveoli", b: "The tiny air sacs in the lungs, where inhaled TB lands"},
           {f: "Granuloma", b: "A small, organized cluster of immune cells that \"walls off\" bacteria the body can't destroy"},
           {f: "Latent infection", b: "Bacteria walled off in granulomas: no symptoms, can't spread TB"},
@@ -881,7 +914,7 @@ window.TOUR_DATA = {
       ],
       orgs: [
         {id: "mtb", photos: [{"src": "images/m-tuberculosis-lj.jpg", "alt": "Rough, cream-colored colonies on a blue-green medium", "cap": "<i>M. tuberculosis</i> colonies on Löwenstein-Jensen medium", "credit": "Credit: Centers for Disease Control and Prevention, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.23)"}], node: "m_tb", name: "Mycobacterium tuberculosis", shape: "rod", emoji: "🫁",
-          cheat: "Strongly <b>acid-fast</b>, slow-growing rods that hide in macrophages and granulomas.",
+          cheat: "<b>Strongly acid-fast</b>, <b>slow-growing</b> rods (obligate aerobe): <i>Mycobacterium</i>.",
           tests: [
             {k: "gram", v: "+", from: "grampos"},
             {k: "acidfast", v: "strongly acid-fast", from: "mycobacterium"},
@@ -889,19 +922,16 @@ window.TOUR_DATA = {
             {k: "feature", v: "slow-growing (days to weeks)", ic: "🐢", label: "Growth"}
           ],
           disease: {short: "tuberculosis (TB)", html: "tuberculosis (TB)",
-            boxes: [{ic: "🛡️", t: "survives inside <b>macrophages</b> and gets trapped in granulomas"}, {ic: "🧀", t: "cells inside the granuloma die: <b>caseous necrosis</b>"}]},
-          facts: [
-            {ic: "💨", h: "How it spreads", t: "inhaling airborne droplets from someone with <b>active</b> TB; prolonged contact (shared air in crowded areas, prisons, shelters)"},
-            {ic: "🔬", h: "Diagnosis", t: "skin test (checked for swelling in 48 to 72 hours) or a blood test for the immune response to TB proteins. If positive → chest X-ray."},
-            {ic: "📈", h: "Reemerging because of", t: "HIV coinfection, poverty and overcrowding, and drug resistance (MDR- and XDR-TB)", warn: true}
-          ],
+            flow: {title: "From test to treatment", steps: ["skin test (checked for swelling at 48 to 72 hours) or a blood test for the immune response to TB proteins", "positive → chest X-ray", "active TB → RIPE treatment (below)"]}},
+          facts: [{ic: "💨", h: "How it spreads", t: "inhaling airborne droplets from someone with <b>active</b> TB, usually after prolonged contact (shared air in crowded places, prisons, shelters)"}],
           treat: {short: "RIPE: rifampin, isoniazid, pyrazinamide, ethambutol", html: "<b>RIPE</b> for 6+ months: 2 months with all 4 drugs, then 4 months with just isoniazid + rifampin. It's long because TB grows slowly and hides in cells.", drugs: ["rifampin", "isoniazid", "pyrazinamide", "ethambutol"]},
-          extra: [{h: "💊 RIPE: how each drug works", flips: [
+          treatSteps: ["<b>RIPE</b> = rifampin, isoniazid, pyrazinamide, ethambutol", "<b>First 2 months:</b> all 4 drugs", "<b>Next 4 months:</b> just isoniazid + rifampin", "Why so long? TB grows slowly and hides inside cells."],
+          extra: [{h: "RIPE: how each drug works", flips: [
             {f: "Rifampin", b: "Blocks RNA polymerase"},
             {f: "Isoniazid", b: "Blocks mycolic acid synthesis"},
             {f: "Pyrazinamide", b: "Disrupts membrane energy production"},
             {f: "Ethambutol", b: "Blocks cell wall arabinogalactan synthesis"}
-          ]}, {h: "🌍 Public health", boxes: [{ic: "🇺🇸", t: "In the U.S., most cases come from reactivation of latent TB or travel to high-incidence regions"}, {ic: "🌍", t: "About 95% of TB deaths are in low- and middle-income countries, especially sub-Saharan Africa and South Asia"}]}]}
+          ]}, {h: "Why TB is reemerging", boxes: [{t: "<b>HIV coinfection</b> weakens the immune system → reactivation"}, {t: "<b>Poverty and overcrowding</b> → easier spread, less access to care"}, {t: "<b>Drug resistance</b> (MDR- and XDR-TB) → treatment failure"}]}]}
       ],
       case: {story: "A patient who recently moved from a high-incidence region has had a cough for 2 months, with some blood, plus night sweats and weight loss. Their skin test is positive and the chest X-ray shows a lung lesion.", tests: [{name: "Acid-fast stain of sputum", ic: "🔴", r: "<b>red rods</b> (strongly acid-fast)"}, {name: "Culture", ic: "🐢", r: "grows <b>very slowly</b> (weeks)"}, {name: "Oxygen", ic: "🫧", r: "<b>obligate aerobe</b>"}], q: "Which organism is it?", o: ["<i>Mycobacterium tuberculosis</i>", "<i>Nocardia asteroides</i>", "<i>Corynebacterium diphtheriae</i>", "<i>Streptococcus pneumoniae</i>"], w: "Strongly acid-fast, slow-growing rods with these symptoms: secondary (reactivated) TB."},
       checkin: {
@@ -912,7 +942,7 @@ window.TOUR_DATA = {
     {id: "m-leprae", node: "m_leprae", title: "<i>Mycobacterium leprae</i>: leprosy",
       orgs: [
         {id: "mleprae", node: "m_leprae", name: "Mycobacterium leprae", shape: "rod", emoji: "🩹",
-          cheat: "The mycobacterium that <b>can't grow in lab culture</b>; linked to <b>armadillos</b>.",
+          cheat: "An <b>acid-fast</b> rod that <b>can't grow in lab culture</b>: <i>M. leprae</i>.",
           fun: {t: "Besides humans, the <b>nine-banded armadillo</b> (southern U.S. and Latin America) can be naturally infected with <i>M. leprae</i>. Handling infected armadillos is linked to leprosy!"},
           tests: [
             {k: "gram", v: "+", from: "grampos"},
@@ -920,10 +950,10 @@ window.TOUR_DATA = {
             {k: "media", v: "only in living hosts (no lab culture)", note: "cannot grow in a lab culture"}
           ],
           disease: {short: "leprosy (Hansen's disease)", html: "leprosy. Skin lesions vary with each person's immune response: pale or raised patches, nodules, \"target-like\" or \"punched out\" lesions.",
-            boxes: [{ic: "🧠", t: "nerve damage is permanent"}, {ic: "🩹", t: "skin lesions improve after months but can persist for years"}, {ic: "🔁", t: "relapses can occur"}]},
+            boxes: [{t: "nerve damage is permanent"}, {t: "skin lesions improve after months but can persist for years"}, {t: "relapses can occur"}]},
           facts: [
             {ic: "💨", h: "How it spreads", t: "prolonged close contact; respiratory droplets from the nasal mucosa. Also linked to handling infected armadillos."},
-            {ic: "🌍", h: "Where", t: "about 80% of cases are in India, Brazil, and Indonesia. Rare in the U.S. (about 150 to 200 cases a year)."}
+            {h: "Where", t: "about 80% of cases are in India, Brazil, and Indonesia. Rare in the U.S. (about 150 to 200 cases a year)."}
           ],
           treat: {short: "multidrug therapy: rifampin, dapsone, clofazimine", html: "multidrug therapy for 1 to 2 years: <b>rifampin</b> (blocks RNA polymerase, same as TB!), <b>dapsone</b> (inhibits folate synthesis), <b>clofazimine</b> (binds bacterial DNA, causes oxidative stress)", drugs: ["rifampin", "dapsone", "clofazimine"]}}
       ],
@@ -935,7 +965,7 @@ window.TOUR_DATA = {
     {id: "nocardia", node: "nocardia", title: "<i>Nocardia asteroides</i>",
       orgs: [
         {id: "nasteroides", node: "nocardia", name: "Nocardia asteroides", shape: "branching", emoji: "🌱",
-          cheat: "<b>Weakly acid-fast</b> branching filaments with <b>chalky</b> colonies.",
+          cheat: "<b>Weakly acid-fast</b> branching filaments (strict aerobe) with <b>chalky</b> colonies: <i>Nocardia</i>.",
           tests: [
             {k: "gram", v: "+", from: "grampos"},
             {k: "shape", v: "branching filaments", from: "nocardia"},
@@ -944,8 +974,8 @@ window.TOUR_DATA = {
             {k: "catalase", v: "+", from: "nocardia"},
             {k: "pigment", v: "chalky white/orange"}
           ],
-          disease: {short: "nocardiosis", html: "nocardiosis: pulmonary (lungs), cutaneous (skin), or disseminated (including the CNS)"},
-          facts: [{ic: "🌱", h: "Found in", t: "soil and decaying organic matter"}]}
+          disease: {short: "nocardiosis", html: "nocardiosis: pulmonary (lungs), cutaneous (skin), or disseminated (including the CNS). An <b>opportunistic pathogen</b>."},
+          facts: [{h: "Found in", t: "soil and decaying organic matter"}]}
       ],
       checkin: {
         q: "Which lab stain shows <i>Nocardia</i> as weakly acid-fast?",
@@ -953,15 +983,23 @@ window.TOUR_DATA = {
         w: "<i>Nocardia</i> is weakly acid-fast with the modified Ziehl-Neelsen stain (medium mycolic acids, C40 to 60)."
       }},
 
-    {id: "finale", links: [{href: "microbe-collector.html", ic: "🧫", t: "Microbe Collector", sub: "swab spots and collect every card"}, {href: "mystery-microbe.html", ic: "🕵️", t: "Mystery Microbe", sub: "ID it from lab tests"}, {href: "disease-type.html", ic: "⌨️", t: "Disease Typing Game", sub: "name the microbe fast"}], node: "bacteria", title: "Finale: the full tree", full: true, finale: true,
-      takeaways: [
-        "Gram-positive: thick peptidoglycan → purple. Firmicutes = <b>low G+C</b>.",
-        "Class Bacilli grows with O₂; class Clostridia are <b>obligate anaerobes</b>.",
-        "<b>Catalase + = Bacillales</b> (<i>Bacillus, Listeria, Staphylococcus</i>). <b>Catalase − = Lactobacillales</b> (<i>Lactobacillus, Streptococcus, Enterococcus</i>).",
-        "Spore formers: <i>Bacillus</i> and the Clostridia.",
-        "<i>S. aureus</i> = catalase + AND coagulase + AND golden.",
-        "Actinobacteria = <b>high G+C</b>. Corynebacteriales have mycolic acids: <i>Mycobacterium</i> strongly acid-fast, <i>Nocardia</i> weakly, <i>Corynebacterium</i> not.",
-        "<i>Micrococcus</i> = tetrads. <i>Streptomyces</i> = antibiotics. <i>Actinomyces</i> = lumpy jaw."
+    {id: "finale", node: "bacteria", title: "Finale: the full tree", full: true, finale: true,
+      outline: [
+        {h: "Gram-positive bacteria", t: "thick peptidoglycan → purple Gram stain", kids: [
+          {h: "Firmicutes", t: "= <b>low G+C</b> (&lt;50%)", kids: [
+            {h: "Class Bacilli", t: "= aerobes or facultative anaerobes. The <b>catalase test</b> splits its orders:", kids: [
+              {h: "Bacillales (catalase +)", t: "<i>Bacillus</i> (spore formers), <i>Listeria</i>, <i>Staphylococcus</i> (<i>S. aureus</i> = coagulase + and golden)"},
+              {h: "Lactobacillales (catalase −)", t: "<i>Lactobacillus</i>, <i>Streptococcus</i> (sorted by hemolysis), <i>Enterococcus</i>"}
+            ]},
+            {h: "Class Clostridia", t: "= <b>obligate anaerobes</b>, spore-forming rods: <i>Clostridium</i>, <i>Clostridioides</i>"}
+          ]},
+          {h: "Actinobacteria", t: "= <b>high G+C</b> (51 to 70%)", kids: [
+            {h: "Corynebacteriales", t: "= mycolic acids: <i>Mycobacterium</i> strongly acid-fast, <i>Nocardia</i> weakly, <i>Corynebacterium</i> not"},
+            {h: "Other orders", t: "<i>Micrococcus</i> (tetrads), <i>Streptomyces</i> (antibiotics), <i>Actinomyces</i> (anaerobic filaments), <i>Cutibacterium</i>"}
+          ]}
+        ]},
+        {h: "Spore formers on our list", t: "aerobic or facultative → <i>Bacillus</i>; obligate anaerobe → Clostridia"},
+        {h: "Mycoplasma", t: "no cell wall (sterols in its membrane), but related to the Firmicutes"}
       ]}
   ]
 };

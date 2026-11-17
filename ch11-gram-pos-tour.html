@@ -490,7 +490,29 @@ button.base:hover{transform:translateY(-2px)}
 .plink:hover{border-color:var(--arrow)}
 .plink span{font-size:24px}
 .plink small{color:var(--muted); font-size:14px}
-.flipc .fe{display:block; font-size:34px; line-height:1.1; margin-bottom:4px}
+.cols{display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr))}
+.colbox{border:1.5px solid var(--line); border-top:5px solid var(--cc, var(--gn-edge)); border-radius:14px; background:var(--surface); padding:10px 12px; min-width:0}
+.colbox h5{margin:0 0 4px; font-family:var(--f-display); font-size:18px}
+.colbox p{margin:0 0 6px; font-size:16px}
+.genera{list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:6px}
+.genera li{background:var(--surface-2); border-radius:999px; padding:3px 10px; font-size:15px; font-style:italic}
+.tblwrap{overflow-x:auto}
+.dtable{border-collapse:collapse; width:100%; font-size:16px}
+.dtable th,.dtable td{border:1.5px solid var(--line); padding:8px 10px; text-align:left}
+.dtable th{background:var(--surface-2); font-family:var(--f-display)}
+details.more{border:1.5px solid var(--line); border-radius:14px; background:var(--surface)}
+details.more summary{cursor:pointer; padding:10px 14px; font-weight:700}
+.morebody{padding:0 14px 12px; font-size:16.5px}
+.morebody p{margin:6px 0 0}
+.practice1{margin:0; font-size:15.5px; display:flex; flex-wrap:wrap; gap:6px 8px; align-items:center}
+.practice1 a{text-decoration:none; color:var(--ink); border:1.5px solid var(--line); border-radius:999px; padding:3px 11px; background:var(--surface); font-weight:700; font-size:14.5px}
+.practice1 a:hover{border-color:var(--arrow)}
+.tsteps{margin:0; padding-left:24px; display:flex; flex-direction:column; gap:6px; font-size:17px}
+.outline,.outline ul{list-style:none; margin:0; padding:0}
+.outline ul{margin-left:18px; padding-left:14px; border-left:3px solid var(--line)}
+.outline li{margin:6px 0}
+.onode{background:var(--surface); border:1.5px solid var(--line); border-radius:12px; padding:8px 12px; font-size:16.5px}
+.outline > li > .onode{border-left:6px solid var(--gn-edge)}
 .tabs a.tablink{text-decoration:none; color:var(--ink); border:1.5px solid var(--line); border-radius:999px; padding:6px 14px; font-weight:700; font-size:15px; background:var(--surface)}
 @media (max-width:520px){ .matchgrid{grid-template-columns:minmax(0,1fr)} }
 .xlink a{display:inline-block; font-weight:700; color:var(--ink); text-decoration:none; border:1.5px solid var(--line); background:var(--surface); border-radius:999px; padding:8px 14px}
@@ -687,7 +709,7 @@ function iconInner(shape){
     case "lancet": s += '<path d="M4 22 Q15 9 30 22 Q15 35 4 22Z" ' + f + '/><path d="M60 22 Q49 9 34 22 Q49 35 60 22Z" ' + f + '/>'; break;
     case "tetrads": s += [[24, 12], [40, 12], [24, 30], [40, 30]].map(function(p){ return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="7.5" ' + f + '/>'; }).join(""); break;
     case "branching": s += tube("M6 30 L24 22 L58 24", 4) + tube("M24 22 L38 6", 4) + tube("M40 23 L52 38", 4) + tube("M14 26 L10 10", 4); break;
-    case "club": s += '<path d="M8 22 Q8 15 15 16 L46 17 Q58 13 58 22 Q58 31 46 27 L15 28 Q8 29 8 22Z" ' + f + '/>'; break;
+    case "club": s += '<path transform="translate(9 22)" d="M0 -3 L30 -5.6 Q40 -7.2 45 -5.8 Q50 -4 50 0 Q50 4 45 5.8 Q40 7.2 30 5.6 L0 3 Q-3 3 -3 0 Q-3 -3 0 -3Z" ' + f + '/>'; break;
     case "coccobacillus": s += '<rect x="18" y="11" width="28" height="22" rx="11" ' + f + '/>'; break;
     case "diplococcus": s += '<path d="M28.5 9 A13 13 0 1 0 28.5 35 Q21 22 28.5 9Z" ' + f + '/><path d="M35.5 9 A13 13 0 1 1 35.5 35 Q43 22 35.5 9Z" ' + f + '/>'; break;
     case "curved": s += tube("M14 32 Q32 2 50 32", 10); break;
@@ -735,22 +757,25 @@ var DIAGRAMS = {
     return {svg: s + "</svg>", cap: "<i>Mycoplasma</i> has <b>no cell wall</b>. <b>Sterols</b> in its membrane help hold it together."};
   },
   acidfast: function(){
-    var R = rng(5), s = '<svg viewBox="0 0 540 250" role="img" aria-label="Acid-fast stain views. Mycobacterium: bright red rods. Nocardia: partly red branching filaments. Corynebacterium: blue, not acid-fast.">';
-    [["Mycobacterium", "strongly acid-fast", "#dc2626", "rods"], ["Nocardia", "weakly acid-fast", "#e879a0", "branch"], ["Corynebacterium", "not acid-fast", "#2563eb", "rods"]].forEach(function(p, i){
+    var R = rng(5), s = '<svg viewBox="0 0 540 250" role="img" aria-label="Acid-fast stain views. Mycobacterium: thin red rods. Nocardia: partly pink, beaded branching filaments. Corynebacterium: blue club-shaped rods in V and L shapes, not acid-fast.">';
+    function club(rot, c){ return '<path transform="rotate(' + rot + ') scale(.8)" d="M0 -3 L30 -5.6 Q40 -7.2 45 -5.8 Q50 -4 50 0 Q50 4 45 5.8 Q40 7.2 30 5.6 L0 3 Q-3 3 -3 0 Q-3 -3 0 -3Z" fill="' + c + '"/>'; }
+    [["Mycobacterium", "strongly acid-fast", "#dc2626", "rods"], ["Nocardia", "weakly acid-fast", "#e879a0", "branch"], ["Corynebacterium", "not acid-fast", "#2563eb", "clubs"]].forEach(function(p, i){
       var cx = 95 + i * 175;
       s += '<circle cx="' + cx + '" cy="95" r="78" fill="#dbeafe" stroke="#33415c" stroke-width="6"/>';
-      if (p[3] === "branch") s += '<path d="M' + (cx - 50) + ' 120 L' + (cx - 10) + ' 95 L' + (cx + 45) + ' 100 M' + (cx - 10) + ' 95 L' + (cx + 10) + ' 50 M' + (cx + 15) + ' 98 L' + (cx + 35) + ' 135 M' + (cx - 32) + ' 109 L' + (cx - 45) + ' 70" stroke="' + p[2] + '" stroke-width="6" stroke-linecap="round" stroke-dasharray="7 4" fill="none"/>';
-      else for (var k = 0; k < 9; k++){ var a = R() * 6.28, d = 12 + R() * 50, x = cx + Math.cos(a) * d, y = 95 + Math.sin(a) * d; s += '<rect x="' + (x - 12).toFixed(1) + '" y="' + (y - 4).toFixed(1) + '" width="24" height="8" rx="4" fill="' + p[2] + '" transform="rotate(' + Math.round(R() * 180) + " " + x.toFixed(1) + " " + y.toFixed(1) + ')"/>'; }
+      if (p[3] === "branch") s += '<path d="M' + (cx - 50) + ' 120 L' + (cx - 10) + ' 95 L' + (cx + 45) + ' 100 M' + (cx - 10) + ' 95 L' + (cx + 10) + ' 50 M' + (cx + 15) + ' 98 L' + (cx + 35) + ' 135 M' + (cx - 32) + ' 109 L' + (cx - 45) + ' 70" stroke="' + p[2] + '" stroke-width="5" stroke-linecap="round" stroke-dasharray="6 4" fill="none"/>';
+      else if (p[3] === "clubs") [[cx - 30, 70, -150, 70], [cx + 26, 62, -20, 90], [cx - 14, 128, 200, 60], [cx + 34, 118, 30, 80]].forEach(function(q){ s += '<g transform="translate(' + q[0] + " " + q[1] + ')">' + club(q[2], p[2]) + club(q[2] + q[3], p[2]) + "</g>"; });
+      else for (var k = 0; k < 9; k++){ var a = R() * 6.28, d = 12 + R() * 50, x = cx + Math.cos(a) * d, y = 95 + Math.sin(a) * d, r0 = Math.round(R() * 180); s += '<path d="M' + (x - 13).toFixed(1) + " " + y.toFixed(1) + " q 13 " + (k % 2 ? -5 : 5) + " 26 0" + '" stroke="' + p[2] + '" stroke-width="4.5" stroke-linecap="round" fill="none" transform="rotate(' + r0 + " " + x.toFixed(1) + " " + y.toFixed(1) + ')"/>'; }
       s += '<text class="dg-b" x="' + cx + '" y="204" text-anchor="middle" font-style="italic" style="font-size:17px">' + p[0] + '</text><text class="dg-t" x="' + cx + '" y="230" text-anchor="middle" style="font-size:16px">' + p[1] + "</text>";
     });
     return {svg: s + "</svg>", cap: "Acid-fast (Ziehl-Neelsen) stain: <b>red</b> = keeps carbolfuchsin; <b>blue</b> = not acid-fast"};
   },
   chinese: function(){
-    var s = '<svg viewBox="0 0 300 230" role="img" aria-label="Microscope view of Corynebacterium: club-shaped rods stuck together at angles, in V and L shapes, like Chinese letters."><circle cx="150" cy="112" r="100" fill="var(--scope)" stroke="#33415c" stroke-width="7"/>';
-    [[95, 70, 20, 75], [180, 60, -30, 60], [120, 140, 70, 95], [205, 130, 10, 100], [150, 100, -60, 80], [80, 120, 45, 90], [175, 170, -20, 70]].forEach(function(p){
-      s += '<g transform="translate(' + p[0] + " " + p[1] + ") rotate(" + p[2] + ')"><g transform="scale(.55) translate(-58 -22)">' + iconInner("club") + '</g><g transform="rotate(' + p[3] + ') scale(.55) translate(-6 -22)">' + iconInner("club") + "</g></g>";
+    var s = '<svg viewBox="0 0 300 230" role="img" aria-label="Microscope view of Corynebacterium: club-shaped rods, thin at one end and swollen at the other, stuck together at their thin ends in V and L shapes, like Chinese letters."><circle cx="150" cy="112" r="100" fill="var(--scope)" stroke="#33415c" stroke-width="7"/>';
+    function club(rot){ return '<path transform="rotate(' + rot + ')" d="M0 -3 L30 -5.6 Q40 -7.2 45 -5.8 Q50 -4 50 0 Q50 4 45 5.8 Q40 7.2 30 5.6 L0 3 Q-3 3 -3 0 Q-3 -3 0 -3Z" fill="var(--gn-fill)" stroke="var(--gn-edge)" stroke-width="2"/>'; }
+    [[112, 66, 20, 70], [212, 82, 125, 75], [96, 142, -40, 75], [204, 172, 200, 70]].forEach(function(p){
+      s += '<g transform="translate(' + p[0] + " " + p[1] + ') scale(.95)">' + club(p[2]) + club(p[2] + p[3]) + "</g>";
     });
-    return {svg: s + "</svg>", cap: "<b>\"Chinese letters\":</b> club-shaped rods stay attached at angles (V and L shapes) after snapping division", small: true};
+    return {svg: s + "</svg>", cap: "<b>\"Chinese letters\":</b> club-shaped rods (thin at one end, swollen at the other) stay attached at angles in V and L shapes after snapping division", small: true};
   },
   hemolysis: function(){
     var P = [["Alpha", "partial", "greenish halo", "#65a30d", .55], ["Beta", "complete", "clear halo", "#fde2e2", .9], ["Gamma", "none", "no change", null, 0]], R = rng(11);
@@ -1196,8 +1221,8 @@ function plateG(colony, edge){
   [[22, 19], [34, 16], [42, 25], [28, 28], [18, 27], [38, 32]].forEach(function(p){ g += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3.4" fill="' + colony + '"' + (edge ? ' stroke="' + edge + '" stroke-width="1"' : "") + "/>"; });
   return g;
 }
-function shapeKey(v){ return {"rods": "rod", "spore-forming rods": "rodspore", "cocci in clusters": "clusters", "cocci in chains": "chains", "lancet-shaped diplococci": "lancet", "cocci in pairs or short chains": "pairchain", "cocci in tetrads": "tetrads", "branching filaments": "branching", "filamentous rods": "branching", "club-shaped rods": "club"}[v] || "rod"; }
-var SHAPES = ["rods", "spore-forming rods", "cocci in clusters", "cocci in chains", "lancet-shaped diplococci", "cocci in pairs or short chains", "cocci in tetrads", "club-shaped rods", "filamentous rods", "branching filaments"];
+function shapeKey(v){ return {"rods": "rod", "spore-forming rods": "rodspore", "cocci in clusters": "clusters", "cocci in chains": "chains", "diplococci (pairs)": "lancet", "cocci in pairs or short chains": "pairchain", "cocci in tetrads": "tetrads", "branching filaments": "branching", "filamentous rods": "branching", "club-shaped rods": "club"}[v] || "rod"; }
+var SHAPES = ["rods", "spore-forming rods", "cocci in clusters", "cocci in chains", "diplococci (pairs)", "cocci in pairs or short chains", "cocci in tetrads", "club-shaped rods", "filamentous rods", "branching filaments"];
 function pm(v){ return String(v).charAt(0) === "+" ? "+" : String(v).charAt(0) === "−" ? "−" : v; }
 var TESTS = {
   gram: {name: "Gram stain", opts: ["pink (−)", "purple (+)"], ans: function(){ return "purple (+)"; },
@@ -1395,8 +1420,9 @@ function orgCard(o){
   }
   /* Spread, found in, at risk, prevention, treatment */
   var facts = (o.facts || []).slice();
-  if (o.treat && !t) facts.push({ic: "💊", h: "Treatment", t: o.treat.html});
+  if (o.treat && !t && !o.treatSteps) facts.push({ic: "💊", h: "Treatment", t: o.treat.html});
   if (facts.length) h += '<section class="sec">' + boxesHtml(facts) + "</section>";
+  if (o.treatSteps && !t) h += '<section class="sec"><h4 class="sech">💊 Treatment</h4><ol class="tsteps">' + o.treatSteps.map(function(x){ return "<li>" + x + "</li>"; }).join("") + "</ol></section>";
   if (o.treat && t){
     var tk = "x:" + o.id;
     register(tk, {a: o.treat.short, kind: "treat", why: "<b><i>" + esc(o.name) + "</i> treatment:</b> " + o.treat.html});
@@ -1523,20 +1549,38 @@ function matchHtml(s){
   return h;
 }
 function linksHtml(list){
-  return '<section class="practice"><h4 class="sech">🎮 Practice this</h4><div class="plinks">' + list.map(function(l){
-    return '<a class="plink" href="' + l.href + '"' + (/^#/.test(l.href) ? "" : "") + "><span>" + (l.ic || "🎮") + "</span><b>" + l.t + "</b>" + (l.sub ? "<small>" + l.sub + "</small>" : "") + "</a>";
-  }).join("") + "</div></section>";
+  return '<p class="practice1"><b>Practice:</b> ' + list.map(function(l){ return '<a href="' + l.href + '">' + l.t + "</a>"; }).join("") + "</p>";
+}
+/* side-by-side boxes: [{h, t, items}] */
+function colsHtml(cols){
+  return '<div class="cols n' + cols.length + '">' + cols.map(function(c){
+    return '<div class="colbox"' + (c.c ? ' style="--cc:' + c.c + '"' : "") + "><h5>" + c.h + "</h5>" + (c.t ? "<p>" + c.t + "</p>" : "") + (c.items ? '<ul class="genera">' + c.items.map(function(x){ return "<li>" + x + "</li>"; }).join("") + "</ul>" : "") + "</div>";
+  }).join("") + "</div>";
+}
+function tableHtml(t){
+  return '<div class="tblwrap"><table class="dtable"><thead><tr>' + t.head.map(function(x){ return "<th>" + x + "</th>"; }).join("") + "</tr></thead><tbody>" +
+    t.rows.map(function(r){ return "<tr>" + r.map(function(x){ return "<td>" + x + "</td>"; }).join("") + "</tr>"; }).join("") + "</tbody></table></div>";
+}
+function moreHtml(m){
+  return '<details class="more"><summary>📖 Learn more: ' + m.title + '</summary><div class="morebody">' + m.html + (m.link ? '<p><a href="' + m.link.href + '" target="_blank" rel="noopener">' + m.link.t + " ↗</a></p>" : "") + "</div></details>";
+}
+/* finale: nested outline [{h, t, kids}] */
+function outlineHtml(list){
+  return '<ul class="outline">' + list.map(function(n){ return "<li><div class=\"onode\"><b>" + n.h + "</b>" + (n.t ? " " + n.t : "") + "</div>" + (n.kids ? outlineHtml(n.kids) : "") + "</li>"; }).join("") + "</ul>";
 }
 function refreshWidget(id, html){ var el = document.getElementById(id); if (el) el.outerHTML = html; }
 function renderLesson(){
   var s = stop(), h = "", c = colorOf(N[s.node]);
   h += '<header class="mhead"><div class="mbadge" style="--c:' + c + '">' + (s.n + 1) + "</div><div><h2>" + s.title + "</h2></div></header>";
   if (s.lesson) h += '<ul class="lesson">' + s.lesson.map(function(p){ return "<li>" + p + "</li>"; }).join("") + "</ul>";
+  if (s.cols) h += colsHtml(s.cols);
+  if (s.table) h += tableHtml(s.table);
   if (s.diagram && DIAGRAMS[s.diagram]){ var dg = DIAGRAMS[s.diagram](); h += '<figure class="figure' + (dg.small ? " smallfig" : "") + '" style="margin:0">' + dg.svg + "<figcaption>" + dg.cap + "</figcaption></figure>"; }
   [].concat(s.photo || [], s.photos || []).forEach(function(p){ h += '<div class="photos n1 big">' + photoHtml(p) + "</div>"; });
   if (s.link) h += '<p class="xlink"><a href="' + s.link.href + '" target="_blank" rel="noopener">' + s.link.t + ' ↗</a></p>';
   (s.widgets || []).forEach(function(k){ if (k === "gc") h += gcHtml(); });
   if (s.match) h += matchHtml(s);
+  if (s.more) h += moreHtml(s.more);
   (s.sections || []).forEach(function(x, i){ h += '<section class="sec"><h4 class="sech">' + x.h + "</h4>" + (x.flow ? flowHtml(s.id + "-" + i, x.flow) : "") + (x.boxes ? boxesHtml(x.boxes, "small") : "") + (x.flips ? flipsHtml(s.id, x.flips, "s" + i) : "") + "</section>"; });
   if (s.life) h += '<section class="life"><h4 class="sech">🌍 In your life</h4>' + boxesHtml(s.life, "small") + "</section>";
   if (s.entericTable) h += '<div><button class="btn ghost" type="button" data-act="table">📋 Open the enteric ID table</button></div>';
@@ -1544,13 +1588,13 @@ function renderLesson(){
   if (s.orgs && s.orgs.length) h += '<div class="orgs">' + s.orgs.map(orgCard).join("") + "</div>";
   if (s.case) h += caseHtml(s);
   if (s.finale) h += finaleHtml(s);
-  if (s.links) h += linksHtml(s.links);
   h += cheatHtml(s.cheat);
   (s.orgs || []).forEach(function(o){ if (o.cheat) h += cheatHtml(o.cheat, s.orgs.length > 1 ? o : null); });
   h += traitsHtml();
   var keys = Object.keys(KEYS);
   if (testOn()) h += checkbarHtml(keys);
   h += checkinHtml(s);
+  if (s.links) h += linksHtml(s.links);
   h += '<div><button class="btn ghost" type="button" data-act="map" aria-controls="mapsec">🗺️ ' + (st.map ? "Hide the map" : "Show the map") + "</button></div>";
   h += '<nav class="stepnav" aria-label="Tour navigation">' +
     '<button type="button" data-act="prev"><small>&larr; Back</small><b>' + stepTitle(s.n - 1) + "</b></button>" +
@@ -1559,14 +1603,14 @@ function renderLesson(){
   if (s.diagram === "axial") startAxial();
 }
 function finaleHtml(s){
-  var h = '<ol class="takeaways">' + s.takeaways.map(function(t){ return '<li><span style="min-width:0">' + t + "</span></li>"; }).join("") + "</ol>";
+  var h = s.outline ? outlineHtml(s.outline) : '<ol class="takeaways">' + s.takeaways.map(function(t){ return '<li><span style="min-width:0">' + t + "</span></li>"; }).join("") + "</ol>";
   h += '<div class="btnrow"><button class="btn" type="button" data-act="testmode">✏️ Switch to Test mode</button><button class="btn ghost" type="button" data-act="explore">🌳 Explore the tree</button><button class="btn ghost" type="button" data-act="cheats">🎯 ID cheat sheet</button></div>';
   h += '<div><h3 class="sech">Keep practicing</h3><div class="tiles">';
   D.games.forEach(function(g){
     h += g.href ? '<a class="tile" href="' + esc(g.href) + '"><span class="tag">Game</span><b>' + esc(g.title) + "</b></a>"
                 : '<div class="tile soon"><span class="tag">Game · link coming soon</span><b>' + esc(g.title) + "</b></div>";
   });
-  h += '<div class="tile soon"><span class="tag">Learn · coming soon</span><b>Gram-positive tour</b>Firmicutes and Actinobacteria</div>';
+  (D.tabs || []).forEach(function(t){ if (t.href) h += '<a class="tile" href="' + esc(t.href) + '"><span class="tag">Learn</span><b>' + esc(t.label) + " tour</b></a>"; });
   return h + "</div></div>";
 }
 
