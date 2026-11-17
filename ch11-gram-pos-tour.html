@@ -642,6 +642,9 @@ function iconInner(shape){
     case "chains": s += [[7, 26], [18, 21], [29, 19], [40, 21], [51, 25], [61, 30]].map(function(p){ return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="5.6" ' + f + '/>'; }).join(""); break;
     case "pairchain": s += [[9, 13], [21, 13], [30, 31], [42, 31], [54, 31]].map(function(p){ return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="6" ' + f + '/>'; }).join(""); break;
     case "lancet": s += '<path d="M4 22 Q15 9 30 22 Q15 35 4 22Z" ' + f + '/><path d="M60 22 Q49 9 34 22 Q49 35 60 22Z" ' + f + '/>'; break;
+    case "tetrads": s += [[24, 12], [40, 12], [24, 30], [40, 30]].map(function(p){ return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="7.5" ' + f + '/>'; }).join(""); break;
+    case "branching": s += tube("M6 30 L24 22 L58 24", 4) + tube("M24 22 L38 6", 4) + tube("M40 23 L52 38", 4) + tube("M14 26 L10 10", 4); break;
+    case "club": s += '<path d="M8 22 Q8 15 15 16 L46 17 Q58 13 58 22 Q58 31 46 27 L15 28 Q8 29 8 22Z" ' + f + '/>'; break;
     case "coccobacillus": s += '<rect x="18" y="11" width="28" height="22" rx="11" ' + f + '/>'; break;
     case "diplococcus": s += '<path d="M28.5 9 A13 13 0 1 0 28.5 35 Q21 22 28.5 9Z" ' + f + '/><path d="M35.5 9 A13 13 0 1 1 35.5 35 Q43 22 35.5 9Z" ' + f + '/>'; break;
     case "curved": s += tube("M14 32 Q32 2 50 32", 10); break;
@@ -667,6 +670,24 @@ function bilayer(x0, x1, y){
   return s;
 }
 var DIAGRAMS = {
+  acidfast: function(){
+    var R = rng(5), s = '<svg viewBox="0 0 540 250" role="img" aria-label="Acid-fast stain views. Mycobacterium: bright red rods. Nocardia: partly red branching filaments. Corynebacterium: blue, not acid-fast.">';
+    [["Mycobacterium", "strongly acid-fast", "#dc2626", "rods"], ["Nocardia", "weakly acid-fast", "#e879a0", "branch"], ["Corynebacterium", "not acid-fast", "#2563eb", "rods"]].forEach(function(p, i){
+      var cx = 95 + i * 175;
+      s += '<circle cx="' + cx + '" cy="95" r="78" fill="#dbeafe" stroke="#33415c" stroke-width="6"/>';
+      if (p[3] === "branch") s += '<path d="M' + (cx - 50) + ' 120 L' + (cx - 10) + ' 95 L' + (cx + 45) + ' 100 M' + (cx - 10) + ' 95 L' + (cx + 10) + ' 50 M' + (cx + 15) + ' 98 L' + (cx + 35) + ' 135 M' + (cx - 32) + ' 109 L' + (cx - 45) + ' 70" stroke="' + p[2] + '" stroke-width="6" stroke-linecap="round" stroke-dasharray="7 4" fill="none"/>';
+      else for (var k = 0; k < 9; k++){ var a = R() * 6.28, d = 12 + R() * 50, x = cx + Math.cos(a) * d, y = 95 + Math.sin(a) * d; s += '<rect x="' + (x - 12).toFixed(1) + '" y="' + (y - 4).toFixed(1) + '" width="24" height="8" rx="4" fill="' + p[2] + '" transform="rotate(' + Math.round(R() * 180) + " " + x.toFixed(1) + " " + y.toFixed(1) + ')"/>'; }
+      s += '<text class="dg-b" x="' + cx + '" y="204" text-anchor="middle" font-style="italic" style="font-size:17px">' + p[0] + '</text><text class="dg-t" x="' + cx + '" y="230" text-anchor="middle" style="font-size:16px">' + p[1] + "</text>";
+    });
+    return {svg: s + "</svg>", cap: "Acid-fast (Ziehl-Neelsen) stain: <b>red</b> = keeps carbolfuchsin; <b>blue</b> = not acid-fast"};
+  },
+  chinese: function(){
+    var s = '<svg viewBox="0 0 300 230" role="img" aria-label="Microscope view of Corynebacterium: club-shaped rods stuck together at angles, in V and L shapes, like Chinese letters."><circle cx="150" cy="112" r="100" fill="var(--scope)" stroke="#33415c" stroke-width="7"/>';
+    [[95, 70, 20, 75], [180, 60, -30, 60], [120, 140, 70, 95], [205, 130, 10, 100], [150, 100, -60, 80], [80, 120, 45, 90], [175, 170, -20, 70]].forEach(function(p){
+      s += '<g transform="translate(' + p[0] + " " + p[1] + ") rotate(" + p[2] + ')"><g transform="scale(.55) translate(-58 -22)">' + iconInner("club") + '</g><g transform="rotate(' + p[3] + ') scale(.55) translate(-6 -22)">' + iconInner("club") + "</g></g>";
+    });
+    return {svg: s + "</svg>", cap: "<b>\"Chinese letters\":</b> club-shaped rods stay attached at angles (V and L shapes) after snapping division", small: true};
+  },
   hemolysis: function(){
     var P = [["Alpha", "partial", "greenish halo", "#65a30d", .55], ["Beta", "complete", "clear halo", "#fde2e2", .9], ["Gamma", "none", "no change", null, 0]], R = rng(11);
     var s = '<svg viewBox="0 0 540 282" role="img" aria-label="Three blood agar plates. Alpha hemolysis: a greenish halo around the colonies (partial). Beta hemolysis: a clear halo (complete). Gamma: no change.">';
@@ -1111,8 +1132,8 @@ function plateG(colony, edge){
   [[22, 19], [34, 16], [42, 25], [28, 28], [18, 27], [38, 32]].forEach(function(p){ g += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3.4" fill="' + colony + '"' + (edge ? ' stroke="' + edge + '" stroke-width="1"' : "") + "/>"; });
   return g;
 }
-function shapeKey(v){ return {"rods": "rod", "spore-forming rods": "rodspore", "cocci in clusters": "clusters", "cocci in chains": "chains", "lancet-shaped diplococci": "lancet", "cocci in pairs or short chains": "pairchain"}[v] || "rod"; }
-var SHAPES = ["rods", "spore-forming rods", "cocci in clusters", "cocci in chains", "lancet-shaped diplococci", "cocci in pairs or short chains"];
+function shapeKey(v){ return {"rods": "rod", "spore-forming rods": "rodspore", "cocci in clusters": "clusters", "cocci in chains": "chains", "lancet-shaped diplococci": "lancet", "cocci in pairs or short chains": "pairchain", "cocci in tetrads": "tetrads", "branching filaments": "branching", "filamentous rods": "branching", "club-shaped rods": "club"}[v] || "rod"; }
+var SHAPES = ["rods", "spore-forming rods", "cocci in clusters", "cocci in chains", "lancet-shaped diplococci", "cocci in pairs or short chains", "cocci in tetrads", "club-shaped rods", "filamentous rods", "branching filaments"];
 function pm(v){ return String(v).charAt(0) === "+" ? "+" : String(v).charAt(0) === "−" ? "−" : v; }
 var TESTS = {
   gram: {name: "Gram stain", opts: ["pink (−)", "purple (+)"], ans: function(){ return "purple (+)"; },
@@ -1121,14 +1142,21 @@ var TESTS = {
   shape: {name: "Shape", opts: SHAPES, ans: function(v){ return v; },
     back: function(v){ return {txt: v, sub: "", col: "#6d28d9", svg: svgBox(iconInner(shapeKey(v)))}; },
     chip: function(v){ return v; }, opp: function(v){ return /clusters/.test(v) ? "cocci in chains" : /cocc/.test(v) ? "cocci in clusters" : /rod/.test(v) ? "cocci in clusters" : "rods"; }},
-  oxygen: {name: "Oxygen", opts: ["needs O₂ (aerobe)", "with or without O₂", "no O₂ (obligate anaerobe)"],
-    ans: function(v){ return /obligate anaerobe/.test(v) ? "no O₂ (obligate anaerobe)" : /facultative/.test(v) ? "with or without O₂" : "needs O₂ (aerobe)"; },
+  oxygen: {name: "Oxygen", opts: ["needs O₂ (aerobe)", "with or without O₂", "little or no O₂", "no O₂ (obligate anaerobe)"],
+    ans: function(v){ return /obligate anaerobe/.test(v) ? "no O₂ (obligate anaerobe)" : /microaerophilic/.test(v) ? "little or no O₂" : /facultative/.test(v) ? "with or without O₂" : "needs O₂ (aerobe)"; },
     back: function(v){
-      var an = /obligate anaerobe/.test(v), fa = /facultative/.test(v);
-      var o = an ? {dots: [[4, 27], [8, 29], [5, 32], [8, 34], [3, 31], [7, 25]]} : fa ? {dots: [[4, 10], [8, 13], [5, 18], [8, 23], [4, 28], [7, 31]]} : {dots: [[3, 9], [6, 8], [9, 9], [5, 11], [8, 11]]};
-      return {txt: v, sub: an ? "grows only at the bottom: O₂ is toxic" : fa ? "grows with or without O₂" : "grows at the top: needs O₂", col: "#1d4ed8", svg: svgBox(tubeG(26, "#fdf6e3", o))};
+      var an = /obligate anaerobe/.test(v), mi = /microaerophilic/.test(v), fa = !mi && /facultative/.test(v);
+      var o = an ? {dots: [[4, 27], [8, 29], [5, 32], [8, 34], [3, 31], [7, 25]]} : mi ? {dots: [[4, 20], [8, 23], [5, 27], [8, 30], [4, 33]]} : fa ? {dots: [[4, 10], [8, 13], [5, 18], [8, 23], [4, 28], [7, 31]]} : {dots: [[3, 9], [6, 8], [9, 9], [5, 11], [8, 11]]};
+      return {txt: v, sub: an ? "grows only at the bottom: O₂ is toxic" : mi ? "grows lower down: little or no O₂" : fa ? "grows with or without O₂" : "grows at the top: needs O₂", col: "#1d4ed8", svg: svgBox(tubeG(26, "#fdf6e3", o))};
     },
     chip: function(v){ return v; }, opp: function(v){ return /obligate anaerobe/.test(v) ? "grows with O₂" : "obligate anaerobe"; }},
+  acidfast: {name: "Acid-fast stain", opts: ["strongly acid-fast", "weakly acid-fast", "not acid-fast"], ans: function(v){ return v; },
+    back: function(v){
+      var st = /strongly/.test(v), wk = /weakly/.test(v), c = st ? "#dc2626" : wk ? "#e879a0" : "#2563eb";
+      var g = '<ellipse cx="32" cy="22" rx="27" ry="17" fill="#dbeafe" stroke="#94a3b8" stroke-width="1.4"/>' + [[18, 18, -20], [30, 26, 15], [42, 16, 40], [46, 28, -10], [24, 30, 70]].map(function(p){ return '<rect x="' + (p[0] - 6) + '" y="' + (p[1] - 2) + '" width="12" height="4" rx="2" fill="' + c + '" transform="rotate(' + p[2] + " " + p[0] + " " + p[1] + ')"/>'; }).join("");
+      return {txt: v, sub: st ? "bright red: keeps carbolfuchsin" : wk ? "partly red (modified stain)" : "blue: loses the red dye", col: st ? "#dc2626" : wk ? "#db2777" : "#2563eb", svg: svgBox(g)};
+    },
+    chip: function(v){ return v; }, opp: function(v){ return /not/.test(v) ? "strongly acid-fast" : "not acid-fast"; }},
   spores: {name: "Endospores", opts: ["+", "−"], ans: pm,
     back: function(v){ var p = pm(v) === "+"; return {txt: p ? "Spores (+)" : "No spores (−)", sub: p ? "tough endospores" : "never makes spores", col: p ? "#6d28d9" : NEG, svg: svgBox(iconInner(p ? "rodspore" : "rod"))}; },
     chip: function(v){ return pm(v) === "+" ? "spore former" : "no spores"; }, opp: function(v){ return pm(v) === "+" ? "no spores" : "spore former"; }},
@@ -1219,7 +1247,7 @@ function tileHtml(o, t, k){
 }
 function sortItems(o){
   /* own results first, then the tests that best tell organisms apart; skip the Gram stain (everything here is gram +) */
-  var PRI = ["coagulase", "pigment", "spores", "oxygen", "catalase", "urease", "shape"];
+  var PRI = ["acidfast", "coagulase", "pigment", "spores", "oxygen", "catalase", "oxidase", "urease", "shape"];
   var cands = (o.tests || []).filter(function(t){ var T0 = testOf(t); return t.k !== "gram" && T0 && T0.chip && T0.chip(t.v) && T0.opp(t.v); });
   cands.sort(function(a, b){ return ((a.from ? 100 : 0) + PRI.indexOf(a.k)) - ((b.from ? 100 : 0) + PRI.indexOf(b.k)); });
   cands = cands.slice(0, 3);

@@ -44,6 +44,8 @@
     {good: "diphtheriae", bad: /^dip(h)?t(h)?eria$/, tip: "Careful: the microbe is diphtheriae (ends in -ae). Diphtheria is the disease."},
     {good: "epidermidis", bad: /^epidermis$/, tip: "Careful: it's epidermidis (ends in -idis). The epidermis is your skin layer."},
     {good: "pneumoniae", bad: /^pneumonia$/, tip: "Careful: the microbe is pneumoniae (ends in -ae). Pneumonia is the disease."},
+    {good: "leprae", bad: /^lep(e)?ros(y|i)$/, tip: "Careful: the microbe is leprae. Leprosy is the disease."},
+    {good: "tuberculosis", bad: /^tubercul(o|e)sis$|^tb$/, tip: "Check the spelling: tuberculosis."},
     {good: "clostridioides", bad: /^clostridium$/, tip: "Almost! C. diff was renamed: it's now Clostridioides difficile."}
   ];
   var WHICH = ["genus", "species", "third"];
