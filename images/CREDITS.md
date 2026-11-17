@@ -34,7 +34,6 @@ They were taken from the book's PDF and cropped to single panels where noted, an
 | e-coli-and-elephant.jpg | 11.1 | Left: modification of work by NIAID. Right: modification of work by Tom Lubbock |
 | john-snow-cholera-map.jpg | 16.5 | Portrait: modification of work by “Rsabbatini”/Wikimedia Commons. Map: OpenStax Microbiology |
 | rmsf-us-map.png | 25.12 | Modification of work by Centers for Disease Control and Prevention |
-| s-aureus-gram-stain.jpg | 2.34 | OpenStax Microbiology |
 | b-subtilis-endospores.jpg | 2.38 | Modification of work by American Society for Microbiology |
 | mycoplasma-attaching.jpg | 22.12 | Modification of work by American Society for Microbiology |
 | catalase-test.jpg | 9.23 | Centers for Disease Control and Prevention |
@@ -48,7 +47,8 @@ They were taken from the book's PDF and cropped to single panels where noted, an
 | s-pyogenes-chains-beta.jpg | 4.20 | Modification of work by American Society for Microbiology |
 | s-pneumoniae-lancet.jpg | 22.10 | Panel a: modification of work by CDC; panel b: modification of work by Janice Carr, CDC |
 | c-botulinum-canner.jpg | 13.11 | Panel a: modification of work by CDC; panel b: modification of work by National Center for Home Food Preservation |
-| botulinum-tetanus-toxins.jpg | 15.16 | Micrographs: modification of work by Centers for Disease Control and Prevention |
+| botulinum-toxin.jpg | 15.16 (top half), cropped | Micrographs: modification of work by Centers for Disease Control and Prevention |
+| tetanus-toxin.jpg | 15.16 (bottom half), cropped | Micrographs: modification of work by Centers for Disease Control and Prevention |
 | c-difficile-sem.jpg | 4.19 | Modification of work by Centers for Disease Control and Prevention |
 | acid-fast-cell-wall.jpg | 3.27 | Panel a: modification of work by "Franciscosp2"/Wikimedia Commons; panel b: modification of work by CDC |
 | corynebacterium-palisades.jpg | 4.18 (b), cropped | Modification of work by Centers for Disease Control and Prevention |

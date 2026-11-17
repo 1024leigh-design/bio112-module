@@ -357,7 +357,7 @@ window.TOUR_DATA = {
             {k: "pigment", v: "greenish, pearly colonies"}
           ],
           disease: {short: "burn and wound infections, sepsis, swimmer's ear", html: "opportunistic infections:", tags: ["wound", "sepsis", "uti", "eye", "hospital"],
-            boxes: [{ic: "🔥", t: "burn and wound infections"}, {ic: "🩸", t: "sepsis (hospitals)"}, {ic: "👁️", t: "eye infections (contact lenses)"}, {ic: "👂", t: "swimmer's ear"}, {ic: "🚽", t: "UTIs"}]},
+            boxes: [{ic: "🔥", t: "burn and wound infections"}, {ic: "🩸", t: "sepsis (a <b>nosocomial</b> infection in hospitals)"}, {ic: "👁️", t: "eye infections (contact lenses)"}, {ic: "👂", t: "swimmer's ear"}, {ic: "🚽", t: "UTIs"}]},
           facts: [{ic: "🌍", h: "Found in", t: "soil, water, hospitals"}],
           extra: [{h: "🍓 Related species", boxes: [{ic: "🧊", t: "<i>P. fluorescens</i> is a major cause of refrigerated food spoilage"}]}]}
           /* TODO: brief gives no treatment for P. aeruginosa */
@@ -435,7 +435,7 @@ window.TOUR_DATA = {
             {k: "feature", v: "non-motile", ic: "⛔"},
             {k: "urease", v: "+ slow"}
           ],
-          disease: {short: "aspiration pneumonia", html: "aspiration pneumonia, often hospital-acquired", tags: ["pneumonia", "hospital"]},
+          disease: {short: "aspiration pneumonia", html: "aspiration pneumonia, often <b>nosocomial</b> (hospital-acquired)", tags: ["pneumonia", "hospital"]},
           facts: [{ic: "🌱", h: "Found in", t: "soil and water (it fixes nitrogen)"}]}
       ]},
     {id: "enterobacter", node: "enterobacter", title: "<i>Enterobacter</i>", entericTable: true,
@@ -449,7 +449,7 @@ window.TOUR_DATA = {
             {k: "lactose", v: "+", from: "coliforms"},
             {k: "imvic", v: "−−++"}
           ],
-          disease: {short: "hospital-acquired infections", html: "hospital-acquired infections", tags: ["hospital"]},
+          disease: {short: "<b>nosocomial</b> (hospital-acquired) infections", html: "<b>nosocomial</b> (hospital-acquired) infections", tags: ["hospital"]},
           extra: [{h: "🔬 Two species: tap to reveal the urease result", flips: [
             {f: "<i>E. aerogenes</i><br><small>(now called <i>Klebsiella aerogenes</i>)</small>", b: "urease −"},
             {f: "<i>E. cloacae</i>", b: "urease + (slow)"}
@@ -561,7 +561,7 @@ window.TOUR_DATA = {
             {k: "imvic", v: "−−++"},
             {k: "pigment", v: "red", note: "may not form at 37°C"}
           ],
-          disease: {short: "hospital-acquired UTIs, pneumonia, wound infections", html: "hospital-acquired infections, linked to catheters and IV lines:", tags: ["hospital", "uti", "pneumonia", "wound", "sepsis"],
+          disease: {short: "<b>nosocomial</b> (hospital-acquired) UTIs, pneumonia, wound infections", html: "<b>nosocomial</b> (hospital-acquired) infections, linked to catheters and IV lines:", tags: ["hospital", "uti", "pneumonia", "wound", "sepsis"],
             boxes: [{ic: "🚽", t: "UTIs"}, {ic: "🫁", t: "pneumonia"}, {ic: "🩹", t: "wound infections"}, {ic: "🩸", t: "bacteremia"}]},
           facts: [{ic: "🚿", h: "Found in", t: "water, soil, bathrooms, medical equipment"}]}
       ],
