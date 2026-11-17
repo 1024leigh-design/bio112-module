@@ -231,6 +231,8 @@ var RARITY = {
   legendary: ["ypestis", "banthracis"]
 };
 var WEIGHT = {common: 50, uncommon: 20, rare: 7, legendary: 1};
+/* per-microbe tweaks to how often it shows up (multiplies its rarity weight) */
+var BOOST = {banthracis: 5};
 var BONUS = {common: 0, uncommon: 5, rare: 15, legendary: 40};
 var RLABEL = {common: "● Common", uncommon: "◆ Uncommon", rare: "★ Rare", legendary: "👑 Legendary"};
 var RAR = {}; Object.keys(RARITY).forEach(function(r){ RARITY[r].forEach(function(id){ RAR[id] = r; }); });
@@ -534,7 +536,7 @@ function closeDlg(){ var d = $("#dlg"); if (d.close) d.close(); else d.removeAtt
 /* a better swab = a better sample = better odds of rare finds */
 function pick(site, luck){
   luck = luck || 1;
-  function w(id){ var r = BY[id].rar; return WEIGHT[r] * (r === "rare" || r === "legendary" ? luck : r === "uncommon" ? Math.sqrt(luck) : 1); }
+  function w(id){ var r = BY[id].rar; return WEIGHT[r] * (BOOST[id] || 1) * (r === "rare" || r === "legendary" ? luck : r === "uncommon" ? Math.sqrt(luck) : 1); }
   var total = 0; site.orgs.forEach(function(id){ total += w(id); });
   var r = Math.random() * total;
   for (var i = 0; i < site.orgs.length; i++){ r -= w(site.orgs[i]); if (r < 0) return BY[site.orgs[i]]; }
