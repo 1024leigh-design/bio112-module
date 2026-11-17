@@ -208,31 +208,31 @@ var SITES = [
   {id: "poop", em: "💩", name: "Poop sample", blurb: "The gut is packed with microbes.",
     orgs: ["ecoli", "enterobacter", "bactero", "enterococcus", "proteus", "lactobacillus", "kpneumoniae", "salmonella", "shigella", "cjejuni", "cdiff", "cperfringens", "vcholerae", "styphi"]},
   {id: "dirt", em: "🌱", name: "Garden dirt", blurb: "Soil is full of spore formers.",
-    orgs: ["bsubtilis", "paeruginosa", "bcereus", "lmono", "cperfringens", "kpneumoniae", "ctetani", "cbotulinum", "banthracis"]},
+    orgs: ["bsubtilis", "paeruginosa", "bcereus", "lmono", "cperfringens", "kpneumoniae", "ctetani", "cbotulinum", "banthracis", "sgriseus", "nasteroides", "mphlei"]},
   {id: "water", em: "💧", name: "Pond & hot tub", blurb: "Lakes, ponds, pools, and building water.",
     orgs: ["cyano", "paeruginosa", "planct", "lpneumophila", "cjejuni", "vcholerae"]},
   {id: "mouth", em: "👄", name: "Mouth & throat", blurb: "Normal flora and some troublemakers.",
-    orgs: ["fuso", "lactobacillus", "bactero", "spyogenes", "spneumoniae", "nmen", "cpneumoniae", "bpertussis"]},
+    orgs: ["fuso", "lactobacillus", "bactero", "spyogenes", "spneumoniae", "nmen", "cpneumoniae", "bpertussis", "mluteus", "aisraelii", "cdiphtheriae"]},
   {id: "nose", em: "👃", name: "Nose & skin", blurb: "Your skin and nostrils have flora too.",
-    orgs: ["sepi", "saureus", "spneumoniae", "nmen"]},
+    orgs: ["sepi", "saureus", "spneumoniae", "nmen", "mluteus", "cacnes"]},
   {id: "bugs", em: "🕷️", name: "Ticks & fleas", blurb: "Vector-borne microbes hitch a ride.",
     orgs: ["bburgdorferi", "brf", "rrickettsii", "ypestis"]},
   {id: "kitchen", em: "🍳", name: "Kitchen", blurb: "Raw meat, leftovers, the fridge.",
     orgs: ["ecoli", "lactobacillus", "saureus", "salmonella", "cjejuni", "lmono", "bcereus", "cperfringens", "cbotulinum"]},
   {id: "hospital", em: "🏥", name: "Hospital", blurb: "Medical devices, surfaces, and water systems.",
-    orgs: ["sepi", "saureus", "enterococcus", "paeruginosa", "kpneumoniae", "proteus", "smarcescens", "cdiff", "lpneumophila"]},
+    orgs: ["sepi", "saureus", "enterococcus", "paeruginosa", "kpneumoniae", "proteus", "smarcescens", "cdiff", "lpneumophila", "cjeikeium", "cacnes"]},
   {id: "clinic", em: "🧪", name: "Clinic lab", blurb: "Urine samples, swabs, and biopsies.",
-    orgs: ["ecoli", "proteus", "ssapro", "ngon", "ctrachomatis", "sagalactiae", "tpallidum", "hpylori"]}
+    orgs: ["ecoli", "proteus", "ssapro", "ngon", "ctrachomatis", "sagalactiae", "tpallidum", "hpylori", "mtb", "mleprae"]}
 ];
 var RARITY = {
-  common: ["ecoli", "enterobacter", "bactero", "enterococcus", "proteus", "lactobacillus", "bsubtilis", "paeruginosa", "cyano", "fuso", "sepi", "saureus"],
-  uncommon: ["kpneumoniae", "salmonella", "shigella", "cjejuni", "cdiff", "cperfringens", "bcereus", "lmono", "planct", "lpneumophila", "spyogenes", "spneumoniae", "nmen", "cpneumoniae", "bburgdorferi", "smarcescens", "ssapro", "ngon", "ctrachomatis", "sagalactiae", "hpylori"],
-  rare: ["vcholerae", "styphi", "ctetani", "cbotulinum", "bpertussis", "brf", "rrickettsii", "tpallidum"],
+  common: ["ecoli", "enterobacter", "bactero", "enterococcus", "proteus", "lactobacillus", "bsubtilis", "paeruginosa", "cyano", "fuso", "sepi", "saureus", "sgriseus", "mluteus", "cacnes"],
+  uncommon: ["kpneumoniae", "salmonella", "shigella", "cjejuni", "cdiff", "cperfringens", "bcereus", "lmono", "planct", "lpneumophila", "spyogenes", "spneumoniae", "nmen", "cpneumoniae", "bburgdorferi", "smarcescens", "ssapro", "ngon", "ctrachomatis", "sagalactiae", "hpylori", "aisraelii", "nasteroides", "cjeikeium", "mphlei"],
+  rare: ["vcholerae", "styphi", "ctetani", "cbotulinum", "bpertussis", "brf", "rrickettsii", "tpallidum", "mtb", "cdiphtheriae", "mleprae"],
   legendary: ["ypestis", "banthracis"]
 };
 var WEIGHT = {common: 50, uncommon: 20, rare: 7, legendary: 1};
 /* per-microbe tweaks to how often it shows up (multiplies its rarity weight) */
-var BOOST = {banthracis: 5};
+var BOOST = {banthracis: 7, ypestis: 2};
 var BONUS = {common: 0, uncommon: 5, rare: 15, legendary: 40};
 var RLABEL = {common: "● Common", uncommon: "◆ Uncommon", rare: "★ Rare", legendary: "👑 Legendary"};
 var RAR = {}; Object.keys(RARITY).forEach(function(r){ RARITY[r].forEach(function(id){ RAR[id] = r; }); });
@@ -343,6 +343,24 @@ var QSETS = {
     [Q("How is tetanus prevented?", ["vaccination", "no honey for infants", "hand sanitizer", "cooking food well"]),
      Q("Tetanus fatality rate, even with treatment?", ["10 to 20%", "less than 1%", "about 50%", "100%"])]
   ],
+  mtb: [
+    [Q("What makes <i>M. tuberculosis</i> strongly acid-fast?", ["long mycolic acids (C60 to 90) in its cell wall", "an outer membrane with LPS", "endospores", "a polysaccharide capsule"]),
+     Q("In latent TB, the bacteria are...", ["walled off in granulomas: no symptoms, can't spread", "spreading through the blood", "growing fast in the throat", "gone from the body"])],
+    [Q("RIPE stands for...", ["rifampin, isoniazid, pyrazinamide, ethambutol", "rifampin, ibuprofen, penicillin, erythromycin", "rest, ice, pressure, elevation", "rifampin, isoniazid, penicillin, ethambutol"]),
+     Q("Isoniazid works by...", ["blocking mycolic acid synthesis", "blocking RNA polymerase", "inhibiting folate synthesis", "neutralizing a toxin"])]
+  ],
+  cdiphtheriae: [
+    [Q("Under the microscope, <i>C. diphtheriae</i> looks like...", ["club-shaped rods in \"Chinese letters\" (V and L shapes)", "cocci in tetrads", "strongly acid-fast rods", "branching filaments"]),
+     Q("The gray pseudomembrane in the throat is made of...", ["dead cells, fibrin, bacteria, and immune cells", "endospores", "sulfur granules", "honey-crusted pus"])],
+    [Q("Diphtheria toxin damages cells by...", ["stopping protein synthesis", "blocking acetylcholine release", "blocking inhibitory neurotransmitters", "destroying red blood cells"]),
+     Q("Treatment for diphtheria?", ["diphtheria antitoxin plus penicillin or erythromycin", "RIPE for 6 months", "oral vancomycin", "rehydration only"])]
+  ],
+  mleprae: [
+    [Q("What's special about growing <i>M. leprae</i> in the lab?", ["it can't grow in a lab culture", "it only grows in the fridge", "it grows on MacConkey as pink colonies", "it grows in a few hours"]),
+     Q("Besides humans, which animal can carry <i>M. leprae</i>?", ["the nine-banded armadillo", "rats and their fleas", "deer ticks", "chickens"])],
+    [Q("Leprosy multidrug therapy uses...", ["rifampin, dapsone, and clofazimine", "RIPE", "penicillin G", "botulinum antitoxin"]),
+     Q("Which leprosy damage is permanent?", ["nerve damage", "skin lesions always heal fully", "none of it", "hair loss"])]
+  ],
   lmono: [
     [Q("What's unusual about where <i>Listeria</i> grows?", ["it grows at refrigerator temperatures", "it only grows in boiling water", "it only grows inside ticks", "it only grows without oxygen"]),
      Q("Who is most at risk from listeriosis?", ["pregnant people, newborns, elderly, immunocompromised", "teens in dorms", "infants under 6 months only", "healthy athletes"])],
@@ -358,7 +376,8 @@ var SETS = [
   {id: "enterics", name: "Enterics", c: "#ea580c", g: "neg"}, {id: "epsilon", name: "Epsilon", c: "#be123c", g: "neg"}, {id: "spirochetes", name: "Spirochetes", c: "#a16207", g: "neg"},
   {id: "chlamydiae", name: "Chlamydiae", c: "#a21caf", g: "neg"}, {id: "other", name: "Other phyla", c: "#15803d", g: "neg"},
   {id: "bacillales", name: "Bacillus & Listeria", c: "#0f766e", g: "pos"}, {id: "staph", name: "Staphylococci", c: "#ca8a04", g: "pos"},
-  {id: "lactobacillales", name: "Lactobacillales", c: "#2563eb", g: "pos"}, {id: "clostridia", name: "Clostridia", c: "#9333ea", g: "pos"}
+  {id: "lactobacillales", name: "Lactobacillales", c: "#2563eb", g: "pos"}, {id: "clostridia", name: "Clostridia", c: "#9333ea", g: "pos"},
+  {id: "actino", name: "Actinobacteria", c: "#be185d", g: "pos"}, {id: "coryne", name: "Corynebacteriales (acid-fast crew)", c: "#0369a1", g: "pos"}
 ];
 function setOf(o, tour){
   if (o.type === "phylum") return "other";
@@ -368,6 +387,8 @@ function setOf(o, tour){
     if (p.indexOf("staph") >= 0) return "staph";
     if (p.indexOf("bacillales") >= 0) return "bacillales";
     if (p.indexOf("lactobacillales") >= 0) return "lactobacillales";
+    if (p.indexOf("corynebacteriales") >= 0) return "coryne";
+    if (p.indexOf("actino") >= 0) return "actino";
     return "clostridia";
   }
   if (p.indexOf("enterics") >= 0) return "enterics";
@@ -415,6 +436,9 @@ function iconInner(shape){
     case "pairchain": return dots([[9, 13], [21, 13], [30, 31], [42, 31], [54, 31]], 6);
     case "lancet": return '<path d="M4 22 Q15 9 30 22 Q15 35 4 22Z" ' + f + '/><path d="M60 22 Q49 9 34 22 Q49 35 60 22Z" ' + f + '/>';
     case "rod": return '<rect x="8" y="14" width="48" height="16" rx="8" ' + f + '/>';
+    case "tetrads": return dots([[24, 12], [40, 12], [24, 30], [40, 30]], 7.5);
+    case "branching": return tube("M6 30 L24 22 L58 24", 4) + tube("M24 22 L38 6", 4) + tube("M40 23 L52 38", 4) + tube("M14 26 L10 10", 4);
+    case "club": return '<path d="M8 22 Q8 15 15 16 L46 17 Q58 13 58 22 Q58 31 46 27 L15 28 Q8 29 8 22Z" ' + f + '/>';
     default: return '<rect x="14" y="13" width="36" height="18" rx="9" ' + f + '/>';
   }
 }
@@ -434,6 +458,7 @@ function clueOf(t){
     case "oxygen": return t.v;
     case "oxidase": case "catalase": case "lactose": case "citrate": case "urease": case "coagulase": return t.k + " " + t.v;
     case "spores": return pm(t.v) === "+" ? "forms endospores" : "no endospores";
+    case "acidfast": return t.v;
     case "h2s": return "H₂S " + t.v;
     case "imvic": return "IMViC " + t.v;
     case "sugars": return "uses " + t.v;
@@ -443,7 +468,7 @@ function clueOf(t){
     default: return "";
   }
 }
-var PRI = ["sugars", "coagulase", "pigment", "imvic", "h2s", "citrate", "urease", "lactose", "oxidase", "feature", "spores", "shape", "oxygen", "media", "catalase"];
+var PRI = ["sugars", "acidfast", "coagulase", "pigment", "imvic", "h2s", "citrate", "urease", "lactose", "oxidase", "feature", "spores", "shape", "oxygen", "media", "catalase"];
 function clueTests(o){
   if (o.type === "phylum") return [];
   var ts = (o.tests || []).filter(function(t){ return t.k !== "gram" && clueOf(t); });
@@ -560,6 +585,8 @@ var MEDIA = {
   mrs: {name: "MRS agar", c: "#d8c08c"},
   light: {name: "Water + light", c: "#e7efd9"},
   cells: {name: "Cell culture", c: "#f3e8ee"},
+  lj: {name: "Löwenstein-Jensen medium", c: "#7fae6e"},
+  tellurite: {name: "Tellurite agar (selective)", c: "#b9a57c"},
   none: {name: "Plate", c: "#ead9a8"}
 };
 var PLATES = {
@@ -607,7 +634,18 @@ var PLATES = {
   cperfringens: {m: "bloodan", col: "#d6d0c4", halo: "double", note: "Double zone of hemolysis; grown without O₂"},
   cbotulinum: {m: "bloodan", col: "#cfc9bd", look: "irregular", note: "Irregular gray colonies; grown without O₂"},
   ctetani: {m: "bloodan", col: "#d8d2c6", look: "film", note: "A thin film that swarms over the plate; grown without O₂"},
-  cdiff: {m: "ccfa", col: "#fff7d6", look: "glass", tint: "#f0c94a", note: "Yellow \"ground glass\" colonies on CCFA"}
+  cdiff: {m: "ccfa", col: "#fff7d6", look: "glass", tint: "#f0c94a", note: "Yellow \"ground glass\" colonies on CCFA"},
+  /* Actinobacteria */
+  aisraelii: {m: "bloodan", col: "#f3efe6", look: "irregular", note: "White, lumpy \"molar-like\" colonies (bacteria + calcium phosphate); slow growth, no O₂"},
+  sgriseus: {m: "nutrient", col: "#f4f2ea", look: "wrinkly", note: "Dry, chalky colonies of filaments and conidia"},
+  mluteus: {m: "nutrient", col: "#f2c40f", note: "Bright yellow colonies"},
+  cacnes: {m: "bloodan", col: "#eeeae0", look: "small", note: "Small white colonies; grown without O₂"},
+  cdiphtheriae: {m: "tellurite", col: "#3a3a3a", note: "Gray-black colonies on selective tellurite agar"},
+  cjeikeium: {m: "blood", col: "#eef0ee", look: "small", note: "Small gray-white colonies"},
+  mtb: {m: "lj", col: "#e7d9b5", look: "wrinkly", note: "Dry, rough, non-pigmented colonies after weeks of growth"},
+  mphlei: {m: "lj", col: "#e7d9b5", look: "wrinkly", note: "Rough colonies that grow fast (for a mycobacterium)"},
+  mleprae: {m: "none", note: "No colonies: M. leprae can't grow in a lab culture."},
+  nasteroides: {m: "nutrient", col: "#f0a35e", look: "wrinkly", note: "Chalky white/orange colonies that may fragment"}
 };
 function plateOf(o){ return PLATES[o.id] || {m: "nutrient", col: "#efe7d6", note: ""}; }
 function plateSvg(o, grown){
