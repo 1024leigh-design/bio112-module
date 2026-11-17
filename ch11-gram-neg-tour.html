@@ -452,6 +452,12 @@ table.ent tr.grp td{background:color-mix(in srgb, var(--c) 12%, var(--surface))}
 .fun[open] summary{border-bottom:1.5px solid var(--line)}
 .funbody{padding:12px 14px; display:flex; flex-direction:column; gap:10px}
 .xlink{margin:0}
+.practice .plinks{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px}
+.plink{display:flex; flex-direction:column; gap:2px; text-decoration:none; color:var(--ink); border:1.5px solid var(--line); border-left:6px solid var(--gn-edge); border-radius:14px; padding:10px 12px; background:var(--surface)}
+.plink:hover{border-color:var(--arrow)}
+.plink span{font-size:24px}
+.plink small{color:var(--muted); font-size:14px}
+.tabs a.tablink{text-decoration:none; color:var(--ink); border:1.5px solid var(--line); border-radius:999px; padding:6px 14px; font-weight:700; font-size:15px; background:var(--surface)}
 .xlink a{display:inline-block; font-weight:700; color:var(--ink); text-decoration:none; border:1.5px solid var(--line); background:var(--surface); border-radius:999px; padding:8px 14px}
 .xlink a:hover{border-color:var(--arrow)}
 .credits{margin-top:28px; padding-top:14px; border-top:1.5px solid var(--line); font-size:15px; color:var(--muted); max-width:80ch}
@@ -1384,6 +1390,7 @@ function renderLesson(){
   if (s.orgs && s.orgs.length) h += '<div class="orgs">' + s.orgs.map(orgCard).join("") + "</div>";
   if (s.case) h += caseHtml(s);
   if (s.finale) h += finaleHtml(s);
+  if (s.links) h += '<section class="practice"><h4 class="sech">🎮 Practice this</h4><div class="plinks">' + s.links.map(function(l){ return '<a class="plink" href="' + l.href + '"><span>' + (l.ic || "🎮") + "</span><b>" + l.t + "</b>" + (l.sub ? "<small>" + l.sub + "</small>" : "") + "</a>"; }).join("") + "</div></section>";
   h += cheatHtml(s.cheat);
   (s.orgs || []).forEach(function(o){ if (o.cheat) h += cheatHtml(o.cheat, s.orgs.length > 1 ? o : null); });
   h += traitsHtml();
@@ -1646,6 +1653,7 @@ $("#startEyebrow").textContent = D.eyebrow;
 $("#startTitle").innerHTML = D.title;
 $("#goals").innerHTML = D.goals.map(function(g){ return "<li><span>" + g + "</span></li>"; }).join("");
 $("#tabs").innerHTML = D.tabs.map(function(t){
+  if (t.href) return '<a role="tab" aria-selected="false" class="tablink" href="' + t.href + '">' + esc(t.label) + "</a>";
   return t.current ? '<button type="button" role="tab" aria-selected="true" class="on">' + esc(t.label) + "</button>"
                    : '<button type="button" role="tab" aria-selected="false" class="soon" data-tab-soon="' + esc(t.soon) + '">🔒 ' + esc(t.label) + "</button>";
 }).join("");
