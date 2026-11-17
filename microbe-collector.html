@@ -932,6 +932,8 @@ $("#dlg").addEventListener("click", function(e){ if (e.target === e.currentTarge
 
 save();
 renderBook();
+var hs = (location.hash.match(/^#swab-([a-z]+)$/) || [])[1];
+if (hs && SITES.some(function(x){ return x.id === hs; })) setTimeout(function(){ swab(hs); }, 300);
 if (window.BIO112_LB){
   BIO112_LB.widget($("#lb"), {game: "collector", title: "Microbe Collector leaderboard", score: function(){ var t = totals(); return {score: t.score, details: t.cards + " microbes, " + t.catches + " catches"}; }});
 }

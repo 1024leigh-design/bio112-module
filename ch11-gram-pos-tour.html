@@ -454,6 +454,45 @@ table.ent tr.grp td{background:color-mix(in srgb, var(--c) 12%, var(--surface))}
 .fun[open] summary{border-bottom:1.5px solid var(--line)}
 .funbody{padding:12px 14px; display:flex; flex-direction:column; gap:10px}
 .xlink{margin:0}
+/* widgets: G+C builder, mini labs, matching, practice links */
+.widget{border:1.5px solid var(--line); border-radius:16px; background:var(--surface); padding:14px; display:flex; flex-direction:column; gap:10px; min-width:0}
+.strand{display:flex; flex-wrap:nowrap; gap:4px; justify-content:center; width:100%; max-width:480px; margin:0 auto}
+.base{flex:1 1 0; min-width:0; max-width:44px; height:48px; padding:0; border-radius:10px; font:800 clamp(15px, 4.2vw, 24px) var(--f-mono); border:2.5px solid var(--bc); background:color-mix(in srgb, var(--bc) 16%, var(--surface)); color:var(--ink); display:inline-flex; align-items:center; justify-content:center; cursor:pointer}
+button.base:hover{transform:translateY(-2px)}
+.strand.comp .base{height:38px; font-size:19px; opacity:.75; cursor:default}
+.bA{--bc:#16a34a} .bT{--bc:#dc2626} .bG{--bc:#d97706} .bC{--bc:#2563eb}
+.gcmeter{position:relative; height:16px; border-radius:99px; background:var(--surface-2); overflow:hidden; max-width:520px; width:100%; margin:0 auto}
+.gcmeter i{display:block; height:100%; background:linear-gradient(90deg, var(--gn-edge), var(--gold, #e3a008)); transition:width .3s}
+.gcmeter .mid{position:absolute; left:50%; top:0; bottom:0; width:3px; background:var(--ink)}
+.gcnum{text-align:center; font-size:18px}
+.benches{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.bench{display:flex; flex-direction:column; align-items:center; gap:6px; background:var(--surface-2); border-radius:14px; padding:10px}
+.bench svg{width:100%; max-width:200px; height:auto}
+.bench .res{font-weight:800}
+.bench .res.p{color:var(--good)} .bench .res.n{color:var(--muted)}
+.bub{animation:bub 1.4s ease-out infinite}
+@keyframes bub{0%{transform:translateY(6px); opacity:0} 30%{opacity:1} 100%{transform:translateY(-14px); opacity:0}}
+.clot{animation:clot 1s ease-out both}
+@keyframes clot{from{opacity:0}}
+.btn.right{border-color:var(--good); background:var(--good-soft); color:var(--ink)}
+.btn.wrong{border-color:var(--bad); background:var(--bad-soft); color:var(--ink)}
+.labmsg{border-radius:12px; padding:10px 12px; margin:0}
+.labmsg.good{background:var(--good-soft)} .labmsg.bad{background:var(--bad-soft)}
+.matchgrid{display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr); gap:10px}
+.mcol{display:flex; flex-direction:column; gap:8px}
+.mterm,.mdef{text-align:left; border:2px solid var(--line); background:var(--bg); border-radius:12px; padding:10px 12px; cursor:pointer; font:inherit; font-size:16px; color:var(--ink)}
+.mterm{font-weight:700; font-style:italic}
+.mterm.on{border-color:var(--arrow); background:var(--arrow-soft)}
+.mterm.ok,.mdef.ok{border-color:var(--good); background:var(--good-soft); cursor:default}
+.mdef.bad{border-color:var(--bad); background:var(--bad-soft)}
+.practice .plinks{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px}
+.plink{display:flex; flex-direction:column; gap:2px; text-decoration:none; color:var(--ink); border:1.5px solid var(--line); border-left:6px solid var(--gn-edge); border-radius:14px; padding:10px 12px; background:var(--surface)}
+.plink:hover{border-color:var(--arrow)}
+.plink span{font-size:24px}
+.plink small{color:var(--muted); font-size:14px}
+.flipc .fe{display:block; font-size:34px; line-height:1.1; margin-bottom:4px}
+.tabs a.tablink{text-decoration:none; color:var(--ink); border:1.5px solid var(--line); border-radius:999px; padding:6px 14px; font-weight:700; font-size:15px; background:var(--surface)}
+@media (max-width:520px){ .matchgrid{grid-template-columns:minmax(0,1fr)} }
 .xlink a{display:inline-block; font-weight:700; color:var(--ink); text-decoration:none; border:1.5px solid var(--line); background:var(--surface); border-radius:999px; padding:8px 14px}
 .xlink a:hover{border-color:var(--arrow)}
 .credits{margin-top:28px; padding-top:14px; border-top:1.5px solid var(--line); font-size:15px; color:var(--muted); max-width:80ch}
@@ -552,6 +591,10 @@ table.ent tr.grp td{background:color-mix(in srgb, var(--c) 12%, var(--surface))}
     <div class="mapbox"><svg id="map" role="group" aria-label="Overview map. Every branch is a button."></svg></div>
   </section>
 </section>
+<footer class="credits" aria-labelledby="credH">
+  <h2 id="credH">📷 Image credits</h2>
+  <p>Photos and figures are from <a href="https://openstax.org/details/books/microbiology" target="_blank" rel="noopener"><i>Microbiology</i></a> by OpenStax (Nina Parker, Mark Schneegurt, Anh-Hue Thi Tu, Philip Lister, and Brian M. Forster), licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. Access for free at <a href="https://openstax.org/books/microbiology/pages/1-introduction" target="_blank" rel="noopener">openstax.org</a>. Each picture lists its original creator and figure number. Some were cropped to one panel and resized. Thank you to all the photographers, scientists, and illustrators! 💖</p>
+</footer>
 </div>
 
 <dialog id="cheatDlg" aria-labelledby="cheatTitle">
@@ -670,6 +713,27 @@ function bilayer(x0, x1, y){
   return s;
 }
 var DIAGRAMS = {
+  gcsplit: function(){
+    var x = function(p){ return 40 + (p - 25) / 50 * 460; };
+    var s = '<svg viewBox="0 0 540 190" role="img" aria-label="G+C content scale from 25% to 75%. Firmicutes are below 50%. Actinobacteria are above 50%, about 51 to 70%.">';
+    s += '<rect x="' + x(25) + '" y="70" width="' + (x(50) - x(25)) + '" height="40" rx="8" fill="#ede9fe" stroke="#6d28d9" stroke-width="2"/>';
+    s += '<rect x="' + x(51) + '" y="70" width="' + (x(70) - x(51)) + '" height="40" rx="8" fill="#fce7f3" stroke="#be185d" stroke-width="2"/>';
+    s += '<text class="dg-b" x="' + ((x(25) + x(50)) / 2) + '" y="96" text-anchor="middle" style="font-size:17px">Firmicutes</text><text class="dg-b" x="' + ((x(51) + x(70)) / 2) + '" y="96" text-anchor="middle" style="font-size:17px">Actinobacteria</text>';
+    s += '<line x1="' + x(25) + '" y1="130" x2="' + x(75) + '" y2="130" stroke="var(--ink)" stroke-width="2"/>';
+    [25, 50, 75].forEach(function(p){ s += '<line x1="' + x(p) + '" y1="124" x2="' + x(p) + '" y2="136" stroke="var(--ink)" stroke-width="2"/><text class="dg-t" x="' + x(p) + '" y="158" text-anchor="middle" style="font-size:15px">' + p + "%</text>"; });
+    s += '<line x1="' + x(50) + '" y1="40" x2="' + x(50) + '" y2="124" stroke="var(--ink)" stroke-dasharray="5 4" stroke-width="2"/><text class="dg-t" x="' + x(50) + '" y="30" text-anchor="middle" style="font-size:15px">50%</text>';
+    s += '<text class="dg-t" x="' + x(37.5) + '" y="182" text-anchor="middle" style="font-size:15px">low G+C</text><text class="dg-t" x="' + x(62.5) + '" y="182" text-anchor="middle" style="font-size:15px">high G+C</text>';
+    return {svg: s + "</svg>", cap: "Gram-positives split into 2 phyla by <b>G+C content</b> (the % of DNA bases that are G or C)"};
+  },
+  nowall: function(){
+    var s = '<svg viewBox="0 0 540 230" role="img" aria-label="Left: a typical gram-positive cell with a thick peptidoglycan wall around its membrane. Right: Mycoplasma, an irregular cell with only a membrane that contains sterols.">';
+    s += '<rect x="40" y="40" width="200" height="120" rx="60" fill="#d8c8f5" stroke="#6d28d9" stroke-width="14"/><rect x="54" y="54" width="172" height="92" rx="46" fill="none" stroke="#a78bfa" stroke-width="3"/>';
+    s += '<path d="M320 100 Q330 40 400 50 Q470 40 480 95 Q500 150 430 165 Q360 185 330 150 Q305 130 320 100Z" fill="#f5f3ff" stroke="#a78bfa" stroke-width="3"/>';
+    [[338, 80], [372, 56], [420, 52], [462, 72], [484, 118], [452, 160], [398, 168], [344, 150]].forEach(function(p){ s += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="5" fill="#f59e0b" stroke="#92400e" stroke-width="1"/>'; });
+    s += '<text class="dg-b" x="140" y="196" text-anchor="middle" style="font-size:16px">Typical gram +</text><text class="dg-t" x="140" y="220" text-anchor="middle" style="font-size:14px">thick wall around the membrane</text>';
+    s += '<text class="dg-b" x="405" y="196" text-anchor="middle" style="font-size:16px">Mycoplasma</text><text class="dg-t" x="405" y="220" text-anchor="middle" style="font-size:14px">no wall; sterols (orange dots) in the membrane</text>';
+    return {svg: s + "</svg>", cap: "<i>Mycoplasma</i> has <b>no cell wall</b>. <b>Sterols</b> in its membrane help hold it together."};
+  },
   acidfast: function(){
     var R = rng(5), s = '<svg viewBox="0 0 540 250" role="img" aria-label="Acid-fast stain views. Mycobacterium: bright red rods. Nocardia: partly red branching filaments. Corynebacterium: blue, not acid-fast.">';
     [["Mycobacterium", "strongly acid-fast", "#dc2626", "rods"], ["Nocardia", "weakly acid-fast", "#e879a0", "branch"], ["Corynebacterium", "not acid-fast", "#2563eb", "rods"]].forEach(function(p, i){
@@ -1425,6 +1489,45 @@ function caseHtml(s){
   return h + "</section>";
 }
 function stepTitle(i){ return i < 0 ? "Start screen" : D.stops[i].title; }
+/* ================= interactive widgets: G+C builder, matching ================= */
+var W = {gc: null, match: {}};
+var BASE_NEXT = {A: "T", T: "G", G: "C", C: "A"}, PAIR = {A: "T", T: "A", G: "C", C: "G"};
+function gcInit(kind){
+  /* presets stay inside the slide ranges: Firmicutes <50%, Actinobacteria about 51 to 70% */
+  var seq = kind === "low" ? "ATGATTGCAT" : kind === "high" ? "GCAGCTGACG" : kind === "random" ? null : "ATGCATGCAT";
+  W.gc = seq ? seq.split("") : Array.apply(null, Array(10)).map(function(){ return "ATGC".charAt(Math.floor(Math.random() * 4)); });
+}
+function gcHtml(){
+  if (!W.gc) gcInit();
+  var n = W.gc.filter(function(b){ return b === "G" || b === "C"; }).length, pct = n * 10;
+  var verdict = pct < 50 ? "Low G+C, like the <b>Firmicutes</b> (&lt;50%)" : pct > 50 ? "High G+C, like the <b>Actinobacteria</b> (&gt;50%)" : "Exactly 50%: right on the line";
+  var h = '<div class="widget" id="w-gc"><h4 class="sech">🧬 Build a DNA strand: what is G+C content?</h4>' +
+    '<p class="hint">Tap a base to change it (A → T → G → C). G+C content = the % of bases that are <b>G</b> or <b>C</b>.</p><div class="strand">';
+  W.gc.forEach(function(b, i){ h += '<button type="button" class="base b' + b + '" data-gc="' + i + '" aria-label="Base ' + (i + 1) + ": " + b + '. Tap to change.">' + b + "</button>"; });
+  h += '</div><div class="strand comp" aria-hidden="true">' + W.gc.map(function(b){ return '<span class="base b' + PAIR[b] + '">' + PAIR[b] + "</span>"; }).join("") + "</div>" +
+    '<p class="hint" style="text-align:center">Bottom row = the matching strand (A pairs with T, G pairs with C), so both strands have the same G+C %.</p>' +
+    '<div class="gcmeter" role="img" aria-label="G+C content ' + pct + ' percent"><i style="width:' + pct + '%"></i><span class="mid"></span></div>' +
+    '<p class="gcnum"><b>' + n + " of 10</b> bases are G or C = <b>" + pct + "% G+C</b><br>" + verdict + "</p>" +
+    '<div class="btnrow" style="justify-content:center"><button class="btn small ghost" type="button" data-gcset="low">Firmicutes-like</button><button class="btn small ghost" type="button" data-gcset="high">Actinobacteria-like</button><button class="btn small ghost" type="button" data-gcset="random">🎲 Random</button></div></div>';
+  return h;
+}
+function matchHtml(s){
+  var M = s.match, st0 = W.match[s.id];
+  if (!st0){ var idx = M.pairs.map(function(_, i){ return i; }); st0 = W.match[s.id] = {order: shuffle(idx, rng(hashStr("m" + s.id))), pick: null, done: {}, bad: null}; }
+  var all = Object.keys(st0.done).length === M.pairs.length;
+  var h = '<div class="widget" id="w-match"><h4 class="sech">' + M.title + '</h4><p class="hint">' + (all ? "🎉 All matched!" : "Tap a genus, then tap the clue that fits it.") + '</p><div class="matchgrid"><div class="mcol">';
+  M.pairs.forEach(function(p, i){ h += '<button type="button" class="mterm' + (st0.done[i] ? " ok" : st0.pick === i ? " on" : "") + '" data-mterm="' + i + '"' + (st0.done[i] ? " disabled" : "") + ">" + p[0] + "</button>"; });
+  h += '</div><div class="mcol">';
+  st0.order.forEach(function(i){ h += '<button type="button" class="mdef' + (st0.done[i] ? " ok" : st0.bad === i ? " bad" : "") + '" data-mdef="' + i + '"' + (st0.done[i] ? " disabled" : "") + ">" + M.pairs[i][1] + "</button>"; });
+  h += "</div></div>" + (all ? '<div><button class="btn small ghost" type="button" data-mreset="' + s.id + '">🔁 Play again</button></div>' : "") + "</div>";
+  return h;
+}
+function linksHtml(list){
+  return '<section class="practice"><h4 class="sech">🎮 Practice this</h4><div class="plinks">' + list.map(function(l){
+    return '<a class="plink" href="' + l.href + '"' + (/^#/.test(l.href) ? "" : "") + "><span>" + (l.ic || "🎮") + "</span><b>" + l.t + "</b>" + (l.sub ? "<small>" + l.sub + "</small>" : "") + "</a>";
+  }).join("") + "</div></section>";
+}
+function refreshWidget(id, html){ var el = document.getElementById(id); if (el) el.outerHTML = html; }
 function renderLesson(){
   var s = stop(), h = "", c = colorOf(N[s.node]);
   h += '<header class="mhead"><div class="mbadge" style="--c:' + c + '">' + (s.n + 1) + "</div><div><h2>" + s.title + "</h2></div></header>";
@@ -1432,6 +1535,8 @@ function renderLesson(){
   if (s.diagram && DIAGRAMS[s.diagram]){ var dg = DIAGRAMS[s.diagram](); h += '<figure class="figure' + (dg.small ? " smallfig" : "") + '" style="margin:0">' + dg.svg + "<figcaption>" + dg.cap + "</figcaption></figure>"; }
   [].concat(s.photo || [], s.photos || []).forEach(function(p){ h += '<div class="photos n1 big">' + photoHtml(p) + "</div>"; });
   if (s.link) h += '<p class="xlink"><a href="' + s.link.href + '" target="_blank" rel="noopener">' + s.link.t + ' ↗</a></p>';
+  (s.widgets || []).forEach(function(k){ if (k === "gc") h += gcHtml(); });
+  if (s.match) h += matchHtml(s);
   (s.sections || []).forEach(function(x, i){ h += '<section class="sec"><h4 class="sech">' + x.h + "</h4>" + (x.flow ? flowHtml(s.id + "-" + i, x.flow) : "") + (x.boxes ? boxesHtml(x.boxes, "small") : "") + (x.flips ? flipsHtml(s.id, x.flips, "s" + i) : "") + "</section>"; });
   if (s.life) h += '<section class="life"><h4 class="sech">🌍 In your life</h4>' + boxesHtml(s.life, "small") + "</section>";
   if (s.entericTable) h += '<div><button class="btn ghost" type="button" data-act="table">📋 Open the enteric ID table</button></div>';
@@ -1439,6 +1544,7 @@ function renderLesson(){
   if (s.orgs && s.orgs.length) h += '<div class="orgs">' + s.orgs.map(orgCard).join("") + "</div>";
   if (s.case) h += caseHtml(s);
   if (s.finale) h += finaleHtml(s);
+  if (s.links) h += linksHtml(s.links);
   h += cheatHtml(s.cheat);
   (s.orgs || []).forEach(function(o){ if (o.cheat) h += cheatHtml(o.cheat, s.orgs.length > 1 ? o : null); });
   h += traitsHtml();
@@ -1540,6 +1646,12 @@ function toast(msg){ var t = $("#toast"); t.textContent = msg; t.classList.add("
 
 function stopKeys(){ return Object.keys(KEYS); }
 document.addEventListener("click", function(e){
+  var wel;
+  if ((wel = e.target.closest("[data-gc]"))){ var gi = Number(wel.getAttribute("data-gc")); W.gc[gi] = BASE_NEXT[W.gc[gi]]; refreshWidget("w-gc", gcHtml()); var nb = document.querySelector('[data-gc="' + gi + '"]'); if (nb) nb.focus(); return; }
+  if ((wel = e.target.closest("[data-gcset]"))){ gcInit(wel.getAttribute("data-gcset")); refreshWidget("w-gc", gcHtml()); return; }
+  if ((wel = e.target.closest("[data-mterm]"))){ var ms = W.match[stop().id]; ms.pick = Number(wel.getAttribute("data-mterm")); ms.bad = null; refreshWidget("w-match", matchHtml(stop())); return; }
+  if ((wel = e.target.closest("[data-mdef]"))){ var md = W.match[stop().id], di = Number(wel.getAttribute("data-mdef")); if (md.pick == null) return; if (md.pick === di){ md.done[di] = true; md.pick = null; md.bad = null; } else md.bad = di; refreshWidget("w-match", matchHtml(stop())); return; }
+  if ((wel = e.target.closest("[data-mreset]"))){ delete W.match[stop().id]; refreshWidget("w-match", matchHtml(stop())); return; }
   var el;
   if ((el = e.target.closest("#tree .tn"))){ if (T.justDragged) return; openNode(el.getAttribute("data-node")); return; }
   if ((el = e.target.closest("#map .tn"))){ openNode(el.getAttribute("data-node")); if (!N[el.getAttribute("data-node")].locked && !N[el.getAttribute("data-node")].muted) window.scrollTo({top: 0, behavior: reduced ? "auto" : "smooth"}); return; }
@@ -1704,6 +1816,7 @@ $("#startEyebrow").textContent = D.eyebrow;
 $("#startTitle").innerHTML = D.title;
 $("#goals").innerHTML = D.goals.map(function(g){ return "<li><span>" + g + "</span></li>"; }).join("");
 $("#tabs").innerHTML = D.tabs.map(function(t){
+  if (t.href) return '<a role="tab" aria-selected="false" class="tablink" href="' + t.href + '">' + esc(t.label) + "</a>";
   return t.current ? '<button type="button" role="tab" aria-selected="true" class="on">' + esc(t.label) + "</button>"
                    : '<button type="button" role="tab" aria-selected="false" class="soon" data-tab-soon="' + esc(t.soon) + '">🔒 ' + esc(t.label) + "</button>";
 }).join("");
