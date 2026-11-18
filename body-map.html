@@ -74,6 +74,11 @@ button{font:inherit; color:inherit}
 .sitechips{display:flex; flex-wrap:wrap; gap:6px; margin-top:8px}
 .sitechips button{border:1.5px solid var(--line); background:var(--surface-2); border-radius:999px; padding:4px 11px; font-size:14px; font-weight:700; cursor:pointer}
 .sitechips button.sel{border-color:var(--arrow); background:var(--arrow-soft)}
+.sitechips button.focus{box-shadow:0 0 0 3px #f59e0b}
+#body .site.focus .org, #body .skin.focus .skinline{stroke:#f59e0b; stroke-width:5; animation:ring 1.6s ease-in-out infinite}
+@keyframes ring{50%{stroke-opacity:.45}}
+.mcard.hl{box-shadow:0 0 0 3px #f59e0b}
+.focuschip{align-self:flex-start; border:2px solid #f59e0b; background:var(--surface); border-radius:999px; padding:3px 12px; font-weight:700; font-size:14.5px; cursor:pointer}
 .panel{background:var(--surface); border:1.5px solid var(--line); border-radius:20px; padding:16px; display:flex; flex-direction:column; gap:12px; min-width:0}
 .panel h2{font-size:28px}
 .panel .sub{color:var(--muted); font-size:16px}
@@ -134,6 +139,7 @@ a.mcard:hover .go{text-decoration:underline}
 <script>window.TOUR_NEG = window.TOUR_DATA;</script>
 <script src="gram-pos-tree.js"></script>
 <script>window.TOUR_POS = window.TOUR_DATA;</script>
+<script src="body-map-data.js"></script>
 <script>
 (function(){
 "use strict";
@@ -155,41 +161,13 @@ function ref(x){
   var o = ORG[x]; return o ? {key: x, name: o.name, href: o.href, gram: o.gram} : {key: x, name: x, href: null, gram: "?"};
 }
 
-/* ---------- the body areas ----------
-   flora: normal microbiota (Ch. 14 slides, Table 14.1). dz: [id, what it causes there] from the Ch. 11 tours. */
-var SITES = [
-  {id: "brain", name: "Brain & spinal cord", flora: [], floraNote: "Normally sterile: no normal flora.",
-    dz: [["nmen", "meningococcal meningitis (it normally lives in the throat!)"], ["spneumoniae", "meningitis"], ["sagalactiae", "meningitis in newborns"], ["lmono", "meningitis"], ["nasteroides", "nocardiosis that spreads to the brain"], ["ecoli", "opportunist in the wrong place: the spinal cord"], ["mtb", "disseminated (miliary) TB can spread to the brain"], ["cdiphtheriae", "the toxin travels in the blood and can damage the brain"]]},
-  {id: "eyes", name: "Eyes", flora: ["sepi", "saureus", "@cutibacterium|Cutibacterium (Propionibacterium)", "@corynebacterium|Corynebacterium (diphtheroids)", "@streptococcus|Streptococci", "@micrococcus|Micrococcus"], floraNote: "These live on the conjunctiva.",
-    dz: [["ngon", "eye infection in newborns that can cause blindness"], ["ctrachomatis", "trachoma"], ["paeruginosa", "eye infections (contact lenses)"]]},
-  {id: "nose", name: "Nose & throat", flora: ["saureus", "sepi", "@corynebacterium|Corynebacterium (diphtheroids)", "spneumoniae", "nmen", "@neisseria|Neisseria", "!Haemophilus|−", "@fusobacteria|Fusobacterium", "@actinomyces|Actinomyces"],
-    dz: [["spyogenes", "strep throat (the main cause) and scarlet fever"], ["cdiphtheriae", "diphtheria: pseudomembrane in the throat"], ["bpertussis", "whooping cough"], ["mleprae", "spreads in droplets from the nasal mucosa"]]},
-  {id: "mouth", name: "Mouth", flora: ["@streptococcus|Streptococcus", "lactobacillus", "@actinomyces|Actinomyces", "@bacteroidetes|Bacteroides", "!Veillonella|−", "@neisseria|Neisseria", "!Haemophilus|−", "@fusobacteria|Fusobacterium", "@treponema|Treponema (harmless oral species, not T. pallidum)", "@staphylococcus|Staphylococcus", "@corynebacterium|Corynebacterium", "@micrococcus|Micrococcus"],
-    dz: [["aisraelii", "actinomycosis (\"lumpy jaw\") when the mucosa is breached"], ["fuso", "periodontal (gum) disease and abscesses"], ["tpallidum", "congenital syphilis: Hutchinson's teeth"]]},
-  {id: "lungs", name: "Lungs", flora: [], floraNote: "Healthy lungs have very few microbes.",
-    dz: [["mtb", "tuberculosis"], ["banthracis", "inhalation anthrax: breathing in spores; the deadliest form"], ["spneumoniae", "pneumonia (it normally lives in the nose and throat!)"], ["kpneumoniae", "aspiration pneumonia, often nosocomial"], ["lpneumophila", "Legionnaires' disease"], ["cpneumoniae", "respiratory infections"], ["ctrachomatis", "pneumonia"], ["nasteroides", "pulmonary nocardiosis"], ["ypestis", "pneumonic plague"], ["smarcescens", "nosocomial pneumonia"], ["ecoli", "opportunist in the wrong place: the lungs"]]},
-  {id: "heart", name: "Blood & heart", flora: [], floraNote: "Blood is normally sterile.",
-    dz: [["sepi", "nosocomial bloodstream infections; endocarditis on artificial valves"], ["enterococcus", "endocarditis"], ["sagalactiae", "sepsis in newborns"], ["ypestis", "septicemic plague"], ["styphi", "typhoid fever"], ["smarcescens", "bacteremia"], ["paeruginosa", "sepsis (a nosocomial infection)"], ["saureus", "toxic shock syndrome; hemolysin destroys red blood cells"], ["cdiphtheriae", "myocarditis: the toxin travels in the blood to the heart"], ["tpallidum", "tertiary syphilis: heart damage"]]},
-  {id: "stomach", name: "Stomach", flora: [], floraNote: "Stomach acid keeps most microbes out.",
-    dz: [["hpylori", "gastritis and peptic ulcers"]]},
-  {id: "gut", name: "Intestines", flora: ["ecoli", "@bacteroidetes|Bacteroides", "@fusobacteria|Fusobacterium", "lactobacillus", "enterococcus", "!Bifidobacterium|+", "enterobacter", "!Citrobacter|−", "proteus", "kpneumoniae", "@clostridia|Clostridium", "@actinomyces|Actinomyces"], floraNote: "These live in the large intestine.",
-    dz: [["salmonella", "food poisoning (salmonellosis)"], ["styphi", "typhoid fever"], ["shigella", "shigellosis (bacillary dysentery)"], ["vcholerae", "cholera"], ["cjejuni", "bacterial gastroenteritis"], ["ecoli", "traveler's diarrhea"], ["cdiff", "colitis after antibiotics wipe out the normal flora"], ["bcereus", "food poisoning (stale rice)"], ["saureus", "food poisoning (enterotoxin)"], ["lmono", "listeriosis (can feel like the stomach flu)"], ["banthracis", "gastrointestinal anthrax: from eating undercooked meat from infected animals"], ["cbotulinum", "infant botulism: swallowed spores (e.g., honey) grow in the infant gut and release toxin"]]},
-  {id: "urinary", name: "Urinary tract", flora: ["@staphylococcus|Staphylococcus", "@micrococcus|Micrococcus", "enterococcus", "lactobacillus", "@bacteroidetes|Bacteroides", "@corynebacterium|Corynebacterium (diphtheroids)", "@pseudomonas|Pseudomonas", "kpneumoniae", "proteus", "ssapro", "@actinomyces|Actinomyces"], floraNote: "These live in the urethra and urogenital tract.",
-    dz: [["ecoli", "UTIs (the #1 cause)"], ["ssapro", "UTIs (the #2 cause)"], ["proteus", "UTIs"], ["enterococcus", "UTIs"], ["paeruginosa", "UTIs"], ["smarcescens", "nosocomial UTIs"], ["ngon", "gonorrhea: painful urination and pus-like discharge"], ["mtb", "disseminated (miliary) TB can spread to the kidneys"], ["cdiphtheriae", "the toxin travels in the blood and can damage the kidneys"]]},
-  {id: "repro", name: "Reproductive tract", flora: ["lactobacillus", "@streptococcus|Streptococcus", "@clostridia|Clostridium", "ssapro", "@actinomyces|Actinomyces", "@fusobacteria|Fusobacterium"], floraNote: "These live in the vagina and urogenital tract. Lactobacillus keeps the pH low.",
-    dz: [["ngon", "gonorrhea (in women: often no symptoms, possible PID)"], ["ctrachomatis", "chlamydia (the most common bacterial STI)"], ["tpallidum", "primary syphilis: painless chancre"], ["lmono", "miscarriage and stillbirth"], ["ecoli", "opportunist in the wrong place: the vagina"]]},
-  {id: "skin", name: "Skin & wounds", flora: ["@cutibacterium|Cutibacterium (Propionibacterium)", "sepi", "saureus", "@corynebacterium|Corynebacterium", "@micrococcus|Micrococcus", "!Acinetobacter|−", "!Brevibacterium|+"], floraNote: "Fungi live here too: Candida and Malassezia.",
-    dz: [["saureus", "folliculitis, boils (furuncles, carbuncles), impetigo, paronychia, cellulitis, scalded skin syndrome"], ["spyogenes", "necrotizing fasciitis"], ["paeruginosa", "burn and wound infections"], ["cperfringens", "gas gangrene in contaminated wounds"], ["cacnes", "acne"], ["cdiphtheriae", "cutaneous diphtheria (skin ulcers)"], ["mleprae", "leprosy skin lesions"], ["nasteroides", "cutaneous nocardiosis"], ["proteus", "wound infections"], ["enterococcus", "wound infections"], ["smarcescens", "nosocomial wound infections"], ["ecoli", "opportunist in the wrong place: wounds"], ["tpallidum", "secondary syphilis: skin rash, including palms and soles"], ["bburgdorferi", "Lyme disease: erythema migrans (\"bull's-eye\" rash)"], ["cbotulinum", "wound botulism"], ["sgriseus", "rare: mycetoma in immunocompromised people"], ["banthracis", "cutaneous anthrax: spores enter a cut; the most common form"]]},
-  {id: "nerves", name: "Nerves & muscles", flora: [], floraNote: "Normally sterile.",
-    dz: [["ctetani", "tetanus: stiff muscles, spasms, lockjaw (spores get in through deep puncture wounds)"], ["cbotulinum", "botulism: the toxin blocks acetylcholine → flaccid paralysis"], ["mleprae", "permanent nerve damage"], ["cperfringens", "muscle death (clostridial myonecrosis)"], ["cdiphtheriae", "neuropathy (nerve damage from the toxin)"], ["tpallidum", "tertiary syphilis: nerve damage"]]},
-  {id: "bones", name: "Bones", flora: [], floraNote: "Normally sterile.",
-    dz: [["saureus", "osteomyelitis (bone infection)"], ["mtb", "disseminated (miliary) TB can spread to the bones"], ["tpallidum", "congenital syphilis: bone deformities"]]}
-];
+/* the body areas live in body-map-data.js (shared with the tours) */
+var SITES = window.BODYMAP.SITES;
 var BY = {}; SITES.forEach(function(s){ BY[s.id] = s; });
 /* microbes that are normal flora somewhere AND cause disease somewhere = opportunists (or "wrong place" problems) */
 var FLORA_IDS = {}, DZ_IDS = {};
 SITES.forEach(function(s){ s.flora.forEach(function(x){ FLORA_IDS[x.charAt(0) === "@" ? x.split("|")[0] : x] = 1; }); s.dz.forEach(function(d){ DZ_IDS[d[0]] = 1; }); });
-var GENUS_OF = {sgriseus: "@streptomyces", saureus: "@staphylococcus", sepi: "@staphylococcus", ssapro: "@staphylococcus", spneumoniae: "@streptococcus", spyogenes: "@streptococcus", sagalactiae: "@streptococcus", cacnes: "@cutibacterium", aisraelii: "@actinomyces", fuso: "@fusobacteria", nmen: "@neisseria", ngon: "@neisseria", cdiphtheriae: "@corynebacterium", paeruginosa: "@pseudomonas", cperfringens: "@clostridia", ctetani: "@clostridia", cbotulinum: "@clostridia"};
+var GENUS_OF = window.BODYMAP.GENUS_OF;
 function isFlora(id){ return !!FLORA_IDS[id]; }
 function sameGenusFlora(id){ return !FLORA_IDS[id] && GENUS_OF[id] && FLORA_IDS[GENUS_OF[id]]; }
 
@@ -225,17 +203,21 @@ function drawBody(){
 }
 
 /* ---------- state + rendering ---------- */
-var st = {mode: "flora", site: "gut", quiz: null, score: 0, streak: 0, best: 0};
+var st = {mode: "flora", site: "gut", focus: null, quiz: null, score: 0, streak: 0, best: 0};
 try { st.best = Number(localStorage.getItem("bio112-bodymap-best")) || 0; } catch (e) {}
+/* a microbe in focus (from a tour link): ring every area where it lives (flora) or causes disease (dz) */
+function focusSites(){ return st.focus && st.mode !== "quiz" ? window.BODYMAP.sitesFor(st.focus, st.mode) : []; }
 function paintMap(){
+  var fs = focusSites();
   document.querySelectorAll("#body .site").forEach(function(g){
     var id = g.getAttribute("data-site"), site = BY[id];
+    g.classList.toggle("focus", fs.indexOf(id) >= 0);
     g.classList.toggle("sel", st.mode !== "quiz" && id === st.site);
     g.classList.toggle("has-flora", st.mode === "flora" && site.flora.length > 0);
     g.classList.toggle("has-dz", st.mode === "dz" && site.dz.length > 0);
     g.classList.toggle("none", st.mode === "flora" && !site.flora.length || st.mode === "dz" && !site.dz.length);
   });
-  document.querySelectorAll("#sitechips button").forEach(function(b){ b.classList.toggle("sel", st.mode !== "quiz" && b.getAttribute("data-site") === st.site); });
+  document.querySelectorAll("#sitechips button").forEach(function(b){ b.classList.toggle("sel", st.mode !== "quiz" && b.getAttribute("data-site") === st.site); b.classList.toggle("focus", fs.indexOf(b.getAttribute("data-site")) >= 0); });
   $("#legend").innerHTML = st.mode === "quiz" ? "Tap the body to answer." :
     st.mode === "flora" ? '<span><i style="background:var(--flora-soft);border:2px solid var(--flora)"></i>has normal flora</span><span><i style="background:var(--organ);opacity:.55"></i>normally sterile</span>' :
     '<span><i style="background:var(--dz-soft);border:2px solid var(--dz)"></i>bacteria cause disease here</span>';
@@ -246,14 +228,15 @@ function card(x, note, mode){
   if (mode === "flora" && (DZ_IDS[id] || Object.keys(GENUS_OF).some(function(k){ return GENUS_OF[k] === id && DZ_IDS[k]; }))) tags += '<span class="tag opp">can also cause disease</span>';
   if (mode === "dz" && (isFlora(id) || sameGenusFlora(id))) tags += '<span class="tag opp">' + (isFlora(id) ? "normal flora elsewhere" : "its genus is normal flora") + "</span>";
   var inner = "<b>" + esc(r.name) + "</b>" + (note ? "<small>" + esc(note) + "</small>" : "") + '<span class="tags">' + tags + "</span>" + (r.href ? '<span class="go">Open in the tour →</span>' : "");
+  var hl = st.focus && (id === st.focus || window.BODYMAP.ALIAS[st.focus] === id) ? " hl" : "";
   var style = ' style="--ge:' + (r.gram === "+" ? "var(--gp-edge)" : "var(--gn-edge)") + '"';
-  return r.href ? '<a class="mcard" href="' + r.href + '"' + style + ">" + inner + "</a>" : '<div class="mcard"' + style + ">" + inner + "</div>";
+  return r.href ? '<a class="mcard' + hl + '" href="' + r.href + '"' + style + ">" + inner + "</a>" : '<div class="mcard' + hl + '"' + style + ">" + inner + "</div>";
 }
 function render(){
   paintMap();
   document.querySelector(".layout").classList.toggle("quizzing", st.mode === "quiz");
   if (st.mode === "quiz") return renderQuiz();
-  var site = BY[st.site], h = "<h2>" + esc(site.name) + "</h2>";
+  var site = BY[st.site], h = (st.focus ? '<button type="button" class="focuschip" data-unfocus aria-label="Stop highlighting ' + esc(ref(st.focus).name) + '">📍 <i>' + esc(ref(st.focus).name) + "</i> ✕</button>" : "") + "<h2>" + esc(site.name) + "</h2>";
   if (st.mode === "flora"){
     h += '<div class="banner flora">🌱 Normal flora: <i>examples</i> of commensals that live here without causing disease</div>';
     h += site.flora.length ? (site.floraNote ? '<p class="sub">' + esc(site.floraNote) + "</p>" : "") + '<div class="mlist">' + site.flora.map(function(x){ return card(x, "", "flora"); }).join("") + "</div>"
@@ -322,6 +305,7 @@ document.addEventListener("click", function(e){
     if (st.mode === "quiz" && (!st.quiz || st.quiz.done)) newQuestion();
     render(); return;
   }
+  if ((el = e.target.closest("[data-unfocus]"))){ st.focus = null; render(); return; }
   if ((el = e.target.closest("[data-next]"))){ newQuestion(); render(); return; }
   if ((el = e.target.closest("[data-site]"))){ pick(el.getAttribute("data-site")); }
 });
@@ -331,9 +315,11 @@ document.addEventListener("keydown", function(e){
 });
 
 drawBody();
-/* deep links: #flora, #dz, #quiz, or a mode plus an area like #flora-gut or #dz-lungs */
-var hmm = location.hash.match(/^#(flora|dz|quiz)(?:-([a-z]+))?$/) || [], hm = hmm[1];
+/* deep links: #flora, #dz, #quiz, a mode plus an area (#flora-gut, #dz-lungs),
+   or a mode plus a microbe from the tours (#flora/sepi, #dz/ngon) to ring every area it shows up in */
+var hmm = location.hash.match(/^#(flora|dz|quiz)(?:-([a-z]+))?(?:\/([a-z0-9]+))?$/) || [], hm = hmm[1];
 if (hmm[2] && BY[hmm[2]]) st.site = hmm[2];
+if (hmm[3] && hm !== "quiz"){ st.focus = hmm[3]; var fs0 = window.BODYMAP.sitesFor(hmm[3], hm); if (fs0.length && !hmm[2]) st.site = fs0[0]; }
 if (hm){ st.mode = hm; document.querySelectorAll("[data-mode]").forEach(function(b){ b.setAttribute("aria-pressed", b.getAttribute("data-mode") === hm ? "true" : "false"); }); }
 render();
 window.__bodymap = {SITES: SITES, ref: ref, st: st};

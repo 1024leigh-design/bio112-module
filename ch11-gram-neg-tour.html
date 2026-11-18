@@ -316,6 +316,10 @@ table.ent tr.grp td{background:color-mix(in srgb, var(--c) 12%, var(--surface))}
 @media (max-width:560px){ .org.v2 .hero{grid-template-columns:96px minmax(0,1fr)} .scope{width:96px; height:96px} .org.v2 .hero h3{font-size:24px} }
 .badges{display:flex; flex-wrap:wrap; gap:6px}
 .badge{font-weight:700; font-size:14.5px; padding:4px 11px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface-2)}
+a.badge.dzlink{color:inherit; text-decoration:none} a.badge.dzlink:hover{border-color:var(--bad); text-decoration:underline}
+.herobtns{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
+.btn.cmlink{border-color:var(--good); color:var(--good); text-decoration:none}
+a.dzhead{color:inherit; text-decoration:none} a.dzhead:hover{text-decoration:underline}
 .badge.gram{background:var(--gn-fill); border-color:var(--gn-edge); color:#5c0b2b; font-family:var(--f-mono)}
 .sec{display:flex; flex-direction:column; gap:8px; min-width:0}
 .sechead{display:flex; align-items:center; gap:10px; justify-content:space-between; flex-wrap:wrap}
@@ -579,6 +583,8 @@ table.ent tr.grp td{background:color-mix(in srgb, var(--c) 12%, var(--surface))}
 
 <!-- Tour content. Swap this one line to reuse the page for another tour. -->
 <script src="gram-neg-tree.js"></script>
+<!-- Body Map data: which microbes are commensals, and where they cause disease (links into body-map.html) -->
+<script src="body-map-data.js"></script>
 <script>
 (function(){
 "use strict";
@@ -1253,6 +1259,8 @@ function spellHtml(o){
   h += '<div class="btnrow">' + (S.chk ? '<button class="btn small ghost" type="button" data-spell="' + o.id + '" data-dir="reset">↺ Try again</button>' : '<button class="btn small" type="button" data-spell="' + o.id + '" data-dir="check">Check spelling</button>') + "</div>";
   return h + "</section>";
 }
+/* Body Map links: does this microbe show up on the map as normal flora ("flora") or as a disease cause ("dz")? */
+function bmHas(id, mode){ return !!(window.BODYMAP && window.BODYMAP.sitesFor(id, mode).length); }
 function orgCard(o){
   var t = testOn(), sel = st.org === o.id;
   var nm = o.type === "phylum" ? esc(o.name) : "<i>" + esc(o.name) + "</i>" + (o.sub ? " " + esc(o.sub) : "");
@@ -1262,9 +1270,11 @@ function orgCard(o){
     h += '<span class="badge gram">GRAM −</span>';
     var sh = (o.tests || []).filter(function(x){ return x.k === "shape"; })[0];
     if (sh) h += '<span class="badge">' + esc(sh.v) + "</span>";
-    if (!t && o.disease) h += '<span class="badge">' + (o.emoji || "") + " " + esc(o.disease.short) + "</span>";
+    if (!t && o.disease) h += bmHas(o.id, "dz") ? '<a class="badge dzlink" href="body-map.html#dz/' + o.id + '" title="See where it causes disease on the Body Map">' + (o.emoji || "") + " " + esc(o.disease.short) + "</a>"
+      : '<span class="badge">' + (o.emoji || "") + " " + esc(o.disease.short) + "</span>";
   }
-  h += '</div><button type="button" class="btn small ghost" data-focus="' + o.id + '">' + (sel ? "📍 On the tree" : "Show on tree") + "</button></div></div>";
+  h += '</div><div class="herobtns"><button type="button" class="btn small ghost" data-focus="' + o.id + '">' + (sel ? "📍 On the tree" : "Show on tree") + "</button>" +
+    (bmHas(o.id, "flora") ? '<a class="btn small ghost cmlink" href="body-map.html#flora/' + o.id + '" title="See where it lives on the Body Map">🌱 Commensal</a>' : "") + "</div></div></div>";
   if (o.type === "phylum") return h + boxesHtml(o.boxes) + (o.photos ? '<div class="photos n' + o.photos.length + '">' + o.photos.map(photoHtml).join("") + "</div>" : "") + (o.flips ? flipsHtml(o.id, o.flips, "p") : "") + "</article>";
 
   /* Lab ID tiles */
@@ -1278,7 +1288,7 @@ function orgCard(o){
   /* Disease */
   if (o.disease){
     var d = o.disease, detail = (d.boxes ? boxesHtml(d.boxes, "small") : "") + (d.flips ? flipsHtml(o.id, d.flips, "d") : "") + (d.flow ? flowHtml(o.id, d.flow) : "");
-    h += '<section class="sec"><h4 class="sech">🦠 Disease</h4>';
+    h += '<section class="sec"><h4 class="sech">' + (bmHas(o.id, "dz") ? '<a class="dzhead" href="body-map.html#dz/' + o.id + '" title="See where it causes disease on the Body Map">🦠 Disease</a>' : "🦠 Disease") + "</h4>";
     if (t){
       var dk = "d:" + o.id;
       register(dk, {a: d.short, kind: "disease", why: "<b><i>" + esc(o.name) + "</i> disease:</b> " + d.html});

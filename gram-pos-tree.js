@@ -417,7 +417,7 @@ window.TOUR_DATA = {
             {k: "pigment", v: "white"},
             {k: "feature", v: "forms biofilms on devices", ic: "🩺"}
           ],
-          disease: {short: "medical device infections", html: "<b>not normally pathogenic</b>: it's normal skin flora. It's an <b>opportunistic pathogen</b> that causes <b>nosocomial</b> (hospital) infections: prosthetic device infections, bloodstream infections, and endocarditis on artificial valves"},
+          disease: {short: "medical device infections", html: "<b>opportunistic</b>, <b>nosocomial</b> infections:", boxes: [{t: "prosthetic device infections"}, {t: "hospital bloodstream infections"}, {t: "endocarditis on artificial valves"}]},
           facts: [{h: "Found in", t: "normal skin flora (the most abundant)"}]},
         {id: "ssapro", node: "s_sapro", name: "Staphylococcus saprophyticus", shape: "clusters", emoji: "🚽",
           fun: {t: "The name explains it: <b>staphylo</b> = grapes, <b>coccus</b> = round, <b>saprophyticus</b> = organisms that grow on decaying organic material."},
