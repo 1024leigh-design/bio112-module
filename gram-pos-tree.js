@@ -335,7 +335,6 @@ window.TOUR_DATA = {
         w: "Bubbles = catalase +. All staphylococci are catalase +, all streptococci are catalase −."
       }},
     {id: "s-aureus", node: "s_aureus", title: "<i>Staphylococcus aureus</i>",
-      life: [{ic: "👃", t: "About 1 in 4 people carry <i>S. aureus</i> on their skin or in their nose without being sick."}],
       orgs: [
         {id: "saureus", photos: [{"src": "images/s-aureus-vs-epidermidis-msa.jpg", "alt": "A mannitol salt agar plate: the left side turned yellow around the colonies, the right side stayed pink", "cap": "Mannitol salt agar: <i>S. aureus</i> (left) ferments mannitol and turns it <b>yellow</b>; <i>S. epidermidis</i> (right) does not", "credit": "Credit: modification of work by “ScienceProfOnline”/YouTube, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 21.9, panel a, cropped)"}], node: "s_aureus", name: "Staphylococcus aureus", shape: "clusters", emoji: "🟡",
           cheat: "A staph that's <b>coagulase +</b> with <b>golden</b> colonies: <i>S. aureus</i>.",
@@ -357,7 +356,7 @@ window.TOUR_DATA = {
               {f: "Enterotoxin", b: "Causes food poisoning; survives high heat"}
             ]},
           facts: [
-            {h: "Found in", t: "nostrils, armpits, groin (skin flora). About 1 in 4 people are colonized."},
+            {h: "Found in", t: "nostrils, armpits, groin (skin flora)"},
             {h: "When it causes infection", t: "higher numbers plus a break in the skin (microfissures, trauma)"},
             {ic: "🧼", h: "Prevention", t: "<b>hand hygiene (most important!)</b>: S. aureus on hands is mostly picked up by touch (transient), so washing removes it before it spreads. Plus wound care, clean surfaces, and isolation in healthcare."}
           ],
