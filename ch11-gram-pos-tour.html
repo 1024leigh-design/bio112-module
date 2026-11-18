@@ -510,6 +510,30 @@ details.more{border:1.5px solid var(--line); border-radius:14px; background:var(
 details.more summary{cursor:pointer; padding:10px 14px; font-weight:700}
 .morebody{padding:0 14px 12px; font-size:16.5px}
 .morebody p{margin:6px 0 0}
+/* deep dives (deep-dives.js): timeline, two-panel graphic, comparison table, references */
+.morebody .mr-h{font-family:var(--f-display); font-size:19px; margin:20px 0 6px}
+.morebody ul{margin:4px 0; padding-left:22px} .morebody li{margin:3px 0}
+.mr-flow{display:flex; flex-direction:column; margin:6px 0}
+.mr-step{display:grid; grid-template-columns:92px minmax(0,1fr); gap:10px; align-items:start; border:2px solid var(--line); border-radius:14px; padding:10px 12px; background:var(--surface)}
+.mr-step .mr-yr{font:700 13.5px var(--f-mono); color:var(--arrow); padding-top:2px}
+.mr-step > div > b{display:block}
+.mr-step small{color:var(--muted); font-size:14.5px}
+.mr-step.bad{border-color:var(--bad); background:var(--bad-soft)}
+.mr-step.good{border-color:var(--good); background:var(--good-soft)}
+.mr-down{align-self:center; font-size:21px; line-height:1; color:var(--muted); padding:3px 0}
+.mr-split{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px}
+.mr-panel{border:2px solid var(--line); border-radius:14px; padding:10px; background:var(--surface)}
+.mr-panel h5{margin:0 0 4px; font:700 12.5px var(--f-mono); text-transform:uppercase; letter-spacing:.04em; color:var(--muted)}
+.mr-panel svg{width:100%; height:auto; display:block}
+.mr-twist{border-left:6px solid var(--arrow); background:var(--arrow-soft); border-radius:12px; padding:10px 14px; margin-top:12px; color:var(--ink)}
+.mr-tablewrap{overflow-x:auto}
+.mr-table{width:100%; border-collapse:collapse; font-size:15.5px}
+.mr-table th, .mr-table td{border:1.5px solid var(--line); padding:7px 9px; text-align:left; vertical-align:top}
+.mr-table thead th{background:var(--surface-2); font-family:var(--f-display)}
+.mr-table tbody th{font:700 12.5px var(--f-mono); text-transform:uppercase; color:var(--muted); width:22%}
+.mr-cite{font-size:13.5px; color:var(--muted)}
+.mr-refs{font-size:14px; color:var(--muted); padding-left:24px} .mr-refs li{margin:5px 0} .mr-refs a{color:var(--arrow); font-weight:700}
+@media (max-width:560px){ .mr-split{grid-template-columns:minmax(0,1fr)} .mr-step{grid-template-columns:minmax(0,1fr); gap:2px} }
 .practice1{margin:0; font-size:15.5px; display:flex; flex-wrap:wrap; gap:6px 8px; align-items:center}
 .practice1 a{text-decoration:none; color:var(--ink); border:1.5px solid var(--line); border-radius:999px; padding:3px 11px; background:var(--surface); font-weight:700; font-size:14.5px}
 .practice1 a:hover{border-color:var(--arrow)}
@@ -639,6 +663,8 @@ details.more summary{cursor:pointer; padding:10px 14px; font-weight:700}
 <script src="gram-pos-tree.js"></script>
 <!-- Body Map data: which microbes are commensals, and where they cause disease (links into body-map.html) -->
 <script src="body-map-data.js"></script>
+<!-- long "Learn more" deep dives (e.g. MRSA) -->
+<script src="deep-dives.js"></script>
 <script>
 (function(){
 "use strict";
@@ -1574,7 +1600,8 @@ function tableHtml(t){
     t.rows.map(function(r){ return "<tr>" + r.map(function(x){ return "<td>" + x + "</td>"; }).join("") + "</tr>"; }).join("") + "</tbody></table></div>";
 }
 function moreHtml(m){
-  return '<details class="more"><summary>📖 Learn more: ' + m.title + '</summary><div class="morebody">' + m.html + (m.link ? '<p><a href="' + m.link.href + '" target="_blank" rel="noopener">' + m.link.t + " ↗</a></p>" : "") + "</div></details>";
+  var body = m.src ? ((window.DEEP_DIVES || {})[m.src] || "") : m.html;
+  return '<details class="more' + (m.src ? " deep" : "") + '"><summary>📖 Learn more: ' + m.title + '</summary><div class="morebody">' + body + (m.link ? '<p><a href="' + m.link.href + '" target="_blank" rel="noopener">' + m.link.t + " ↗</a></p>" : "") + "</div></details>";
 }
 /* finale: nested outline [{h, t, kids}] */
 function outlineHtml(list){
@@ -1592,9 +1619,10 @@ function renderLesson(){
   if (s.link) h += '<p class="xlink"><a href="' + s.link.href + '" target="_blank" rel="noopener">' + s.link.t + ' ↗</a></p>';
   (s.widgets || []).forEach(function(k){ if (k === "gc") h += gcHtml(); });
   if (s.match) h += matchHtml(s);
-  if (s.more) h += moreHtml(s.more);
+  if (s.more && !s.more.last) h += moreHtml(s.more);
   (s.sections || []).forEach(function(x, i){ h += '<section class="sec"><h4 class="sech">' + x.h + "</h4>" + (x.flow ? flowHtml(s.id + "-" + i, x.flow) : "") + (x.boxes ? boxesHtml(x.boxes, "small") : "") + (x.flips ? flipsHtml(s.id, x.flips, "s" + i) : "") + "</section>"; });
   if (s.life) h += '<section class="life"><h4 class="sech">🌍 In your life</h4>' + boxesHtml(s.life, "small") + "</section>";
+  if (s.more && s.more.last) h += moreHtml(s.more);
   if (s.entericTable) h += '<div><button class="btn ghost" type="button" data-act="table">📋 Open the enteric ID table</button></div>';
   if (s.comic) h += comicHtml(s.comic);
   if (s.orgs && s.orgs.length) h += '<div class="orgs">' + s.orgs.map(orgCard).join("") + "</div>";

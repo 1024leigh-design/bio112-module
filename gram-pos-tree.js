@@ -380,6 +380,7 @@ window.TOUR_DATA = {
         w: "All staphs are catalase +. Only <i>S. aureus</i> is coagulase +."
       }},
     {id: "mrsa", node: "s_aureus", title: "MRSA: it just keeps evolving",
+      more: {title: "how did MRSA happen?", src: "mrsa", last: true},
       lesson: [
         "<b>MRSA</b> = methicillin-resistant <i>S. aureus</i>: strains resistant to methicillin and related antibiotics.",
         "The <b><i>mecA</i> gene</b> changes the antibiotic's target, so these drugs can't bind. (Methicillin itself isn't used anymore.)",
