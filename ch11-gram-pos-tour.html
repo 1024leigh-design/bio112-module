@@ -349,18 +349,20 @@ table.ent tr.grp td{background:color-mix(in srgb, var(--c) 12%, var(--surface))}
 .ibox{border:2px solid var(--line); border-radius:16px; padding:12px 14px; background:var(--surface); display:flex; flex-direction:column; gap:4px}
 .ibox .ic{font-size:28px; line-height:1}
 .ibox h5{margin:0; font:700 12.5px var(--f-mono); text-transform:uppercase; letter-spacing:.05em; color:var(--muted)}
-.ibox p{margin:0; font-size:17px}
+.ibox p, .ibox .bt{margin:0; font-size:17px}
+.blist{margin:2px 0 0; padding-left:20px; display:flex; flex-direction:column; gap:4px}
 .ibox.warn{border-color:var(--bad); background:var(--bad-soft)}
 .iboxes.small .ibox{flex-direction:row; align-items:center; gap:10px}
 .iboxes.small .ibox .ic{font-size:24px}
 .flips{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px}
 .flipc{position:relative; min-height:118px; perspective:900px; border:0; background:none; padding:0; cursor:pointer; font:inherit; color:inherit}
-.flipc .in{position:absolute; inset:0; transition:transform .5s; transform-style:preserve-3d; display:block}
+.flipc .in{position:relative; display:grid; height:100%; min-height:118px; transition:transform .5s; transform-style:preserve-3d}
 .flipc.on .in{transform:rotateY(180deg)}
-.flipc .fa, .flipc .fb{position:absolute; inset:0; border-radius:16px; backface-visibility:hidden; -webkit-backface-visibility:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:12px; text-align:center}
+.flipc .fa, .flipc .fb{grid-area:1 / 1; position:relative; border-radius:16px; backface-visibility:hidden; -webkit-backface-visibility:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:12px; text-align:center}
 .flipc .fa{background:var(--surface-2); border:2px solid var(--c); font-family:var(--f-display); font-weight:700; font-size:18px; line-height:1.2}
 .flipc .fa small{font:600 12px var(--f-body); color:var(--muted)}
-.flipc .fb{transform:rotateY(180deg); background:var(--surface); border:2px solid var(--line); font-size:16.5px}
+.flipc .fb{transform:rotateY(180deg); background:var(--surface); border:2px solid var(--line); font-size:16px; line-height:1.4; align-items:flex-start; justify-content:flex-start; text-align:left}
+.flipc .fbh{font:700 12.5px var(--f-mono); text-transform:uppercase; letter-spacing:.04em; color:var(--muted)}
 .flowbox{border:2px solid var(--line); border-radius:16px; padding:12px; display:flex; flex-direction:column; gap:10px; background:var(--surface)}
 .flowbox h5{margin:0; font-family:var(--f-display); font-size:17px}
 .flow{display:flex; flex-wrap:wrap; align-items:stretch; gap:6px}
@@ -1302,11 +1304,11 @@ function scopeSvg(shape){
 }
 
 /* ================= lesson + cards ================= */
-function boxesHtml(list, cls){ return '<div class="iboxes n' + Math.min(list.length, 6) + " " + (cls || "") + '">' + list.map(function(b){ return '<div class="ibox' + (b.warn ? " warn" : "") + '"><span class="ic">' + (b.ic || "") + "</span>" + (b.h ? "<h5>" + b.h + "</h5>" : "") + "<p>" + b.t + "</p></div>"; }).join("") + "</div>"; }
+function boxesHtml(list, cls){ return '<div class="iboxes n' + Math.min(list.length, 6) + " " + (cls || "") + '">' + list.map(function(b){ return '<div class="ibox' + (b.warn ? " warn" : "") + '"><span class="ic">' + (b.ic || "") + "</span>" + (b.h ? "<h5>" + b.h + "</h5>" : "") + '<div class="bt">' + b.t + "</div></div>"; }).join("") + "</div>"; }
 function flipsHtml(oid, list, tag){
   return '<div class="flips">' + list.map(function(f, i){
     var key = "f:" + oid + ":" + tag + ":" + i, on = st.flip[key];
-    return '<button type="button" class="flipc' + (on ? " on" : "") + '" data-flip="' + key + '"><span class="in"><span class="fa">' + f.f + '<small>tap to reveal</small></span><span class="fb">' + f.b + "</span></span></button>";
+    return '<button type="button" class="flipc' + (on ? " on" : "") + '" data-flip="' + key + '"><span class="in"><span class="fa">' + f.f + '<small>tap to reveal</small></span><span class="fb"><b class="fbh">' + f.f + "</b>" + f.b + "</span></span></button>";
   }).join("") + "</div>";
 }
 function flowHtml(oid, fl){
