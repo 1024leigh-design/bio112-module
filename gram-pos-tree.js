@@ -358,9 +358,9 @@ window.TOUR_DATA = {
           facts: [
             {h: "Found in", t: "nostrils, armpits, groin (skin flora)"},
             {h: "When it causes infection", t: "higher numbers plus a break in the skin (microfissures, trauma)"},
-            {ic: "🧼", h: "Prevention", t: "<b>hand hygiene (most important!)</b>: S. aureus on hands is mostly picked up by touch (transient), so washing removes it before it spreads. Plus wound care, clean surfaces, and isolation in healthcare."}
+            {ic: "🧼", h: "Prevention", t: '<ul class="blist"><li><b>Hand hygiene (most important!)</b>: washing removes <i>S. aureus</i> picked up by touch</li><li>Proper wound care and dressing</li><li>Clean and disinfect surfaces</li><li>Isolation precautions in healthcare settings</li></ul>'}
           ],
-          treat: {short: "MSSA: nafcillin, oxacillin, cephalexin. MRSA: vancomycin, daptomycin, clindamycin", html: "<b>MSSA:</b> nafcillin, oxacillin, or cephalexin. <b>MRSA:</b> vancomycin, daptomycin, or clindamycin. Localized infections may need incision and drainage.", drugs: ["nafcillin", "oxacillin", "cephalexin", "vancomycin", "daptomycin", "clindamycin"]},
+          treat: {short: "MSSA: nafcillin, oxacillin, cephalexin. MRSA: vancomycin, daptomycin, clindamycin", html: '<ul class="blist"><li><b>MSSA:</b> nafcillin, oxacillin, or cephalexin</li><li><b>MRSA:</b> vancomycin, daptomycin, or clindamycin</li><li>Localized infections may need incision and drainage</li></ul>', drugs: ["nafcillin", "oxacillin", "cephalexin", "vancomycin", "daptomycin", "clindamycin"]},
           extra: [
             {h: "Skin and soft tissue infections", flips: [
               {f: "Folliculitis", b: "Hair follicle infection (topical antibiotics)"},
