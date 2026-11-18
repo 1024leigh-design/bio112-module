@@ -1642,6 +1642,16 @@ window.addEventListener("resize", function(){ if (st.view === "tour") frame(view
 function fromHash(fromHistory){
   var hsh = location.hash || "", m = /^#stop-(\d+)$/.exec(hsh);
   if (m){ go(Number(m[1]) - 1, {fromHistory: true}); return; }
+  /* #org-<id> (links from the Body Map): open the stop with that microbe, highlight it, and scroll to its card */
+  var mo = /^#org-([a-z0-9]+)$/.exec(hsh), si = -1;
+  if (mo) D.stops.some(function(s, i){ if ((s.orgs || []).some(function(o){ return o.id === mo[1]; })){ si = i; return true; } return false; });
+  if (si >= 0){
+    go(si, {fromHistory: true, org: mo[1]});
+    var toCard = function(){ var el = document.getElementById("org-" + mo[1]); if (el) el.scrollIntoView({block: "start"}); };
+    /* scroll again once photos above the card have loaded, unless the student already scrolled */
+    var y0 = null; setTimeout(function(){ toCard(); y0 = window.scrollY; }, 80); setTimeout(function(){ if (y0 !== null && Math.abs(window.scrollY - y0) < 5) toCard(); }, 900);
+    return;
+  }
   showStart(fromHistory);
   /* links from the unit page: #cheats opens the ID cheat sheet, #table the enteric ID table */
   if (hsh === "#cheats"){ renderCheats(); var cd = $("#cheatDlg"); if (cd.showModal) cd.showModal(); else cd.setAttribute("open", ""); }
