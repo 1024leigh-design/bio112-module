@@ -111,6 +111,20 @@ canvas#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:200}
   cursor:pointer;transition:background .2s}
 #close-spell-btn:hover{background:var(--amber-dark)}
 
+/* ── Deck picker + "type the" chip ── */
+#deck-pick{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.deck-btn{flex:1;min-width:100px;padding:12px 8px;border:2px solid var(--border);border-radius:12px;background:#fff;
+  font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:800;color:var(--dark);cursor:pointer;line-height:1.25}
+.deck-btn small{display:block;font-size:.72rem;font-weight:700;color:#A08878}
+.deck-btn[aria-pressed="true"]{border-color:var(--teal);background:#E3F4F3}
+#ask-chip{display:flex;flex-direction:column;justify-content:center;align-items:center;min-width:104px;padding:6px 12px;
+  border-radius:10px;background:var(--purple);color:#fff;text-align:center;line-height:1.15}
+#ask-chip small{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;opacity:.85}
+#ask-chip b{font-size:1.05rem;font-weight:900}
+#ask-chip.k-family{background:var(--coral)}
+#ask-chip.k-genus{background:var(--amber-dark)}
+#ask-chip.k-name{background:var(--teal-dark)}
+
 @keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── End screen ── */
@@ -156,8 +170,14 @@ canvas#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:200}
 <!-- ── Name entry ── -->
 <div id="name-screen" class="screen active">
   <h1>Disease <span>Typing</span></h1>
-  <p>A disease appears. Type the organism that causes it before the clock runs out. Hints unlock as time ticks down.</p>
+  <p>A disease appears. Type the microbe that causes it before the clock runs out. Hints unlock as time ticks down.</p>
   <div id="name-card">
+    <label>Pick a deck</label>
+    <div id="deck-pick" role="group" aria-label="Pick a deck">
+      <button type="button" class="deck-btn" data-deck="bac" aria-pressed="true">🧫 Bacteria<small>Ch. 11 · 40 Qs</small></button>
+      <button type="button" class="deck-btn" data-deck="vir" aria-pressed="false">🧬 Viruses<small>Ch. 13 · <span id="vir-count">36</span> Qs</small></button>
+      <button type="button" class="deck-btn" data-deck="mix" aria-pressed="false">🎲 Mixed<small>20 + 20 Qs</small></button>
+    </div>
     <label for="player-name">Your name</label>
     <input id="player-name" type="text" placeholder="e.g. Alex" maxlength="30" autocomplete="off">
     <button id="start-btn">Start Game</button>
@@ -188,11 +208,12 @@ canvas#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:200}
   </div>
 
   <div id="disease-card">
-    <div id="disease-label">What organism causes...</div>
+    <div id="disease-label">What causes...</div>
     <div id="disease-name"></div>
   </div>
 
   <div id="answer-area">
+    <div id="ask-chip" aria-live="polite"><small>Type the</small><b id="ask-what">Genus species</b></div>
     <input id="answer-input" type="text" placeholder="Genus species (e.g. Escherichia coli)"
       autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
     <button id="submit-btn">Submit</button>
@@ -287,6 +308,66 @@ const PAIRS = [
 ];
 
 // ─────────────────────────────────────────────────────────────
+// VIRUSES (Ch. 13 slides)
+// ask: what to type. "name" = the virus name (abbreviations count), "genus", or "family".
+// a: accepted answers; the first is shown as the answer.
+// hint: Hint 1. Genus and family questions leave the family out so the hint doesn't give it away.
+// mc: two wrong choices for Hint 2. Genus and family names are the textbook names.
+// ─────────────────────────────────────────────────────────────
+const VIRUSES = [
+// enveloped DNA
+{d:"Smallpox", ask:"name", a:["Variola virus","variola","variola major"], hint:"Enveloped dsDNA · Poxviridae", mc:["Vaccinia virus","VZV"]},
+{d:"Cold sores (fever blisters)", ask:"name", a:["HSV-1","herpes simplex virus 1","herpes simplex virus type 1","HHV-1","human herpesvirus 1"], hint:"Enveloped dsDNA · Herpesviridae", mc:["HSV-2","VZV"]},
+{d:"Genital herpes", ask:"name", a:["HSV-2","herpes simplex virus 2","herpes simplex virus type 2","HHV-2","human herpesvirus 2"], hint:"Enveloped dsDNA · Herpesviridae", mc:["HSV-1","HPV"]},
+{d:"Chickenpox (varicella)", ask:"name", a:["VZV","varicella-zoster virus","HHV-3","human herpesvirus 3"], hint:"Enveloped dsDNA · Herpesviridae", mc:["HSV-1","HHV-6"]},
+{d:"Shingles (zoster)", ask:"name", a:["VZV","varicella-zoster virus","HHV-3","human herpesvirus 3"], hint:"Enveloped dsDNA · Herpesviridae", mc:["HSV-2","HHV-8"]},
+{d:"Mononucleosis (\"mono\")", ask:"name", a:["EBV","Epstein-Barr virus","HHV-4","human herpesvirus 4"], hint:"Enveloped dsDNA · Herpesviridae", mc:["HHV-6","VZV"]},
+{d:"Roseola (high fever, then a rash)", ask:"name", a:["HHV-6","human herpesvirus 6"], hint:"Enveloped dsDNA · Herpesviridae", mc:["Parvovirus B19","EBV"]},
+{d:"Kaposi sarcoma", ask:"name", a:["HHV-8","human herpesvirus 8","KSHV","Kaposi sarcoma herpesvirus","Kaposi's sarcoma herpesvirus"], hint:"Enveloped dsDNA · Herpesviridae", mc:["HHV-6","EBV"]},
+{d:"Hepatitis B", ask:"name", a:["HBV","hepatitis B virus"], hint:"Enveloped, partially dsDNA · Hepadnaviridae", mc:["HCV","HIV"]},
+// non-enveloped DNA
+{d:"Pink eye, or a cold- or pneumonia-like illness", ask:"name", a:["Adenovirus","adenoviruses","human adenovirus"], hint:"Non-enveloped dsDNA · Adenoviridae", mc:["RSV","HSV-1"]},
+{d:"PML (brain infection in severely immunocompromised people)", ask:"name", a:["JC virus","JCV","JC polyomavirus","John Cunningham virus"], hint:"Non-enveloped dsDNA · Polyomaviridae", mc:["BK virus","HHV-6"]},
+{d:"Kidney transplant failure (bladder and kidney damage)", ask:"name", a:["BK virus","BKV","BK polyomavirus"], hint:"Non-enveloped dsDNA · Polyomaviridae", mc:["JC virus","HBV"]},
+{d:"Genital warts", ask:"name", a:["HPV","human papillomavirus","HPV 6","HPV 11"], hint:"Non-enveloped dsDNA · Papillomaviridae", mc:["HSV-2","HHV-8"]},
+{d:"Cervical cancer", ask:"name", a:["HPV","human papillomavirus","HPV 16","HPV 18"], hint:"Non-enveloped dsDNA · Papillomaviridae", mc:["HSV-2","HBV"]},
+{d:"Fifth disease (\"slapped-cheek\" rash)", ask:"name", a:["Parvovirus B19","B19","B19V","human parvovirus B19","parvovirus"], hint:"Non-enveloped ssDNA · Parvoviridae", mc:["HHV-6","VZV"]},
+// + sense RNA
+{d:"COVID-19", ask:"name", a:["SARS-CoV-2","severe acute respiratory syndrome coronavirus 2"], hint:"Enveloped +ssRNA · Coronaviridae", mc:["RSV","Adenovirus"]},
+{d:"Yellow fever", ask:"family", a:["Flaviviridae"], hint:"Enveloped +ssRNA · spread by mosquitoes", mc:["Coronaviridae","Matonaviridae"]},
+{d:"Dengue", ask:"family", a:["Flaviviridae"], hint:"Enveloped +ssRNA · spread by mosquitoes", mc:["Rhabdoviridae","Picornaviridae"]},
+{d:"Zika", ask:"family", a:["Flaviviridae"], hint:"Enveloped +ssRNA · spread by mosquitoes (and sex)", mc:["Matonaviridae","Paramyxoviridae"]},
+{d:"West Nile", ask:"family", a:["Flaviviridae"], hint:"Enveloped +ssRNA · spread by mosquitoes", mc:["Orthomyxoviridae","Picornaviridae"]},
+{d:"Hepatitis C", ask:"name", a:["HCV","hepatitis C virus"], hint:"Enveloped +ssRNA · bloodborne", mc:["HBV","HIV"]},
+{d:"Hepatitis C", ask:"family", a:["Flaviviridae"], hint:"Enveloped +ssRNA · bloodborne", mc:["Hepadnaviridae","Picornaviridae"]},
+{d:"Hand-foot-and-mouth disease", ask:"genus", a:["Enterovirus"], hint:"Non-enveloped +ssRNA", mc:["Morbillivirus","Rubulavirus"]},
+{d:"Polio", ask:"name", a:["Poliovirus"], hint:"Non-enveloped +ssRNA · fecal-oral", mc:["Enterovirus","Rubella virus"]},
+{d:"Polio", ask:"family", a:["Picornaviridae"], hint:"Non-enveloped +ssRNA", mc:["Flaviviridae","Coronaviridae"]},
+{d:"Rubella (German measles)", ask:"name", a:["Rubella virus"], hint:"Enveloped +ssRNA · MMR vaccine", mc:["Measles virus","Parvovirus B19"]},
+{d:"Rubella (German measles)", ask:"family", a:["Matonaviridae"], hint:"Enveloped +ssRNA", mc:["Paramyxoviridae","Flaviviridae"]},
+{d:"AIDS", ask:"name", a:["HIV","HIV-1","HIV-2","HIV-1/2","human immunodeficiency virus"], hint:"Enveloped +ssRNA (retrovirus) · Retroviridae", mc:["HTLV-1","HBV"]},
+// − sense RNA
+{d:"Measles", ask:"genus", a:["Morbillivirus"], hint:"Enveloped −ssRNA", mc:["Rubulavirus","Enterovirus"]},
+{d:"Measles", ask:"family", a:["Paramyxoviridae"], hint:"Enveloped −ssRNA", mc:["Pneumoviridae","Orthomyxoviridae"]},
+{d:"Mumps", ask:"genus", a:["Rubulavirus"], hint:"Enveloped −ssRNA", mc:["Morbillivirus","Enterovirus"]},
+{d:"Mumps", ask:"family", a:["Paramyxoviridae"], hint:"Enveloped −ssRNA", mc:["Orthomyxoviridae","Picornaviridae"]},
+{d:"Pneumonia-like illness in infants (the #1 viral cause)", ask:"name", a:["RSV","respiratory syncytial virus"], hint:"Enveloped −ssRNA · Pneumoviridae", mc:["Adenovirus","SARS-CoV-2"]},
+{d:"Rabies", ask:"family", a:["Rhabdoviridae"], hint:"Enveloped −ssRNA", mc:["Paramyxoviridae","Orthomyxoviridae"]},
+{d:"Influenza (the flu)", ask:"family", a:["Orthomyxoviridae"], hint:"Enveloped −ssRNA", mc:["Paramyxoviridae","Coronaviridae"]}
+];
+
+// every question has the same shape: {d: disease, ask, a: [answers], hint, mc: [2 wrong], v: virus?}
+const BAC_QS = PAIRS.map(p => ({d:p[0], ask:"species", a:[p[1]], hint:p[2]+" "+p[3], mc:[p[4],p[5]], v:false}));
+const VIR_QS = VIRUSES.map(q => Object.assign({v:true}, q));
+const ASK = {
+  species:{chip:"Genus species", label:"What bacterium causes...", ph:"Genus species (e.g. Escherichia coli)", tip:"Type the genus and species of the bacterium that causes this disease."},
+  name:{chip:"Virus name", label:"What virus causes...", ph:"Virus name or abbreviation (e.g. HSV-1)", tip:"Type the virus name. Abbreviations like EBV or HIV count."},
+  genus:{chip:"Genus", label:"What virus GENUS causes...", ph:"Genus (ends in -virus)", tip:"Type the virus genus. Genus names end in -virus."},
+  family:{chip:"Family", label:"What virus FAMILY causes...", ph:"Family (ends in -viridae)", tip:"Type the virus family. Family names end in -viridae."}
+};
+const DECKS = {bac:{game:"disease", title:"Bacteria"}, vir:{game:"disease-virus", title:"Viruses"}, mix:{game:"disease-mixed", title:"Mixed"}};
+
+// ─────────────────────────────────────────────────────────────
 // HELPERS
 // ─────────────────────────────────────────────────────────────
 function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
@@ -306,6 +387,12 @@ function singularGenus(s){
   parts[0] = g; return parts.join(" ");
 }
 function norm(s){return singularGenus(s.trim().toLowerCase().replace(/\s+/g," "));}
+/* virus answers: ignore case, spaces, hyphens, and the word "type" (HSV-1 = hsv 1 = HSV1) */
+function vkey(s){return s.toLowerCase().replace(/\btype\b/g,"").replace(/[^a-z0-9]/g,"");}
+function vMatches(guess, answers){
+  const g = vkey(guess);
+  return answers.some(a => vkey(a) === g || vkey(a) === g + "virus");
+}
 function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 const WIN_MSGS=[
@@ -326,6 +413,7 @@ const WRONG_MSGS=[
 // ─────────────────────────────────────────────────────────────
 let session = {
   playerName:'',
+  deck:'bac',
   queue:[],
   idx:0,
   scores:[],
@@ -355,7 +443,9 @@ function showScreen(id){
 // SESSION START
 // ─────────────────────────────────────────────────────────────
 function startSession(){
-  session.queue = shuffle(PAIRS);
+  session.queue = session.deck === 'vir' ? shuffle(VIR_QS)
+    : session.deck === 'mix' ? shuffle(shuffle(BAC_QS).slice(0,20).concat(shuffle(VIR_QS).slice(0,20)))
+    : shuffle(BAC_QS);
   session.idx = 0;
   session.scores = [];
   session.total = 0;
@@ -370,20 +460,26 @@ function startSession(){
 function loadQuestion(idx){
   if(round.intervalId) clearInterval(round.intervalId);
 
-  const pair = session.queue[idx];
+  const q = session.queue[idx];
+  const ask = ASK[q.ask];
   round = {
-    pair, startMs:performance.now(), elapsed:0,
+    q, startMs:performance.now(), elapsed:0,
     baseScore:100, hint1Shown:false, hint2Shown:false,
     answered:false, intervalId:null, closePenalty:false
   };
 
   // Reset UI
-  document.getElementById('disease-name').textContent = pair[0];
+  document.getElementById('disease-name').textContent = q.d;
+  document.getElementById('disease-label').textContent = ask.label;
+  document.getElementById('ask-what').textContent = ask.chip;
+  document.getElementById('ask-chip').className = 'k-' + q.ask;
+  document.getElementById('answer-input').placeholder = ask.ph;
+  document.getElementById('hint1-label').textContent = (q.v ? 'Hint 1: Virus type' : 'Hint 1: Gram stain & shape') + ' (−10 pts)';
   document.getElementById('q-counter').textContent = `Question ${idx+1} of ${session.queue.length}`;
   document.getElementById('answer-input').value='';
   document.getElementById('answer-input').disabled=false;
   document.getElementById('submit-btn').disabled=false;
-  setFeedback('Type the genus and species of the organism that causes this disease.','neutral');
+  setFeedback(ask.tip,'neutral');
   document.getElementById('close-spell').style.display='none';
   document.getElementById('hint1').className='';
   document.getElementById('hint2').className='';
@@ -447,14 +543,12 @@ function setTimer(val, phase){
 }
 
 function showHint1(){
-  const [,, gram, shape] = round.pair;
-  document.getElementById('hint1-val').textContent = `${gram} ${shape}`;
+  document.getElementById('hint1-val').textContent = round.q.hint;
   document.getElementById('hint1').className = 'visible';
 }
 
 function showHint2(){
-  const [, answer,,, d1, d2] = round.pair;
-  const choices = shuffle([answer, d1, d2]);
+  const choices = shuffle([round.q.a[0]].concat(round.q.mc));
   ['mc-a','mc-b','mc-c'].forEach((id,i)=>{
     const b=document.getElementById(id);
     b.textContent=choices[i];
@@ -474,7 +568,7 @@ function timeUp(){
   document.getElementById('submit-btn').disabled=true;
   ['mc-a','mc-b','mc-c'].forEach(id=>document.getElementById(id).disabled=true);
   document.getElementById('close-spell').style.display='none';
-  setFeedback(`Time's up! The answer was ${round.pair[1]}.`,'error');
+  setFeedback(`Time's up! The answer was ${round.q.a[0]}.`,'error');
   session.scores.push(0);
   // Don't add to total for 0 scores
   setTimeout(advanceQuestion, 2200);
@@ -497,6 +591,7 @@ function advanceQuestion(){
 function submitAnswer(raw){
   if(round.answered) return;
   if(!raw.trim()) return;
+  if(round.q.v){ submitVirus(raw.trim()); return; }
 
   // Capitalization check: genus must start with uppercase
   if(!/^[A-Z]/.test(raw.trim())){
@@ -505,14 +600,14 @@ function submitAnswer(raw){
   }
 
   const guess = norm(raw);
-  const correct = norm(round.pair[1]);
+  const correct = norm(round.q.a[0]);
   const correctGenus = correct.split(' ')[0];
   const guessGenus = guess.split(' ')[0];
 
   // Genus-only answer: accept the genus, with or without a species,
   // unless the full name is another disease's answer (Borrelia burgdorferi is Lyme, not relapsing fever)
   if(guess !== correct && correct.indexOf(' ') < 0 && guessGenus === correct){
-    if(PAIRS.some(function(p){ return norm(p[1]) === guess; })){
+    if(BAC_QS.some(function(p){ return norm(p.a[0]) === guess; })){
       setFeedback("Right genus, but that species causes a different disease! 🔬",'negative');
       return;
     }
@@ -562,6 +657,46 @@ function submitAnswer(raw){
   setFeedback(WRONG_MSGS[Math.floor(Math.random()*WRONG_MSGS.length)],'error');
 }
 
+function submitVirus(raw){
+  const q = round.q, close = window.BIO112_SPELL ? BIO112_SPELL.close : (a,b) => levenshtein(a,b) <= 2;
+  const ranked = q.ask === 'genus' || q.ask === 'family';
+  // Genus and family names are capitalized, like bacteria genus names
+  if(ranked && !/^[A-Z]/.test(raw)){
+    setFeedback(`Heads up: ${q.ask} names are capitalized! ✏️ (e.g., ${q.ask === 'family' ? 'Herpesviridae' : 'Simplexvirus'})`,'negative');
+    return;
+  }
+  if(vMatches(raw, q.a)){
+    document.getElementById('close-spell').style.display='none';
+    handleCorrect();
+    return;
+  }
+  const g = vkey(raw);
+  // Right rank? Families end in -viridae, genera in -virus
+  if(q.ask === 'family' && /virus$/.test(g) && !/viridae$/.test(g)){
+    setFeedback("That looks like a genus or virus name. This one asks for the FAMILY: it ends in -viridae. 🔬",'negative');
+    return;
+  }
+  if(q.ask === 'genus' && /viridae$/.test(g)){
+    setFeedback("That's a family name! This one asks for the GENUS: it ends in -virus. 🔬",'negative');
+    return;
+  }
+  // A real answer from the deck, just not for this disease
+  const other = VIR_QS.some(o => o !== q && vMatches(raw, o.a));
+  if(other){
+    setFeedback("That's a real virus answer, but it goes with a different disease! 🔬",'negative');
+    document.getElementById('close-spell').style.display='none';
+    return;
+  }
+  // Spelling slip on a longer name (short abbreviations like HSV-1 vs HSV-2 never count as "close")
+  if(q.a.some(a => vkey(a).length >= 6 && (close(g, vkey(a)) || close(g + "virus", vkey(a))))){
+    setFeedback("Almost there! Check your spelling. ✏️",'negative');
+    showCloseSpell();
+    return;
+  }
+  document.getElementById('close-spell').style.display='none';
+  setFeedback(WRONG_MSGS[Math.floor(Math.random()*WRONG_MSGS.length)],'error');
+}
+
 function showCloseSpell(){
   document.getElementById('close-spell').style.display='block';
 }
@@ -570,7 +705,7 @@ function acceptClose(){
   if(round.answered) return;
   round.closePenalty = true;
   document.getElementById('close-spell').style.display='none';
-  document.getElementById('answer-input').value = round.pair[1];
+  document.getElementById('answer-input').value = round.q.a[0];
   handleCorrect();
 }
 
@@ -602,7 +737,7 @@ function handleCorrect(){
 function mcClick(btn){
   if(round.answered) return;
   const val = btn.dataset.val;
-  const correct = round.pair[1];
+  const correct = round.q.a[0];
   if(norm(val) === norm(correct)){
     btn.classList.add('correct');
     handleCorrect();
@@ -676,7 +811,7 @@ function triggerConfetti(){
 // Class leaderboard: optional nickname save to the instructor's Google Sheet (leaderboard.js)
 function loadLeaderboard(){
   if(!window.BIO112_LB) return;
-  BIO112_LB.widget(document.getElementById('lb-section'), {game: 'disease', title: 'Class leaderboard', score: function(){
+  BIO112_LB.widget(document.getElementById('lb-section'), {game: DECKS[session.deck].game, title: 'Class leaderboard: ' + DECKS[session.deck].title, score: function(){
     var c = session.scores.filter(function(s){ return s > 0; }).length;
     return {score: session.total, details: session.scores.length + ' questions, ' + c + ' correct'};
   }});
@@ -686,6 +821,13 @@ function loadLeaderboard(){
 // ─────────────────────────────────────────────────────────────
 // EVENT LISTENERS
 // ─────────────────────────────────────────────────────────────
+document.getElementById('vir-count').textContent = VIR_QS.length;
+document.querySelectorAll('.deck-btn').forEach(b => b.addEventListener('click', () => {
+  session.deck = b.dataset.deck;
+  document.querySelectorAll('.deck-btn').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+}));
+/* deep link: disease-type.html#viruses or #mixed picks that deck */
+(function(){ const h = location.hash.slice(1), m = {bacteria:'bac', viruses:'vir', mixed:'mix'}[h]; if(m){ const b = document.querySelector('.deck-btn[data-deck="'+m+'"]'); if(b) b.click(); } })();
 document.getElementById('start-btn').addEventListener('click',()=>{
   const name=document.getElementById('player-name').value.trim();
   session.playerName=name||'Student';
