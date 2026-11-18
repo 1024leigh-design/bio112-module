@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Body Map: Normal Flora and Disease</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Body Map: tap a body area, then switch between its normal flora (commensals) and the bacteria that cause disease there.
+   Normal flora come from the Ch. 14 slides (Table 14.1). Disease sites come from the two Ch. 11 tours. */
+:root{
+  --bg:#f2f5f8; --surface:#ffffff; --surface-2:#e8eef4; --ink:#14223a; --muted:#53657b; --line:#d3dde7;
+  --arrow:#1683cc; --arrow-soft:#dcecf9; --good:#1f8a55; --good-soft:#dcf2e5; --bad:#c43a2b; --bad-soft:#fbe0db;
+  --flora:#1f8a55; --flora-soft:#d6f0e1; --dz:#c43a2b; --dz-soft:#fbe0db; --body:#f6e3d3; --body-edge:#b98b6b; --organ:#f3d5c6;
+  --gn-fill:#f7b6cf; --gn-edge:#c2185b; --gp-fill:#d8c8f5; --gp-edge:#6d28d9;
+  --f-display:'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --f-body:'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
+  --f-mono:'IBM Plex Mono', ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
+    --arrow:#4aa9ee; --arrow-soft:#173450; --good:#4ccb8b; --good-soft:#153a29; --bad:#ff7d6d; --bad-soft:#46211d;
+    --flora:#4ccb8b; --flora-soft:#173a2a; --dz:#ff7d6d; --dz-soft:#4a221e; --body:#3a2e28; --body-edge:#c79a7a; --organ:#4a3a33;
+    --gn-fill:#9c3d68; --gn-edge:#f48fb6; --gp-fill:#4c3a7a; --gp-edge:#c4b0f5; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
+  --arrow:#4aa9ee; --arrow-soft:#173450; --good:#4ccb8b; --good-soft:#153a29; --bad:#ff7d6d; --bad-soft:#46211d;
+  --flora:#4ccb8b; --flora-soft:#173a2a; --dz:#ff7d6d; --dz-soft:#4a221e; --body:#3a2e28; --body-edge:#c79a7a; --organ:#4a3a33;
+  --gn-fill:#9c3d68; --gn-edge:#f48fb6; --gp-fill:#4c3a7a; --gp-edge:#c4b0f5; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:18px; line-height:1.5; overflow-x:hidden}
+.wrap{max-width:1180px; margin:0 auto; padding:16px 16px 60px}
+h1,h2,h3,h4{font-family:var(--f-display); margin:0; letter-spacing:-.01em}
+p{margin:0}
+button{font:inherit; color:inherit}
+:focus-visible{outline:3px solid var(--arrow); outline-offset:2px; border-radius:6px}
+.top{display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; padding-bottom:12px; border-bottom:1px solid var(--line); margin-bottom:18px}
+.top a{margin-left:auto; text-decoration:none; color:var(--ink); font-weight:700; font-size:15px; padding:8px 13px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface)}
+.brand{font-family:var(--f-display); font-weight:700}
+.hero h1{font-size:clamp(32px,5.5vw,48px); line-height:1.05}
+.hero p{color:var(--muted); max-width:62ch; margin-top:6px}
+.modes{display:flex; flex-wrap:wrap; gap:8px; margin:16px 0}
+.mode{border:2px solid var(--line); background:var(--surface); border-radius:999px; padding:9px 18px; font-weight:700; cursor:pointer}
+.mode[aria-pressed="true"]{color:#fff; border-color:transparent}
+.mode.flora[aria-pressed="true"]{background:var(--flora)}
+.mode.dz[aria-pressed="true"]{background:var(--dz)}
+.mode.quiz[aria-pressed="true"]{background:var(--arrow)}
+.layout{display:grid; grid-template-columns:minmax(0,360px) minmax(0,1fr); gap:20px; align-items:start}
+@media (max-width:760px){ .layout{grid-template-columns:minmax(0,1fr)} }
+.mapbox{background:var(--surface); border:1.5px solid var(--line); border-radius:20px; padding:10px; position:sticky; top:10px}
+@media (max-width:760px){ .mapbox{position:static} .layout.quizzing .panel{order:-1} }
+#body{width:100%; height:auto; display:block; max-height:72vh}
+.site{cursor:pointer}
+.site .hit{fill:transparent}
+.site .org{fill:var(--organ); stroke:var(--body-edge); stroke-width:2; transition:fill .2s}
+.site:hover .org, .site:focus .org{stroke-width:3.5}
+.site.has-flora .org{fill:var(--flora-soft); stroke:var(--flora)}
+.site.has-dz .org{fill:var(--dz-soft); stroke:var(--dz)}
+.site.sel .org{stroke:var(--arrow); stroke-width:4.5}
+.site.none .org{opacity:.55}
+.skinline{fill:var(--body); stroke:var(--body-edge); stroke-width:3}
+.skin.has-flora .skinline{stroke:var(--flora); stroke-width:5}
+.skin.has-dz .skinline{stroke:var(--dz); stroke-width:5}
+.skin.sel .skinline{stroke:var(--arrow); stroke-width:6}
+.lbl{font:700 10.5px var(--f-mono); fill:var(--muted); pointer-events:none; text-transform:uppercase}
+.lead{stroke:var(--muted); stroke-width:1; opacity:.6; pointer-events:none}
+#body .site:focus{outline:none}
+#body .site:focus-visible .org, #body .site:focus-visible .skinline{stroke:var(--arrow); stroke-dasharray:5 3}
+.sitechips{display:flex; flex-wrap:wrap; gap:6px; margin-top:8px}
+.sitechips button{border:1.5px solid var(--line); background:var(--surface-2); border-radius:999px; padding:4px 11px; font-size:14px; font-weight:700; cursor:pointer}
+.sitechips button.sel{border-color:var(--arrow); background:var(--arrow-soft)}
+.panel{background:var(--surface); border:1.5px solid var(--line); border-radius:20px; padding:16px; display:flex; flex-direction:column; gap:12px; min-width:0}
+.panel h2{font-size:28px}
+.panel .sub{color:var(--muted); font-size:16px}
+.banner{border-radius:14px; padding:10px 14px; font-weight:700}
+.banner.flora{background:var(--flora-soft); color:var(--ink); border-left:6px solid var(--flora)}
+.banner.dz{background:var(--dz-soft); color:var(--ink); border-left:6px solid var(--dz)}
+.mlist{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:10px}
+.mcard{display:flex; flex-direction:column; gap:4px; text-decoration:none; color:var(--ink); background:var(--surface); border:1.5px solid var(--line); border-left:6px solid var(--ge); border-radius:14px; padding:10px 12px}
+a.mcard:hover{border-color:var(--arrow)}
+.mcard b{font-style:italic; font-size:17px}
+.mcard small{color:var(--muted); font-size:15px}
+.mcard .tags{display:flex; flex-wrap:wrap; gap:4px; margin-top:2px}
+.tag{font:600 11.5px var(--f-mono); text-transform:uppercase; letter-spacing:.04em; padding:1px 8px; border-radius:999px; border:1.5px solid var(--line); color:var(--muted)}
+.tag.opp{border-color:#d97706; color:#b45309}
+.tag.gneg{border-color:var(--gn-edge); color:var(--gn-edge)} .tag.gpos{border-color:var(--gp-edge); color:var(--gp-edge)}
+.empty{color:var(--muted); background:var(--surface-2); border-radius:14px; padding:12px 14px}
+.legend{display:flex; flex-wrap:wrap; gap:6px 14px; font-size:14.5px; color:var(--muted)}
+.legend i{display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:5px; vertical-align:-1px}
+.quizq{font-family:var(--f-display); font-size:24px}
+.quizq i{font-family:var(--f-body)}
+.qmsg{border-radius:12px; padding:10px 12px}
+.qmsg.good{background:var(--good-soft)} .qmsg.bad{background:var(--bad-soft)}
+.score{font:600 15px var(--f-mono); color:var(--muted)}
+.btn{display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:9px 18px; font-weight:700; font-size:16px; cursor:pointer; border:1.5px solid var(--arrow); background:var(--arrow); color:#fff}
+.btn.ghost{background:transparent; color:var(--arrow)}
+.src{color:var(--muted); font-size:14px}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important; animation:none!important} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><span class="brand">🧫 BIO 112 · Ch. 11 + 14</span><a href="unit-bacteria.html">← Bacteria unit</a></header>
+  <section class="hero">
+    <h1>Body Map</h1>
+    <p>Tap a part of the body. Switch between the <b>normal flora</b> that live there and the bacteria that <b>cause disease</b> there. Some microbes are on both lists: normal in one place, a problem in another!</p>
+  </section>
+  <div class="modes" role="toolbar" aria-label="What to show">
+    <button type="button" class="mode flora" data-mode="flora" aria-pressed="true">🌱 Normal flora</button>
+    <button type="button" class="mode dz" data-mode="dz" aria-pressed="false">🦠 Causes disease here</button>
+    <button type="button" class="mode quiz" data-mode="quiz" aria-pressed="false">🎯 Quiz me</button>
+  </div>
+  <div class="layout">
+    <div class="mapbox">
+      <svg id="body" viewBox="0 0 300 640" role="group" aria-label="Body map. Each area is a button."></svg>
+      <div class="legend" id="legend"></div>
+      <div class="sitechips" id="sitechips" aria-label="Body areas"></div>
+    </div>
+    <section class="panel" id="panel" aria-live="polite"></section>
+  </div>
+</div>
+
+<!-- organism names and tour links come from the tour data files -->
+<script src="gram-neg-tree.js"></script>
+<script>window.TOUR_NEG = window.TOUR_DATA;</script>
+<script src="gram-pos-tree.js"></script>
+<script>window.TOUR_POS = window.TOUR_DATA;</script>
+<script>
+(function(){
+"use strict";
+function $(s){ return document.querySelector(s); }
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;"}[c]; }); }
+
+/* ---------- organisms and links into the tours ---------- */
+var ORG = {}, STOP = {};
+[["neg", window.TOUR_NEG, "ch11-gram-neg-tour.html", "−"], ["pos", window.TOUR_POS, "ch11-gram-pos-tour.html", "+"]].forEach(function(t){
+  t[1].stops.forEach(function(s, i){
+    STOP[s.id] = {href: t[2] + "#stop-" + (i + 1), gram: t[3]};
+    (s.orgs || []).forEach(function(o){ if (!ORG[o.id]) ORG[o.id] = {name: o.name, href: t[2] + "#stop-" + (i + 1), gram: t[3]}; });
+  });
+});
+/* an entry is an organism id, or "@stopId|Label" for a genus (links to that genus stop) */
+function ref(x){
+  if (x.charAt(0) === "@"){ var p = x.slice(1).split("|"), st = STOP[p[0]]; return {key: x, name: p[1], href: st ? st.href : null, gram: st ? st.gram : "+"}; }
+  if (x.charAt(0) === "!"){ var q = x.slice(1).split("|"); return {key: x, name: q[0], href: null, gram: q[1]}; }
+  var o = ORG[x]; return o ? {key: x, name: o.name, href: o.href, gram: o.gram} : {key: x, name: x, href: null, gram: "?"};
+}
+
+/* ---------- the body areas ----------
+   flora: normal microbiota (Ch. 14 slides, Table 14.1). dz: [id, what it causes there] from the Ch. 11 tours. */
+var SITES = [
+  {id: "brain", name: "Brain & spinal cord", flora: [], floraNote: "Normally sterile: no normal flora.",
+    dz: [["nmen", "meningococcal meningitis (it normally lives in the throat!)"], ["spneumoniae", "meningitis"], ["sagalactiae", "meningitis in newborns"], ["lmono", "meningitis"], ["nasteroides", "nocardiosis that spreads to the brain"], ["ecoli", "opportunist in the wrong place: the spinal cord"]]},
+  {id: "eyes", name: "Eyes", flora: ["sepi", "saureus", "@cutibacterium|Cutibacterium (Propionibacterium)", "@corynebacterium|Corynebacterium (diphtheroids)", "@streptococcus|Streptococci", "@micrococcus|Micrococcus"], floraNote: "These live on the conjunctiva.",
+    dz: [["ngon", "eye infection in newborns that can cause blindness"], ["ctrachomatis", "trachoma"], ["paeruginosa", "eye infections (contact lenses)"]]},
+  {id: "nose", name: "Nose & throat", flora: ["saureus", "sepi", "@corynebacterium|Corynebacterium (diphtheroids)", "spneumoniae", "@neisseria|Neisseria", "!Haemophilus|−", "@fusobacteria|Fusobacterium", "@actinomyces|Actinomyces"],
+    dz: [["spyogenes", "strep throat (the main cause)"], ["cdiphtheriae", "diphtheria: pseudomembrane in the throat"], ["bpertussis", "whooping cough"]]},
+  {id: "mouth", name: "Mouth", flora: ["@streptococcus|Streptococcus", "lactobacillus", "@actinomyces|Actinomyces", "@bacteroidetes|Bacteroides", "!Veillonella|−", "@neisseria|Neisseria", "!Haemophilus|−", "@fusobacteria|Fusobacterium", "@treponema|Treponema (harmless oral species, not T. pallidum)", "@staphylococcus|Staphylococcus", "@corynebacterium|Corynebacterium"],
+    dz: [["aisraelii", "actinomycosis (\"lumpy jaw\") when the mucosa is breached"], ["fuso", "periodontal (gum) disease and abscesses"]]},
+  {id: "lungs", name: "Lungs", flora: [], floraNote: "Healthy lungs have very few microbes.",
+    dz: [["mtb", "tuberculosis"], ["spneumoniae", "pneumonia (it normally lives in the nose and throat!)"], ["kpneumoniae", "aspiration pneumonia, often nosocomial"], ["lpneumophila", "Legionnaires' disease"], ["cpneumoniae", "respiratory infections"], ["nasteroides", "pulmonary nocardiosis"], ["ypestis", "pneumonic plague"], ["smarcescens", "nosocomial pneumonia"], ["ecoli", "opportunist in the wrong place: the lungs"]]},
+  {id: "heart", name: "Blood & heart", flora: [], floraNote: "Blood is normally sterile.",
+    dz: [["sepi", "nosocomial bloodstream infections; endocarditis on artificial valves"], ["enterococcus", "endocarditis"], ["sagalactiae", "sepsis in newborns"], ["ypestis", "septicemic plague"], ["styphi", "typhoid fever"], ["rrickettsii", "Rocky Mountain spotted fever"], ["brf", "relapsing fever"], ["bburgdorferi", "Lyme disease"], ["smarcescens", "bacteremia"], ["saureus", "toxic shock syndrome"]]},
+  {id: "stomach", name: "Stomach", flora: [], floraNote: "Stomach acid keeps most microbes out.",
+    dz: [["hpylori", "gastritis and peptic ulcers"]]},
+  {id: "gut", name: "Intestines", flora: ["ecoli", "@bacteroidetes|Bacteroides", "@fusobacteria|Fusobacterium", "lactobacillus", "enterococcus", "!Bifidobacterium|+", "enterobacter", "!Citrobacter|−", "proteus", "kpneumoniae"], floraNote: "These live in the large intestine.",
+    dz: [["salmonella", "food poisoning (salmonellosis)"], ["styphi", "typhoid fever"], ["shigella", "shigellosis (bacillary dysentery)"], ["vcholerae", "cholera"], ["cjejuni", "bacterial gastroenteritis"], ["ecoli", "traveler's diarrhea"], ["cdiff", "colitis after antibiotics wipe out the normal flora"], ["bcereus", "food poisoning (stale rice)"], ["saureus", "food poisoning (enterotoxin)"], ["lmono", "listeriosis (can feel like the stomach flu)"]]},
+  {id: "urinary", name: "Urinary tract", flora: ["@staphylococcus|Staphylococcus", "@micrococcus|Micrococcus", "enterococcus", "lactobacillus", "@bacteroidetes|Bacteroides", "@corynebacterium|Corynebacterium (diphtheroids)", "@pseudomonas|Pseudomonas", "kpneumoniae", "proteus"], floraNote: "These live in the urethra.",
+    dz: [["ecoli", "UTIs (the #1 cause)"], ["ssapro", "UTIs (the #2 cause)"], ["proteus", "UTIs"], ["enterococcus", "UTIs"], ["paeruginosa", "UTIs"], ["smarcescens", "nosocomial UTIs"]]},
+  {id: "repro", name: "Reproductive tract", flora: ["lactobacillus", "@streptococcus|Streptococcus", "@clostridia|Clostridium"], floraNote: "These live in the vagina. Lactobacillus keeps the pH low.",
+    dz: [["ngon", "gonorrhea"], ["ctrachomatis", "chlamydia (the most common bacterial STI)"], ["tpallidum", "syphilis"], ["lmono", "miscarriage and stillbirth"], ["ecoli", "opportunist in the wrong place: the vagina"]]},
+  {id: "skin", name: "Skin & wounds", flora: ["@cutibacterium|Cutibacterium (Propionibacterium)", "sepi", "saureus", "@corynebacterium|Corynebacterium", "@micrococcus|Micrococcus", "!Acinetobacter|−", "!Brevibacterium|+"], floraNote: "Fungi live here too: Candida and Malassezia.",
+    dz: [["saureus", "folliculitis, boils, impetigo, cellulitis, scalded skin"], ["spyogenes", "necrotizing fasciitis"], ["paeruginosa", "burn and wound infections"], ["cperfringens", "gas gangrene in contaminated wounds"], ["cacnes", "acne"], ["cdiphtheriae", "cutaneous diphtheria (skin ulcers)"], ["mleprae", "leprosy skin lesions"], ["nasteroides", "cutaneous nocardiosis"], ["proteus", "wound infections"], ["enterococcus", "wound infections"], ["ecoli", "opportunist in the wrong place: wounds"]]},
+  {id: "nerves", name: "Nerves & muscles", flora: [], floraNote: "Normally sterile.",
+    dz: [["ctetani", "tetanus: stiff muscles, spasms, lockjaw"], ["cbotulinum", "botulism: flaccid paralysis"], ["mleprae", "permanent nerve damage"], ["cperfringens", "muscle death (clostridial myonecrosis)"]]},
+  {id: "bones", name: "Bones", flora: [], floraNote: "Normally sterile.",
+    dz: [["saureus", "osteomyelitis (bone infection)"], ["mtb", "TB can spread to the bones"]]}
+];
+var BY = {}; SITES.forEach(function(s){ BY[s.id] = s; });
+/* microbes that are normal flora somewhere AND cause disease somewhere = opportunists (or "wrong place" problems) */
+var FLORA_IDS = {}, DZ_IDS = {};
+SITES.forEach(function(s){ s.flora.forEach(function(x){ FLORA_IDS[x.charAt(0) === "@" ? x.split("|")[0] : x] = 1; }); s.dz.forEach(function(d){ DZ_IDS[d[0]] = 1; }); });
+var GENUS_OF = {saureus: "@staphylococcus", sepi: "@staphylococcus", ssapro: "@staphylococcus", spneumoniae: "@streptococcus", spyogenes: "@streptococcus", sagalactiae: "@streptococcus", cacnes: "@cutibacterium", aisraelii: "@actinomyces", fuso: "@fusobacteria", nmen: "@neisseria", ngon: "@neisseria", cdiphtheriae: "@corynebacterium", paeruginosa: "@pseudomonas", cperfringens: "@clostridia", ctetani: "@clostridia", cbotulinum: "@clostridia"};
+function isFlora(id){ return !!FLORA_IDS[id]; }
+function sameGenusFlora(id){ return !FLORA_IDS[id] && GENUS_OF[id] && FLORA_IDS[GENUS_OF[id]]; }
+
+/* ---------- the body drawing ---------- */
+var SHAPES = {
+  brain: '<ellipse class="org" cx="150" cy="52" rx="34" ry="24"/>',
+  eyes: '<circle class="org" cx="137" cy="80" r="6"/><circle class="org" cx="163" cy="80" r="6"/>',
+  nose: '<path class="org" d="M150 84 L144 100 L156 100Z"/><rect class="org" x="142" y="122" width="16" height="30" rx="6"/>',
+  mouth: '<path class="org" d="M137 108 Q150 118 163 108 Q150 113 137 108Z"/>',
+  lungs: '<path class="org" d="M112 180 Q104 240 116 268 Q132 274 140 262 L140 186 Q128 172 112 180Z"/><path class="org" d="M188 180 Q196 240 184 268 Q168 274 160 262 L160 186 Q172 172 188 180Z"/>',
+  heart: '<path class="org" d="M150 236 Q138 222 132 232 Q128 244 150 262 Q172 244 168 232 Q162 222 150 236Z"/>',
+  stomach: '<path class="org" d="M156 284 Q186 278 188 300 Q190 326 160 324 Q148 322 152 306 Q154 294 146 290Z"/>',
+  gut: '<rect class="org" x="116" y="334" width="68" height="66" rx="22"/><path d="M128 352 Q150 344 172 352 M128 368 Q150 360 172 368 M128 384 Q150 376 172 384" fill="none" stroke="var(--body-edge)" stroke-width="2" opacity=".6"/>',
+  urinary: '<ellipse class="org" cx="150" cy="420" rx="16" ry="12"/>',
+  repro: '<path class="org" d="M140 438 L160 438 L156 456 L144 456Z"/>',
+  nerves: '<path class="org" d="M66 214 Q56 260 58 300 Q66 306 72 300 Q78 260 76 214Z"/><path d="M228 200 Q242 260 240 320" fill="none" stroke="#e0b100" stroke-width="3" stroke-dasharray="2 4"/>',
+  bones: '<path class="org" d="M118 480 L128 480 L127 590 L119 590Z"/><circle class="org" cx="123" cy="478" r="7"/><circle class="org" cx="123" cy="592" r="7"/>'
+};
+/* [label x, label y, text, anchor, leader line from x, y] placed outside the body so nothing overlaps */
+var LABELS = [[202, 38, "brain", "start", 178, 46], [224, 362, "stomach", "start", 176, 318], [212, 418, "bladder", "start", 166, 420], [254, 238, "nerve", "start", 236, 232], [44, 346, "muscle", "middle", 66, 304], [98, 538, "bone", "end", 120, 536]];
+function drawBody(){
+  var s = '<g class="site skin" data-site="skin" tabindex="0" role="button" aria-label="Skin and wounds">' +
+    '<path class="skinline" d="M150 18 C188 18 196 54 192 80 C190 100 180 116 168 120 L170 150 C200 154 226 160 238 186 L262 300 C266 316 254 322 248 308 L226 222 L214 330 C212 346 200 352 196 350 L194 440 L188 600 C188 620 170 622 166 604 L156 460 L144 460 L134 604 C130 622 112 620 112 600 L106 440 L104 350 C100 352 88 346 86 330 L74 222 L52 308 C46 322 34 316 38 300 L62 186 C74 160 100 154 130 150 L132 120 C120 116 110 100 108 80 C104 54 112 18 150 18Z"/></g>';
+  Object.keys(SHAPES).forEach(function(id){
+    var site = BY[id];
+    s += '<g class="site" data-site="' + id + '" tabindex="0" role="button" aria-label="' + esc(site.name) + '"><title>' + esc(site.name) + "</title>" + SHAPES[id] + "</g>";
+  });
+  LABELS.forEach(function(l){
+    s += '<line class="lead" x1="' + l[4] + '" y1="' + l[5] + '" x2="' + l[0] + '" y2="' + (l[1] - 4) + '"/><text class="lbl" x="' + l[0] + '" y="' + l[1] + '" text-anchor="' + l[3] + '">' + l[2] + "</text>";
+  });
+  $("#body").innerHTML = s;
+  $("#sitechips").innerHTML = SITES.map(function(x){ return '<button type="button" data-site="' + x.id + '">' + esc(x.name) + "</button>"; }).join("");
+}
+
+/* ---------- state + rendering ---------- */
+var st = {mode: "flora", site: "gut", quiz: null, score: 0, streak: 0, best: 0};
+try { st.best = Number(localStorage.getItem("bio112-bodymap-best")) || 0; } catch (e) {}
+function paintMap(){
+  document.querySelectorAll("#body .site").forEach(function(g){
+    var id = g.getAttribute("data-site"), site = BY[id];
+    g.classList.toggle("sel", st.mode !== "quiz" && id === st.site);
+    g.classList.toggle("has-flora", st.mode === "flora" && site.flora.length > 0);
+    g.classList.toggle("has-dz", st.mode === "dz" && site.dz.length > 0);
+    g.classList.toggle("none", st.mode === "flora" && !site.flora.length || st.mode === "dz" && !site.dz.length);
+  });
+  document.querySelectorAll("#sitechips button").forEach(function(b){ b.classList.toggle("sel", st.mode !== "quiz" && b.getAttribute("data-site") === st.site); });
+  $("#legend").innerHTML = st.mode === "quiz" ? "Tap the body to answer." :
+    st.mode === "flora" ? '<span><i style="background:var(--flora-soft);border:2px solid var(--flora)"></i>has normal flora</span><span><i style="background:var(--organ);opacity:.55"></i>normally sterile</span>' :
+    '<span><i style="background:var(--dz-soft);border:2px solid var(--dz)"></i>bacteria cause disease here</span>';
+}
+function card(x, note, mode){
+  var r = ref(x), id = /^[@!]/.test(x) ? x.split("|")[0] : x;
+  var tags = '<span class="tag ' + (r.gram === "+" ? "gpos" : "gneg") + '">gram ' + r.gram + "</span>" + (r.href ? "" : '<span class="tag">not in our tours</span>');
+  if (mode === "flora" && (DZ_IDS[id] || Object.keys(GENUS_OF).some(function(k){ return GENUS_OF[k] === id && DZ_IDS[k]; }))) tags += '<span class="tag opp">can also cause disease</span>';
+  if (mode === "dz" && (isFlora(id) || sameGenusFlora(id))) tags += '<span class="tag opp">' + (isFlora(id) ? "normal flora elsewhere" : "its genus is normal flora") + "</span>";
+  var inner = "<b>" + esc(r.name) + "</b>" + (note ? "<small>" + esc(note) + "</small>" : "") + '<span class="tags">' + tags + "</span>";
+  var style = ' style="--ge:' + (r.gram === "+" ? "var(--gp-edge)" : "var(--gn-edge)") + '"';
+  return r.href ? '<a class="mcard" href="' + r.href + '"' + style + ">" + inner + "</a>" : '<div class="mcard"' + style + ">" + inner + "</div>";
+}
+function render(){
+  paintMap();
+  document.querySelector(".layout").classList.toggle("quizzing", st.mode === "quiz");
+  if (st.mode === "quiz") return renderQuiz();
+  var site = BY[st.site], h = "<h2>" + esc(site.name) + "</h2>";
+  if (st.mode === "flora"){
+    h += '<div class="banner flora">🌱 Normal flora: commensals that live here without causing disease</div>';
+    h += site.flora.length ? (site.floraNote ? '<p class="sub">' + esc(site.floraNote) + "</p>" : "") + '<div class="mlist">' + site.flora.map(function(x){ return card(x, "", "flora"); }).join("") + "</div>"
+                           : '<p class="empty">' + esc(site.floraNote || "No normal flora here.") + "</p>";
+    h += '<p class="src">Source: Ch. 14 slides, Table 14.1 (Representative Normal Microbiota by Body Region).</p>';
+  } else {
+    h += '<div class="banner dz">🦠 Causes disease here</div>';
+    h += site.dz.length ? '<div class="mlist">' + site.dz.map(function(d){ return card(d[0], d[1], "dz"); }).join("") + "</div>" : '<p class="empty">No bacteria from our list cause disease here.</p>';
+    h += '<p class="src">Tap a card to open that microbe in the tour.</p>';
+  }
+  $("#panel").innerHTML = h;
+}
+
+/* ---------- quiz: a microbe pops up, tap where it lives or where it causes disease ---------- */
+function newQuestion(){
+  var pool = [];
+  SITES.forEach(function(s){
+    s.flora.forEach(function(x){ if (x.charAt(0) !== "@") pool.push({kind: "flora", id: x}); });
+    s.dz.forEach(function(d){ pool.push({kind: "dz", id: d[0]}); });
+  });
+  var q = pool[Math.floor(Math.random() * pool.length)];
+  q.answers = SITES.filter(function(s){ return q.kind === "flora" ? s.flora.some(function(x){ return x === q.id || GENUS_OF[q.id] && x.split("|")[0] === GENUS_OF[q.id]; }) : s.dz.some(function(d){ return d[0] === q.id; }); }).map(function(s){ return s.id; });
+  q.tried = []; q.done = false;
+  st.quiz = q;
+}
+function renderQuiz(){
+  if (!st.quiz) newQuestion();
+  var q = st.quiz, r = ref(q.id);
+  var h = "<h2>🎯 Quiz me</h2><p class=\"score\">Score " + st.score + " · streak " + st.streak + " · best streak " + st.best + "</p>";
+  h += '<p class="quizq">' + (q.kind === "flora" ? "Where does <i>" + esc(r.name) + "</i> live as <span style=\"color:var(--flora)\">normal flora</span>?" : "Where does <i>" + esc(r.name) + "</i> <span style=\"color:var(--dz)\">cause disease</span>?") + "</p>";
+  h += '<p class="sub">Tap a body area (or a button under the map). ' + (q.answers.length > 1 ? "There is more than one right answer: any one counts." : "") + "</p>";
+  if (q.msg) h += '<div class="qmsg ' + (q.done ? "good" : "bad") + '">' + q.msg + "</div>";
+  if (q.done) h += '<div><button class="btn" type="button" data-next>Next microbe →</button></div>';
+  $("#panel").innerHTML = h;
+}
+function answer(siteId){
+  var q = st.quiz; if (!q || q.done) return;
+  var site = BY[siteId], names = q.answers.map(function(a){ return BY[a].name; }).join(", ");
+  if (q.answers.indexOf(siteId) >= 0){
+    q.done = true;
+    if (!q.tried.length){ st.score += 10; st.streak++; if (st.streak > st.best){ st.best = st.streak; try { localStorage.setItem("bio112-bodymap-best", st.best); } catch (e) {} } }
+    else { st.score += 5; st.streak = 0; }
+    var note = q.kind === "dz" ? (site.dz.filter(function(d){ return d[0] === q.id; })[0] || [])[1] : "";
+    q.msg = "✅ Yes: <b>" + esc(site.name) + "</b>" + (note ? ": " + esc(note) : "") + "." + (q.answers.length > 1 ? " All the right answers: " + esc(names) + "." : "");
+  } else {
+    q.tried.push(siteId); st.streak = 0;
+    q.msg = "Not " + esc(site.name) + ". Try again!";
+  }
+  renderQuiz();
+}
+
+/* ---------- events ---------- */
+function pick(id){
+  if (st.mode === "quiz") answer(id); else { st.site = id; render(); }
+  /* on phones the answer panel sits off screen: bring it into view */
+  var r = $("#panel").getBoundingClientRect();
+  if (st.mode !== "quiz" && innerWidth <= 760 && r.top > innerHeight - 80) $("#panel").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start"});
+}
+document.addEventListener("click", function(e){
+  var el;
+  if ((el = e.target.closest("[data-mode]"))){
+    st.mode = el.getAttribute("data-mode");
+    document.querySelectorAll("[data-mode]").forEach(function(b){ b.setAttribute("aria-pressed", b === el ? "true" : "false"); });
+    if (st.mode === "quiz" && (!st.quiz || st.quiz.done)) newQuestion();
+    render(); return;
+  }
+  if ((el = e.target.closest("[data-next]"))){ newQuestion(); render(); return; }
+  if ((el = e.target.closest("[data-site]"))){ pick(el.getAttribute("data-site")); }
+});
+document.addEventListener("keydown", function(e){
+  var g = e.target.closest && e.target.closest("#body [data-site]");
+  if (g && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); pick(g.getAttribute("data-site")); }
+});
+
+drawBody();
+/* deep links: #flora, #dz, #quiz, or a mode plus an area like #flora-gut or #dz-lungs */
+var hmm = location.hash.match(/^#(flora|dz|quiz)(?:-([a-z]+))?$/) || [], hm = hmm[1];
+if (hmm[2] && BY[hmm[2]]) st.site = hmm[2];
+if (hm){ st.mode = hm; document.querySelectorAll("[data-mode]").forEach(function(b){ b.setAttribute("aria-pressed", b.getAttribute("data-mode") === hm ? "true" : "false"); }); }
+render();
+window.__bodymap = {SITES: SITES, ref: ref, st: st};
+})();
+</script>
+</body>
+</html>
