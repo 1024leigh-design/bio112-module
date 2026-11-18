@@ -57,6 +57,7 @@ window.TOUR_DATA = {
   /* related games. Entries with no href show as "link coming soon" (TODO: Microbe Match). */
   games: [
     {title: "Microbe Collector", href: "microbe-collector.html"},
+    {title: "Body Map: normal flora vs. disease", href: "body-map.html"},
     {title: "Mystery Microbe", href: "mystery-microbe.html"},
     {title: "Microbe Match", href: ""},
     {title: "Disease Typing Game", href: "disease-type.html"}
@@ -405,7 +406,7 @@ window.TOUR_DATA = {
       lesson: [
         "All three coliforms ferment lactose. To tell them apart, use IMViC:<ul><li><i>E. coli</i> is <b>++−−</b></li><li><i>Klebsiella</i> and <i>Enterobacter</i> are the opposite: <b>−−++</b></li></ul>"
       ]},
-    {id: "e-coli", node: "ecoli", title: "<i>Escherichia coli</i>", also: ["escherichia"], entericTable: true,
+    {id: "e-coli", links: [{href: "body-map.html#flora-gut", ic: "🧍", t: "Body Map", sub: "normal flora in the gut, a problem in the bladder"}], node: "ecoli", title: "<i>Escherichia coli</i>", also: ["escherichia"], entericTable: true,
       orgs: [
         {id: "ecoli", node: "ecoli", photos: [{"src": "images/e-coli-o157-curli.jpg", "alt": "Two electron micrographs: smooth rod-shaped cells (left) and cells covered in a mesh of fibers (right)", "cap": "<i>E. coli</i> O157:H7 without (left) and with (right) sticky <b>curli fibers</b>, which help it stick to surfaces and form biofilms", "credit": "Credit: modification of work by USDA, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 24.1)"}], fun: {"t": "<i>E. coli</i> and an elephant look nothing alike, but both store their genetic instructions the same way: in <b>DNA</b>.", "photo": {"src": "images/e-coli-and-elephant.jpg", "alt": "Left: blue rod-shaped E. coli cells. Right: an adult elephant and a baby elephant.", "cap": "<i>E. coli</i> (left) and an elephant (right)", "credit": "Credit: left, modification of work by NIAID; right, modification of work by Tom Lubbock, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 11.1)"}}, cheat: "The only coliform with <b>IMViC ++−−</b>.", name: "Escherichia coli", shape: "rod", emoji: "🚽",
           tests: [

@@ -30,6 +30,7 @@ window.TOUR_DATA = {
   ],
   games: [
     {title: "Microbe Collector", href: "microbe-collector.html"},
+    {title: "Body Map: normal flora vs. disease", href: "body-map.html"},
     {title: "Mystery Microbe", href: "mystery-microbe.html"},
     {title: "Disease Typing Game", href: "disease-type.html"}
   ],
@@ -320,7 +321,7 @@ window.TOUR_DATA = {
       }},
 
     /* ---------- Staphylococcus ---------- */
-    {id: "staphylococcus", photo: {"src": "images/s-aureus-sem.jpg", "alt": "Colorized electron micrograph of many round gold cells in clusters", "cap": "<i>S. aureus</i>: grape-like clusters (SEM)", "credit": "Credit: modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.22)"}, links: [{href: "microbe-collector.html#swab-nose", ic: "👃", t: "Microbe Collector: swab the nose and skin", sub: "catch these microbes"}, {href: "mystery-microbe.html", ic: "🕵️", t: "Mystery Microbe", sub: "ID it from lab tests"}], node: "staph", title: "<i>Staphylococcus</i>",
+    {id: "staphylococcus", photo: {"src": "images/s-aureus-sem.jpg", "alt": "Colorized electron micrograph of many round gold cells in clusters", "cap": "<i>S. aureus</i>: grape-like clusters (SEM)", "credit": "Credit: modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.22)"}, links: [{href: "microbe-collector.html#swab-nose", ic: "👃", t: "Microbe Collector: swab the nose and skin", sub: "catch these microbes"}, {href: "body-map.html#flora-skin", ic: "🧍", t: "Body Map", sub: "flora vs. disease"}, {href: "mystery-microbe.html", ic: "🕵️", t: "Mystery Microbe", sub: "ID it from lab tests"}], node: "staph", title: "<i>Staphylococcus</i>",
       lesson: [
         "Staphylococci are gram-positive <b>cocci in grape-like clusters</b>.",
         "<b>Catalase +</b> (vs. <i>Streptococcus</i>), non-motile, <b>salt-tolerant</b>, facultative anaerobes, <b>no spores</b>.",
