@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How Diseases Spread</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* How Diseases Spread: tap a route of transmission to see the bacteria and viruses that spread that way.
+   Explore mode never labels primary vs. other routes (Ch. 13 slide 42 is a student worksheet); the quiz checks primary routes only.
+   Data: transmission-data.js. Same tokens as the Body Map. */
+:root{
+  --bg:#f2f5f8; --surface:#ffffff; --surface-2:#e8eef4; --ink:#14223a; --muted:#53657b; --line:#d3dde7;
+  --arrow:#1683cc; --arrow-soft:#dcecf9; --good:#1f8a55; --good-soft:#dcf2e5; --bad:#c43a2b; --bad-soft:#fbe0db; --warn:#b45309; --warn-soft:#fdf0dc;
+  --route:#0e7490; --route-soft:#dff3f7; --vir:#0e7490;
+  --gn-edge:#c2185b; --gp-edge:#6d28d9;
+  --f-display:'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --f-body:'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
+  --f-mono:'IBM Plex Mono', ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
+    --arrow:#4aa9ee; --arrow-soft:#173450; --good:#4ccb8b; --good-soft:#153a29; --bad:#ff7d6d; --bad-soft:#46211d; --warn:#f5b85a; --warn-soft:#3a2a12;
+    --route:#4fc3d9; --route-soft:#14313a; --vir:#4fc3d9; --gn-edge:#f48fb6; --gp-edge:#c4b0f5; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
+  --arrow:#4aa9ee; --arrow-soft:#173450; --good:#4ccb8b; --good-soft:#153a29; --bad:#ff7d6d; --bad-soft:#46211d; --warn:#f5b85a; --warn-soft:#3a2a12;
+  --route:#4fc3d9; --route-soft:#14313a; --vir:#4fc3d9; --gn-edge:#f48fb6; --gp-edge:#c4b0f5; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:18px; line-height:1.5; overflow-x:hidden}
+.wrap{max-width:1180px; margin:0 auto; padding:16px 16px 60px}
+h1,h2,h3{font-family:var(--f-display); margin:0; letter-spacing:-.01em}
+p{margin:0}
+button{font:inherit; color:inherit}
+:focus-visible{outline:3px solid var(--arrow); outline-offset:2px; border-radius:6px}
+.top{display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; padding-bottom:12px; border-bottom:1px solid var(--line); margin-bottom:18px}
+.top a{margin-left:auto; text-decoration:none; color:var(--ink); font-weight:700; font-size:15px; padding:8px 13px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface)}
+.brand{font-family:var(--f-display); font-weight:700}
+.hero h1{font-size:clamp(32px,5.5vw,48px); line-height:1.05}
+.hero p{color:var(--muted); max-width:66ch; margin-top:6px}
+.hero a{color:var(--arrow); font-weight:700}
+.bar{display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center; margin:16px 0}
+.group{display:flex; flex-wrap:wrap; gap:8px}
+.mode, .kind{border:2px solid var(--line); background:var(--surface); border-radius:999px; padding:9px 18px; font-weight:700; cursor:pointer}
+.mode[aria-pressed="true"]{background:var(--route); border-color:transparent; color:#fff}
+.mode.quiz[aria-pressed="true"]{background:var(--arrow)}
+.kind{padding:7px 14px; font-size:16px; background:var(--surface-2)}
+.kind[aria-pressed="true"]{background:var(--ink); color:var(--bg); border-color:transparent}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .mode[aria-pressed="true"]{color:#0d151f} }
+:root[data-theme="dark"] .mode[aria-pressed="true"]{color:#0d151f}
+.layout{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.15fr); gap:20px; align-items:start}
+@media (max-width:820px){ .layout{grid-template-columns:minmax(0,1fr)} .layout.quizzing .panel{order:-1} }
+.routes{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px}
+@media (max-width:420px){ .routes{grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px} }
+.rt{position:relative; display:flex; flex-direction:column; align-items:flex-start; gap:2px; text-align:left; border:2px solid var(--line); background:var(--surface); border-radius:16px; padding:10px 12px; cursor:pointer; min-height:92px}
+.rt .ic{font-size:28px; line-height:1.1}
+.rt .nm{font-family:var(--f-display); font-weight:700; font-size:17px; line-height:1.15}
+.rt .ct{font:600 12.5px var(--f-mono); color:var(--muted)}
+.rt:hover{border-color:var(--route)}
+.rt.sel{border-color:var(--route); background:var(--route-soft); box-shadow:0 0 0 2px var(--route) inset}
+.rt.none{opacity:.5}
+.rt.right{border-color:var(--good); background:var(--good-soft)}
+.rt.near{border-color:var(--warn); background:var(--warn-soft)}
+.rt.wrong{border-color:var(--bad); background:var(--bad-soft)}
+.panel{background:var(--surface); border:1.5px solid var(--line); border-radius:20px; padding:16px; display:flex; flex-direction:column; gap:12px; min-width:0}
+@media (min-width:821px){ .panel{position:sticky; top:10px} }
+.panel h2{font-size:28px}
+.def{background:var(--route-soft); border-left:6px solid var(--route); border-radius:14px; padding:10px 14px}
+.sub{color:var(--muted); font-size:16px}
+.sech{font:600 13px var(--f-mono); text-transform:uppercase; letter-spacing:.06em; color:var(--muted)}
+.mlist{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px}
+.mcard{display:flex; flex-direction:column; gap:4px; text-decoration:none; color:var(--ink); background:var(--surface); border:1.5px solid var(--line); border-left:6px solid var(--ge); border-radius:14px; padding:10px 12px}
+a.mcard:hover{border-color:var(--arrow)}
+.mcard b{font-size:17px}
+.mcard b.it{font-style:italic}
+.mcard small{color:var(--muted); font-size:15px}
+.mcard .go{margin-top:auto; padding-top:4px; font-weight:700; font-size:14px; color:var(--arrow)}
+.tags{display:flex; flex-wrap:wrap; gap:4px; margin-top:2px}
+.tag{font:600 11.5px var(--f-mono); padding:1px 8px; border-radius:999px; border:1.5px solid var(--line); color:var(--muted)}
+.tag.gneg{border-color:var(--gn-edge); color:var(--gn-edge)} .tag.gpos{border-color:var(--gp-edge); color:var(--gp-edge)} .tag.vir{border-color:var(--vir); color:var(--vir)}
+.empty{color:var(--muted); background:var(--surface-2); border-radius:14px; padding:12px 14px}
+.quizq{font-family:var(--f-display); font-size:24px; line-height:1.25}
+.quizq i{font-family:var(--f-body)}
+.score{font:600 15px var(--f-mono); color:var(--muted)}
+.qmsg{border-radius:12px; padding:10px 12px}
+.qmsg.good{background:var(--good-soft)} .qmsg.bad{background:var(--bad-soft)} .qmsg.near{background:var(--warn-soft)}
+.qmsg a{color:var(--arrow); font-weight:700}
+.btn{display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:9px 18px; font-weight:700; font-size:16px; cursor:pointer; border:1.5px solid var(--arrow); background:var(--arrow); color:#fff}
+.src{color:var(--muted); font-size:14px}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important; animation:none!important} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><span class="brand">🧫 BIO 112 · Ch. 11, 13 + 14</span><a href="unit-bacteria.html">← Pathology unit</a></header>
+  <section class="hero">
+    <h1>How Diseases Spread</h1>
+    <p>Tap a route of transmission to see which bacteria and viruses spread that way. Then use <b>Quiz me</b> to practice each microbe's <b>primary</b> route.</p>
+    <p>Want to see where they cause disease once they're in? <a href="body-map.html#dz">Open the Body Map →</a></p>
+  </section>
+  <div class="bar">
+    <div class="group" role="toolbar" aria-label="Mode">
+      <button type="button" class="mode" data-mode="explore" aria-pressed="true">🗺️ Explore routes</button>
+      <button type="button" class="mode quiz" data-mode="quiz" aria-pressed="false">🎯 Quiz me</button>
+    </div>
+    <div class="group" role="toolbar" aria-label="Which microbes">
+      <button type="button" class="kind" data-kind="all" aria-pressed="true">Both</button>
+      <button type="button" class="kind" data-kind="b" aria-pressed="false">🧫 Bacteria</button>
+      <button type="button" class="kind" data-kind="v" aria-pressed="false">🧬 Viruses</button>
+    </div>
+  </div>
+  <div class="layout">
+    <div class="routes" id="routes" role="group" aria-label="Routes of transmission"></div>
+    <section class="panel" id="panel" aria-live="polite"></section>
+  </div>
+</div>
+
+<!-- organism names and tour links come from the tour data files; virus names from the Body Map data -->
+<script src="gram-neg-tree.js"></script>
+<script>window.TOUR_NEG = window.TOUR_DATA;</script>
+<script src="gram-pos-tree.js"></script>
+<script>window.TOUR_POS = window.TOUR_DATA;</script>
+<script src="body-map-data.js"></script>
+<script src="transmission-data.js"></script>
+<script>
+(function(){
+"use strict";
+function $(s){ return document.querySelector(s); }
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;"}[c]; }); }
+
+var D = window.TXDATA, ROUTES = D.ROUTES, TX = D.TX, VIR = window.BODYMAP.VIRUSES;
+var RBY = {}; ROUTES.forEach(function(r){ RBY[r.id] = r; });
+
+/* bacteria names, gram, and tour links */
+var ORG = {};
+[[window.TOUR_NEG, "ch11-gram-neg-tour.html", "−"], [window.TOUR_POS, "ch11-gram-pos-tour.html", "+"]].forEach(function(t){
+  t[0].stops.forEach(function(s){ (s.orgs || []).forEach(function(o){ if (!ORG[o.id]) ORG[o.id] = {name: o.name, href: t[1] + "#org-" + o.id, gram: t[2]}; }); });
+});
+function info(id){
+  var x = TX[id];
+  if (x.k === "v"){ var v = VIR[id]; return {name: v.name, fam: v.fam, genus: v.genus, v: true}; }
+  var o = ORG[id] || {name: id, gram: "?"};
+  return {name: D.NAMES[id] || o.name, href: o.href, gram: o.gram, v: false};
+}
+function ids(){ return Object.keys(TX).filter(function(id){ return st.kind === "all" || TX[id].k === st.kind; }); }
+/* explore mode lists every route a microbe uses, without saying which is primary */
+function users(rid){ return ids().filter(function(id){ var x = TX[id]; return x.p.indexOf(rid) >= 0 || (x.s || []).indexOf(rid) >= 0; }); }
+
+var st = {mode: "explore", kind: "all", route: "drop", quiz: null, score: 0, streak: 0, best: 0};
+try { st.best = Number(localStorage.getItem("bio112-tx-best")) || 0; } catch (e) {}
+
+function drawRoutes(){
+  var q = st.quiz;
+  $("#routes").innerHTML = ROUTES.map(function(r){
+    var n = users(r.id).length, cls = "rt";
+    if (st.mode === "explore"){ if (r.id === st.route) cls += " sel"; if (!n) cls += " none"; }
+    else if (q){ if (q.done && q.p.indexOf(r.id) >= 0) cls += " right"; else if (q.tried.indexOf(r.id) >= 0) cls += (q.s.indexOf(r.id) >= 0 ? " near" : " wrong"); }
+    return '<button type="button" class="' + cls + '" data-route="' + r.id + '"' + (st.mode === "explore" && r.id === st.route ? ' aria-current="true"' : "") + '><span class="ic" aria-hidden="true">' + r.ic + '</span><span class="nm">' + esc(r.name) + "</span>" +
+      (st.mode === "explore" ? '<span class="ct">' + n + " microbe" + (n === 1 ? "" : "s") + "</span>" : "") + "</button>";
+  }).join("");
+}
+function card(id){
+  var m = info(id), x = TX[id];
+  var tags = m.v ? '<span class="tag vir">virus · ' + esc(m.fam) + "</span>" : '<span class="tag ' + (m.gram === "+" ? "gpos" : "gneg") + '">gram ' + m.gram + "</span>";
+  var style = ' style="--ge:' + (m.v ? "var(--vir)" : m.gram === "+" ? "var(--gp-edge)" : "var(--gn-edge)") + '"';
+  var inner = '<b class="' + (m.v ? "" : "it") + '">' + esc(m.name) + "</b>" + (x.note ? "<small>" + esc(x.note) + "</small>" : "") + '<span class="tags">' + tags + "</span>" + (m.href ? '<span class="go">Open in the tour →</span>' : "");
+  return m.href ? '<a class="mcard" href="' + m.href + '"' + style + ">" + inner + "</a>" : '<div class="mcard"' + style + ">" + inner + "</div>";
+}
+function render(){
+  drawRoutes();
+  document.querySelector(".layout").classList.toggle("quizzing", st.mode === "quiz");
+  if (st.mode === "quiz") return renderQuiz();
+  var r = RBY[st.route], list = users(r.id);
+  var bac = list.filter(function(id){ return TX[id].k === "b"; }), vir = list.filter(function(id){ return TX[id].k === "v"; });
+  var h = "<h2>" + r.ic + " " + esc(r.name) + '</h2><p class="def">' + esc(r.def) + "</p>";
+  if (!list.length) h += '<p class="empty">None of our ' + (st.kind === "v" ? "viruses" : st.kind === "b" ? "bacteria" : "microbes") + " spread this way.</p>";
+  if (bac.length) h += '<p class="sech">🧫 Bacteria (' + bac.length + ')</p><div class="mlist">' + bac.map(card).join("") + "</div>";
+  if (vir.length) h += '<p class="sech">🧬 Viruses (' + vir.length + ')</p><div class="mlist">' + vir.map(card).join("") + "</div>";
+  h += '<p class="src">Microbes are listed for every route they can use. Some spread more than one way! Sources: Ch. 13 slides (viruses) and the Ch. 11 tours (bacteria).</p>';
+  $("#panel").innerHTML = h;
+}
+
+/* ---------- quiz: primary routes only ---------- */
+function newQuestion(){
+  var pool = ids(), last = st.quiz && st.quiz.id, id;
+  do { id = pool[Math.floor(Math.random() * pool.length)]; } while (pool.length > 1 && id === last);
+  st.quiz = {id: id, p: TX[id].p, s: TX[id].s || [], tried: [], done: false, msg: ""};
+}
+function renderQuiz(){
+  if (!st.quiz) newQuestion();
+  var q = st.quiz, m = info(q.id);
+  var nm = m.v ? "<b>" + esc(m.name) + "</b>" : "<i>" + esc(m.name) + "</i>";
+  var h = '<h2>🎯 Quiz me</h2><p class="score">Score ' + st.score + " · streak " + st.streak + " · best streak " + st.best + "</p>";
+  h += '<p class="quizq">What is the <b>primary</b> way ' + nm + " spreads?</p>";
+  h += '<p class="sub">Tap a route. ' + (q.p.length > 1 ? "It has more than one primary route: any one counts." : "") + "</p>";
+  if (q.msg) h += '<div class="qmsg ' + q.cls + '">' + q.msg + "</div>";
+  if (q.done) h += '<div><button class="btn" type="button" data-next>Next microbe →</button></div>';
+  $("#panel").innerHTML = h;
+}
+function answer(rid){
+  var q = st.quiz; if (!q || q.done || q.tried.indexOf(rid) >= 0) return;
+  var m = info(q.id), r = RBY[rid];
+  if (q.p.indexOf(rid) >= 0){
+    q.done = true; q.cls = "good";
+    if (!q.tried.length){ st.score += 10; st.streak++; if (st.streak > st.best){ st.best = st.streak; try { localStorage.setItem("bio112-tx-best", st.best); } catch (e) {} } }
+    else { st.score += 5; st.streak = 0; }
+    var all = q.p.map(function(p){ return RBY[p].ic + " " + RBY[p].name; }).join(", ");
+    q.msg = "✅ Yes! " + (q.p.length > 1 ? "Its primary routes: " + esc(all) + "." : esc(r.name) + " is its primary route.") + (TX[q.id].note ? " (" + esc(TX[q.id].note) + ")" : "") +
+      (m.href ? ' <a href="' + m.href + '">Read about <i>' + esc(m.name) + "</i> in the tour →</a>" : "");
+  } else {
+    q.tried.push(rid); st.streak = 0;
+    if (q.s.indexOf(rid) >= 0){ q.cls = "near"; q.msg = "Close! It <b>can</b> spread by " + esc(r.name.toLowerCase()) + ", but that's not its main route. Try again!"; }
+    else { q.cls = "bad"; q.msg = "Not " + esc(r.name.toLowerCase()) + ". Try again!"; }
+  }
+  render();
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click", function(e){
+  var el;
+  if ((el = e.target.closest("[data-mode]"))){
+    st.mode = el.getAttribute("data-mode");
+    document.querySelectorAll("[data-mode]").forEach(function(b){ b.setAttribute("aria-pressed", b === el ? "true" : "false"); });
+    if (st.mode === "quiz" && (!st.quiz || st.quiz.done)) newQuestion();
+    render(); return;
+  }
+  if ((el = e.target.closest("[data-kind]"))){
+    st.kind = el.getAttribute("data-kind");
+    document.querySelectorAll("[data-kind]").forEach(function(b){ b.setAttribute("aria-pressed", b === el ? "true" : "false"); });
+    if (st.mode === "quiz") newQuestion();
+    render(); return;
+  }
+  if ((el = e.target.closest("[data-next]"))){ newQuestion(); render(); return; }
+  if ((el = e.target.closest("[data-route]"))){
+    var rid = el.getAttribute("data-route");
+    if (st.mode === "quiz") answer(rid);
+    else {
+      st.route = rid; render();
+      /* on phones the list sits below the routes: bring it into view */
+      var pr = $("#panel").getBoundingClientRect();
+      if (innerWidth <= 820 && pr.top > innerHeight - 80) $("#panel").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start"});
+    }
+  }
+});
+
+/* deep links: #quiz, or a route id (#vector, #fecal) */
+var h0 = location.hash.slice(1);
+if (h0 === "quiz"){ st.mode = "quiz"; document.querySelectorAll("[data-mode]").forEach(function(b){ b.setAttribute("aria-pressed", b.getAttribute("data-mode") === "quiz" ? "true" : "false"); }); }
+else if (RBY[h0]) st.route = h0;
+render();
+window.__tx = {st: st, TX: TX, ROUTES: ROUTES, info: info, answer: answer};
+})();
+</script>
+</body>
+</html>
