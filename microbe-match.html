@@ -54,11 +54,12 @@ button{font:inherit; color:inherit}
 .how div{background:var(--surface-2); border-radius:14px; padding:10px 14px; font-size:16.5px}
 .how b{font-family:var(--f-display)}
 .lbl{font:600 13px var(--f-mono); text-transform:uppercase; letter-spacing:.06em; color:var(--muted)}
-.decks{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px}
-@media (max-width:520px){ .decks{grid-template-columns:minmax(0,1fr) minmax(0,1fr)} .decks .deck:last-child{grid-column:1 / -1} }
+.decks{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px}
+@media (max-width:520px){ .decks{grid-template-columns:minmax(0,1fr) minmax(0,1fr)} }
 .deck{border:2px solid var(--line); background:var(--surface); border-radius:14px; padding:12px 8px; font-weight:700; font-size:18px; cursor:pointer; text-align:center}
 .deck small{display:block; font-weight:400; font-size:14px; color:var(--muted)}
 .deck[aria-pressed="true"]{border-color:var(--mic); background:var(--mic-soft)}
+.sizes{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px}
 .btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; border-radius:999px; padding:12px 22px; font-weight:700; font-size:18px; cursor:pointer; border:2px solid var(--mic); background:var(--mic); color:var(--on-color)}
 .btn.ghost{background:transparent; color:var(--mic)}
 .btnrow{display:flex; flex-wrap:wrap; gap:10px}
@@ -74,7 +75,11 @@ button{font:inherit; color:inherit}
 
 /* board */
 .board{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px}
-@media (max-width:640px){ .board{grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px} }
+.board.hard{grid-template-columns:repeat(6,minmax(0,1fr)); gap:8px}
+/* Hard (24 cards): the page widens so 6 columns still fit the longer clues */
+body.hard .wrap{max-width:1180px}
+@media (max-width:1060px){ .board.hard{grid-template-columns:repeat(4,minmax(0,1fr))} }
+@media (max-width:640px){ .board, .board.hard{grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px} }
 .card{position:relative; min-height:150px; border:0; padding:0; background:none; cursor:pointer; perspective:900px; text-align:center}
 @media (max-width:640px){ .card{min-height:168px} .face{padding:6px} }
 .card .in{position:absolute; inset:0; transition:transform .45s; transform-style:preserve-3d}
@@ -90,7 +95,7 @@ button{font:inherit; color:inherit}
 .card.c .front{border-color:var(--clue); background:var(--clue-soft)}
 .front .k{font:600 11.5px var(--f-mono); text-transform:uppercase; letter-spacing:.05em; color:var(--muted)}
 .front .t{font-size:16.5px; font-weight:700; line-height:1.25; overflow-wrap:anywhere}
-.card.m .front .t{font-size:18px}
+.card.m .front .t{font-size:18px; hyphens:auto; -webkit-hyphens:auto}
 @media (max-width:640px){ .front .t{font-size:14.5px; line-height:1.2} .card.m .front .t{font-size:15.5px} }
 .front .t i{font-style:italic}
 .card.done .front{border-color:var(--good); background:var(--good-soft); box-shadow:0 0 0 2px var(--good) inset}
@@ -117,27 +122,33 @@ button{font:inherit; color:inherit}
 </head>
 <body>
 <div class="wrap">
-  <header class="top"><span class="brand">🧫 BIO 112 · Ch. 11 + 13</span><a href="#lb-bottom" class="lbjump">🏆 Leaderboard</a><a href="unit-bacteria.html">← Pathology unit</a></header>
+  <header class="top"><span class="brand">🧫 BIO 112 · Ch. 11, 13 + 14</span><a href="#lb-bottom" class="lbjump">🏆 Leaderboard</a><a href="unit-bacteria.html">← Pathology unit</a></header>
 
   <!-- start -->
   <section class="screen on" id="s-start">
     <div class="panel">
       <div class="hero">
         <h1>Microbe <span>Match</span></h1>
-        <p>A memory game. Flip a <b>microbe</b> card and a <b>clue</b> card. If the clue fits that microbe, you keep the pair!</p>
+        <p>A memory game. Flip a <b>purple</b> card and a <b>teal</b> card. If they go together, you keep the pair!</p>
       </div>
       <div class="how">
-        <div><b>🟪 Microbe cards</b><br>a bacterium or virus</div>
-        <div><b>🟦 Clue cards</b><br>the disease it causes, or its one-clue ID cheat</div>
+        <div><b>🟪 Purple cards</b><br>a bacterium, a virus, or a vocab term</div>
+        <div><b>🟦 Teal cards</b><br>the disease it causes, its one-clue ID cheat, or the term's definition</div>
         <div><b>🏆 Score</b><br>+100 per pair, −10 per miss, plus a speed bonus each round</div>
       </div>
       <p class="lbl">Pick a deck</p>
       <div class="decks" role="group" aria-label="Pick a deck">
         <button type="button" class="deck" data-deck="bac" aria-pressed="true">🧫 Bacteria<small>Ch. 11</small></button>
         <button type="button" class="deck" data-deck="vir" aria-pressed="false">🧬 Viruses<small>Ch. 13</small></button>
-        <button type="button" class="deck" data-deck="mix" aria-pressed="false">🎲 Mixed<small>both</small></button>
+        <button type="button" class="deck" data-deck="voc" aria-pressed="false">📚 Vocab<small>Ch. 11, 13, 14</small></button>
+        <button type="button" class="deck" data-deck="mix" aria-pressed="false">🎲 Mixed<small>all three</small></button>
       </div>
-      <p class="src">3 rounds of 6 pairs. A new mix of microbes every game.</p>
+      <p class="lbl">Pick a board size</p>
+      <div class="sizes" role="group" aria-label="Pick a board size">
+        <button type="button" class="deck sz" data-size="reg" aria-pressed="true">🃏 Regular<small>6 pairs per round</small></button>
+        <button type="button" class="deck sz" data-size="hard" aria-pressed="false">🔥 Hard<small>12 pairs per round</small></button>
+      </div>
+      <p class="src" id="sizeNote">3 rounds of 6 pairs. A new mix of microbes every game.</p>
       <div class="btnrow"><button type="button" class="btn" id="go">Start matching →</button></div>
     </div>
   </section>
@@ -151,9 +162,9 @@ button{font:inherit; color:inherit}
       <div class="stat"><span>Time</span><b id="g-time">0:00</b></div>
       <button type="button" class="quit" id="quit">End game</button>
     </div>
-    <div class="legend"><span><i style="background:var(--mic)"></i>microbe card</span><span><i style="background:var(--clue)"></i>clue card</span><span>Flip one of each.</span></div>
+    <div class="legend"><span><i style="background:var(--mic)"></i>microbe or term</span><span><i style="background:var(--clue)"></i>clue or definition</span><span>Flip one of each.</span></div>
     <div class="board" id="board"></div>
-    <div class="msg" id="msg" role="status" aria-live="polite">Flip a purple microbe card and a teal clue card.</div>
+    <div class="msg" id="msg" role="status" aria-live="polite">Flip a purple card and a teal card.</div>
   </section>
 
   <!-- between rounds -->
@@ -266,11 +277,126 @@ var VIRUSES = [
   {id: "rhabdo", n: "Rhabdoviridae", tag: "family", dz: "Rabies", clue: "Hides behind the blood-brain barrier; Pasteur made the first vaccine"},
   {id: "orthomyxo", n: "Orthomyxoviridae", tag: "family", dz: "Influenza (the flu)", clue: ["Hemagglutinin (HA) and neuraminidase (NA) spikes", "Serotypes A, B, and C; A and B cause seasonal epidemics", "Antigenic drift (yearly epidemics) and antigenic shift (pandemics)"]}
 ];
+/* VOCAB (Ch. 14, 13, 11). n = term card, def = definition card. ch = chapter.
+   p = instructor priority: 2 = top (shows up once in every Vocab game), 1 = mid, 0 = low (now and then for variety).
+   All priorities are the instructor's. (Ids follow the instructor's numbered list; #68 Prophage was cut.) */
+var VOCAB = [
+  {id: "v1", n: "Pathology", def: "The scientific study of disease", ch: 14, p: 1},
+  {id: "v2", n: "Etiology", def: "The cause of a disease", ch: 14, p: 1},
+  {id: "v3", n: "Pathogenesis", def: "How a disease develops", ch: 14, p: 1},
+  {id: "v4", n: "Infection", def: "Invasion or colonization of the body by pathogens", ch: 14, p: 1},
+  {id: "v5", n: "Disease", def: "Any change from a state of health caused by an infection", ch: 14, p: 1},
+  {id: "v6", n: "Normal microbiota", def: "Microbes that colonize us without causing disease", ch: 14, p: 1},
+  {id: "v7", n: "Hygiene hypothesis", def: "Childhood exposure to microbes develops the immune system", ch: 14, p: 1},
+  {id: "v8", n: "Microbial antagonism", def: "Normal microbiota block harmful microbes from overgrowing", ch: 14, p: 2},
+  {id: "v9", n: "Symbiosis", def: "Two organisms living together; at least one depends on the other", ch: 14, p: 1},
+  {id: "v10", n: "Mutualism", def: "Both organisms benefit", ch: 14, p: 1},
+  {id: "v11", n: "Commensalism", def: "One organism benefits; the other is unaffected", ch: 14, p: 1},
+  {id: "v12", n: "Parasitism", def: "One organism benefits at the other's expense", ch: 14, p: 1},
+  {id: "v13", n: "Opportunistic pathogen", def: "Normally harmless, but causes disease in the wrong place or when overgrown", ch: 14, p: 1},
+  {id: "v14", n: "Koch's postulates", def: "Steps to prove a microbe causes a disease", ch: 14, p: 0},
+  {id: "v15", n: "Communicable disease", def: "Spread from one host to another", ch: 14, p: 0},
+  {id: "v16", n: "Contagious disease", def: "Spreads very easily", ch: 14, p: 0},
+  {id: "v17", n: "Noncommunicable disease", def: "Not spread between hosts", ch: 14, p: 0},
+  {id: "v18", n: "Incidence", def: "Number of people who develop a disease during a time period", ch: 14, p: 1},
+  {id: "v19", n: "Prevalence", def: "Number of people who have a disease at a specific time", ch: 14, p: 1},
+  {id: "v20", n: "Sporadic disease", def: "Occurs only occasionally", ch: 14, p: 1},
+  {id: "v21", n: "Endemic", def: "Constantly present in a population", ch: 14, p: 2},
+  {id: "v22", n: "Epidemic", def: "A regional outbreak", ch: 14, p: 2},
+  {id: "v23", n: "Pandemic", def: "An epidemic across countries or continents", ch: 14, p: 2},
+  {id: "v24", n: "Acute disease", def: "Develops fast, lasts a short time", ch: 14, p: 1},
+  {id: "v25", n: "Chronic disease", def: "Develops slowly, lasts a long time", ch: 14, p: 1},
+  {id: "v26", n: "Subacute disease", def: "Between acute and chronic", ch: 14, p: 2},
+  {id: "v27", n: "Latent disease", def: "The agent hides (inactive) for a time, then becomes active again", ch: 14, p: 1},
+  {id: "v28", n: "Local infection", def: "Limited to a small area", ch: 14, p: 1},
+  {id: "v29", n: "Systemic infection", def: "Spread throughout the body", ch: 14, p: 0},
+  {id: "v30", n: "Focal infection", def: "A local infection that spreads through the blood to specific areas", ch: 14, p: 1},
+  {id: "v31", n: "Septicemia", def: "Systemic infection from pathogens multiplying in the blood", ch: 14, p: 1},
+  {id: "v32", n: "Bacteremia", def: "Bacteria in the blood", ch: 14, p: 1},
+  {id: "v33", n: "Viremia", def: "Viruses in the blood", ch: 14, p: 1},
+  {id: "v34", n: "Primary infection", def: "The acute infection that causes the first illness", ch: 14, p: 1},
+  {id: "v35", n: "Secondary infection", def: "An opportunist takes over after a primary infection", ch: 14, p: 1},
+  {id: "v36", n: "Subclinical infection", def: "An infection with no noticeable illness", ch: 14, p: 2, avoid: ["v44"]},
+  {id: "v37", n: "Predisposing factor", def: "Makes the body more susceptible to disease", ch: 14, p: 0},
+  {id: "v38", n: "Incubation period", def: "From infection to the first signs or symptoms", ch: 14, p: 1},
+  {id: "v39", n: "Prodromal period", def: "Early, mild symptoms", ch: 14, p: 2},
+  {id: "v40", n: "Period of illness", def: "Disease is most severe", ch: 14, p: 1},
+  {id: "v41", n: "Period of decline", def: "Signs and symptoms subside", ch: 14, p: 1},
+  {id: "v42", n: "Period of convalescence", def: "The body returns to its pre-disease state", ch: 14, p: 2},
+  {id: "v43", n: "Reservoir", def: "A continual source of a pathogen", ch: 14, p: 1},
+  {id: "v44", n: "Carrier", def: "A living reservoir with no signs of illness", ch: 14, p: 1},
+  {id: "v45", n: "Zoonosis", def: "An animal disease that can spread to humans", ch: 14, p: 2},
+  {id: "v46", n: "Nosocomial (HAI)", def: "An infection picked up at a healthcare facility", ch: 14, p: 2},
+  {id: "v47", n: "Compromised host", def: "Resistance to infection is impaired", ch: 14, p: 0},
+  {id: "v48", n: "Emerging infectious disease", def: "New or changing; incidence is rising", ch: 14, p: 0},
+  {id: "v49", n: "Epidemiology", def: "Study of when and where diseases occur and how they spread", ch: 14, p: 1},
+  {id: "v50", n: "Descriptive epidemiology", def: "Collecting data that describes a disease's occurrence", ch: 14, p: 1},
+  {id: "v51", n: "Analytical epidemiology", def: "Analyzes a disease to find its probable cause", ch: 14, p: 1},
+  {id: "v52", n: "Case-control study", def: "Compares people with the disease to people without it", ch: 14, p: 2},
+  {id: "v53", n: "Cohort study", def: "Compares people exposed to an agent with people who weren't", ch: 14, p: 2},
+  {id: "v54", n: "Experimental epidemiology", def: "Tests a hypothesis about a disease with experiments", ch: 14, p: 1},
+  {id: "v55", n: "Clinical trial", def: "Testing on humans", ch: 14, p: 2},
+  {id: "v56", n: "Virion", def: "A complete, infectious viral particle", ch: 13, p: 2},
+  {id: "v57", n: "Capsid", def: "The protein coat around viral nucleic acid", ch: 13, p: 2},
+  {id: "v58", n: "Capsomeres", def: "Protein subunits of the capsid", ch: 13, p: 1},
+  {id: "v59", n: "Envelope", def: "Lipid, protein, and carbohydrate layer covering the capsid", ch: 13, p: 0},
+  {id: "v60", n: "Spikes", def: "Projections from the envelope surface", ch: 13, p: 1},
+  {id: "v61", n: "Host range", def: "The cells a virus can infect", ch: 13, p: 1},
+  {id: "v62", n: "Bacteriophage", def: "A virus that infects bacteria", ch: 13, p: 1},
+  {id: "v63", n: "Helical virus", def: "A hollow, rod-shaped capsid", ch: 13, p: 0},
+  {id: "v64", n: "Polyhedral virus", def: "Many-sided capsid (icosahedron: 20 faces)", ch: 13, p: 0},
+  {id: "v65", n: "Complex virus", def: "Complicated structure (like a phage's head and tail)", ch: 13, p: 0},
+  {id: "v66", n: "Lytic cycle", def: "The virus multiplies and kills the host cell", ch: 13, p: 1},
+  {id: "v67", n: "Lysogenic cycle", def: "Phage DNA lies low; the host cell stays alive", ch: 13, p: 1},
+  {id: "v69", n: "Phage conversion", def: "The host gains new traits (like toxins) from phage genes", ch: 13, p: 1},
+  {id: "v70", n: "Generalized transduction", def: "Bacterial genes carried to another bacterium in a phage coat", ch: 13, p: 0},
+  {id: "v71", n: "Eclipse period", def: "After infection, before new virions can be found", ch: 13, p: 2},
+  {id: "v72", n: "Uncoating", def: "Separating viral nucleic acid from its protein coat", ch: 13, p: 0},
+  {id: "v73", n: "Receptor-mediated endocytosis", def: "The cell membrane folds in and brings the virus inside", ch: 13, p: 0},
+  {id: "v74", n: "Fusion", def: "The viral envelope merges with the plasma membrane", ch: 13, p: 0},
+  {id: "v75", n: "Positive-sense (+) RNA", def: "Works like mRNA; translated right away", ch: 13, p: 2},
+  {id: "v76", n: "Negative-sense (−) RNA", def: "Must be copied to + first; brings its own RNA polymerase", ch: 13, p: 2},
+  {id: "v77", n: "Integrase", def: "Inserts viral DNA into host DNA", ch: 13, p: 1},
+  {id: "v78", n: "Provirus", def: "Viral DNA built into a host chromosome, hidden from the immune system", ch: 13, p: 1},
+  {id: "v79", n: "Oncogene", def: "A gene that can make a cell cancerous", ch: 13, p: 1},
+  {id: "v80", n: "Oncogenic virus", def: "A virus that can cause tumors", ch: 13, p: 1},
+  {id: "v81", n: "Serotype", def: "A group within a species with its own surface antigens", ch: 13, p: 2},
+  {id: "v82", n: "Hemagglutinin (HA)", def: "Flu spike that attaches to host cells", ch: 13, p: 1},
+  {id: "v83", n: "Neuraminidase (NA)", def: "Flu spike that helps new viruses exit the cell", ch: 13, p: 1},
+  {id: "v84", n: "Antigenic drift", def: "Small, gradual mutations (yearly epidemics)", ch: 13, p: 1},
+  {id: "v85", n: "Antigenic shift", def: "Major change from swapped genes (pandemics)", ch: 13, p: 1},
+  {id: "v86", n: "Fomite", def: "A contaminated object that spreads infection", ch: 13, p: 1},
+  {id: "v87", n: "Autoinoculation", def: "Spreading an infection to another part of your own body", ch: 13, p: 0},
+  {id: "v88", n: "Vertical transmission", def: "Passed from parent to baby during pregnancy or birth", ch: 13, p: 0},
+  {id: "v89", n: "Vector", def: "An animal (like a mosquito or tick) that carries a pathogen", ch: 13, p: 0},
+  {id: "v90", n: "Obligate aerobe", def: "Needs O₂ to grow", ch: 11, p: 0},
+  {id: "v91", n: "Obligate anaerobe", def: "Can't grow with O₂", ch: 11, p: 0},
+  {id: "v92", n: "Facultative anaerobe", def: "Grows with or without O₂", ch: 11, p: 0},
+  {id: "v93", n: "Microaerophilic", def: "Needs low O₂", ch: 11, p: 0},
+  {id: "v94", n: "Obligate intracellular parasite", def: "Can only grow inside host cells", ch: 11, p: 0},
+  {id: "v95", n: "Mycolic acid", def: "Waxy lipid in the cell wall of mycobacteria", ch: 11, p: 0},
+  {id: "v96", n: "Axial filaments", def: "Internal flagella that let spirochetes corkscrew", ch: 11, p: 0},
+  {id: "v97", n: "Coccobacillus", def: "A short, oval rod", ch: 11, p: 0},
+  {id: "v98", n: "Diplococci", def: "Cocci in pairs", ch: 11, p: 0},
+  {id: "v99", n: "Tetrads", def: "Cocci in groups of 4", ch: 11, p: 0},
+  {id: "v100", n: "Enterics", def: "Gram-negative rods that live in the intestines", ch: 11, p: 1},
+  {id: "v101", n: "Coliforms", def: "Enterics that ferment lactose", ch: 11, p: 2},
+  {id: "v102", n: "G+C content", def: "% of DNA bases that are G or C (low = Firmicutes, high = Actinobacteria)", ch: 11, p: 1},
+  {id: "v103", n: "Catalase", def: "Splits H₂O₂ (bubbles): + = Bacillales, − = Lactobacillales", ch: 11, p: 1},
+  {id: "v104", n: "Coagulase", def: "An enzyme that clots plasma", ch: 11, p: 1},
+  {id: "v105", n: "Hemolysis", def: "Breaking RBCs on blood agar (α, β, γ); key for sorting <i>Streptococcus</i>", ch: 11, p: 1},
+  {id: "v106", n: "Metachromatic granules", def: "Stored phosphate granules (<i>Corynebacterium</i>)", ch: 11, p: 1}
+];
 BACTERIA.forEach(function(o){ o.v = false; });
+VOCAB.forEach(function(o){ o.v = false; o.voc = true; o.clue = o.def; });
 VIRUSES.forEach(function(o){ o.v = true; });
 
-var DECKS = {bac: {game: "match-bac", title: "Bacteria"}, vir: {game: "match-vir", title: "Viruses"}, mix: {game: "match-mix", title: "Mixed"}};
-var ROUNDS = 3, PAIRS = 6;
+var DECKS = {bac: {game: "match-bac", title: "Bacteria"}, vir: {game: "match-vir", title: "Viruses"}, voc: {game: "match-vocab", title: "Vocab"}, mix: {game: "match-mix", title: "Mixed"}};
+var ROUNDS = 3, SIZES = {reg: 6, hard: 12};
+function P(){ return SIZES[g.size]; }
+/* each deck + board size has its own leaderboard (hard scores run higher) */
+function lbGame(){ return DECKS[g.deck].game + (g.size === "hard" ? "-hard" : ""); }
+function lbTitle(){ return DECKS[g.deck].title + " deck" + (g.size === "hard" ? " · Hard 🔥" : ""); }
 
 function $(s){ return document.querySelector(s); }
 function shuffle(a){ a = a.slice(); for (var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
@@ -280,7 +406,7 @@ function show(id){ document.querySelectorAll(".screen").forEach(function(s){ s.c
 function soft(h){ return String(h).replace(/([A-Za-z]{4,}?)(viridae|virus|coccus|bacterium|bacteria|bacter|bacillus|myces|mycetes|cytogenes|phyticus|rhoeae|gitidis|oides|matis|phila)(?![a-z])/g, "$1&shy;$2"); }
 function fmt(sec){ return Math.floor(sec / 60) + ":" + ("0" + (sec % 60)).slice(-2); }
 
-var g = {deck: "bac", queue: [], round: 0, score: 0, misses: 0, totalMatched: 0, roundMisses: 0, cards: [], open: [], matched: 0, lock: false, t0: 0, timer: null, sec: 0, log: []};
+var g = {deck: "bac", size: "reg", used: {}, queue: [], round: 0, score: 0, misses: 0, totalMatched: 0, roundMisses: 0, cards: [], open: [], matched: 0, lock: false, t0: 0, timer: null, sec: 0, log: []};
 
 function list(x){ return x ? (Array.isArray(x) ? x : [x]) : []; }
 /* two microbes clash (never on the same board) if one lists the other in avoid, or they share a card (Variola + Poxviridae both = Smallpox) */
@@ -297,56 +423,115 @@ function take(pool, n, round){
     round.push(o); pool.splice(i, 1); i--; n--;
   }
 }
-/* pick 18 microbes for the game (no repeats); mixed = half bacteria, half viruses in every round */
+/* take n fresh microbes; if the deck runs out (Hard mode needs 36), reuse ones from earlier rounds with a different card */
+function fill(all, pool, n, round, used){
+  var before = round.length;
+  take(pool, n, round);
+  /* short? first use cards not seen yet this game, then (only if the deck is too small) repeat earlier ones */
+  var short = n - (round.length - before);
+  if (short > 0) take(shuffle(all.filter(function(o){ return round.indexOf(o) < 0 && pool.indexOf(o) < 0 && used.indexOf(o) < 0; })), short, round);
+  short = n - (round.length - before);
+  if (short > 0){
+    /* repeats: microbes with more than one card first, so they come back with a different card */
+    var again = shuffle(all.filter(function(o){ return round.indexOf(o) < 0; }));
+    again.sort(function(a, b){ return (cardsOf(b).length > 1) - (cardsOf(a).length > 1); });
+    take(again, short, round);
+  }
+}
+/* a top-priority term left over (it clashed with a look-alike every time) swaps in for a non-top term in a round where it fits */
+function placeLeftoverTops(rounds, pool){
+  pool.filter(function(o){ return o.voc && o.p === 2; }).forEach(function(o){
+    for (var r = 0; r < rounds.length; r++){
+      var R = rounds[r];
+      for (var j = 0; j < R.length; j++){
+        if (!R[j].voc || R[j].p === 2) continue;
+        if (R.some(function(x, k){ return k !== j && clash(x, o); })) continue;
+        R[j] = o; return;
+      }
+    }
+  });
+}
+/* weighted pick without repeats: top priority x8, mid x3, low x1, and Ch. 14 counts double */
+function vw(o){ return [1, 3, 8][o.p] * (o.ch === 14 ? 2 : 1); }
+function weighted(pool, n){
+  pool = pool.slice(); var out = [];
+  while (out.length < n && pool.length){
+    var tot = pool.reduce(function(a, o){ return a + vw(o); }, 0), r = Math.random() * tot, i = 0;
+    while ((r -= vw(pool[i])) > 0) i++;
+    out.push(pool.splice(i, 1)[0]);
+  }
+  return out;
+}
+/* vocab for one game. In the Vocab deck top-priority terms are guaranteed (all of them in Hard); the rest are weighted. */
+function pickVocab(n, guaranteeTop){
+  /* keep at least 4 spots for mid/low terms; Hard (36 spots) fits every top term, Regular (18) rotates them */
+  var top = guaranteeTop ? shuffle(VOCAB.filter(function(o){ return o.p === 2; })).slice(0, Math.max(0, n - 4)) : [];
+  var rest = VOCAB.filter(function(o){ return top.indexOf(o) < 0; });
+  return shuffle(top.concat(weighted(rest, n - top.length)));
+}
+/* how many of each kind go on one Mixed board */
+function mixSplit(){ return g.size === "hard" ? {b: 4, v: 4, w: 4} : {b: 2, v: 2, w: 2}; }
+/* pick the microbes for each round (no repeats while the deck lasts); mixed = half bacteria, half viruses in every round */
 function buildQueue(){
-  var b = shuffle(BACTERIA), v = shuffle(VIRUSES), q = [];
+  var b = shuffle(BACTERIA), v = shuffle(VIRUSES), q = [], n = P(), ms = mixSplit();
+  var w = g.deck === "voc" ? pickVocab(ROUNDS * n, true) : g.deck === "mix" ? pickVocab(ROUNDS * ms.w, false) : [];
+  var rounds = [], used = [];
   for (var r = 0; r < ROUNDS; r++){
     var round = [];
-    if (g.deck === "mix"){ take(b, PAIRS / 2, round); take(v, PAIRS / 2, round); }
-    else take(g.deck === "vir" ? v : b, PAIRS, round);
-    q = q.concat(shuffle(round));
+    if (g.deck === "mix"){ fill(BACTERIA, b, ms.b, round, used); fill(VIRUSES, v, ms.v, round, used); fill(VOCAB, w, ms.w, round, used); }
+    else if (g.deck === "voc") fill(VOCAB, w, n, round, used);
+    else if (g.deck === "vir") fill(VIRUSES, v, n, round, used);
+    else fill(BACTERIA, b, n, round, used);
+    used = used.concat(round); rounds.push(round);
   }
+  if (g.deck === "voc") placeLeftoverTops(rounds, w);
+  rounds.forEach(function(R){ q = q.concat(shuffle(R)); });
   return q;
 }
 
 function startGame(){
-  g.queue = buildQueue(); g.round = 0; g.score = 0; g.misses = 0; g.totalMatched = 0; g.log = [];
+  g.queue = buildQueue(); g.used = {}; g.round = 0; g.score = 0; g.misses = 0; g.totalMatched = 0; g.log = [];
   startRound();
 }
 function startRound(){
-  var picks = g.queue.slice(g.round * PAIRS, g.round * PAIRS + PAIRS), cards = [];
+  var picks = g.queue.slice(g.round * P(), g.round * P() + P()), cards = [];
   picks.forEach(function(o, i){
-    var kinds = []; if (o.dz) kinds.push("dz"); if (o.clue) kinds.push("clue");
-    var kind = kinds[Math.floor(Math.random() * kinds.length)], opts = list(o[kind]);
+    /* a microbe seen in an earlier round gets a card it hasn't shown yet, when it has one */
+    var used = g.used[o.id || o.n] = g.used[o.id || o.n] || [];
+    var kinds = ["dz", "clue"].filter(function(k){ return list(o[k]).some(function(t){ return used.indexOf(t) < 0; }); });
+    if (!kinds.length){ kinds = ["dz", "clue"].filter(function(k){ return o[k]; }); used.length = 0; }
+    var kind = kinds[Math.floor(Math.random() * kinds.length)], opts = list(o[kind]).filter(function(t){ return used.indexOf(t) < 0; });
+    var text = opts[Math.floor(Math.random() * opts.length)];
+    used.push(text);
     cards.push({pair: i, side: "m", o: o});
-    cards.push({pair: i, side: "c", o: o, kind: kind, text: opts[Math.floor(Math.random() * opts.length)]});
+    cards.push({pair: i, side: "c", o: o, kind: kind, text: text});
   });
   g.cards = shuffle(cards); g.open = []; g.matched = 0; g.lock = false; g.roundMisses = 0; g.roundLog = [];
   g.t0 = Date.now(); g.sec = 0;
   clearInterval(g.timer);
   g.timer = setInterval(function(){ g.sec = Math.floor((Date.now() - g.t0) / 1000); $("#g-time").textContent = fmt(g.sec); }, 500);
   $("#g-time").textContent = "0:00";
-  setMsg("Flip a purple microbe card and a teal clue card.", "");
+  setMsg("Flip a purple card and a teal card.", "");
   drawBoard(); updateBar(); show("s-game");
 }
 function cardHtml(c, i){
-  var back = c.side === "m" ? '<span class="big">🦠</span><span class="k">Microbe</span>' : '<span class="big">❓</span><span class="k">Clue</span>';
+  var back = c.side === "m" ? (c.o.voc ? '<span class="big">📖</span><span class="k">Term</span>' : '<span class="big">🦠</span><span class="k">Microbe</span>') : '<span class="big">❓</span><span class="k">' + (c.o.voc ? "Definition" : "Clue") + "</span>";
   var front = c.side === "m"
-    ? '<span class="k">' + (c.o.v ? (c.o.tag ? "virus " + c.o.tag : "virus") : (c.o.tag || "bacterium")) + '</span><span class="t">' + soft(c.o.n) + "</span>"
-    : '<span class="k">' + (c.kind === "dz" ? "Disease" : "ID clue") + '</span><span class="t">' + c.text + "</span>";
-  return '<button type="button" class="card ' + c.side + '" data-i="' + i + '" aria-label="' + (c.side === "m" ? "Face-down microbe card" : "Face-down clue card") + '"><span class="in"><span class="face back">' + back + '</span><span class="face front">' + front + "</span></span></button>";
+    ? '<span class="k">' + (c.o.voc ? "vocab term" : c.o.v ? (c.o.tag ? "virus " + c.o.tag : "virus") : (c.o.tag || "bacterium")) + '</span><span class="t">' + soft(c.o.n) + "</span>"
+    : '<span class="k">' + (c.o.voc ? "Definition" : c.kind === "dz" ? "Disease" : "ID clue") + '</span><span class="t">' + c.text + "</span>";
+  return '<button type="button" class="card ' + c.side + '" data-i="' + i + '" aria-label="' + (c.side === "m" ? "Face-down purple card" : "Face-down teal card") + '"><span class="in"><span class="face back">' + back + '</span><span class="face front">' + front + "</span></span></button>";
 }
-function drawBoard(){ $("#board").innerHTML = g.cards.map(cardHtml).join(""); }
+function drawBoard(){ $("#board").innerHTML = g.cards.map(cardHtml).join(""); $("#board").classList.toggle("hard", g.size === "hard"); document.body.classList.toggle("hard", g.size === "hard"); }
 function cardEl(i){ return $('#board [data-i="' + i + '"]'); }
 function faceUp(i, up){
   var c = g.cards[i], el = cardEl(i);
   el.classList.toggle("up", up);
-  el.setAttribute("aria-label", up ? (c.side === "m" ? (c.o.v ? "Virus" : "Bacterium") + ": " + plain(c.o.n) : (c.kind === "dz" ? "Disease: " : "ID clue: ") + plain(c.text)) : (c.side === "m" ? "Face-down microbe card" : "Face-down clue card"));
+  el.setAttribute("aria-label", up ? (c.side === "m" ? (c.o.voc ? "Vocab term" : c.o.v ? "Virus" : "Bacterium") + ": " + plain(c.o.n) : (c.o.voc ? "Definition: " : c.kind === "dz" ? "Disease: " : "ID clue: ") + plain(c.text)) : (c.side === "m" ? "Face-down purple card" : "Face-down teal card"));
 }
 function updateBar(){
   $("#g-round").textContent = (g.round + 1) + " / " + ROUNDS;
   $("#g-score").textContent = g.score;
-  $("#g-pairs").textContent = g.matched + " / " + PAIRS;
+  $("#g-pairs").textContent = g.matched + " / " + P();
 }
 function setMsg(h, cls){ var m = $("#msg"); m.innerHTML = h; m.className = "msg" + (cls ? " " + cls : ""); }
 
@@ -364,7 +549,7 @@ function flip(i){
   var same = g.open.filter(function(j){ return g.cards[j].side === c.side; })[0];
   if (same !== undefined){ faceUp(same, false); g.open.splice(g.open.indexOf(same), 1); }
   faceUp(i, true); g.open.push(i);
-  if (g.open.length < 2){ setMsg(c.side === "m" ? "Now flip a teal clue card that fits this microbe." : "Now flip a purple microbe card that fits this clue.", ""); return; }
+  if (g.open.length < 2){ setMsg(c.side === "m" ? "Now flip a teal card that goes with this one." : "Now flip a purple card that goes with this one.", ""); return; }
   var a = g.cards[g.open[0]], b = g.cards[g.open[1]], m = a.side === "m" ? a : b, k = a.side === "m" ? b : a;
   if (a.pair === b.pair){
     a.done = b.done = true;
@@ -374,7 +559,7 @@ function flip(i){
     g.roundLog.push(o);
     setMsg("✅ <b>" + o.n + "</b>: " + k.text + "." + (extra ? " <span>Also: " + extra + ".</span>" : ""), "good");
     updateBar();
-    if (g.matched === PAIRS) setTimeout(endRound, 900);
+    if (g.matched === P()) setTimeout(endRound, 900);
   } else {
     g.misses++; g.roundMisses++; g.score = Math.max(0, g.score - 10); g.lock = true;
     g.open.forEach(function(j){ cardEl(j).classList.add("miss"); });
@@ -385,44 +570,51 @@ function flip(i){
 }
 function endRound(){
   clearInterval(g.timer);
-  var sec = Math.floor((Date.now() - g.t0) / 1000), bonus = Math.max(0, 120 - sec) * 2;
+  var sec = Math.floor((Date.now() - g.t0) / 1000), bonus = Math.max(0, P() * 20 - sec) * 2;
   g.score += bonus;
   g.log = g.log.concat(g.roundLog);
   var last = g.round === ROUNDS - 1;
   $("#r-title").textContent = "Round " + (g.round + 1) + " done! 🎉";
   $("#r-sum").innerHTML = '<div><b>' + fmt(sec) + '</b><span>time</span></div><div><b>+' + bonus + '</b><span>speed bonus</span></div><div><b>' + g.roundMisses + '</b><span>misses</span></div><div><b>' + g.score + '</b><span>total score</span></div>';
-  $("#r-review").innerHTML = g.roundLog.map(function(o){ return "<div><b>" + o.n + "</b>" + (o.dz ? " · Disease: " + list(o.dz).join("; ") : "") + (o.clue ? " · ID clue: " + list(o.clue).join("; ") : "") + "</div>"; }).join("");
+  $("#r-review").innerHTML = g.roundLog.map(function(o){ return "<div><b>" + o.n + "</b>" + (o.dz ? " · Disease: " + list(o.dz).join("; ") : "") + (o.clue ? (o.voc ? ": " : " · ID clue: ") + list(o.clue).join("; ") : "") + "</div>"; }).join("");
   $("#next").textContent = last ? "See my final score →" : "Next round →";
   updateBar(); show("s-round");
 }
 function endGame(){
   clearInterval(g.timer); clearTimeout(g.missTimer);
   $("#e-score").textContent = g.score;
-  $("#e-sum").innerHTML = '<div><b>' + g.totalMatched + '</b><span>pairs matched</span></div><div><b>' + g.misses + '</b><span>misses</span></div><div><b>' + DECKS[g.deck].title + '</b><span>deck</span></div>';
+  $("#e-sum").innerHTML = '<div><b>' + g.totalMatched + '</b><span>pairs matched</span></div><div><b>' + g.misses + '</b><span>misses</span></div><div><b>' + DECKS[g.deck].title + (g.size === "hard" ? " 🔥" : "") + '</b><span>' + (g.size === "hard" ? "deck · hard" : "deck") + '</span></div>';
   show("s-end");
-  if (window.BIO112_LB) BIO112_LB.widget($("#lb"), {board: false, game: DECKS[g.deck].game, title: "Save your score: " + DECKS[g.deck].title + " deck", score: function(){
+  if (window.BIO112_LB) BIO112_LB.widget($("#lb"), {board: false, game: lbGame(), title: "Save your score: " + lbTitle(), score: function(){
     return {score: g.score, details: g.totalMatched + " pairs, " + g.misses + " misses"};
   }});
 }
 
 /* events */
-document.querySelectorAll(".deck").forEach(function(b){ b.addEventListener("click", function(){
+document.querySelectorAll(".deck[data-deck]").forEach(function(b){ b.addEventListener("click", function(){
   g.deck = b.getAttribute("data-deck");
-  document.querySelectorAll(".deck").forEach(function(x){ x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+  document.querySelectorAll(".deck[data-deck]").forEach(function(x){ x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
   if (window.BIO112_LB) BIO112_LB.reloadBoards();
 }); });
 /* the class leaderboard for the chosen deck, always at the bottom of the page */
-if (window.BIO112_LB) BIO112_LB.board($("#lb-bottom"), {game: function(){ return DECKS[g.deck].game; }, title: function(){ return "Class leaderboard: " + DECKS[g.deck].title + " deck"; }});
+if (window.BIO112_LB) BIO112_LB.board($("#lb-bottom"), {game: lbGame, title: function(){ return "Class leaderboard: " + lbTitle(); }});
+document.querySelectorAll(".sz").forEach(function(b){ b.addEventListener("click", function(){
+  g.size = b.getAttribute("data-size");
+  document.querySelectorAll(".sz").forEach(function(x){ x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+  $("#sizeNote").textContent = "3 rounds of " + P() + " pairs. A new mix of microbes every game.";
+  if (window.BIO112_LB) BIO112_LB.reloadBoards();
+}); });
 $("#go").addEventListener("click", startGame);
 $("#board").addEventListener("click", function(e){ var el = e.target.closest(".card"); if (el) flip(Number(el.getAttribute("data-i"))); });
 $("#next").addEventListener("click", function(){ if (g.round < ROUNDS - 1){ g.round++; startRound(); } else endGame(); });
 $("#quit").addEventListener("click", function(){ if (confirm("End the game now? Your score so far still counts.")){ g.log = g.log.concat(g.roundLog || []); endGame(); } });
 $("#again").addEventListener("click", startGame);
-$("#home").addEventListener("click", function(){ show("s-start"); });
-/* deep links: microbe-match.html#viruses or #mixed picks that deck */
-var dl = {bacteria: "bac", viruses: "vir", mixed: "mix"}[location.hash.slice(1)];
+$("#home").addEventListener("click", function(){ document.body.classList.remove("hard"); show("s-start"); });
+/* deep links: microbe-match.html#viruses or #mixed picks that deck; add -hard (#viruses-hard) for the 12-pair board */
+var hp = location.hash.slice(1).split("-"), dl = {bacteria: "bac", viruses: "vir", mixed: "mix"}[hp[0]];
 if (dl) document.querySelector('.deck[data-deck="' + dl + '"]').click();
-window.__match = {g: g, BACTERIA: BACTERIA, VIRUSES: VIRUSES, flip: flip, buildQueue: buildQueue};
+if (hp[1] === "hard") document.querySelector('.sz[data-size="hard"]').click();
+window.__match = {g: g, BACTERIA: BACTERIA, VIRUSES: VIRUSES, VOCAB: VOCAB, flip: flip, buildQueue: buildQueue};
 })();
 </script>
 </body>
