@@ -75,11 +75,12 @@ button{font:inherit; color:inherit}
 .sech{font:600 13px var(--f-mono); text-transform:uppercase; letter-spacing:.06em; color:var(--muted)}
 .mlist{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px}
 .mcard{display:flex; flex-direction:column; gap:4px; text-decoration:none; color:var(--ink); background:var(--surface); border:1.5px solid var(--line); border-left:6px solid var(--ge); border-radius:14px; padding:10px 12px}
-a.mcard:hover{border-color:var(--arrow)}
 .mcard b{font-size:17px}
 .mcard b.it{font-style:italic}
 .mcard small{color:var(--muted); font-size:15px}
-.mcard .go{margin-top:auto; padding-top:4px; font-weight:700; font-size:14px; color:var(--arrow)}
+.mcard .links{margin-top:auto; padding-top:4px; display:flex; flex-wrap:wrap; gap:4px 14px}
+.mcard .links a{font-weight:700; font-size:14px; color:var(--arrow); text-decoration:none}
+.mcard .links a:hover{text-decoration:underline}
 .tags{display:flex; flex-wrap:wrap; gap:4px; margin-top:2px}
 .tag{font:600 11.5px var(--f-mono); padding:1px 8px; border-radius:999px; border:1.5px solid var(--line); color:var(--muted)}
 .tag.gneg{border-color:var(--gn-edge); color:var(--gn-edge)} .tag.gpos{border-color:var(--gp-edge); color:var(--gp-edge)} .tag.vir{border-color:var(--vir); color:var(--vir)}
@@ -145,7 +146,9 @@ function info(id){
   var x = TX[id];
   if (x.k === "v"){ var v = VIR[id]; return {name: v.name, fam: v.fam, genus: v.genus, v: true}; }
   var o = ORG[id] || {name: id, gram: "?"};
-  return {name: D.NAMES[id] || o.name, href: o.href, gram: o.gram, v: false};
+  /* Body Map link: rings every body area where this bacterium causes disease */
+  var map = window.BODYMAP.sitesFor(id, "dz").length ? "body-map.html#dz/" + id : null;
+  return {name: D.NAMES[id] || o.name, href: o.href, map: map, gram: o.gram, v: false};
 }
 function ids(){ return Object.keys(TX).filter(function(id){ return st.kind === "all" || TX[id].k === st.kind; }); }
 /* explore mode lists every route a microbe uses, without saying which is primary */
@@ -168,8 +171,8 @@ function card(id){
   var m = info(id), x = TX[id];
   var tags = m.v ? '<span class="tag vir">virus · ' + esc(m.fam) + "</span>" : '<span class="tag ' + (m.gram === "+" ? "gpos" : "gneg") + '">gram ' + m.gram + "</span>";
   var style = ' style="--ge:' + (m.v ? "var(--vir)" : m.gram === "+" ? "var(--gp-edge)" : "var(--gn-edge)") + '"';
-  var inner = '<b class="' + (m.v ? "" : "it") + '">' + esc(m.name) + "</b>" + (x.note ? "<small>" + esc(x.note) + "</small>" : "") + '<span class="tags">' + tags + "</span>" + (m.href ? '<span class="go">Open in the tour →</span>' : "");
-  return m.href ? '<a class="mcard" href="' + m.href + '"' + style + ">" + inner + "</a>" : '<div class="mcard"' + style + ">" + inner + "</div>";
+  var links = (m.href ? '<a href="' + m.href + '">Open in the tour →</a>' : "") + (m.map ? '<a href="' + m.map + '">Body Map →</a>' : "");
+  return '<div class="mcard"' + style + '><b class="' + (m.v ? "" : "it") + '">' + esc(m.name) + "</b>" + (x.note ? "<small>" + esc(x.note) + "</small>" : "") + '<span class="tags">' + tags + "</span>" + (links ? '<span class="links">' + links + "</span>" : "") + "</div>";
 }
 function render(){
   drawRoutes();
@@ -211,7 +214,7 @@ function answer(rid){
     else { st.score += 5; st.streak = 0; }
     var all = q.p.map(function(p){ return RBY[p].ic + " " + RBY[p].name; }).join(", ");
     q.msg = "✅ Yes! " + (q.p.length > 1 ? "Its primary routes: " + esc(all) + "." : esc(r.name) + " is its primary route.") + (TX[q.id].note ? " (" + esc(TX[q.id].note) + ")" : "") +
-      (m.href ? ' <a href="' + m.href + '">Read about <i>' + esc(m.name) + "</i> in the tour →</a>" : "");
+      (m.href ? ' <a href="' + m.href + '">Read about <i>' + esc(m.name) + "</i> in the tour →</a>" : "") + (m.map ? ' <a href="' + m.map + '">See it on the Body Map →</a>' : "");
   } else {
     q.tried.push(rid); st.streak = 0;
     if (q.s.indexOf(rid) >= 0){ q.cls = "near"; q.msg = "Close! It <b>can</b> spread by " + esc(r.name.toLowerCase()) + ", but that's not its main route. Try again!"; }
