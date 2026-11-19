@@ -59,7 +59,7 @@ var VIRUSES = {
   hcv: {name: "HCV (hepatitis C virus)", fam: "Flaviviridae", type: "Enveloped +ssRNA"},
   ev: {name: "Enterovirus", fam: "Picornaviridae", type: "Non-enveloped +ssRNA"},
   polio: {name: "Poliovirus", fam: "Picornaviridae", type: "Non-enveloped +ssRNA"},
-  rubella: {name: "Rubella virus", fam: "Matonaviridae", type: "Enveloped +ssRNA"},
+  rubella: {name: "Rubella virus", fam: "Matonaviridae", genus: "Rubivirus", type: "Enveloped +ssRNA"},
   hiv: {name: "HIV", fam: "Retroviridae", type: "Enveloped +ssRNA (retrovirus)"},
   measles: {name: "Measles virus", fam: "Paramyxoviridae", genus: "Morbillivirus", type: "Enveloped −ssRNA"},
   mumps: {name: "Mumps virus", fam: "Paramyxoviridae", genus: "Orthorubulavirus", type: "Enveloped −ssRNA"},
