@@ -8,8 +8,8 @@
    Claim codes stay in the Sheet, where only the Sheet's owner can see them. */
 
 var SHEET_NAME = "Scores";
-/* highest believable score per game; anything above is rejected */
-var MAX_SCORE = {collector: 100000, mystery: 100000, disease: 100000};
+/* highest believable score per game; anything above is rejected (games not listed allow up to 100000) */
+var MAX_SCORE = {collector: 100000, mystery: 100000, disease: 100000, "disease-virus": 100000, "disease-mixed": 100000, "match-bac": 5000, "match-vir": 5000, "match-mix": 5000};
 
 function sheet_(){
   var ss = SpreadsheetApp.getActiveSpreadsheet();
