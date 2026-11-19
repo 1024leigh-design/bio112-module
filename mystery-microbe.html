@@ -145,6 +145,13 @@ header p{font-size:.9rem;color:#8A7060;margin-top:4px;font-weight:600}
   background:var(--coral);color:#fff;border:none;border-radius:10px;
   font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;letter-spacing:.01em}
 #play-again-btn:hover{background:var(--coral-dark)}
+/* top nav + always-on leaderboard at the bottom (like Microbe Collector) */
+.gnav{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.gnav .brand{font-weight:800;margin-right:auto}
+.gnav a{text-decoration:none;color:var(--dark);font-weight:800;font-size:.9rem;padding:8px 14px;border-radius:999px;border:1.5px solid var(--border);background:var(--panel)}
+.gnav a:hover{border-color:var(--coral);color:var(--coral)}
+@media(max-width:480px){.gnav .brand{display:none}.gnav{justify-content:space-between}.gnav a{padding:7px 12px;font-size:.85rem}}
+.lb-bottom{max-width:928px;width:calc(100% - 32px);margin:16px auto 40px;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px}
 canvas#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:200}
 #skip-btn{padding:7px 14px;background:transparent;color:#B0A090;border:1px solid var(--border);
   border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:700;
@@ -155,6 +162,7 @@ canvas#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:200}
 <body>
 <canvas id="confetti-canvas"></canvas>
 <div id="app">
+  <nav class="gnav" aria-label="Page"><span class="brand">🧫 BIO 112</span><a href="#lb-bottom">🏆 Leaderboard</a><a href="unit-bacteria.html">← Pathology unit</a></nav>
   <header>
     <h1>Mystery <span>Microbe</span></h1>
     <p>Reveal clues, identify the organism, rack up points.</p>
@@ -189,6 +197,8 @@ canvas#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:200}
   <div id="test-grid"></div>
   <button id="skip-btn">Skip this microbe (−0 pts)</button>
 </div>
+
+<section class="lb-bottom" id="lb-bottom" aria-label="Class leaderboard"></section>
 
 <div id="modal-overlay">
   <div id="modal">
@@ -1059,11 +1069,14 @@ function triggerConfetti() {
 // Class leaderboard: optional nickname save to the instructor's Google Sheet (leaderboard.js)
 function loadLeaderboard(){
   if(!window.BIO112_LB) return;
-  BIO112_LB.widget(document.getElementById('leaderboard-section'), {game: 'mystery', title: 'Class leaderboard', score: function(){
+  BIO112_LB.widget(document.getElementById('leaderboard-section'), {board: false, game: 'mystery', title: 'Save your score', score: function(){
     return {score: state.total, details: state.sessionScores.length + ' microbes'};
   }});
 }
 
+
+/* the class leaderboard, always at the bottom of the page */
+if(window.BIO112_LB) BIO112_LB.board(document.getElementById('lb-bottom'), {game: 'mystery', title: 'Class leaderboard'});
 
 function escHtml(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
