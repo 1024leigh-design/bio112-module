@@ -187,54 +187,55 @@ button{font:inherit; color:inherit}
 (function(){
 "use strict";
 /* ─────────────────────────────────────────────────────────────
-   DATA. n = name on the microbe card (<i> for italics), dz = disease clue, clue = one-clue ID cheat.
-   Either clue can be missing. Each round shows ONE clue per microbe, so no two cards ever fit the same microbe.
-   tag = small label on a virus card when the name is a genus or family.
+   DATA. n = name on the microbe card (<i> for italics), dz = disease card(s), clue = ID clue card(s).
+   dz and clue can be one string or a list. Each round shows ONE card per microbe, picked at random.
+   tag = small label on the microbe card (virus genus/family, or "2 genera").
+   avoid = ids that must never share a round with this one, so no clue card fits two microbes on the board.
    ───────────────────────────────────────────────────────────── */
 var BACTERIA = [
-  {n: "<i>Rickettsia rickettsii</i>", dz: "Rocky Mountain spotted fever", clue: "Tiny rod that only grows inside host cells; spread by tick bites"},
-  {n: "<i>Bordetella pertussis</i>", dz: "Whooping cough", clue: "The only coccobacillus on our list"},
-  {n: "<i>Neisseria gonorrhoeae</i>", dz: "Gonorrhea", clue: "Gram − diplococcus on chocolate agar that uses glucose only"},
-  {n: "<i>Neisseria meningitidis</i>", dz: "Meningococcal meningitis", clue: "Gram − diplococcus on chocolate agar that also uses maltose"},
-  {n: "<i>Pseudomonas aeruginosa</i>", dz: "Contact lens eye infections", clue: "Greenish, pearly colonies (oxidase +, lactose −)"},
-  {n: "<i>Legionella pneumophila</i>", dz: "Legionnaires' disease", clue: "Reproduces inside amoebae; outbreaks come from water systems"},
-  {n: "<i>Escherichia coli</i>", dz: "UTIs (the #1 cause)", clue: "The only coliform with IMViC ++−−"},
-  {n: "<i>Klebsiella pneumoniae</i>", dz: "Aspiration pneumonia (often hospital-acquired)", clue: "The only non-motile coliform (IMViC −−++)"},
-  {n: "<i>Salmonella typhi</i>", dz: "Typhoid fever", clue: "The <i>Salmonella</i> that breaks the rules: citrate −, weak H₂S"},
-  {n: "<i>Shigella</i>", dz: "Shigellosis (bacillary dysentery)"},
-  {n: "<i>Proteus</i>", clue: "Swarms across the agar, with a strong odor"},
-  {n: "<i>Serratia marcescens</i>", clue: "The only gram-negative with a red pigment"},
-  {n: "<i>Vibrio cholerae</i>", dz: "Cholera", clue: "Comma-shaped rod; oxidase +, unlike the oxidase − enterics"},
-  {n: "<i>Campylobacter jejuni</i>", dz: "Bacterial gastroenteritis (worldwide #1)", clue: "The only gull-wing shape"},
-  {n: "<i>Helicobacter pylori</i>", dz: "Stomach ulcers", clue: "The urease + spiral"},
-  {n: "<i>Yersinia pestis</i>", dz: "Bubonic plague"},
-  {n: "<i>Treponema pallidum</i>", dz: "Syphilis", clue: "Too thin to see with a regular light microscope"},
-  {n: "<i>Borrelia burgdorferi</i>", dz: "Lyme disease", clue: "Bull's-eye rash after a tick bite"},
-  {n: "<i>Chlamydia trachomatis</i>", dz: "The most common bacterial STI", clue: "The only one with a two-form life cycle (EB and RB)"},
-  {n: "<i>Fusobacterium</i>", dz: "Periodontal (gum) disease", clue: "Spindle-shaped rods"},
-  {n: "Cyanobacteria", clue: "The only photosynthetic group: it makes O₂"},
-  {n: "Planctomycetes", clue: "Reproduces by budding"},
-  {n: "<i>Mycoplasma</i>", clue: "No cell wall; sterols in its membrane hold it together"},
-  {n: "<i>Staphylococcus aureus</i>", dz: "Toxic shock syndrome", clue: "Coagulase + staph with golden colonies"},
-  {n: "<i>Staphylococcus saprophyticus</i>", dz: "UTIs (the #2 cause)"},
-  {n: "<i>Streptococcus pyogenes</i>", dz: "Strep throat"},
-  {n: "<i>Streptococcus pneumoniae</i>", dz: "Streptococcal pneumonia"},
-  {n: "<i>Enterococcus</i>", clue: "Catalase − cocci that are salt- and bile-tolerant (bile-esculin +)"},
-  {n: "<i>Lactobacillus</i>", clue: "Catalase − rod that makes lactic acid and never forms spores"},
-  {n: "<i>Clostridium perfringens</i>", dz: "Gas gangrene", clue: "Non-motile, spore-forming obligate anaerobe; a big gas producer"},
-  {n: "<i>Clostridium tetani</i>", dz: "Tetanus (lockjaw)"},
-  {n: "<i>Clostridium botulinum</i>", dz: "Botulism"},
-  {n: "<i>Clostridioides difficile</i>", dz: "Colitis after antibiotics"},
-  {n: "<i>Bacillus anthracis</i>", dz: "Anthrax"},
-  {n: "<i>Bacillus cereus</i>", dz: "Food poisoning from stale rice"},
-  {n: "<i>Listeria monocytogenes</i>", dz: "Listeriosis"},
-  {n: "<i>Actinomyces israelii</i>", dz: "Actinomycosis (lumpy jaw)", clue: "Anaerobic branching filaments; sulfur granules in pus"},
-  {n: "<i>Streptomyces</i>", clue: "Aerobic branching filaments that make conidia (not endospores)"},
-  {n: "<i>Micrococcus luteus</i>", clue: "Cocci in tetrads (groups of 4); catalase + and oxidase +"},
-  {n: "<i>Corynebacterium diphtheriae</i>", dz: "Diphtheria", clue: "Club-shaped rods in \"Chinese letters\"; metachromatic granules"},
-  {n: "<i>Mycobacterium tuberculosis</i>", dz: "Tuberculosis", clue: "Strongly acid-fast, slow-growing rods"},
-  {n: "<i>Mycobacterium leprae</i>", dz: "Leprosy", clue: "Acid-fast rod that can't grow in lab culture"},
-  {n: "<i>Nocardia asteroides</i>", clue: "Weakly acid-fast branching filaments with chalky colonies"}
+  {id: "rrick", n: "<i>Rickettsia rickettsii</i>", dz: "Rocky Mountain spotted fever"},
+  {id: "bpert", n: "<i>Bordetella pertussis</i>", dz: "Whooping cough", clue: "The only gram-negative coccobacillus on our list"},
+  {id: "ngon", n: "<i>Neisseria gonorrhoeae</i>", dz: "Gonorrhea", clue: "Gram − diplococcus on chocolate agar that uses glucose only"},
+  {id: "nmen", n: "<i>Neisseria meningitidis</i>", dz: "Meningococcal meningitis", clue: "Gram − diplococcus on chocolate agar that also uses maltose"},
+  {id: "paer", n: "<i>Pseudomonas aeruginosa</i>", dz: "Contact lens eye infections", clue: "Obligate aerobe with greenish, pearly colonies (oxidase +, lactose −)"},
+  {id: "lpneu", n: "<i>Legionella pneumophila</i>", dz: "Legionnaires' disease", clue: "Reproduces inside amoebae; outbreaks come from water systems"},
+  {id: "ecoli", n: "<i>Escherichia coli</i>", dz: ["UTIs (the #1 cause)", "Traveler's diarrhea"], clue: "The only coliform with IMViC ++−−"},
+  {id: "kpneu", n: "<i>Klebsiella pneumoniae</i>", dz: "Aspiration pneumonia (often hospital-acquired)", clue: "The only non-motile coliform (IMViC −−++)"},
+  {id: "styph", n: "<i>Salmonella typhi</i>", dz: "Typhoid fever", clue: "Non-coliform with IMViC −+−− and weak H₂S"},
+  {id: "shig", n: "<i>Shigella</i>", dz: "Shigellosis (bacillary dysentery)"},
+  {id: "pmir", n: "<i>Proteus mirabilis</i>", clue: ["Swarms across the agar, with a strong odor", "Lactose −, IMViC −+−+, H₂S +, urease +"]},
+  {id: "smar", n: "<i>Serratia marcescens</i>", clue: "The only gram-negative with a red pigment"},
+  {id: "vchol", n: "<i>Vibrio cholerae</i>", dz: "Cholera", clue: "Comma-shaped rod; oxidase +, unlike the oxidase − enterics"},
+  {id: "cjej", n: "<i>Campylobacter jejuni</i>", dz: "Bacterial gastroenteritis (worldwide #1)", clue: "The only gull-wing shape"},
+  {id: "hpyl", n: "<i>Helicobacter pylori</i>", dz: "Stomach ulcers", clue: "Urease + spiral that lives in the stomach"},
+  {id: "ypest", n: "<i>Yersinia pestis</i>", dz: "Bubonic plague"},
+  {id: "tpal", n: "<i>Treponema pallidum</i>", dz: "Syphilis"},
+  {id: "trep", n: "<i>Treponema</i>", dz: "Bejel, yaws, and pinta", avoid: ["tpal"]},
+  {id: "bburg", n: "<i>Borrelia burgdorferi</i>", dz: "Lyme disease", clue: "Erythema migrans (bull's-eye rash) after a tick bite"},
+  {id: "ctrach", n: "<i>Chlamydia trachomatis</i>", dz: "The most common bacterial STI", clue: "Life cycle with elementary bodies (EB) and reticulate bodies (RB)"},
+  {id: "fuso", n: "<i>Fusobacterium</i>", dz: "Periodontal (gum) disease", clue: "Anaerobic spindle-shaped rods that live in the mouth"},
+  {id: "cyano", n: "Cyanobacteria", clue: "The only photosynthetic group: it makes O₂"},
+  {id: "planct", n: "Planctomycetes", clue: "Once thought to bridge prokaryote and eukaryote features"},
+  {id: "myco", n: "<i>Mycoplasma</i>", clue: "No cell wall; sterols in its membrane hold it together"},
+  {id: "saur", n: "<i>Staphylococcus aureus</i>", dz: ["Toxic shock syndrome", "Scalded skin syndrome", "Impetigo", "Osteomyelitis", "Boils (furuncles and carbuncles)"], clue: "Gram-positive cocci: catalase +, coagulase +"},
+  {id: "ssap", n: "<i>Staphylococcus saprophyticus</i>", dz: "UTIs (the #2 cause)", clue: "Gram-positive cocci: catalase +, coagulase −, urease +"},
+  {id: "spyo", n: "<i>Streptococcus pyogenes</i>", dz: "Strep throat"},
+  {id: "spneu", n: "<i>Streptococcus pneumoniae</i>", dz: "Streptococcal pneumonia"},
+  {id: "lacto", n: "<i>Lactobacillus</i>", clue: "A major food fermenter: makes lactic acid (yogurt, sauerkraut, pickles)"},
+  {id: "cperf", n: "<i>Clostridium perfringens</i>", dz: "Gas gangrene", clue: "Non-motile, spore-forming obligate anaerobe; a big gas producer"},
+  {id: "ctet", n: "<i>Clostridium tetani</i>", dz: "Tetanus (lockjaw)", clue: "Its toxin blocks INHIBITORY neurotransmitters → spastic paralysis"},
+  {id: "cbot", n: "<i>Clostridium botulinum</i>", dz: "Botulism", clue: "Its toxin blocks EXCITATORY acetylcholine → flaccid paralysis"},
+  {id: "cdiff", n: "<i>Clostridioides difficile</i>", dz: "Colitis after antibiotics"},
+  {id: "banth", n: "<i>Bacillus anthracis</i>", dz: "Anthrax"},
+  {id: "bcer", n: "<i>Bacillus cereus</i>", dz: "Food poisoning from stale rice"},
+  {id: "spore", n: "<i>Bacillus</i> + <i>Clostridium</i>", tag: "2 genera", clue: "The endospore formers", avoid: ["cperf", "ctet", "cbot", "cdiff", "banth", "bcer"]},
+  {id: "lmono", n: "<i>Listeria monocytogenes</i>", dz: "Listeriosis"},
+  {id: "aisr", n: "<i>Actinomyces israelii</i>", dz: "Actinomycosis (lumpy jaw)", clue: "Anaerobic branching filaments; sulfur granules in pus"},
+  {id: "strmy", n: "<i>Streptomyces</i>", clue: "A major producer of antibiotics (like streptomycin)"},
+  {id: "mlut", n: "<i>Micrococcus luteus</i>", clue: "Yellow colonies; cocci in tetrads (groups of 4)"},
+  {id: "cdiph", n: "<i>Corynebacterium diphtheriae</i>", dz: "Diphtheria", clue: "Club-shaped rods in \"Chinese letters\"; metachromatic granules"},
+  {id: "mtb", n: "<i>Mycobacterium tuberculosis</i>", dz: "Tuberculosis", clue: ["Treated with RIPE: rifampin, isoniazid, pyrazinamide, ethambutol", "Vocab: tubercle (granuloma), Ghon complex, caseous necrosis, miliary"]},
+  {id: "mlep", n: "<i>Mycobacterium leprae</i>", dz: "Leprosy", clue: "Can be caught from armadillos"}
 ];
 var VIRUSES = [
   {n: "Variola virus", dz: "Smallpox", clue: "Eradicated in 1980; the vaccine came from vaccinia (cowpox)"},
@@ -279,15 +280,26 @@ function fmt(sec){ return Math.floor(sec / 60) + ":" + ("0" + (sec % 60)).slice(
 
 var g = {deck: "bac", queue: [], round: 0, score: 0, misses: 0, totalMatched: 0, roundMisses: 0, cards: [], open: [], matched: 0, lock: false, t0: 0, timer: null, sec: 0, log: []};
 
+function list(x){ return x ? (Array.isArray(x) ? x : [x]) : []; }
+function clash(a, b){ return list(a.avoid).indexOf(b.id) >= 0 || list(b.avoid).indexOf(a.id) >= 0; }
+/* fill one round from a shuffled pool, skipping anything that clashes with what's already on the board */
+function take(pool, n, round){
+  for (var i = 0; i < pool.length && n > 0; i++){
+    var o = pool[i];
+    if (round.some(function(x){ return clash(x, o); })) continue;
+    round.push(o); pool.splice(i, 1); i--; n--;
+  }
+}
 /* pick 18 microbes for the game (no repeats); mixed = half bacteria, half viruses in every round */
 function buildQueue(){
-  var need = ROUNDS * PAIRS;
-  if (g.deck === "mix"){
-    var b = shuffle(BACTERIA), v = shuffle(VIRUSES), q = [];
-    for (var r = 0; r < ROUNDS; r++) q = q.concat(shuffle(b.slice(r * 3, r * 3 + 3).concat(v.slice(r * 3, r * 3 + 3))));
-    return q;
+  var b = shuffle(BACTERIA), v = shuffle(VIRUSES), q = [];
+  for (var r = 0; r < ROUNDS; r++){
+    var round = [];
+    if (g.deck === "mix"){ take(b, PAIRS / 2, round); take(v, PAIRS / 2, round); }
+    else take(g.deck === "vir" ? v : b, PAIRS, round);
+    q = q.concat(shuffle(round));
   }
-  return shuffle(g.deck === "vir" ? VIRUSES : BACTERIA).slice(0, need);
+  return q;
 }
 
 function startGame(){
@@ -298,9 +310,9 @@ function startRound(){
   var picks = g.queue.slice(g.round * PAIRS, g.round * PAIRS + PAIRS), cards = [];
   picks.forEach(function(o, i){
     var kinds = []; if (o.dz) kinds.push("dz"); if (o.clue) kinds.push("clue");
-    var kind = kinds[Math.floor(Math.random() * kinds.length)];
+    var kind = kinds[Math.floor(Math.random() * kinds.length)], opts = list(o[kind]);
     cards.push({pair: i, side: "m", o: o});
-    cards.push({pair: i, side: "c", o: o, kind: kind, text: o[kind]});
+    cards.push({pair: i, side: "c", o: o, kind: kind, text: opts[Math.floor(Math.random() * opts.length)]});
   });
   g.cards = shuffle(cards); g.open = []; g.matched = 0; g.lock = false; g.roundMisses = 0; g.roundLog = [];
   g.t0 = Date.now(); g.sec = 0;
@@ -313,7 +325,7 @@ function startRound(){
 function cardHtml(c, i){
   var back = c.side === "m" ? '<span class="big">🦠</span><span class="k">Microbe</span>' : '<span class="big">❓</span><span class="k">Clue</span>';
   var front = c.side === "m"
-    ? '<span class="k">' + (c.o.v ? (c.o.tag ? "virus " + c.o.tag : "virus") : "bacterium") + '</span><span class="t">' + soft(c.o.n) + "</span>"
+    ? '<span class="k">' + (c.o.v ? (c.o.tag ? "virus " + c.o.tag : "virus") : (c.o.tag || "bacterium")) + '</span><span class="t">' + soft(c.o.n) + "</span>"
     : '<span class="k">' + (c.kind === "dz" ? "Disease" : "ID clue") + '</span><span class="t">' + c.text + "</span>";
   return '<button type="button" class="card ' + c.side + '" data-i="' + i + '" aria-label="' + (c.side === "m" ? "Face-down microbe card" : "Face-down clue card") + '"><span class="in"><span class="face back">' + back + '</span><span class="face front">' + front + "</span></span></button>";
 }
@@ -351,7 +363,7 @@ function flip(i){
     a.done = b.done = true;
     g.open.forEach(function(j){ cardEl(j).classList.add("done"); cardEl(j).setAttribute("aria-disabled", "true"); });
     g.open = []; g.matched++; g.totalMatched++; g.score += 100;
-    var o = m.o, extra = k.kind === "dz" ? o.clue : o.dz;
+    var o = m.o, extra = list(o.dz).concat(list(o.clue)).filter(function(t){ return t !== k.text; }).join("; ");
     g.roundLog.push(o);
     setMsg("✅ <b>" + o.n + "</b>: " + k.text + "." + (extra ? " <span>Also: " + extra + ".</span>" : ""), "good");
     updateBar();
@@ -372,7 +384,7 @@ function endRound(){
   var last = g.round === ROUNDS - 1;
   $("#r-title").textContent = "Round " + (g.round + 1) + " done! 🎉";
   $("#r-sum").innerHTML = '<div><b>' + fmt(sec) + '</b><span>time</span></div><div><b>+' + bonus + '</b><span>speed bonus</span></div><div><b>' + g.roundMisses + '</b><span>misses</span></div><div><b>' + g.score + '</b><span>total score</span></div>';
-  $("#r-review").innerHTML = g.roundLog.map(function(o){ return "<div><b>" + o.n + "</b>" + (o.dz ? " · Disease: " + o.dz : "") + (o.clue ? " · ID clue: " + o.clue : "") + "</div>"; }).join("");
+  $("#r-review").innerHTML = g.roundLog.map(function(o){ return "<div><b>" + o.n + "</b>" + (o.dz ? " · Disease: " + list(o.dz).join("; ") : "") + (o.clue ? " · ID clue: " + list(o.clue).join("; ") : "") + "</div>"; }).join("");
   $("#next").textContent = last ? "See my final score →" : "Next round →";
   updateBar(); show("s-round");
 }
@@ -403,7 +415,7 @@ $("#home").addEventListener("click", function(){ show("s-start"); });
 /* deep links: microbe-match.html#viruses or #mixed picks that deck */
 var dl = {bacteria: "bac", viruses: "vir", mixed: "mix"}[location.hash.slice(1)];
 if (dl) document.querySelector('.deck[data-deck="' + dl + '"]').click();
-window.__match = {g: g, BACTERIA: BACTERIA, VIRUSES: VIRUSES, flip: flip};
+window.__match = {g: g, BACTERIA: BACTERIA, VIRUSES: VIRUSES, flip: flip, buildQueue: buildQueue};
 })();
 </script>
 </body>
