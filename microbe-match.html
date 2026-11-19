@@ -59,6 +59,7 @@ button{font:inherit; color:inherit}
 .deck{border:2px solid var(--line); background:var(--surface); border-radius:14px; padding:12px 8px; font-weight:700; font-size:18px; cursor:pointer; text-align:center}
 .deck small{display:block; font-weight:400; font-size:14px; color:var(--muted)}
 .deck[aria-pressed="true"]{border-color:var(--mic); background:var(--mic-soft)}
+.sizes{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px}
 .btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; border-radius:999px; padding:12px 22px; font-weight:700; font-size:18px; cursor:pointer; border:2px solid var(--mic); background:var(--mic); color:var(--on-color)}
 .btn.ghost{background:transparent; color:var(--mic)}
 .btnrow{display:flex; flex-wrap:wrap; gap:10px}
@@ -74,7 +75,9 @@ button{font:inherit; color:inherit}
 
 /* board */
 .board{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px}
-@media (max-width:640px){ .board{grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px} }
+.board.hard{grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px}
+@media (max-width:880px){ .board.hard{grid-template-columns:repeat(4,minmax(0,1fr))} }
+@media (max-width:640px){ .board, .board.hard{grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px} }
 .card{position:relative; min-height:150px; border:0; padding:0; background:none; cursor:pointer; perspective:900px; text-align:center}
 @media (max-width:640px){ .card{min-height:168px} .face{padding:6px} }
 .card .in{position:absolute; inset:0; transition:transform .45s; transform-style:preserve-3d}
@@ -137,7 +140,12 @@ button{font:inherit; color:inherit}
         <button type="button" class="deck" data-deck="vir" aria-pressed="false">🧬 Viruses<small>Ch. 13</small></button>
         <button type="button" class="deck" data-deck="mix" aria-pressed="false">🎲 Mixed<small>both</small></button>
       </div>
-      <p class="src">3 rounds of 6 pairs. A new mix of microbes every game.</p>
+      <p class="lbl">Pick a board size</p>
+      <div class="sizes" role="group" aria-label="Pick a board size">
+        <button type="button" class="deck sz" data-size="reg" aria-pressed="true">🃏 Regular<small>6 pairs per round</small></button>
+        <button type="button" class="deck sz" data-size="hard" aria-pressed="false">🔥 Hard<small>10 pairs per round</small></button>
+      </div>
+      <p class="src" id="sizeNote">3 rounds of 6 pairs. A new mix of microbes every game.</p>
       <div class="btnrow"><button type="button" class="btn" id="go">Start matching →</button></div>
     </div>
   </section>
@@ -270,7 +278,11 @@ BACTERIA.forEach(function(o){ o.v = false; });
 VIRUSES.forEach(function(o){ o.v = true; });
 
 var DECKS = {bac: {game: "match-bac", title: "Bacteria"}, vir: {game: "match-vir", title: "Viruses"}, mix: {game: "match-mix", title: "Mixed"}};
-var ROUNDS = 3, PAIRS = 6;
+var ROUNDS = 3, SIZES = {reg: 6, hard: 10};
+function P(){ return SIZES[g.size]; }
+/* each deck + board size has its own leaderboard (hard scores run higher) */
+function lbGame(){ return DECKS[g.deck].game + (g.size === "hard" ? "-hard" : ""); }
+function lbTitle(){ return DECKS[g.deck].title + " deck" + (g.size === "hard" ? " · Hard 🔥" : ""); }
 
 function $(s){ return document.querySelector(s); }
 function shuffle(a){ a = a.slice(); for (var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
@@ -280,7 +292,7 @@ function show(id){ document.querySelectorAll(".screen").forEach(function(s){ s.c
 function soft(h){ return String(h).replace(/([A-Za-z]{4,}?)(viridae|virus|coccus|bacterium|bacteria|bacter|bacillus|myces|mycetes|cytogenes|phyticus|rhoeae|gitidis|oides|matis|phila)(?![a-z])/g, "$1&shy;$2"); }
 function fmt(sec){ return Math.floor(sec / 60) + ":" + ("0" + (sec % 60)).slice(-2); }
 
-var g = {deck: "bac", queue: [], round: 0, score: 0, misses: 0, totalMatched: 0, roundMisses: 0, cards: [], open: [], matched: 0, lock: false, t0: 0, timer: null, sec: 0, log: []};
+var g = {deck: "bac", size: "reg", used: {}, queue: [], round: 0, score: 0, misses: 0, totalMatched: 0, roundMisses: 0, cards: [], open: [], matched: 0, lock: false, t0: 0, timer: null, sec: 0, log: []};
 
 function list(x){ return x ? (Array.isArray(x) ? x : [x]) : []; }
 /* two microbes clash (never on the same board) if one lists the other in avoid, or they share a card (Variola + Poxviridae both = Smallpox) */
@@ -297,29 +309,42 @@ function take(pool, n, round){
     round.push(o); pool.splice(i, 1); i--; n--;
   }
 }
-/* pick 18 microbes for the game (no repeats); mixed = half bacteria, half viruses in every round */
+/* take n fresh microbes; if the deck runs out (Hard mode needs 30), reuse ones from earlier rounds with a different card */
+function fill(all, pool, n, round){
+  var before = round.length;
+  take(pool, n, round);
+  var short = n - (round.length - before);
+  if (short > 0) take(shuffle(all.filter(function(o){ return round.indexOf(o) < 0; })), short, round);
+}
+/* pick the microbes for each round (no repeats while the deck lasts); mixed = half bacteria, half viruses in every round */
 function buildQueue(){
-  var b = shuffle(BACTERIA), v = shuffle(VIRUSES), q = [];
+  var b = shuffle(BACTERIA), v = shuffle(VIRUSES), q = [], n = P();
   for (var r = 0; r < ROUNDS; r++){
     var round = [];
-    if (g.deck === "mix"){ take(b, PAIRS / 2, round); take(v, PAIRS / 2, round); }
-    else take(g.deck === "vir" ? v : b, PAIRS, round);
+    if (g.deck === "mix"){ fill(BACTERIA, b, n / 2, round); fill(VIRUSES, v, n / 2, round); }
+    else if (g.deck === "vir") fill(VIRUSES, v, n, round);
+    else fill(BACTERIA, b, n, round);
     q = q.concat(shuffle(round));
   }
   return q;
 }
 
 function startGame(){
-  g.queue = buildQueue(); g.round = 0; g.score = 0; g.misses = 0; g.totalMatched = 0; g.log = [];
+  g.queue = buildQueue(); g.used = {}; g.round = 0; g.score = 0; g.misses = 0; g.totalMatched = 0; g.log = [];
   startRound();
 }
 function startRound(){
-  var picks = g.queue.slice(g.round * PAIRS, g.round * PAIRS + PAIRS), cards = [];
+  var picks = g.queue.slice(g.round * P(), g.round * P() + P()), cards = [];
   picks.forEach(function(o, i){
-    var kinds = []; if (o.dz) kinds.push("dz"); if (o.clue) kinds.push("clue");
-    var kind = kinds[Math.floor(Math.random() * kinds.length)], opts = list(o[kind]);
+    /* a microbe seen in an earlier round gets a card it hasn't shown yet, when it has one */
+    var used = g.used[o.id || o.n] = g.used[o.id || o.n] || [];
+    var kinds = ["dz", "clue"].filter(function(k){ return list(o[k]).some(function(t){ return used.indexOf(t) < 0; }); });
+    if (!kinds.length){ kinds = ["dz", "clue"].filter(function(k){ return o[k]; }); used.length = 0; }
+    var kind = kinds[Math.floor(Math.random() * kinds.length)], opts = list(o[kind]).filter(function(t){ return used.indexOf(t) < 0; });
+    var text = opts[Math.floor(Math.random() * opts.length)];
+    used.push(text);
     cards.push({pair: i, side: "m", o: o});
-    cards.push({pair: i, side: "c", o: o, kind: kind, text: opts[Math.floor(Math.random() * opts.length)]});
+    cards.push({pair: i, side: "c", o: o, kind: kind, text: text});
   });
   g.cards = shuffle(cards); g.open = []; g.matched = 0; g.lock = false; g.roundMisses = 0; g.roundLog = [];
   g.t0 = Date.now(); g.sec = 0;
@@ -336,7 +361,7 @@ function cardHtml(c, i){
     : '<span class="k">' + (c.kind === "dz" ? "Disease" : "ID clue") + '</span><span class="t">' + c.text + "</span>";
   return '<button type="button" class="card ' + c.side + '" data-i="' + i + '" aria-label="' + (c.side === "m" ? "Face-down microbe card" : "Face-down clue card") + '"><span class="in"><span class="face back">' + back + '</span><span class="face front">' + front + "</span></span></button>";
 }
-function drawBoard(){ $("#board").innerHTML = g.cards.map(cardHtml).join(""); }
+function drawBoard(){ $("#board").innerHTML = g.cards.map(cardHtml).join(""); $("#board").classList.toggle("hard", g.size === "hard"); }
 function cardEl(i){ return $('#board [data-i="' + i + '"]'); }
 function faceUp(i, up){
   var c = g.cards[i], el = cardEl(i);
@@ -346,7 +371,7 @@ function faceUp(i, up){
 function updateBar(){
   $("#g-round").textContent = (g.round + 1) + " / " + ROUNDS;
   $("#g-score").textContent = g.score;
-  $("#g-pairs").textContent = g.matched + " / " + PAIRS;
+  $("#g-pairs").textContent = g.matched + " / " + P();
 }
 function setMsg(h, cls){ var m = $("#msg"); m.innerHTML = h; m.className = "msg" + (cls ? " " + cls : ""); }
 
@@ -374,7 +399,7 @@ function flip(i){
     g.roundLog.push(o);
     setMsg("✅ <b>" + o.n + "</b>: " + k.text + "." + (extra ? " <span>Also: " + extra + ".</span>" : ""), "good");
     updateBar();
-    if (g.matched === PAIRS) setTimeout(endRound, 900);
+    if (g.matched === P()) setTimeout(endRound, 900);
   } else {
     g.misses++; g.roundMisses++; g.score = Math.max(0, g.score - 10); g.lock = true;
     g.open.forEach(function(j){ cardEl(j).classList.add("miss"); });
@@ -385,7 +410,7 @@ function flip(i){
 }
 function endRound(){
   clearInterval(g.timer);
-  var sec = Math.floor((Date.now() - g.t0) / 1000), bonus = Math.max(0, 120 - sec) * 2;
+  var sec = Math.floor((Date.now() - g.t0) / 1000), bonus = Math.max(0, P() * 20 - sec) * 2;
   g.score += bonus;
   g.log = g.log.concat(g.roundLog);
   var last = g.round === ROUNDS - 1;
@@ -398,30 +423,37 @@ function endRound(){
 function endGame(){
   clearInterval(g.timer); clearTimeout(g.missTimer);
   $("#e-score").textContent = g.score;
-  $("#e-sum").innerHTML = '<div><b>' + g.totalMatched + '</b><span>pairs matched</span></div><div><b>' + g.misses + '</b><span>misses</span></div><div><b>' + DECKS[g.deck].title + '</b><span>deck</span></div>';
+  $("#e-sum").innerHTML = '<div><b>' + g.totalMatched + '</b><span>pairs matched</span></div><div><b>' + g.misses + '</b><span>misses</span></div><div><b>' + DECKS[g.deck].title + (g.size === "hard" ? " 🔥" : "") + '</b><span>' + (g.size === "hard" ? "deck · hard" : "deck") + '</span></div>';
   show("s-end");
-  if (window.BIO112_LB) BIO112_LB.widget($("#lb"), {board: false, game: DECKS[g.deck].game, title: "Save your score: " + DECKS[g.deck].title + " deck", score: function(){
+  if (window.BIO112_LB) BIO112_LB.widget($("#lb"), {board: false, game: lbGame(), title: "Save your score: " + lbTitle(), score: function(){
     return {score: g.score, details: g.totalMatched + " pairs, " + g.misses + " misses"};
   }});
 }
 
 /* events */
-document.querySelectorAll(".deck").forEach(function(b){ b.addEventListener("click", function(){
+document.querySelectorAll(".deck[data-deck]").forEach(function(b){ b.addEventListener("click", function(){
   g.deck = b.getAttribute("data-deck");
-  document.querySelectorAll(".deck").forEach(function(x){ x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+  document.querySelectorAll(".deck[data-deck]").forEach(function(x){ x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
   if (window.BIO112_LB) BIO112_LB.reloadBoards();
 }); });
 /* the class leaderboard for the chosen deck, always at the bottom of the page */
-if (window.BIO112_LB) BIO112_LB.board($("#lb-bottom"), {game: function(){ return DECKS[g.deck].game; }, title: function(){ return "Class leaderboard: " + DECKS[g.deck].title + " deck"; }});
+if (window.BIO112_LB) BIO112_LB.board($("#lb-bottom"), {game: lbGame, title: function(){ return "Class leaderboard: " + lbTitle(); }});
+document.querySelectorAll(".sz").forEach(function(b){ b.addEventListener("click", function(){
+  g.size = b.getAttribute("data-size");
+  document.querySelectorAll(".sz").forEach(function(x){ x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+  $("#sizeNote").textContent = "3 rounds of " + P() + " pairs. A new mix of microbes every game.";
+  if (window.BIO112_LB) BIO112_LB.reloadBoards();
+}); });
 $("#go").addEventListener("click", startGame);
 $("#board").addEventListener("click", function(e){ var el = e.target.closest(".card"); if (el) flip(Number(el.getAttribute("data-i"))); });
 $("#next").addEventListener("click", function(){ if (g.round < ROUNDS - 1){ g.round++; startRound(); } else endGame(); });
 $("#quit").addEventListener("click", function(){ if (confirm("End the game now? Your score so far still counts.")){ g.log = g.log.concat(g.roundLog || []); endGame(); } });
 $("#again").addEventListener("click", startGame);
 $("#home").addEventListener("click", function(){ show("s-start"); });
-/* deep links: microbe-match.html#viruses or #mixed picks that deck */
-var dl = {bacteria: "bac", viruses: "vir", mixed: "mix"}[location.hash.slice(1)];
+/* deep links: microbe-match.html#viruses or #mixed picks that deck; add -hard (#viruses-hard) for the 10-pair board */
+var hp = location.hash.slice(1).split("-"), dl = {bacteria: "bac", viruses: "vir", mixed: "mix"}[hp[0]];
 if (dl) document.querySelector('.deck[data-deck="' + dl + '"]').click();
+if (hp[1] === "hard") document.querySelector('.sz[data-size="hard"]').click();
 window.__match = {g: g, BACTERIA: BACTERIA, VIRUSES: VIRUSES, flip: flip, buildQueue: buildQueue};
 })();
 </script>
