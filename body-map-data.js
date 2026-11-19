@@ -7,7 +7,7 @@
 (function(){
 var SITES = [
   {id: "brain", name: "Brain & spinal cord", flora: [], floraNote: "Normally sterile: no normal flora.",
-    dz: [["nmen", "meningococcal meningitis (it normally lives in the throat!)"], ["spneumoniae", "meningitis"], ["sagalactiae", "meningitis in newborns"], ["lmono", "meningitis"], ["nasteroides", "nocardiosis that spreads to the brain"], ["ecoli", "opportunist in the wrong place: the spinal cord"], ["mtb", "disseminated (miliary) TB can spread to the brain"], ["cdiphtheriae", "the toxin travels in the blood and can damage the brain"]]},
+    dz: [["nmen", "meningococcal meningitis (it normally lives in the throat!)"], ["spneumoniae", "meningitis"], ["lmono", "meningitis"], ["nasteroides", "nocardiosis that spreads to the brain"], ["ecoli", "opportunist in the wrong place: the spinal cord"], ["mtb", "disseminated (miliary) TB can spread to the brain"], ["cdiphtheriae", "the toxin travels in the blood and can damage the brain"]]},
   {id: "eyes", name: "Eyes", flora: ["sepi", "saureus", "@cutibacterium|Cutibacterium (Propionibacterium)", "@corynebacterium|Corynebacterium (diphtheroids)", "@streptococcus|Streptococci", "@micrococcus|Micrococcus"], floraNote: "These live on the conjunctiva.",
     dz: [["ngon", "eye infection in newborns that can cause blindness"], ["ctrachomatis", "trachoma"], ["paeruginosa", "eye infections (contact lenses)"]]},
   {id: "nose", name: "Nose & throat", flora: ["saureus", "sepi", "@corynebacterium|Corynebacterium (diphtheroids)", "spneumoniae", "nmen", "@neisseria|Neisseria", "!Haemophilus|−", "@fusobacteria|Fusobacterium", "@actinomyces|Actinomyces"],
@@ -17,7 +17,7 @@ var SITES = [
   {id: "lungs", name: "Lungs", flora: [], floraNote: "Healthy lungs have very few microbes.",
     dz: [["mtb", "tuberculosis"], ["banthracis", "inhalation anthrax: breathing in spores; the deadliest form"], ["spneumoniae", "pneumonia (it normally lives in the nose and throat!)"], ["kpneumoniae", "aspiration pneumonia, often nosocomial"], ["lpneumophila", "Legionnaires' disease"], ["cpneumoniae", "respiratory infections"], ["ctrachomatis", "pneumonia"], ["nasteroides", "pulmonary nocardiosis"], ["ypestis", "pneumonic plague"], ["smarcescens", "nosocomial pneumonia"], ["ecoli", "opportunist in the wrong place: the lungs"]]},
   {id: "heart", name: "Blood & heart", flora: [], floraNote: "Blood is normally sterile.",
-    dz: [["sepi", "nosocomial bloodstream infections; endocarditis on artificial valves"], ["enterococcus", "endocarditis"], ["sagalactiae", "sepsis in newborns"], ["ypestis", "septicemic plague"], ["styphi", "typhoid fever"], ["smarcescens", "bacteremia"], ["paeruginosa", "sepsis (a nosocomial infection)"], ["saureus", "toxic shock syndrome; hemolysin destroys red blood cells"], ["cdiphtheriae", "myocarditis: the toxin travels in the blood to the heart"], ["tpallidum", "tertiary syphilis: heart damage"]]},
+    dz: [["sepi", "nosocomial bloodstream infections; endocarditis on artificial valves"], ["enterococcus", "endocarditis"], ["ypestis", "septicemic plague"], ["styphi", "typhoid fever"], ["smarcescens", "bacteremia"], ["paeruginosa", "sepsis (a nosocomial infection)"], ["saureus", "toxic shock syndrome; hemolysin destroys red blood cells"], ["cdiphtheriae", "myocarditis: the toxin travels in the blood to the heart"], ["tpallidum", "tertiary syphilis: heart damage"]]},
   {id: "stomach", name: "Stomach", flora: [], floraNote: "Stomach acid keeps most microbes out.",
     dz: [["hpylori", "gastritis and peptic ulcers"]]},
   {id: "liver", name: "Liver", flora: [], floraNote: "Normally sterile.",
@@ -86,7 +86,7 @@ var VDZ = {
 };
 SITES.forEach(function(s){ s.vdz = VDZ[s.id] || []; });
 
-var GENUS_OF = {sgriseus: "@streptomyces", saureus: "@staphylococcus", sepi: "@staphylococcus", ssapro: "@staphylococcus", spneumoniae: "@streptococcus", spyogenes: "@streptococcus", sagalactiae: "@streptococcus", cacnes: "@cutibacterium", aisraelii: "@actinomyces", fuso: "@fusobacteria", nmen: "@neisseria", ngon: "@neisseria", cdiphtheriae: "@corynebacterium", paeruginosa: "@pseudomonas", cperfringens: "@clostridia", ctetani: "@clostridia", cbotulinum: "@clostridia"};
+var GENUS_OF = {sgriseus: "@streptomyces", saureus: "@staphylococcus", sepi: "@staphylococcus", ssapro: "@staphylococcus", spneumoniae: "@streptococcus", spyogenes: "@streptococcus", cacnes: "@cutibacterium", aisraelii: "@actinomyces", fuso: "@fusobacteria", nmen: "@neisseria", ngon: "@neisseria", cdiphtheriae: "@corynebacterium", paeruginosa: "@pseudomonas", cperfringens: "@clostridia", ctetani: "@clostridia", cbotulinum: "@clostridia"};
 /* species cards whose genus (not the species itself) is listed as normal flora in the slides */
 var ALIAS = {cacnes: "@cutibacterium", aisraelii: "@actinomyces", mluteus: "@micrococcus", mroseus: "@micrococcus", fuso: "@fusobacteria", bactero: "@bacteroidetes"};
 /* the body areas where an organism is normal flora (mode "flora") or causes disease (mode "dz") */

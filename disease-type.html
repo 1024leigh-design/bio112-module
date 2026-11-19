@@ -183,7 +183,7 @@ canvas#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:200}
   <div id="name-card">
     <label>Pick a deck</label>
     <div id="deck-pick" role="group" aria-label="Pick a deck">
-      <button type="button" class="deck-btn" data-deck="bac" aria-pressed="true">🧫 Bacteria<small>Ch. 11 · 40 Qs</small></button>
+      <button type="button" class="deck-btn" data-deck="bac" aria-pressed="true">🧫 Bacteria<small>Ch. 11 · <span id="bac-count">39</span> Qs</small></button>
       <button type="button" class="deck-btn" data-deck="vir" aria-pressed="false">🧬 Viruses<small>Ch. 13 · <span id="vir-count">36</span> Qs</small></button>
       <button type="button" class="deck-btn" data-deck="mix" aria-pressed="false">🎲 Mixed<small>20 + 20 Qs</small></button>
     </div>
@@ -270,7 +270,7 @@ canvas#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:200}
 <script src="spelling.js"></script>
 <script>
 // ─────────────────────────────────────────────────────────────
-// DATA: 40 disease-to-organism pairs
+// DATA: disease-to-organism pairs
 // [disease, answer, gram, shape, distractor1, distractor2]
 // An answer that is a genus only (e.g. "Shigella") accepts the genus alone or with any species,
 // unless that full name is the answer to a different disease (e.g. Borrelia burgdorferi = Lyme).
@@ -282,7 +282,6 @@ const PAIRS = [
 ["Antibiotic-associated diarrhea and colitis","Clostridioides difficile","Gram-positive","rod","Clostridium tetani","Listeria monocytogenes"],
 ["Strep throat","Streptococcus pyogenes","Gram-positive","coccus","Streptococcus pneumoniae","Staphylococcus aureus"],
 ["Streptococcal pneumonia","Streptococcus pneumoniae","Gram-positive","coccus","Streptococcus pyogenes","Staphylococcus saprophyticus"],
-["Meningitis and sepsis in newborns (group B strep)","Streptococcus agalactiae","Gram-positive","coccus","Streptococcus pyogenes","Staphylococcus aureus"],
 ["UTI (most common cause)","Escherichia coli","Gram-negative","rod","Klebsiella pneumoniae","Proteus mirabilis"],
 ["UTI (2nd most common)","Staphylococcus saprophyticus","Gram-positive","coccus","Staphylococcus aureus","Streptococcus pyogenes"],
 ["Toxic shock syndrome","Staphylococcus aureus","Gram-positive","coccus","Staphylococcus saprophyticus","Streptococcus pyogenes"],
@@ -834,6 +833,7 @@ function loadLeaderboard(){
 // EVENT LISTENERS
 // ─────────────────────────────────────────────────────────────
 document.getElementById('vir-count').textContent = VIR_QS.length;
+document.getElementById('bac-count').textContent = BAC_QS.length;
 document.querySelectorAll('.deck-btn').forEach(b => b.addEventListener('click', () => {
   session.deck = b.dataset.deck;
   document.querySelectorAll('.deck-btn').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));

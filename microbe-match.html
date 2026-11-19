@@ -201,7 +201,7 @@ var BACTERIA = [
   {id: "lpneu", n: "<i>Legionella pneumophila</i>", dz: "Legionnaires' disease", clue: "Reproduces inside amoebae; outbreaks come from water systems"},
   {id: "ecoli", n: "<i>Escherichia coli</i>", dz: ["UTIs (the #1 cause)", "Traveler's diarrhea"], clue: "The only coliform with IMViC ++−−"},
   {id: "kpneu", n: "<i>Klebsiella pneumoniae</i>", dz: "Aspiration pneumonia (often hospital-acquired)", clue: "The only non-motile coliform (IMViC −−++)"},
-  {id: "styph", n: "<i>Salmonella typhi</i>", dz: "Typhoid fever", clue: "Non-coliform with IMViC −+−− and weak H₂S"},
+  {id: "styph", n: "<i>Salmonella typhi</i>", dz: "Typhoid fever", clue: "IMViC −+−−, weak H₂S; citrate −, unlike other <i>Salmonella</i>"},
   {id: "shig", n: "<i>Shigella</i>", dz: "Shigellosis (bacillary dysentery)"},
   {id: "pmir", n: "<i>Proteus mirabilis</i>", clue: ["Swarms across the agar, with a strong odor", "Lactose −, IMViC −+−+, H₂S +, urease +"]},
   {id: "smar", n: "<i>Serratia marcescens</i>", clue: "The only gram-negative with a red pigment"},
@@ -215,7 +215,7 @@ var BACTERIA = [
   {id: "ctrach", n: "<i>Chlamydia trachomatis</i>", dz: "The most common bacterial STI", clue: "Life cycle with elementary bodies (EB) and reticulate bodies (RB)"},
   {id: "fuso", n: "<i>Fusobacterium</i>", dz: "Periodontal (gum) disease", clue: "Anaerobic spindle-shaped rods that live in the mouth"},
   {id: "cyano", n: "Cyanobacteria", clue: "The only photosynthetic group: it makes O₂"},
-  {id: "planct", n: "Planctomycetes", clue: "Once thought to bridge prokaryote and eukaryote features"},
+  {id: "planct", n: "Planctomycetes", clue: "Has some features of prokaryotes AND eukaryotes"},
   {id: "myco", n: "<i>Mycoplasma</i>", clue: "No cell wall; sterols in its membrane hold it together"},
   {id: "saur", n: "<i>Staphylococcus aureus</i>", dz: ["Toxic shock syndrome", "Scalded skin syndrome", "Impetigo", "Osteomyelitis", "Boils (furuncles and carbuncles)"], clue: "Gram-positive cocci: catalase +, coagulase +"},
   {id: "ssap", n: "<i>Staphylococcus saprophyticus</i>", dz: "UTIs (the #2 cause)", clue: "Gram-positive cocci: catalase +, coagulase −, urease +"},
@@ -238,31 +238,33 @@ var BACTERIA = [
   {id: "mlep", n: "<i>Mycobacterium leprae</i>", dz: "Leprosy", clue: "Can be caught from armadillos"}
 ];
 var VIRUSES = [
-  {n: "Variola virus", dz: "Smallpox", clue: "Eradicated in 1980; the vaccine came from vaccinia (cowpox)"},
-  {n: "HSV-1", dz: "Cold sores (fever blisters)", clue: "Hides in the trigeminal nerve ganglia (face)"},
-  {n: "HSV-2", dz: "Genital herpes", clue: "Hides in the sacral ganglia (pelvis)"},
-  {n: "VZV", dz: "Chickenpox and shingles", clue: "Hides in the dorsal root ganglia; reactivation risk rises with age"},
-  {n: "EBV", dz: "Mononucleosis (\"mono\")", clue: "Over 90% of people are infected; hides in B cells"},
-  {n: "HHV-6", dz: "Roseola", clue: "High fever in toddlers, then a rash once the fever breaks"},
-  {n: "HHV-8", dz: "Kaposi sarcoma", clue: "Cancer of the blood vessel lining: purple skin lesions"},
-  {n: "HBV", dz: "Hepatitis B", clue: "The only human DNA virus that uses reverse transcriptase"},
-  {n: "Adenovirus", dz: "Pink eye and cold-like illness", clue: "Used as a backbone for gene therapy vectors"},
-  {n: "JC virus", dz: "PML (brain infection in severely immunocompromised people)"},
-  {n: "BK virus", dz: "Kidney transplant failure"},
-  {n: "HPV", dz: "Genital warts and cervical cancer", clue: "Types 16 and 18 cause cancer; Gardasil 9 prevents it"},
-  {n: "Parvovirus B19", dz: "Fifth disease (\"slapped-cheek\" rash)", clue: "Infects red blood cell precursors"},
-  {n: "SARS-CoV-2", dz: "COVID-19", clue: "Its spike protein binds ACE2"},
-  {n: "Flaviviridae", tag: "family", dz: "Yellow fever, dengue, Zika, West Nile", clue: "\"Bug diseases\": spread by mosquitoes and ticks"},
-  {n: "HCV", dz: "Hepatitis C", clue: "Bloodborne; no vaccine, but curable"},
-  {n: "Enterovirus", tag: "genus", dz: "Hand-foot-and-mouth disease"},
-  {n: "Poliovirus", dz: "Rarely paralysis, if it spreads from the blood to nerves", clue: "Salk (injected) and Sabin (oral) vaccines"},
-  {n: "Rubivirus", tag: "genus", dz: "Rubella (German measles)", clue: "Once required a blood test before getting married!"},
-  {n: "HIV", dz: "AIDS", clue: "Reverse transcriptase + integrase; infects helper T cells"},
-  {n: "Morbillivirus", tag: "genus", dz: "Measles", clue: "Rash from the face to the trunk; extremely contagious"},
-  {n: "Orthorubulavirus", tag: "genus", dz: "Mumps", clue: "Swollen, painful salivary glands"},
-  {n: "RSV", dz: "The #1 viral respiratory illness in infants", clue: "Antibody shot for infants; vaccine for older adults and pregnant people"},
-  {n: "Rhabdoviridae", tag: "family", dz: "Rabies", clue: "Hides behind the blood-brain barrier; Pasteur made the first vaccine"},
-  {n: "Orthomyxoviridae", tag: "family", dz: "Influenza (the flu)", clue: "Hemagglutinin (HA) and neuraminidase (NA) spikes"}
+  {id: "variola", n: "Variola virus", dz: "Smallpox", clue: "Eradicated in 1980; the vaccine came from vaccinia (cowpox)"},
+  {id: "pox", n: "Poxviridae", tag: "family", dz: "Smallpox", clue: "Enveloped dsDNA family of variola and vaccinia"},
+  {id: "hsv1", n: "HSV-1", dz: "Cold sores (fever blisters)", clue: "Hides in the trigeminal nerve ganglia (face)"},
+  {id: "hsv2", n: "HSV-2", dz: "Genital herpes", clue: "Hides in the sacral ganglia (pelvis)"},
+  {id: "vzv", n: "VZV (HHV-3)", dz: ["Chickenpox (varicella)", "Shingles (zoster)"], clue: "Hides in nerve ganglia; airborne; 2 vaccines (varicella, Shingrix)", avoid: ["hsv1", "hsv2"]},
+  {id: "ebv", n: "EBV (HHV-4)", dz: "Mononucleosis (\"mono\")", clue: "Hides in B cells; oncogenic; spread by saliva", avoid: ["hhv8"]},
+  {id: "hhv6", n: "HHV-6", dz: "Roseola", clue: "High fever in toddlers, then a rash once the fever breaks"},
+  {id: "hhv8", n: "HHV-8", dz: "Kaposi sarcoma", clue: "Cancer of the blood vessel lining: purple skin lesions"},
+  {id: "hbv", n: "HBV", dz: "Hepatitis B", clue: "The only human DNA virus that uses reverse transcriptase"},
+  {id: "adeno", n: "Adenovirus", dz: "Common colds and pink eye", clue: "Used as a backbone for gene therapy vectors"},
+  {id: "jc", n: "JC virus", dz: "PML (brain infection in severely immunocompromised people)"},
+  {id: "bk", n: "BK virus", dz: "Kidney transplant failure"},
+  {id: "jcbk", n: "JC + BK viruses", tag: "polyomaviruses", clue: "Latent in the kidneys", avoid: ["jc", "bk"]},
+  {id: "hpv", n: "HPV", dz: "Genital warts and cervical cancer", clue: "Types 16 and 18 cause cancer; Gardasil 9 prevents it"},
+  {id: "b19", n: "Parvovirus B19", dz: "Fifth disease (\"slapped-cheek\" rash)", clue: "No human vaccine: only dogs get a parvovirus vaccine"},
+  {id: "sars2", n: "SARS-CoV-2", dz: "COVID-19", clue: "Its spike protein binds ACE2"},
+  {id: "flavi", n: "Flaviviridae", tag: "family", dz: "Yellow fever, dengue, Zika, West Nile", clue: "\"Bug diseases\": spread by mosquitoes and ticks"},
+  {id: "hcv", n: "HCV", dz: "Hepatitis C", clue: "Bloodborne; no vaccine, but curable"},
+  {id: "ev", n: "Enterovirus", tag: "genus", dz: "Hand-foot-and-mouth disease", clue: "Family: Picornaviridae"},
+  {id: "polio", n: "Poliovirus", dz: "Polio", clue: ["Salk (injected) and Sabin (oral) vaccines", "Family: Picornaviridae"]},
+  {id: "rubi", n: "Rubivirus", tag: "genus", dz: "Rubella (German measles)", clue: "The only positive-sense (+) RNA virus in the MMR vaccine"},
+  {id: "hiv", n: "HIV", dz: "AIDS", clue: "Reverse transcriptase + integrase; latent in T cells and macrophages"},
+  {id: "morbilli", n: "Morbillivirus", tag: "genus", dz: "Measles", clue: "Negative-sense (−) RNA virus in the MMR vaccine; rash from the face to the trunk"},
+  {id: "rubula", n: "Orthorubulavirus", tag: "genus", dz: "Mumps", clue: "Negative-sense (−) RNA virus in the MMR vaccine; swollen salivary glands"},
+  {id: "rsv", n: "RSV (respiratory syncytial virus)", dz: "Pneumonia-like illness in infants", clue: "The #1 cause of viral respiratory illness in infants"},
+  {id: "rhabdo", n: "Rhabdoviridae", tag: "family", dz: "Rabies", clue: "Hides behind the blood-brain barrier; Pasteur made the first vaccine"},
+  {id: "orthomyxo", n: "Orthomyxoviridae", tag: "family", dz: "Influenza (the flu)", clue: ["Hemagglutinin (HA) and neuraminidase (NA) spikes", "Serotypes A, B, and C; A and B cause seasonal epidemics", "Antigenic drift (yearly epidemics) and antigenic shift (pandemics)"]}
 ];
 BACTERIA.forEach(function(o){ o.v = false; });
 VIRUSES.forEach(function(o){ o.v = true; });
@@ -281,7 +283,12 @@ function fmt(sec){ return Math.floor(sec / 60) + ":" + ("0" + (sec % 60)).slice(
 var g = {deck: "bac", queue: [], round: 0, score: 0, misses: 0, totalMatched: 0, roundMisses: 0, cards: [], open: [], matched: 0, lock: false, t0: 0, timer: null, sec: 0, log: []};
 
 function list(x){ return x ? (Array.isArray(x) ? x : [x]) : []; }
-function clash(a, b){ return list(a.avoid).indexOf(b.id) >= 0 || list(b.avoid).indexOf(a.id) >= 0; }
+/* two microbes clash (never on the same board) if one lists the other in avoid, or they share a card (Variola + Poxviridae both = Smallpox) */
+function cardsOf(o){ return list(o.dz).concat(list(o.clue)); }
+function clash(a, b){
+  if (list(a.avoid).indexOf(b.id) >= 0 || list(b.avoid).indexOf(a.id) >= 0) return true;
+  var bc = cardsOf(b); return cardsOf(a).some(function(t){ return bc.indexOf(t) >= 0; });
+}
 /* fill one round from a shuffled pool, skipping anything that clashes with what's already on the board */
 function take(pool, n, round){
   for (var i = 0; i < pool.length && n > 0; i++){
