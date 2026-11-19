@@ -38,6 +38,11 @@ button{font:inherit; color:inherit}
 :focus-visible{outline:3px solid var(--arrow); outline-offset:2px}
 .top{display:flex; align-items:center; gap:10px; padding-bottom:12px; border-bottom:1px solid var(--line); margin-bottom:18px}
 .top .brand{font-family:var(--f-display); font-weight:700}
+.top a.lbjump{margin-left:auto}
+.top a.lbjump + a{margin-left:0}
+.top{flex-wrap:wrap}
+@media (max-width:480px){ .top .brand{display:none} .top a{font-size:14px; padding:7px 11px} .top a.lbjump{margin-left:0} .top{justify-content:space-between} }
+.lb-bottom{margin-top:18px; background:var(--surface); border:1.5px solid var(--line); border-radius:20px; padding:18px}
 .top a{margin-left:auto; text-decoration:none; color:var(--ink); font-weight:700; font-size:15px; padding:8px 13px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface)}
 .screen{display:none}
 .screen.on{display:block}
@@ -112,7 +117,7 @@ button{font:inherit; color:inherit}
 </head>
 <body>
 <div class="wrap">
-  <header class="top"><span class="brand">🧫 BIO 112 · Ch. 11 + 13</span><a href="unit-bacteria.html">← Bacteria unit</a></header>
+  <header class="top"><span class="brand">🧫 BIO 112 · Ch. 11 + 13</span><a href="#lb-bottom" class="lbjump">🏆 Leaderboard</a><a href="unit-bacteria.html">← Pathology unit</a></header>
 
   <!-- start -->
   <section class="screen on" id="s-start">
@@ -173,6 +178,8 @@ button{font:inherit; color:inherit}
       <p class="src">Bacteria clues: Ch. 11 tours (ID cheat sheet) and slides. Virus clues: Ch. 13 slides.</p>
     </div>
   </section>
+
+  <section class="lb-bottom" id="lb-bottom" aria-label="Class leaderboard"></section>
 </div>
 
 <script src="leaderboard.js"></script>
@@ -374,7 +381,7 @@ function endGame(){
   $("#e-score").textContent = g.score;
   $("#e-sum").innerHTML = '<div><b>' + g.totalMatched + '</b><span>pairs matched</span></div><div><b>' + g.misses + '</b><span>misses</span></div><div><b>' + DECKS[g.deck].title + '</b><span>deck</span></div>';
   show("s-end");
-  if (window.BIO112_LB) BIO112_LB.widget($("#lb"), {game: DECKS[g.deck].game, title: "Class leaderboard: " + DECKS[g.deck].title, score: function(){
+  if (window.BIO112_LB) BIO112_LB.widget($("#lb"), {board: false, game: DECKS[g.deck].game, title: "Save your score: " + DECKS[g.deck].title + " deck", score: function(){
     return {score: g.score, details: g.totalMatched + " pairs, " + g.misses + " misses"};
   }});
 }
@@ -383,7 +390,10 @@ function endGame(){
 document.querySelectorAll(".deck").forEach(function(b){ b.addEventListener("click", function(){
   g.deck = b.getAttribute("data-deck");
   document.querySelectorAll(".deck").forEach(function(x){ x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+  if (window.BIO112_LB) BIO112_LB.reloadBoards();
 }); });
+/* the class leaderboard for the chosen deck, always at the bottom of the page */
+if (window.BIO112_LB) BIO112_LB.board($("#lb-bottom"), {game: function(){ return DECKS[g.deck].game; }, title: function(){ return "Class leaderboard: " + DECKS[g.deck].title + " deck"; }});
 $("#go").addEventListener("click", startGame);
 $("#board").addEventListener("click", function(e){ var el = e.target.closest(".card"); if (el) flip(Number(el.getAttribute("data-i"))); });
 $("#next").addEventListener("click", function(){ if (g.round < ROUNDS - 1){ g.round++; startRound(); } else endGame(); });

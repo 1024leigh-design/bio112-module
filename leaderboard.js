@@ -29,9 +29,13 @@
       return withTimeout(fetch(URL + "?game=" + encodeURIComponent(game) + "&n=" + (n || 10)).then(function(r){ return r.json(); }), 15000);
     },
 
-    /* Drop-in panel: LB.widget(element, {game, title, score: function(){ return {score, details}; }}) */
+    /* Drop-in panel: LB.widget(element, {game, title, score: function(){ return {score, details}; }})
+       Options: board: false = save form only (the page shows the table elsewhere with LB.board).
+       game and title can be functions (for games with decks). */
     widget: function(el, opt){
       var saved = null;
+      function gameId(){ return typeof opt.game === "function" ? opt.game() : opt.game; }
+      function titleText(){ return typeof opt.title === "function" ? opt.title() : opt.title; }
       el.classList.add("lbw");
       function table(rows){
         if (!rows.length) return '<p class="lbw-note">No scores yet. Be the first! 🏆</p>';
@@ -40,21 +44,22 @@
       }
       function load(){
         var box = el.querySelector(".lbw-board");
+        if (!box) return;
         if (!LB.ready()){ box.innerHTML = '<p class="lbw-note">The class leaderboard isn\'t turned on yet.</p>'; return; }
         box.innerHTML = '<p class="lbw-note">Loading…</p>';
-        LB.top(opt.game, 10).then(function(d){ box.innerHTML = d && d.ok ? table(d.top || []) : '<p class="lbw-note">Couldn\'t load the leaderboard.</p>'; })
+        LB.top(gameId(), 10).then(function(d){ box.innerHTML = d && d.ok ? table(d.top || []) : '<p class="lbw-note">Couldn\'t load the leaderboard.</p>'; })
           .catch(function(){ box.innerHTML = '<p class="lbw-note">Couldn\'t load the leaderboard. Check your connection.</p>'; });
       }
       function render(){
         var sc = opt.score();
-        var h = '<h3 class="lbw-h">🏆 ' + esc(opt.title || "Class leaderboard") + "</h3>";
+        var h = '<h3 class="lbw-h">🏆 ' + esc(titleText() || "Class leaderboard") + "</h3>";
         if (saved){
           h += '<div class="lbw-saved"><b>Saved! 🎉</b> Your secret claim code: <span class="lbw-code">' + esc(saved) + '</span><br><small>Write it down. If you want extra credit, show this code to your instructor. Nobody else can see it.</small></div>';
         } else if (LB.ready()){
           h += '<p class="lbw-note">Totally optional: save your score (<b>' + esc(sc.score) + '</b>) under any nickname. Only the nickname, score, and date are saved.</p>' +
             '<div class="lbw-form"><input type="text" class="lbw-name" maxlength="20" placeholder="Nickname (no real name needed)" aria-label="Nickname" autocomplete="off"><button type="button" class="lbw-save">Save my score</button></div><p class="lbw-msg" role="status"></p>';
         }
-        h += '<div class="lbw-board"></div>';
+        if (opt.board !== false) h += '<div class="lbw-board"></div>';
         el.innerHTML = h;
         var btn = el.querySelector(".lbw-save");
         if (btn) btn.addEventListener("click", function(){
@@ -62,8 +67,8 @@
           if (!name){ msg.textContent = "Type a nickname first."; return; }
           if (!(s2.score > 0)){ msg.textContent = "Earn some points first!"; return; }
           btn.disabled = true; msg.textContent = "Saving…";
-          LB.submit(opt.game, name, s2.score, s2.details).then(function(d){
-            if (d && d.ok){ saved = d.code; render(); }
+          LB.submit(gameId(), name, s2.score, s2.details).then(function(d){
+            if (d && d.ok){ saved = d.code; render(); LB.reloadBoards(); }
             else { btn.disabled = false; msg.textContent = "That didn't save. Try a different nickname."; }
           }).catch(function(){ btn.disabled = false; msg.textContent = "Couldn't reach the leaderboard. Try again in a minute."; });
         });
@@ -71,8 +76,32 @@
       }
       LB.refresh = render;
       render();
-    }
+    },
+
+    /* View-only table, always on the page (bottom of each game): LB.board(element, {game, title}).
+       game and title can be functions; call LB.reloadBoards() after the deck changes. */
+    _boards: [],
+    board: function(el, opt){
+      function val(x){ return typeof x === "function" ? x() : x; }
+      function render(){
+        el.classList.add("lbw");
+        el.innerHTML = '<h3 class="lbw-h">🏆 ' + esc(val(opt.title) || "Class leaderboard") + '</h3>' + (opt.note ? '<p class="lbw-note">' + opt.note + "</p>" : "") + '<div class="lbw-board"></div>';
+        var box = el.querySelector(".lbw-board");
+        if (!LB.ready()){ box.innerHTML = '<p class="lbw-note">The class leaderboard isn\'t turned on yet.</p>'; return; }
+        box.innerHTML = '<p class="lbw-note">Loading…</p>';
+        LB.top(val(opt.game), 10).then(function(d){ box.innerHTML = d && d.ok ? boardTable(d.top || []) : '<p class="lbw-note">Couldn\'t load the leaderboard.</p>'; })
+          .catch(function(){ box.innerHTML = '<p class="lbw-note">Couldn\'t load the leaderboard. Check your connection.</p>'; });
+      }
+      LB._boards.push(render);
+      render();
+    },
+    reloadBoards: function(){ LB._boards.forEach(function(f){ f(); }); }
   };
+  function boardTable(rows){
+    if (!rows.length) return '<p class="lbw-note">No scores yet. Be the first! 🏆</p>';
+    return '<table class="lbw-table"><thead><tr><th>#</th><th>Name</th><th>Score</th><th>Date</th></tr></thead><tbody>' +
+      rows.map(function(r, i){ return "<tr><td>" + (i < 3 ? ["🥇", "🥈", "🥉"][i] : i + 1) + "</td><td>" + esc(r.name) + "</td><td><b>" + esc(r.score) + "</b></td><td>" + esc(r.date || "") + "</td></tr>"; }).join("") + "</tbody></table>";
+  }
   window.BIO112_LB = LB;
 
   /* default look; pages can restyle .lbw-* */

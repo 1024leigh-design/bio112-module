@@ -125,6 +125,14 @@ canvas#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:200}
 #ask-chip.k-genus{background:var(--amber-dark)}
 #ask-chip.k-name{background:var(--teal-dark)}
 
+/* ── Top nav + always-on leaderboard at the bottom (like Microbe Collector) ── */
+.gnav{display:flex;align-items:center;gap:8px;flex-wrap:wrap;max-width:900px;width:100%;margin:0 auto;padding:12px 16px 0}
+.gnav .brand{font-weight:800;margin-right:auto}
+.gnav a{text-decoration:none;color:var(--dark);font-weight:800;font-size:.9rem;padding:8px 14px;border-radius:999px;border:1.5px solid var(--border);background:var(--panel)}
+.gnav a:hover{border-color:var(--coral);color:var(--coral)}
+@media(max-width:480px){.gnav .brand{display:none}.gnav{justify-content:space-between}.gnav a{padding:7px 12px;font-size:.85rem}}
+.lb-bottom{max-width:700px;width:calc(100% - 32px);margin:10px auto 40px;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px}
+
 @keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── End screen ── */
@@ -166,6 +174,7 @@ canvas#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:200}
 </head>
 <body>
 <canvas id="confetti-canvas"></canvas>
+<nav class="gnav" aria-label="Page"><span class="brand">🧫 BIO 112</span><a href="#lb-bottom">🏆 Leaderboard</a><a href="unit-bacteria.html">← Pathology unit</a></nav>
 
 <!-- ── Name entry ── -->
 <div id="name-screen" class="screen active">
@@ -254,6 +263,8 @@ canvas#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:200}
   <button id="play-again-btn">Play Again</button>
   <button id="back-to-name-btn">Change Name</button>
 </div>
+
+<section class="lb-bottom" id="lb-bottom" aria-label="Class leaderboard"></section>
 
 <script src="leaderboard.js"></script>
 <script src="spelling.js"></script>
@@ -812,7 +823,7 @@ function triggerConfetti(){
 // Class leaderboard: optional nickname save to the instructor's Google Sheet (leaderboard.js)
 function loadLeaderboard(){
   if(!window.BIO112_LB) return;
-  BIO112_LB.widget(document.getElementById('lb-section'), {game: DECKS[session.deck].game, title: 'Class leaderboard: ' + DECKS[session.deck].title, score: function(){
+  BIO112_LB.widget(document.getElementById('lb-section'), {board: false, game: DECKS[session.deck].game, title: 'Save your score: ' + DECKS[session.deck].title + ' deck', score: function(){
     var c = session.scores.filter(function(s){ return s > 0; }).length;
     return {score: session.total, details: session.scores.length + ' questions, ' + c + ' correct'};
   }});
@@ -826,7 +837,10 @@ document.getElementById('vir-count').textContent = VIR_QS.length;
 document.querySelectorAll('.deck-btn').forEach(b => b.addEventListener('click', () => {
   session.deck = b.dataset.deck;
   document.querySelectorAll('.deck-btn').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+  if(window.BIO112_LB) BIO112_LB.reloadBoards();
 }));
+/* the class leaderboard for the chosen deck, always at the bottom of the page */
+if(window.BIO112_LB) BIO112_LB.board(document.getElementById('lb-bottom'), {game: () => DECKS[session.deck].game, title: () => 'Class leaderboard: ' + DECKS[session.deck].title + ' deck'});
 /* deep link: disease-type.html#viruses or #mixed picks that deck */
 (function(){ const h = location.hash.slice(1), m = {bacteria:'bac', viruses:'vir', mixed:'mix'}[h]; if(m){ const b = document.querySelector('.deck-btn[data-deck="'+m+'"]'); if(b) b.click(); } })();
 document.getElementById('start-btn').addEventListener('click',()=>{
