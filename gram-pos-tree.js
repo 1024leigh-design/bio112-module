@@ -109,7 +109,6 @@ window.TOUR_DATA = {
     {id: "strep", rank: "genus", label: "Streptococcus", parent: "lb_cocci", italic: true,
       traits: [{t: "chains", blank: {pre: "", post: "", a: "chains", o: ["chains", "grape-like clusters"], why: "Strepto = twisted chain: strep grow in chains."}}, {t: "sorted by hemolysis"}]},
     {id: "s_pyogenes", rank: "species", label: "S. pyogenes", parent: "strep", italic: true, traits: [{t: "group A strep"}]},
-    {id: "s_agalactiae", rank: "species", label: "S. agalactiae", parent: "strep", italic: true, traits: [{t: "group B strep"}]},
     {id: "s_pneumoniae", rank: "species", label: "S. pneumoniae", parent: "strep", italic: true, traits: [{t: "diplococci (pairs)"}, {t: "capsule"}]},
     {id: "enterococcus", rank: "genus", label: "Enterococcus", parent: "lb_cocci", italic: true,
       traits: [{t: "pairs or short chains"}, {t: "salt- and bile-tolerant", blank: {pre: "", post: "-tolerant", a: "salt- and bile", o: ["salt- and bile", "cold"], why: "<i>Enterococcus</i> is extremely hardy: salt-tolerant, bile-tolerant, heat-resistant."}}, {t: "gut flora"}]},
@@ -485,7 +484,6 @@ window.TOUR_DATA = {
       cheat: "<b>Catalase −</b> cocci in <b>chains</b>: <i>Streptococcus</i>.",
       cols: [
         {h: "<i>S. pyogenes</i> (group A)", t: "The <b>main cause of strep throat</b>; also scarlet fever and necrotizing fasciitis"},
-        {h: "<i>S. agalactiae</i> (group B)", t: "Meningitis and sepsis in <b>newborns</b>"},
         {h: "<i>S. pneumoniae</i>", t: "The leading cause of <b>pneumonia</b> (and meningitis). Next stop!", c: "#0e7490"}
       ],
       orgs: [
@@ -496,15 +494,7 @@ window.TOUR_DATA = {
             {k: "catalase", v: "−", from: "lactobacillales"},
             {k: "feature", v: "group A strep", ic: "🅰️", label: "Group"}
           ],
-          disease: {short: "strep throat, scarlet fever, necrotizing fasciitis", html: "the <b>main cause of strep throat</b>; also scarlet fever and necrotizing fasciitis"}},
-        {id: "sagalactiae", node: "s_agalactiae", name: "Streptococcus agalactiae", sub: "(group B strep)", shape: "chains", emoji: "👶",
-          tests: [
-            {k: "gram", v: "+", from: "grampos"},
-            {k: "shape", v: "cocci in chains", from: "strep"},
-            {k: "catalase", v: "−", from: "lactobacillales"},
-            {k: "feature", v: "group B strep", ic: "🅱️", label: "Group"}
-          ],
-          disease: {short: "meningitis and sepsis in newborns", html: "meningitis and sepsis in newborns", tags: ["meningitis"]}}
+          disease: {short: "strep throat, scarlet fever, necrotizing fasciitis", html: "the <b>main cause of strep throat</b>; also scarlet fever and necrotizing fasciitis"}}
       ],
       checkin: {
         q: "How are streptococci classified?",
