@@ -62,7 +62,7 @@ var VIRUSES = {
   rubella: {name: "Rubella virus", fam: "Matonaviridae", type: "Enveloped +ssRNA"},
   hiv: {name: "HIV", fam: "Retroviridae", type: "Enveloped +ssRNA (retrovirus)"},
   measles: {name: "Measles virus", fam: "Paramyxoviridae", genus: "Morbillivirus", type: "Enveloped −ssRNA"},
-  mumps: {name: "Mumps virus", fam: "Paramyxoviridae", genus: "Rubulavirus", type: "Enveloped −ssRNA"},
+  mumps: {name: "Mumps virus", fam: "Paramyxoviridae", genus: "Orthorubulavirus", type: "Enveloped −ssRNA"},
   rsv: {name: "RSV (respiratory syncytial virus)", fam: "Pneumoviridae", type: "Enveloped −ssRNA"},
   rabies: {name: "Rabies virus", fam: "Rhabdoviridae", type: "Enveloped −ssRNA"},
   flu: {name: "Influenza virus (A, B, C)", fam: "Orthomyxoviridae", type: "Enveloped −ssRNA"}

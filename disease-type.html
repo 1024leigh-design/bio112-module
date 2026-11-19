@@ -312,7 +312,7 @@ const PAIRS = [
 // ask: what to type. "name" = the virus name (abbreviations count), "genus", or "family".
 // a: accepted answers; the first is shown as the answer.
 // hint: Hint 1. Genus and family questions leave the family out so the hint doesn't give it away.
-// mc: two wrong choices for Hint 2. Genus and family names are the textbook names.
+// mc: two wrong choices for Hint 2. Genus and family names follow the instructor's slides.
 // ─────────────────────────────────────────────────────────────
 const VIRUSES = [
 // enveloped DNA
@@ -340,16 +340,17 @@ const VIRUSES = [
 {d:"West Nile", ask:"family", a:["Flaviviridae"], hint:"Enveloped +ssRNA · spread by mosquitoes", mc:["Orthomyxoviridae","Picornaviridae"]},
 {d:"Hepatitis C", ask:"name", a:["HCV","hepatitis C virus"], hint:"Enveloped +ssRNA · bloodborne", mc:["HBV","HIV"]},
 {d:"Hepatitis C", ask:"family", a:["Flaviviridae"], hint:"Enveloped +ssRNA · bloodborne", mc:["Hepadnaviridae","Picornaviridae"]},
-{d:"Hand-foot-and-mouth disease", ask:"genus", a:["Enterovirus"], hint:"Non-enveloped +ssRNA", mc:["Morbillivirus","Rubulavirus"]},
+{d:"Hand-foot-and-mouth disease", ask:"genus", a:["Enterovirus"], hint:"Non-enveloped +ssRNA", mc:["Morbillivirus","Orthorubulavirus"]},
+{d:"Hand-foot-and-mouth disease", ask:"family", a:["Picornaviridae"], hint:"Non-enveloped +ssRNA", mc:["Paramyxoviridae","Flaviviridae"]},
 {d:"Polio", ask:"name", a:["Poliovirus"], hint:"Non-enveloped +ssRNA · fecal-oral", mc:["Enterovirus","Rubella virus"]},
 {d:"Polio", ask:"family", a:["Picornaviridae"], hint:"Non-enveloped +ssRNA", mc:["Flaviviridae","Coronaviridae"]},
 {d:"Rubella (German measles)", ask:"name", a:["Rubella virus"], hint:"Enveloped +ssRNA · MMR vaccine", mc:["Measles virus","Parvovirus B19"]},
 {d:"Rubella (German measles)", ask:"family", a:["Matonaviridae"], hint:"Enveloped +ssRNA", mc:["Paramyxoviridae","Flaviviridae"]},
 {d:"AIDS", ask:"name", a:["HIV","HIV-1","HIV-2","HIV-1/2","human immunodeficiency virus"], hint:"Enveloped +ssRNA (retrovirus) · Retroviridae", mc:["HTLV-1","HBV"]},
 // − sense RNA
-{d:"Measles", ask:"genus", a:["Morbillivirus"], hint:"Enveloped −ssRNA", mc:["Rubulavirus","Enterovirus"]},
+{d:"Measles", ask:"genus", a:["Morbillivirus"], hint:"Enveloped −ssRNA", mc:["Orthorubulavirus","Enterovirus"]},
 {d:"Measles", ask:"family", a:["Paramyxoviridae"], hint:"Enveloped −ssRNA", mc:["Pneumoviridae","Orthomyxoviridae"]},
-{d:"Mumps", ask:"genus", a:["Rubulavirus"], hint:"Enveloped −ssRNA", mc:["Morbillivirus","Enterovirus"]},
+{d:"Mumps", ask:"genus", a:["Orthorubulavirus"], hint:"Enveloped −ssRNA", mc:["Morbillivirus","Enterovirus"]},
 {d:"Mumps", ask:"family", a:["Paramyxoviridae"], hint:"Enveloped −ssRNA", mc:["Orthomyxoviridae","Picornaviridae"]},
 {d:"Pneumonia-like illness in infants (the #1 viral cause)", ask:"name", a:["RSV","respiratory syncytial virus"], hint:"Enveloped −ssRNA · Pneumoviridae", mc:["Adenovirus","SARS-CoV-2"]},
 {d:"Rabies", ask:"family", a:["Rhabdoviridae"], hint:"Enveloped −ssRNA", mc:["Paramyxoviridae","Orthomyxoviridae"]},
