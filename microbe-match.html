@@ -75,8 +75,10 @@ button{font:inherit; color:inherit}
 
 /* board */
 .board{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px}
-.board.hard{grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px}
-@media (max-width:880px){ .board.hard{grid-template-columns:repeat(4,minmax(0,1fr))} }
+.board.hard{grid-template-columns:repeat(6,minmax(0,1fr)); gap:8px}
+/* Hard (24 cards): the page widens so 6 columns still fit the longer clues */
+body.hard .wrap{max-width:1180px}
+@media (max-width:1060px){ .board.hard{grid-template-columns:repeat(4,minmax(0,1fr))} }
 @media (max-width:640px){ .board, .board.hard{grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px} }
 .card{position:relative; min-height:150px; border:0; padding:0; background:none; cursor:pointer; perspective:900px; text-align:center}
 @media (max-width:640px){ .card{min-height:168px} .face{padding:6px} }
@@ -120,7 +122,7 @@ button{font:inherit; color:inherit}
 </head>
 <body>
 <div class="wrap">
-  <header class="top"><span class="brand">🧫 BIO 112 · Ch. 11 + 13</span><a href="#lb-bottom" class="lbjump">🏆 Leaderboard</a><a href="unit-bacteria.html">← Pathology unit</a></header>
+  <header class="top"><span class="brand">🧫 BIO 112 · Ch. 11, 13 + 14</span><a href="#lb-bottom" class="lbjump">🏆 Leaderboard</a><a href="unit-bacteria.html">← Pathology unit</a></header>
 
   <!-- start -->
   <section class="screen on" id="s-start">
@@ -144,7 +146,7 @@ button{font:inherit; color:inherit}
       <p class="lbl">Pick a board size</p>
       <div class="sizes" role="group" aria-label="Pick a board size">
         <button type="button" class="deck sz" data-size="reg" aria-pressed="true">🃏 Regular<small>6 pairs per round</small></button>
-        <button type="button" class="deck sz" data-size="hard" aria-pressed="false">🔥 Hard<small>10 pairs per round</small></button>
+        <button type="button" class="deck sz" data-size="hard" aria-pressed="false">🔥 Hard<small>12 pairs per round</small></button>
       </div>
       <p class="src" id="sizeNote">3 rounds of 6 pairs. A new mix of microbes every game.</p>
       <div class="btnrow"><button type="button" class="btn" id="go">Start matching →</button></div>
@@ -277,7 +279,7 @@ var VIRUSES = [
 ];
 /* VOCAB (Ch. 14, 13, 11). n = term card, def = definition card. ch = chapter.
    p = instructor priority: 2 = top (shows up once in every Vocab game), 1 = mid, 0 = low (now and then for variety).
-   All priorities are the instructor's, except v89 (Vector), which is a placeholder (1) until confirmed. */
+   All priorities are the instructor's. (Ids follow the instructor's numbered list; #68 Prophage was cut.) */
 var VOCAB = [
   {id: "v1", n: "Pathology", def: "The scientific study of disease", ch: 14, p: 1},
   {id: "v2", n: "Etiology", def: "The cause of a disease", ch: 14, p: 1},
@@ -346,7 +348,6 @@ var VOCAB = [
   {id: "v65", n: "Complex virus", def: "Complicated structure (like a phage's head and tail)", ch: 13, p: 0},
   {id: "v66", n: "Lytic cycle", def: "The virus multiplies and kills the host cell", ch: 13, p: 1},
   {id: "v67", n: "Lysogenic cycle", def: "Phage DNA lies low; the host cell stays alive", ch: 13, p: 1},
-  {id: "v68", n: "Prophage", def: "Phage DNA inserted into a bacterial chromosome", ch: 13, p: 1, avoid: ["v78"]},
   {id: "v69", n: "Phage conversion", def: "The host gains new traits (like toxins) from phage genes", ch: 13, p: 1},
   {id: "v70", n: "Generalized transduction", def: "Bacterial genes carried to another bacterium in a phage coat", ch: 13, p: 0},
   {id: "v71", n: "Eclipse period", def: "After infection, before new virions can be found", ch: 13, p: 2},
@@ -356,7 +357,7 @@ var VOCAB = [
   {id: "v75", n: "Positive-sense (+) RNA", def: "Works like mRNA; translated right away", ch: 13, p: 2},
   {id: "v76", n: "Negative-sense (−) RNA", def: "Must be copied to + first; brings its own RNA polymerase", ch: 13, p: 2},
   {id: "v77", n: "Integrase", def: "Inserts viral DNA into host DNA", ch: 13, p: 1},
-  {id: "v78", n: "Provirus", def: "HIV's DNA copy built into a host chromosome, hidden from the immune system", ch: 13, p: 1},
+  {id: "v78", n: "Provirus", def: "Viral DNA built into a host chromosome, hidden from the immune system", ch: 13, p: 1},
   {id: "v79", n: "Oncogene", def: "A gene that can make a cell cancerous", ch: 13, p: 1},
   {id: "v80", n: "Oncogenic virus", def: "A virus that can cause tumors", ch: 13, p: 1},
   {id: "v81", n: "Serotype", def: "A group within a species with its own surface antigens", ch: 13, p: 2},
@@ -367,7 +368,7 @@ var VOCAB = [
   {id: "v86", n: "Fomite", def: "A contaminated object that spreads infection", ch: 13, p: 1},
   {id: "v87", n: "Autoinoculation", def: "Spreading an infection to another part of your own body", ch: 13, p: 0},
   {id: "v88", n: "Vertical transmission", def: "Passed from parent to baby during pregnancy or birth", ch: 13, p: 0},
-  {id: "v89", n: "Vector", def: "An animal (like a mosquito or tick) that carries a pathogen", ch: 13, p: 1},
+  {id: "v89", n: "Vector", def: "An animal (like a mosquito or tick) that carries a pathogen", ch: 13, p: 0},
   {id: "v90", n: "Obligate aerobe", def: "Needs O₂ to grow", ch: 11, p: 0},
   {id: "v91", n: "Obligate anaerobe", def: "Can't grow with O₂", ch: 11, p: 0},
   {id: "v92", n: "Facultative anaerobe", def: "Grows with or without O₂", ch: 11, p: 0},
@@ -391,7 +392,7 @@ VOCAB.forEach(function(o){ o.v = false; o.voc = true; o.clue = o.def; });
 VIRUSES.forEach(function(o){ o.v = true; });
 
 var DECKS = {bac: {game: "match-bac", title: "Bacteria"}, vir: {game: "match-vir", title: "Viruses"}, voc: {game: "match-vocab", title: "Vocab"}, mix: {game: "match-mix", title: "Mixed"}};
-var ROUNDS = 3, SIZES = {reg: 6, hard: 10};
+var ROUNDS = 3, SIZES = {reg: 6, hard: 12};
 function P(){ return SIZES[g.size]; }
 /* each deck + board size has its own leaderboard (hard scores run higher) */
 function lbGame(){ return DECKS[g.deck].game + (g.size === "hard" ? "-hard" : ""); }
@@ -422,7 +423,7 @@ function take(pool, n, round){
     round.push(o); pool.splice(i, 1); i--; n--;
   }
 }
-/* take n fresh microbes; if the deck runs out (Hard mode needs 30), reuse ones from earlier rounds with a different card */
+/* take n fresh microbes; if the deck runs out (Hard mode needs 36), reuse ones from earlier rounds with a different card */
 function fill(all, pool, n, round, used){
   var before = round.length;
   take(pool, n, round);
@@ -430,7 +431,12 @@ function fill(all, pool, n, round, used){
   var short = n - (round.length - before);
   if (short > 0) take(shuffle(all.filter(function(o){ return round.indexOf(o) < 0 && pool.indexOf(o) < 0 && used.indexOf(o) < 0; })), short, round);
   short = n - (round.length - before);
-  if (short > 0) take(shuffle(all.filter(function(o){ return round.indexOf(o) < 0; })), short, round);
+  if (short > 0){
+    /* repeats: microbes with more than one card first, so they come back with a different card */
+    var again = shuffle(all.filter(function(o){ return round.indexOf(o) < 0; }));
+    again.sort(function(a, b){ return (cardsOf(b).length > 1) - (cardsOf(a).length > 1); });
+    take(again, short, round);
+  }
 }
 /* a top-priority term left over (it clashed with a look-alike every time) swaps in for a non-top term in a round where it fits */
 function placeLeftoverTops(rounds, pool){
@@ -458,13 +464,13 @@ function weighted(pool, n){
 }
 /* vocab for one game. In the Vocab deck top-priority terms are guaranteed (all of them in Hard); the rest are weighted. */
 function pickVocab(n, guaranteeTop){
-  /* keep at least 4 spots for mid/low terms; Hard (30 spots) fits every top term, Regular (18) rotates them */
+  /* keep at least 4 spots for mid/low terms; Hard (36 spots) fits every top term, Regular (18) rotates them */
   var top = guaranteeTop ? shuffle(VOCAB.filter(function(o){ return o.p === 2; })).slice(0, Math.max(0, n - 4)) : [];
   var rest = VOCAB.filter(function(o){ return top.indexOf(o) < 0; });
   return shuffle(top.concat(weighted(rest, n - top.length)));
 }
 /* how many of each kind go on one Mixed board */
-function mixSplit(){ return g.size === "hard" ? {b: 3, v: 3, w: 4} : {b: 2, v: 2, w: 2}; }
+function mixSplit(){ return g.size === "hard" ? {b: 4, v: 4, w: 4} : {b: 2, v: 2, w: 2}; }
 /* pick the microbes for each round (no repeats while the deck lasts); mixed = half bacteria, half viruses in every round */
 function buildQueue(){
   var b = shuffle(BACTERIA), v = shuffle(VIRUSES), q = [], n = P(), ms = mixSplit();
@@ -515,7 +521,7 @@ function cardHtml(c, i){
     : '<span class="k">' + (c.o.voc ? "Definition" : c.kind === "dz" ? "Disease" : "ID clue") + '</span><span class="t">' + c.text + "</span>";
   return '<button type="button" class="card ' + c.side + '" data-i="' + i + '" aria-label="' + (c.side === "m" ? "Face-down purple card" : "Face-down teal card") + '"><span class="in"><span class="face back">' + back + '</span><span class="face front">' + front + "</span></span></button>";
 }
-function drawBoard(){ $("#board").innerHTML = g.cards.map(cardHtml).join(""); $("#board").classList.toggle("hard", g.size === "hard"); }
+function drawBoard(){ $("#board").innerHTML = g.cards.map(cardHtml).join(""); $("#board").classList.toggle("hard", g.size === "hard"); document.body.classList.toggle("hard", g.size === "hard"); }
 function cardEl(i){ return $('#board [data-i="' + i + '"]'); }
 function faceUp(i, up){
   var c = g.cards[i], el = cardEl(i);
@@ -603,8 +609,8 @@ $("#board").addEventListener("click", function(e){ var el = e.target.closest(".c
 $("#next").addEventListener("click", function(){ if (g.round < ROUNDS - 1){ g.round++; startRound(); } else endGame(); });
 $("#quit").addEventListener("click", function(){ if (confirm("End the game now? Your score so far still counts.")){ g.log = g.log.concat(g.roundLog || []); endGame(); } });
 $("#again").addEventListener("click", startGame);
-$("#home").addEventListener("click", function(){ show("s-start"); });
-/* deep links: microbe-match.html#viruses or #mixed picks that deck; add -hard (#viruses-hard) for the 10-pair board */
+$("#home").addEventListener("click", function(){ document.body.classList.remove("hard"); show("s-start"); });
+/* deep links: microbe-match.html#viruses or #mixed picks that deck; add -hard (#viruses-hard) for the 12-pair board */
 var hp = location.hash.slice(1).split("-"), dl = {bacteria: "bac", viruses: "vir", mixed: "mix"}[hp[0]];
 if (dl) document.querySelector('.deck[data-deck="' + dl + '"]').click();
 if (hp[1] === "hard") document.querySelector('.sz[data-size="hard"]').click();
