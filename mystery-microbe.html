@@ -788,8 +788,17 @@ function shuffle(arr) {
   return a;
 }
 
+/* instructor priority (3 = must-know ... 0 = background): each session shows the 3s first,
+   then 2s, 1s, and 0s, shuffled within each level, so the important ones never get skipped */
+const PRIORITY = {"Staphylococcus aureus": 2, "Staphylococcus saprophyticus": 1, "Streptococcus pyogenes": 1, "Streptococcus pneumoniae": 1, "Clostridium tetani": 2, "Clostridium botulinum": 3, "Clostridioides difficile": 2, "Listeria monocytogenes": 1, "Bacillus subtilis": 0, "Bacillus cereus": 1, "Bacillus megaterium": 1, "Mycobacterium tuberculosis": 2, "Corynebacterium diphtheriae": 2, "Neisseria gonorrhoeae": 3, "Neisseria meningitidis": 1, "Bordetella pertussis": 1, "Pseudomonas aeruginosa": 1, "Escherichia coli": 2, "Klebsiella pneumoniae": 1, "Salmonella typhi": 2, "Shigella": 1, "Proteus mirabilis": 1, "Serratia marcescens": 0, "Vibrio cholerae": 1, "Helicobacter pylori": 1, "Treponema pallidum": 2, "Borrelia burgdorferi": 2, "Chlamydia trachomatis": 2};
+function byPriority(list){
+  const out = [];
+  [3, 2, 1, 0].forEach(p => out.push(...shuffle(list.filter(o => (PRIORITY[o.name] ?? 1) === p))));
+  return out;
+}
+
 function startSession() {
-  state.queue = shuffle(ORGANISMS);
+  state.queue = byPriority(ORGANISMS);
   state.currentIdx = 0;
   state.sessionScores = [];
   state.total = 0;

@@ -376,7 +376,8 @@ const ASK = {
   genus:{chip:"Genus", label:"What virus GENUS causes...", ph:"Genus (ends in -virus)", tip:"Type the virus genus. Genus names end in -virus."},
   family:{chip:"Family", label:"What virus FAMILY causes...", ph:"Family (ends in -viridae)", tip:"Type the virus family. Family names end in -viridae."}
 };
-const DECKS = {bac:{game:"disease", title:"Bacteria"}, vir:{game:"disease-virus", title:"Viruses"}, mix:{game:"disease-mixed", title:"Mixed"}};
+/* one class leaderboard for every deck (the score's details say which deck) */
+const DECKS = {bac:{game:"disease", title:"Bacteria"}, vir:{game:"disease", title:"Viruses"}, mix:{game:"disease", title:"Mixed"}};
 
 // ─────────────────────────────────────────────────────────────
 // HELPERS
@@ -822,9 +823,9 @@ function triggerConfetti(){
 // Class leaderboard: optional nickname save to the instructor's Google Sheet (leaderboard.js)
 function loadLeaderboard(){
   if(!window.BIO112_LB) return;
-  BIO112_LB.widget(document.getElementById('lb-section'), {board: false, game: DECKS[session.deck].game, title: 'Save your score: ' + DECKS[session.deck].title + ' deck', score: function(){
+  BIO112_LB.widget(document.getElementById('lb-section'), {board: false, game: DECKS[session.deck].game, title: 'Save your score', score: function(){
     var c = session.scores.filter(function(s){ return s > 0; }).length;
-    return {score: session.total, details: session.scores.length + ' questions, ' + c + ' correct'};
+    return {score: session.total, details: DECKS[session.deck].title + ' deck: ' + session.scores.length + ' questions, ' + c + ' correct'};
   }});
 }
 
@@ -840,7 +841,7 @@ document.querySelectorAll('.deck-btn').forEach(b => b.addEventListener('click', 
   if(window.BIO112_LB) BIO112_LB.reloadBoards();
 }));
 /* the class leaderboard for the chosen deck, always at the bottom of the page */
-if(window.BIO112_LB) BIO112_LB.board(document.getElementById('lb-bottom'), {game: () => DECKS[session.deck].game, title: () => 'Class leaderboard: ' + DECKS[session.deck].title + ' deck'});
+if(window.BIO112_LB) BIO112_LB.board(document.getElementById('lb-bottom'), {game: 'disease', title: 'Class leaderboard (all decks)'});
 /* deep link: disease-type.html#viruses or #mixed picks that deck */
 (function(){ const h = location.hash.slice(1), m = {bacteria:'bac', viruses:'vir', mixed:'mix'}[h]; if(m){ const b = document.querySelector('.deck-btn[data-deck="'+m+'"]'); if(b) b.click(); } })();
 document.getElementById('start-btn').addEventListener('click',()=>{

@@ -231,6 +231,12 @@ var RARITY = {
   legendary: ["ypestis", "banthracis"]
 };
 var WEIGHT = {common: 50, uncommon: 20, rare: 7, legendary: 1};
+/* instructor priority (how important it is for the exam), separate from rarity:
+   3 = must-know, 2 = important, 1 = should know, 0 = background.
+   3s are guaranteed by a student's 2nd swab of a spot where they grow, 2s by the 5th;
+   after that, priority nudges the odds (x3, x1.5, x1, x0.5) on top of rarity. */
+var PRIORITY = {aisraelii: 1, bactero: 0, banthracis: 0, bburgdorferi: 2, bcereus: 1, bpertussis: 1, brf: 1, bsubtilis: 0, cacnes: 0, cbotulinum: 3, cdiff: 2, cdiphtheriae: 2, cjeikeium: 1, cjejuni: 1, cperfringens: 2, cpneumoniae: 0, ctetani: 2, ctrachomatis: 2, cyano: 0, ecoli: 2, enterobacter: 1, enterococcus: 0, fuso: 0, hpylori: 1, kpneumoniae: 1, lactobacillus: 0, lmono: 1, lpneumophila: 1, mleprae: 1, mluteus: 1, mphlei: 0, mroseus: 1, mtb: 2, nasteroides: 0, ngon: 3, nmen: 1, paeruginosa: 1, planct: 0, proteus: 1, rrickettsii: 0, salmonella: 2, saureus: 2, sepi: 1, sgriseus: 0, shigella: 1, smarcescens: 0, spneumoniae: 1, spyogenes: 1, ssapro: 1, styphi: 2, tpallidum: 2, vcholerae: 1, ypestis: 0};
+var PRI_W = [0.5, 1, 1.5, 3], DUE_AT = {3: 2, 2: 5};
 /* per-microbe tweaks to how often it shows up (multiplies its rarity weight) */
 var BOOST = {banthracis: 7, ypestis: 2};
 var BONUS = {common: 0, uncommon: 5, rare: 15, legendary: 40};
@@ -561,11 +567,25 @@ function closeDlg(){ var d = $("#dlg"); if (d.close) d.close(); else d.removeAtt
 /* a better swab = a better sample = better odds of rare finds */
 function pick(site, luck){
   luck = luck || 1;
-  function w(id){ var r = BY[id].rar; return WEIGHT[r] * (BOOST[id] || 1) * (r === "rare" || r === "legendary" ? luck : r === "uncommon" ? Math.sqrt(luck) : 1); }
-  var total = 0; site.orgs.forEach(function(id){ total += w(id); });
-  var r = Math.random() * total;
-  for (var i = 0; i < site.orgs.length; i++){ r -= w(site.orgs[i]); if (r < 0) return BY[site.orgs[i]]; }
-  return BY[site.orgs[site.orgs.length - 1]];
+  P.swabs = P.swabs || {}; P.seen = P.seen || {};
+  var n = P.swabs[site.id] = (P.swabs[site.id] || 0) + 1;
+  function pr(id){ return PRIORITY[id] === undefined ? 1 : PRIORITY[id]; }
+  /* must-know microbes the student hasn't grown yet are guaranteed once this spot has been swabbed enough */
+  var due = site.orgs.filter(function(id){ var p = pr(id); return DUE_AT[p] && n >= DUE_AT[p] && !P.seen[id] && !P.cards[id]; });
+  var got;
+  if (due.length){
+    var top = Math.max.apply(null, due.map(pr));
+    due = due.filter(function(id){ return pr(id) === top; });
+    got = BY[due[Math.floor(Math.random() * due.length)]];
+  } else {
+    var w = function(id){ var r = BY[id].rar; return WEIGHT[r] * (BOOST[id] || 1) * PRI_W[pr(id)] * (r === "rare" || r === "legendary" ? luck : r === "uncommon" ? Math.sqrt(luck) : 1); };
+    var total = 0; site.orgs.forEach(function(id){ total += w(id); });
+    var r = Math.random() * total;
+    got = BY[site.orgs[site.orgs.length - 1]];
+    for (var i = 0; i < site.orgs.length; i++){ r -= w(site.orgs[i]); if (r < 0){ got = BY[site.orgs[i]]; break; } }
+  }
+  P.seen[got.id] = true; save();
+  return got;
 }
 
 /* ================= what each microbe looks like on a plate =================
@@ -938,7 +958,7 @@ if (window.BIO112_LB){
   BIO112_LB.widget($("#lb"), {game: "collector", title: "Microbe Collector leaderboard", score: function(){ var t = totals(); return {score: t.score, details: t.cards + " microbes, " + t.catches + " catches"}; }});
 }
 /* for testing */
-window.__collector = {DECK: DECK, SITES: SITES, P: P, QSETS: QSETS, nameOpts: nameOpts, fitsClues: fitsClues, cur: function(){ return C; }, sw: function(){ return SW; }, plateSvg: plateSvg, PLATES: PLATES};
+window.__collector = {DECK: DECK, SITES: SITES, P: P, pick: pick, PRIORITY: PRIORITY, QSETS: QSETS, nameOpts: nameOpts, fitsClues: fitsClues, cur: function(){ return C; }, sw: function(){ return SW; }, plateSvg: plateSvg, PLATES: PLATES};
 })();
 </script>
 </body>
