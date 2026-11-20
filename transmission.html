@@ -46,14 +46,16 @@ button{font:inherit; color:inherit}
 .top{display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; padding-bottom:12px; border-bottom:1px solid var(--line); margin-bottom:18px}
 .top a{margin-left:auto; text-decoration:none; color:var(--ink); font-weight:700; font-size:15px; padding:8px 13px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface)}
 .brand{font-family:var(--f-display); font-weight:700}
-.hero h1{font-size:clamp(32px,5.5vw,48px); line-height:1.05}
-.hero p{color:var(--muted); max-width:66ch; margin-top:6px}
+.hero h1{font-size:clamp(32px,5.5vw,48px); line-height:1.05; margin-bottom:10px}
+.hero p{color:var(--muted); max-width:66ch; margin-top:8px}
 .hero a{color:var(--arrow); font-weight:700}
-.bar{display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center; margin:16px 0 12px}
-.group{display:flex; flex-wrap:wrap; gap:8px}
-.mode, .kind{border:2px solid var(--line); background:var(--surface); border-radius:999px; padding:9px 18px; font-weight:700; cursor:pointer}
+/* two matching segmented controls: what to do, and which microbes to show */
+.bar{display:flex; flex-wrap:wrap; gap:12px 28px; align-items:center; margin:22px 0 16px}
+.group{display:flex; flex-wrap:wrap; align-items:center; gap:4px; background:var(--surface-2); border:1.5px solid var(--line); border-radius:999px; padding:4px}
+.glabel{font:600 12.5px var(--f-mono); text-transform:uppercase; letter-spacing:.05em; color:var(--muted); padding:0 8px 0 10px}
+.mode, .kind{border:0; background:transparent; border-radius:999px; padding:8px 16px; font-weight:700; font-size:16.5px; line-height:1.2; cursor:pointer}
+.mode:hover, .kind:hover{background:var(--surface)}
 .mode[aria-pressed="true"]{background:var(--ink); border-color:transparent; color:var(--bg)}
-.kind{padding:7px 14px; font-size:16px; background:var(--surface-2)}
 .kind[aria-pressed="true"]{background:var(--arrow); color:#fff; border-color:transparent}
 
 /* each group sets --g and --gs for everything inside it */
@@ -61,7 +63,7 @@ button{font:inherit; color:inherit}
 .g-touch{--g:var(--g-touch); --gs:var(--g-touch-soft)} .g-animals{--g:var(--g-animals); --gs:var(--g-animals-soft)} .g-skin{--g:var(--g-skin); --gs:var(--g-skin-soft)}
 
 /* tab bar: one column per group, the route tabs stacked under its label */
-.tabs{position:sticky; top:0; z-index:5; background:var(--bg); padding:8px 0 10px; border-bottom:1px solid var(--line); margin-bottom:16px;
+.tabs{background:var(--bg); padding:8px 0 10px; border-bottom:1px solid var(--line); margin-bottom:16px;
   display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:8px}
 .tgrp{border-top:5px solid var(--g); background:var(--surface); border-radius:12px; padding:6px; display:flex; flex-direction:column; gap:4px}
 .tgrp .gl{font:600 12px var(--f-mono); text-transform:uppercase; letter-spacing:.04em; color:var(--g); padding:2px 4px 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
@@ -75,7 +77,7 @@ button{font:inherit; color:inherit}
 .tab.none{opacity:.45}
 /* phones and small tablets: groups scroll sideways in one row */
 @media (max-width:900px){
-  .tabs{display:flex; overflow-x:auto; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch; padding-bottom:12px}
+  .tabs{position:sticky; top:0; z-index:5; display:flex; overflow-x:auto; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch; padding-bottom:12px}
   .tgrp{flex:none; scroll-snap-align:start; flex-direction:row; flex-wrap:nowrap; align-items:center; padding:6px 8px; border-top:0; border-left:5px solid var(--g)}
   .tgrp .gl{display:none}
   .tab{width:auto; white-space:nowrap}
@@ -97,14 +99,33 @@ button{font:inherit; color:inherit}
 @media (max-width:820px){ .cols{grid-template-columns:minmax(0,1fr)} }
 .colbox{background:var(--surface); border:1.5px solid var(--line); border-radius:18px; padding:14px; display:flex; flex-direction:column; gap:10px}
 .colbox h3{font-size:22px}
-.mlist{display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px}
-.mcard{display:flex; flex-direction:column; gap:4px; color:var(--ink); background:var(--surface); border:1.5px solid var(--line); border-left:6px solid var(--ge); border-radius:14px; padding:10px 12px}
-.mcard b{font-size:17px}
-.mcard b.it{font-style:italic}
-.mcard small{color:var(--muted); font-size:15px}
-.mcard .links{margin-top:auto; padding-top:4px; display:flex; flex-wrap:wrap; gap:4px 14px}
-.mcard .links a{font-weight:700; font-size:14px; color:var(--arrow); text-decoration:none}
-.mcard .links a:hover{text-decoration:underline}
+.mlist{display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px; align-items:stretch}
+/* flip cards: both faces share one grid cell, so the card is as tall as its taller face */
+.fcard{position:relative; perspective:1000px; min-height:150px}
+.fcard .in{display:grid; height:100%; transition:transform .5s; transform-style:preserve-3d}
+.fcard.flipped .in{transform:rotateY(180deg)}
+.face{grid-area:1 / 1; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:14px; border:1.5px solid var(--line); border-left:6px solid var(--ge); padding:10px 12px; display:flex; flex-direction:column; gap:5px; color:var(--ink)}
+.front{background:var(--surface); cursor:pointer; font:inherit; width:100%; justify-content:center; align-items:center; text-align:center; gap:6px}
+.front .big{font-size:30px; line-height:1}
+.front .tags{justify-content:center}
+.front:hover{border-color:var(--ge)}
+.front .nm{font-weight:700; font-size:18px; line-height:1.25}
+.front .nm.it{font-style:italic}
+.front .hint{font:600 12.5px var(--f-mono); color:var(--muted)}
+.back{transform:rotateY(180deg); background:var(--surface-2)}
+.back .nm{font-weight:700; font-size:15.5px; line-height:1.2}
+.back .nm.it{font-style:italic}
+.back .row{font-size:15px; line-height:1.35}
+.back .row b{font:600 11.5px var(--f-mono); text-transform:uppercase; letter-spacing:.04em; color:var(--muted); display:block}
+.back .rts{display:flex; flex-wrap:wrap; gap:4px; margin-top:2px}
+.back .rts span{font-size:13.5px; background:var(--surface); border-radius:999px; padding:1px 8px}
+.back .rts span.cur{box-shadow:0 0 0 2px var(--g) inset; font-weight:700}
+.back .links{margin-top:auto; padding-top:4px; display:flex; flex-wrap:wrap; gap:4px 12px; align-items:center}
+.back .links a{font-weight:700; font-size:14px; color:var(--arrow); text-decoration:none}
+.back .links a:hover{text-decoration:underline}
+.back .unflip{margin-left:auto; border:1.5px solid var(--line); background:var(--surface); border-radius:999px; padding:2px 10px; font-size:13px; font-weight:700; cursor:pointer}
+.colhead{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.flipall{margin-left:auto; border:1.5px solid var(--line); background:var(--surface-2); border-radius:999px; padding:5px 12px; font-size:14.5px; font-weight:700; cursor:pointer}
 .tags{display:flex; flex-wrap:wrap; gap:4px; margin-top:2px}
 .tag{font:600 11.5px var(--f-mono); padding:1px 8px; border-radius:999px; border:1.5px solid var(--line); color:var(--muted)}
 .tag.gneg{border-color:var(--gn-edge); color:var(--gn-edge)} .tag.gpos{border-color:var(--gp-edge); color:var(--gp-edge)} .tag.vir{border-color:var(--vir); color:var(--vir)}
@@ -135,7 +156,7 @@ button{font:inherit; color:inherit}
 .qmsg.good{background:var(--good-soft)} .qmsg.bad{background:var(--bad-soft)} .qmsg.near{background:var(--warn-soft)}
 .qmsg a{color:var(--arrow); font-weight:700}
 .btn{display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:10px 20px; font-weight:700; font-size:17px; cursor:pointer; border:0; background:var(--arrow); color:#fff}
-@media (prefers-reduced-motion: reduce){ *{transition:none!important; animation:none!important; scroll-behavior:auto!important} }
+@media (prefers-reduced-motion: reduce){ .fcard .in{transition:none} *{transition:none!important; animation:none!important; scroll-behavior:auto!important} }
 </style>
 </head>
 <body>
@@ -152,6 +173,7 @@ button{font:inherit; color:inherit}
       <button type="button" class="mode" data-mode="quiz" aria-pressed="false">🎯 Quiz me</button>
     </div>
     <div class="group" role="toolbar" aria-label="Which microbes">
+      <span class="glabel" aria-hidden="true">Show</span>
       <button type="button" class="kind" data-kind="all" aria-pressed="true">Both</button>
       <button type="button" class="kind" data-kind="b" aria-pressed="false">🧫 Bacteria</button>
       <button type="button" class="kind" data-kind="v" aria-pressed="false">🧬 Viruses</button>
@@ -182,21 +204,21 @@ var GBY = {}; GROUPS.forEach(function(g){ GBY[g.id] = g; });
 /* bacteria names, gram, and tour links */
 var ORG = {};
 [[window.TOUR_NEG, "ch11-gram-neg-tour.html", "−"], [window.TOUR_POS, "ch11-gram-pos-tour.html", "+"]].forEach(function(t){
-  t[0].stops.forEach(function(s){ (s.orgs || []).forEach(function(o){ if (!ORG[o.id]) ORG[o.id] = {name: o.name, href: t[1] + "#org-" + o.id, gram: t[2]}; }); });
+  t[0].stops.forEach(function(s){ (s.orgs || []).forEach(function(o){ if (!ORG[o.id]) ORG[o.id] = {name: o.name, href: t[1] + "#org-" + o.id, gram: t[2], dz: o.disease && o.disease.short}; }); });
 });
 function info(id){
   var x = TX[id];
-  if (x.k === "v"){ var v = VIR[id]; return {name: v.name, fam: v.fam, v: true}; }
+  if (x.k === "v"){ var v = VIR[id]; return {name: v.name, fam: v.fam, dz: x.dz, v: true}; }
   var o = ORG[id] || {name: id, gram: "?"};
   /* Body Map link: rings every body area where this bacterium causes disease */
   var map = window.BODYMAP.sitesFor(id, "dz").length ? "body-map.html#dz/" + id : null;
-  return {name: D.NAMES[id] || o.name, href: o.href, map: map, gram: o.gram, v: false};
+  return {name: D.NAMES[id] || o.name, href: o.href, map: map, gram: o.gram, dz: o.dz, v: false};
 }
 function ids(){ return Object.keys(TX).filter(function(id){ return st.kind === "all" || TX[id].k === st.kind; }); }
 /* explore mode lists every route a microbe uses, without saying which is primary */
 function users(rid){ return ids().filter(function(id){ var x = TX[id]; return x.p.indexOf(rid) >= 0 || (x.s || []).indexOf(rid) >= 0; }); }
 
-var st = {mode: "explore", kind: "all", route: "drop", quiz: null, score: 0, streak: 0, best: 0};
+var st = {mode: "explore", kind: "all", route: "drop", flipped: {}, quiz: null, score: 0, streak: 0, best: 0};
 try { st.best = Number(localStorage.getItem("bio112-tx-best")) || 0; } catch (e) {}
 
 function drawTabs(){
@@ -211,31 +233,48 @@ function drawTabs(){
       }).join("") + "</div>";
   }).join("");
 }
-function card(id){
+/* a flip card: front = name + tag, back = disease, every route it uses (unlabeled), note, links */
+function card(id, rid){
   var m = info(id), x = TX[id];
-  var tags = m.v ? '<span class="tag vir">virus · ' + esc(m.fam) + "</span>" : '<span class="tag ' + (m.gram === "+" ? "gpos" : "gneg") + '">gram ' + m.gram + "</span>";
+  var tag = m.v ? '<span class="tag vir">' + esc(m.fam) + "</span>" : '<span class="tag ' + (m.gram === "+" ? "gpos" : "gneg") + '">gram ' + m.gram + "</span>";
   var style = ' style="--ge:' + (m.v ? "var(--vir)" : m.gram === "+" ? "var(--gp-edge)" : "var(--gn-edge)") + '"';
-  var links = (m.href ? '<a href="' + m.href + '">Open in the tour →</a>' : "") + (m.map ? '<a href="' + m.map + '">Body Map →</a>' : "");
-  return '<div class="mcard"' + style + '><b class="' + (m.v ? "" : "it") + '">' + esc(m.name) + "</b>" + (x.note ? "<small>" + esc(x.note) + "</small>" : "") + '<span class="tags">' + tags + "</span>" + (links ? '<span class="links">' + links + "</span>" : "") + "</div>";
+  var it = m.v ? "" : " it";
+  var routes = ROUTES.filter(function(r){ return x.p.indexOf(r.id) >= 0 || (x.s || []).indexOf(r.id) >= 0; })
+    .map(function(r){ return '<span class="' + (r.id === rid ? "cur" : "") + '">' + r.ic + " " + esc(r.short) + "</span>"; }).join("");
+  var links = (m.href ? '<a href="' + m.href + '">Tour →</a>' : "") + (m.map ? '<a href="' + m.map + '">Body Map →</a>' : "");
+  var flipped = st.flipped[id] ? " flipped" : "";
+  return '<div class="fcard' + flipped + '" data-card="' + id + '"' + style + '><div class="in">' +
+    '<button type="button" class="face front" data-flip="' + id + '" aria-expanded="' + !!st.flipped[id] + '"' + (flipped ? ' tabindex="-1" aria-hidden="true"' : "") + '><span class="big" aria-hidden="true">' + (m.v ? "🧬" : "🦠") + '</span><span class="nm' + it + '">' + esc(m.name) + '</span><span class="tags">' + tag + '</span><span class="hint">Tap to flip ↻</span></button>' +
+    '<div class="face back"' + (flipped ? "" : ' aria-hidden="true"') + '><span class="nm' + it + '">' + esc(m.name) + "</span>" +
+      '<span class="row"><b>Causes</b>' + esc(m.dz || "") + "</span>" +
+      '<span class="row"><b>Spreads by</b><span class="rts">' + routes + "</span></span>" +
+      (x.note ? '<span class="row"><b>Note</b>' + esc(x.note) + "</span>" : "") +
+      '<span class="links">' + links + '<button type="button" class="unflip" data-flip="' + id + '"' + (flipped ? "" : ' tabindex="-1"') + ">↻ Flip back</button></span></div>" +
+  "</div></div>";
 }
 function render(){
   drawTabs();
   if (st.mode === "quiz") return renderQuiz();
   var r = RBY[st.route], g = GBY[r.grp], list = users(r.id), i = ROUTES.indexOf(r);
   var bac = list.filter(function(id){ return TX[id].k === "b"; }), vir = list.filter(function(id){ return TX[id].k === "v"; });
-  var h = '<section class="banner g-' + r.grp + '"><span class="big" aria-hidden="true">' + r.ic + '</span><span class="eyebrow">' + g.ic + " " + esc(g.name) + " · route " + (i + 1) + " of " + ROUTES.length + "</span><h2>" + esc(r.name) + '</h2><p class="def">' + esc(r.def) + "</p>" +
+  var h = '<section class="banner g-' + r.grp + '"><span class="big" aria-hidden="true">' + r.ic + '</span><span class="eyebrow">' + g.ic + " " + esc(g.name) + "</span><h2>" + esc(r.name) + '</h2><p class="def">' + esc(r.def) + "</p>" +
     '<div class="count"><span class="pill">' + list.length + " microbe" + (list.length === 1 ? "" : "s") + " spread this way</span>" + (st.kind !== "v" ? '<span class="pill">🧫 ' + bac.length + " bacteria</span>" : "") + (st.kind !== "b" ? '<span class="pill">🧬 ' + vir.length + " virus" + (vir.length === 1 ? "" : "es") + "</span>" : "") + "</div></section>";
   if (!list.length) h += '<p class="empty">None of our ' + (st.kind === "v" ? "viruses" : st.kind === "b" ? "bacteria" : "microbes") + " spread this way. Try another route!</p>";
   else {
     var colsHtml = [];
-    if (st.kind !== "v") colsHtml.push('<div class="colbox"><h3>🧫 Bacteria</h3>' + (bac.length ? '<div class="mlist">' + bac.map(card).join("") + "</div>" : '<p class="empty">No bacteria on our list spread this way.</p>') + "</div>");
-    if (st.kind !== "b") colsHtml.push('<div class="colbox"><h3>🧬 Viruses</h3>' + (vir.length ? '<div class="mlist">' + vir.map(card).join("") + "</div>" : '<p class="empty">No viruses on our list spread this way.</p>') + "</div>");
+    function col(title, kind, arr, none){
+      var all = arr.length && arr.every(function(id){ return st.flipped[id]; });
+      return '<div class="colbox"><div class="colhead"><h3>' + title + "</h3>" + (arr.length ? '<button type="button" class="flipall" data-flipall="' + kind + '">' + (all ? "↻ Flip all back" : "↻ Flip all") + "</button>" : "") + "</div>" +
+        (arr.length ? '<div class="mlist">' + arr.map(function(id){ return card(id, r.id); }).join("") + "</div>" : '<p class="empty">' + none + "</p>") + "</div>";
+    }
+    if (st.kind !== "v") colsHtml.push(col("🧫 Bacteria", "b", bac, "No bacteria on our list spread this way."));
+    if (st.kind !== "b") colsHtml.push(col("🧬 Viruses", "v", vir, "No viruses on our list spread this way."));
     h += '<div class="cols"' + (colsHtml.length === 1 ? ' style="grid-template-columns:minmax(0,1fr)"' : "") + ">" + colsHtml.join("") + "</div>";
   }
   var prev = ROUTES[i - 1], next = ROUTES[i + 1];
   h += '<div class="stepper">' + (prev ? '<button type="button" class="step g-' + prev.grp + '" data-step="' + prev.id + '">← ' + prev.ic + " " + esc(prev.short) + "</button>" : "") +
     (next ? '<button type="button" class="step next g-' + next.grp + '" data-step="' + next.id + '">Next: ' + next.ic + " " + esc(next.short) + " →</button>" : '<button type="button" class="step next g-air" data-mode="quiz">Done! Try the quiz 🎯</button>') + "</div>";
-  h += '<p class="src">Microbes are listed for every route they can use. Some spread more than one way! Sources: Ch. 13 slides (viruses) and the Ch. 11 tours (bacteria).</p>';
+  h += '<p class="src">Tap a card to flip it. Microbes are listed for every route they can use. Some spread more than one way! Sources: Ch. 13 slides (viruses) and the Ch. 11 tours (bacteria).</p>';
   $("#main").innerHTML = h;
 }
 
@@ -282,6 +321,14 @@ function answer(rid){
 }
 
 /* ---------- events ---------- */
+function flipCard(id){
+  st.flipped[id] = !st.flipped[id];
+  var c = document.querySelector('.fcard[data-card="' + id + '"]'); if (!c) return;
+  var on = st.flipped[id], front = c.querySelector(".front"), back = c.querySelector(".back"), un = c.querySelector(".unflip");
+  c.classList.toggle("flipped", on);
+  front.setAttribute("aria-expanded", on); front.tabIndex = on ? -1 : 0; un.tabIndex = on ? 0 : -1;
+  if (on){ front.setAttribute("aria-hidden", "true"); back.removeAttribute("aria-hidden"); } else { back.setAttribute("aria-hidden", "true"); front.removeAttribute("aria-hidden"); }
+}
 function setMode(m){
   st.mode = m;
   document.querySelectorAll(".mode").forEach(function(b){ b.setAttribute("aria-pressed", b.getAttribute("data-mode") === m ? "true" : "false"); });
@@ -289,7 +336,7 @@ function setMode(m){
   render();
 }
 function goRoute(rid, scroll){
-  st.route = rid; render();
+  st.route = rid; st.flipped = {}; render();
   var tab = document.querySelector('.tab[data-route="' + rid + '"]');
   if (tab && tab.scrollIntoView) tab.scrollIntoView({block: "nearest", inline: "center", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"});
   if (scroll){ var t = $(".banner"); if (t && t.getBoundingClientRect().top < 0) t.scrollIntoView({block: "start"}); }
@@ -302,6 +349,13 @@ document.addEventListener("click", function(e){
     document.querySelectorAll("[data-kind]").forEach(function(b){ b.setAttribute("aria-pressed", b === el ? "true" : "false"); });
     if (st.mode === "quiz") newQuestion();
     render(); return;
+  }
+  if ((el = e.target.closest("[data-flip]"))){ flipCard(el.getAttribute("data-flip")); return; }
+  if ((el = e.target.closest("[data-flipall]"))){
+    var kind = el.getAttribute("data-flipall"), cards = users(st.route).filter(function(id){ return TX[id].k === kind; });
+    var to = !cards.every(function(id){ return st.flipped[id]; });
+    cards.forEach(function(id){ if (!!st.flipped[id] !== to) flipCard(id); });
+    el.textContent = to ? "↻ Flip all back" : "↻ Flip all"; return;
   }
   if ((el = e.target.closest("[data-next]"))){ newQuestion(); render(); return; }
   if ((el = e.target.closest("[data-answer]"))){ answer(el.getAttribute("data-answer")); return; }
