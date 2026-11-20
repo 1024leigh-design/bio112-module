@@ -6,20 +6,29 @@
    Bacteria: the "How it spreads" boxes in the Ch. 11 tours; the rest were filled in and reviewed by the instructor.
    Normal flora that cause disease from inside your own body are left out on purpose. */
 (function(){
+/* route groups: the tabs at the top of the page, each with its own color */
+var GROUPS = [
+  {id: "air", ic: "🌬️", name: "Through the air"},
+  {id: "food", ic: "🍽️", name: "Food and water"},
+  {id: "fluids", ic: "🩸", name: "Body fluids"},
+  {id: "touch", ic: "✋", name: "Touch"},
+  {id: "animals", ic: "🦟", name: "Animals"},
+  {id: "skin", ic: "🩹", name: "Breaks in the skin"}
+];
 var ROUTES = [
-  {id: "drop", ic: "💨", name: "Respiratory droplets", def: "Coughing, sneezing, talking, or kissing (saliva). Big droplets only travel a short distance."},
-  {id: "air", ic: "🌫️", name: "Airborne", def: "Tiny particles (aerosols) hang in the air and travel long distances."},
-  {id: "fecal", ic: "🚰", name: "Fecal-oral", def: "Microbes from feces get into water or food, then get swallowed."},
-  {id: "food", ic: "🍽️", name: "Contaminated food", def: "Eating food that carries the microbe or its toxin."},
-  {id: "blood", ic: "🩸", name: "Blood", def: "Transfusions, needle sticks, or transplants."},
-  {id: "sex", ic: "💞", name: "Sexual contact", def: "Genital or oral sex."},
-  {id: "vert", ic: "🤰", name: "Vertical", def: "Passed from parent to baby during pregnancy or birth."},
-  {id: "contact", ic: "✋", name: "Direct contact", def: "Touching skin, sores, lesions, or mucous membranes."},
-  {id: "fomite", ic: "🚪", name: "Fomites", def: "Touching a contaminated object or surface, then your mouth, eyes, or nose."},
-  {id: "auto", ic: "🔁", name: "Autoinoculation", def: "Spreading it to another part of your own body by scratching or touching."},
-  {id: "vector", ic: "🦟", name: "Vectors", def: "Carried by an animal like a mosquito, tick, flea, or louse."},
-  {id: "bite", ic: "🐕", name: "Animal bites", def: "From an infected animal's bite or scratch."},
-  {id: "wound", ic: "🩹", name: "Wounds (parenteral route)", def: "Microbes enter the tissue directly through a puncture, cut, burn, or wound."}
+  {id: "drop", grp: "air", short: "Droplets", ic: "💨", name: "Respiratory droplets", def: "Coughing, sneezing, talking, or kissing (saliva). Big droplets only travel a short distance."},
+  {id: "air", grp: "air", short: "Airborne", ic: "🌫️", name: "Airborne", def: "Tiny particles (aerosols) hang in the air and travel long distances."},
+  {id: "fecal", grp: "food", short: "Fecal-oral", ic: "🚰", name: "Fecal-oral", def: "Microbes from feces get into water or food, then get swallowed."},
+  {id: "food", grp: "food", short: "Contaminated food", ic: "🍽️", name: "Contaminated food", def: "Eating food that carries the microbe or its toxin."},
+  {id: "blood", grp: "fluids", short: "Blood", ic: "🩸", name: "Blood", def: "Transfusions, needle sticks, or transplants."},
+  {id: "sex", grp: "fluids", short: "Sexual contact", ic: "💞", name: "Sexual contact", def: "Genital or oral sex."},
+  {id: "vert", grp: "fluids", short: "Vertical", ic: "🤰", name: "Vertical", def: "Passed from parent to baby during pregnancy or birth."},
+  {id: "contact", grp: "touch", short: "Direct contact", ic: "✋", name: "Direct contact", def: "Touching skin, sores, lesions, or mucous membranes."},
+  {id: "fomite", grp: "touch", short: "Fomites", ic: "🚪", name: "Fomites", def: "Touching a contaminated object or surface, then your mouth, eyes, or nose."},
+  {id: "auto", grp: "touch", short: "Autoinoculation", ic: "🔁", name: "Autoinoculation", def: "Spreading it to another part of your own body by scratching or touching."},
+  {id: "vector", grp: "animals", short: "Vectors", ic: "🦟", name: "Vectors", def: "Carried by an animal like a mosquito, tick, flea, or louse."},
+  {id: "bite", grp: "animals", short: "Animal bites", ic: "🐕", name: "Animal bites", def: "From an infected animal's bite or scratch."},
+  {id: "wound", grp: "skin", short: "Wounds", ic: "🩹", name: "Wounds (parenteral route)", def: "Microbes enter the tissue directly through a puncture, cut, burn, or wound."}
 ];
 
 /* k: "b" bacterium (id from the tours), "v" virus (id from body-map-data.js). note: one line shown on its card. */
@@ -87,5 +96,5 @@ var TX = {
 };
 /* card names that differ from the tour's organism name */
 var NAMES = {styphi: "Salmonella typhi", brf: "Borrelia (relapsing fever)"};
-window.TXDATA = {ROUTES: ROUTES, TX: TX, NAMES: NAMES};
+window.TXDATA = {GROUPS: GROUPS, ROUTES: ROUTES, TX: TX, NAMES: NAMES};
 })();
