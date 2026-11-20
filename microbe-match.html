@@ -204,49 +204,49 @@ body.hard .wrap{max-width:1180px}
    avoid = ids that must never share a round with this one, so no clue card fits two microbes on the board.
    ───────────────────────────────────────────────────────────── */
 var BACTERIA = [
-  {id: "rrick", n: "<i>Rickettsia rickettsii</i>", dz: "Rocky Mountain spotted fever"},
-  {id: "bpert", n: "<i>Bordetella pertussis</i>", dz: "Whooping cough", clue: "Only gram − coccobacillus"},
-  {id: "ngon", n: "<i>Neisseria gonorrhoeae</i>", dz: "Gonorrhea", clue: "Gram − diplococci on chocolate agar + CO₂; uses glucose, but not maltose"},
-  {id: "nmen", n: "<i>Neisseria meningitidis</i>", dz: "Meningococcal meningitis", clue: "Gram − diplococci on chocolate agar + CO₂; uses glucose and maltose"},
-  {id: "paer", n: "<i>Pseudomonas aeruginosa</i>", dz: "Contact lens eye infections", clue: "Obligate aerobe; green, pearly colonies; oxidase +, lactose −"},
-  {id: "lpneu", n: "<i>Legionella pneumophila</i>", dz: "Legionnaires' disease", clue: "Grows inside amoebae; spread from water systems"},
-  {id: "ecoli", n: "<i>Escherichia coli</i>", dz: ["UTIs (the #1 cause)", "Traveler's diarrhea"], clue: "Only coliform with IMViC ++−−"},
-  {id: "kpneu", n: "<i>Klebsiella pneumoniae</i>", dz: "Aspiration pneumonia (often hospital-acquired)", clue: "Only non-motile coliform (IMViC −−++)"},
-  {id: "styph", n: "<i>Salmonella typhi</i>", dz: "Typhoid fever", clue: "IMViC −+−−, weak H₂S; citrate −, unlike other <i>Salmonella</i>"},
-  {id: "shig", n: "<i>Shigella</i>", dz: "Shigellosis (bacillary dysentery)"},
-  {id: "pmir", n: "<i>Proteus mirabilis</i>", clue: ["Swarms across the agar, with a strong odor", "Lactose −, IMViC −+−+, H₂S +, urease +"]},
-  {id: "smar", n: "<i>Serratia marcescens</i>", clue: "Only gram − with a red pigment"},
-  {id: "vchol", n: "<i>Vibrio cholerae</i>", dz: "Cholera", clue: "Comma-shaped rod; oxidase + (enterics are oxidase −)"},
-  {id: "cjej", n: "<i>Campylobacter jejuni</i>", dz: "Bacterial gastroenteritis (worldwide #1)", clue: "Only gull-wing shape"},
-  {id: "hpyl", n: "<i>Helicobacter pylori</i>", dz: "Stomach ulcers", clue: "Urease + spiral; lives in the stomach"},
-  {id: "ypest", n: "<i>Yersinia pestis</i>", dz: "Bubonic plague"},
-  {id: "tpal", n: "<i>Treponema pallidum</i>", dz: "Syphilis"},
-  {id: "trep", n: "<i>Treponema</i>", dz: "Bejel, yaws, and pinta", avoid: ["tpal"]},
-  {id: "bburg", n: "<i>Borrelia burgdorferi</i>", dz: "Lyme disease", clue: "Erythema migrans (bull's-eye rash) after a tick bite"},
-  {id: "ctrach", n: "<i>Chlamydia trachomatis</i>", dz: "The most common bacterial STI", clue: "Only two-form life cycle: elementary (EB) and reticulate (RB) bodies"},
-  {id: "fuso", n: "<i>Fusobacterium</i>", dz: "Periodontal (gum) disease", clue: "Anaerobic, spindle-shaped rods in the mouth"},
-  {id: "cyano", n: "Cyanobacteria", clue: "Only photosynthetic group; makes O₂"},
-  {id: "planct", n: "Planctomycetes", clue: "Prokaryotic AND eukaryotic characteristics"},
-  {id: "myco", n: "<i>Mycoplasma</i>", clue: "Only one with no cell wall; sterols in its membrane"},
-  {id: "saur", n: "<i>Staphylococcus aureus</i>", dz: ["Toxic shock syndrome", "Scalded skin syndrome", "Impetigo", "Osteomyelitis", "Boils (furuncles and carbuncles)"], clue: "Gram-positive cocci: catalase +, coagulase +"},
-  {id: "ssap", n: "<i>Staphylococcus saprophyticus</i>", dz: "UTIs (the #2 cause)", clue: "Gram-positive cocci: catalase +, coagulase −, urease +"},
-  {id: "spyo", n: "<i>Streptococcus pyogenes</i>", dz: "Strep throat"},
-  {id: "spneu", n: "<i>Streptococcus pneumoniae</i>", dz: "Streptococcal pneumonia"},
-  {id: "lacto", n: "<i>Lactobacillus</i>", clue: "A major food fermenter: makes lactic acid (yogurt, sauerkraut, pickles)"},
-  {id: "cperf", n: "<i>Clostridium perfringens</i>", dz: "Gas gangrene", clue: "Non-motile, spore-forming obligate anaerobe; a big gas producer"},
-  {id: "ctet", n: "<i>Clostridium tetani</i>", dz: "Tetanus (lockjaw)", clue: "Its toxin blocks INHIBITORY neurotransmitters → spastic paralysis"},
-  {id: "cbot", n: "<i>Clostridium botulinum</i>", dz: "Botulism", clue: "Its toxin blocks EXCITATORY acetylcholine → flaccid paralysis"},
-  {id: "cdiff", n: "<i>Clostridioides difficile</i>", dz: "Colitis after antibiotics"},
-  {id: "banth", n: "<i>Bacillus anthracis</i>", dz: "Anthrax"},
-  {id: "bcer", n: "<i>Bacillus cereus</i>", dz: "Food poisoning from stale rice"},
-  {id: "spore", n: "<i>Bacillus</i> + <i>Clostridium</i>", tag: "2 genera", clue: "The endospore formers", avoid: ["cperf", "ctet", "cbot", "cdiff", "banth", "bcer"]},
-  {id: "lmono", n: "<i>Listeria monocytogenes</i>", dz: "Listeriosis"},
-  {id: "aisr", n: "<i>Actinomyces israelii</i>", dz: "Actinomycosis (lumpy jaw)", clue: "Anaerobic branching filaments; sulfur granules in pus"},
-  {id: "strmy", n: "<i>Streptomyces</i>", clue: "A major producer of antibiotics (like streptomycin)"},
-  {id: "mlut", n: "<i>Micrococcus luteus</i>", clue: "Yellow colonies; cocci in tetrads"},
-  {id: "cdiph", n: "<i>Corynebacterium diphtheriae</i>", dz: "Diphtheria", clue: "Club-shaped rods in \"Chinese letters\"; metachromatic granules"},
-  {id: "mtb", n: "<i>Mycobacterium tuberculosis</i>", dz: "Tuberculosis", clue: ["Treated with RIPE: rifampin, isoniazid, pyrazinamide, ethambutol", "Vocab: tubercle (granuloma), Ghon complex, caseous necrosis, miliary"]},
-  {id: "mlep", n: "<i>Mycobacterium leprae</i>", dz: "Leprosy", clue: "Can be caught from armadillos"}
+  {id: "rrick", p: 0, n: "<i>Rickettsia rickettsii</i>", dz: "Rocky Mountain spotted fever"},
+  {id: "bpert", p: 1, n: "<i>Bordetella pertussis</i>", dz: "Whooping cough", clue: "Only gram − coccobacillus"},
+  {id: "ngon", p: 3, n: "<i>Neisseria gonorrhoeae</i>", dz: "Gonorrhea", clue: "Gram − diplococci on chocolate agar + CO₂; uses glucose, but not maltose"},
+  {id: "nmen", p: 1, n: "<i>Neisseria meningitidis</i>", dz: "Meningococcal meningitis", clue: "Gram − diplococci on chocolate agar + CO₂; uses glucose and maltose"},
+  {id: "paer", p: 1, n: "<i>Pseudomonas aeruginosa</i>", dz: "Contact lens eye infections", clue: "Obligate aerobe; green, pearly colonies; oxidase +, lactose −"},
+  {id: "lpneu", p: 1, n: "<i>Legionella pneumophila</i>", dz: "Legionnaires' disease", clue: "Grows inside amoebae; spread from water systems"},
+  {id: "ecoli", p: 2, n: "<i>Escherichia coli</i>", dz: ["UTIs (the #1 cause)", "Traveler's diarrhea"], clue: "Only coliform with IMViC ++−−"},
+  {id: "kpneu", p: 1, n: "<i>Klebsiella pneumoniae</i>", dz: "Aspiration pneumonia (often hospital-acquired)", clue: "Only non-motile coliform (IMViC −−++)"},
+  {id: "styph", p: 2, n: "<i>Salmonella typhi</i>", dz: "Typhoid fever", clue: "IMViC −+−−, weak H₂S; citrate −, unlike other <i>Salmonella</i>"},
+  {id: "shig", p: 1, n: "<i>Shigella</i>", dz: "Shigellosis (bacillary dysentery)"},
+  {id: "pmir", p: 1, n: "<i>Proteus mirabilis</i>", clue: ["Swarms across the agar, with a strong odor", "Lactose −, IMViC −+−+, H₂S +, urease +"]},
+  {id: "smar", p: 0, n: "<i>Serratia marcescens</i>", clue: "Only gram − with a red pigment"},
+  {id: "vchol", p: 1, n: "<i>Vibrio cholerae</i>", dz: "Cholera", clue: "Comma-shaped rod; oxidase + (enterics are oxidase −)"},
+  {id: "cjej", p: 1, n: "<i>Campylobacter jejuni</i>", dz: "Bacterial gastroenteritis (worldwide #1)", clue: "Only gull-wing shape"},
+  {id: "hpyl", p: 1, n: "<i>Helicobacter pylori</i>", dz: "Stomach ulcers", clue: "Urease + spiral; lives in the stomach"},
+  {id: "ypest", p: 0, n: "<i>Yersinia pestis</i>", dz: "Bubonic plague"},
+  {id: "tpal", p: 2, n: "<i>Treponema pallidum</i>", dz: "Syphilis"},
+  {id: "trep", p: 1, n: "<i>Treponema</i>", dz: "Bejel, yaws, and pinta", avoid: ["tpal"]},
+  {id: "bburg", p: 2, n: "<i>Borrelia burgdorferi</i>", dz: "Lyme disease", clue: "Erythema migrans (bull's-eye rash) after a tick bite"},
+  {id: "ctrach", p: 2, n: "<i>Chlamydia trachomatis</i>", dz: "The most common bacterial STI", clue: "Only two-form life cycle: elementary (EB) and reticulate (RB) bodies"},
+  {id: "fuso", p: 0, n: "<i>Fusobacterium</i>", dz: "Periodontal (gum) disease", clue: "Anaerobic, spindle-shaped rods in the mouth"},
+  {id: "cyano", p: 0, n: "Cyanobacteria", clue: "Only photosynthetic group; makes O₂"},
+  {id: "planct", p: 0, n: "Planctomycetes", clue: "Prokaryotic AND eukaryotic characteristics"},
+  {id: "myco", p: 1, n: "<i>Mycoplasma</i>", clue: "Only one with no cell wall; sterols in its membrane"},
+  {id: "saur", p: 2, n: "<i>Staphylococcus aureus</i>", dz: ["Toxic shock syndrome", "Scalded skin syndrome", "Impetigo", "Osteomyelitis", "Boils (furuncles and carbuncles)"], clue: "Gram-positive cocci: catalase +, coagulase +"},
+  {id: "ssap", p: 1, n: "<i>Staphylococcus saprophyticus</i>", dz: "UTIs (the #2 cause)", clue: "Gram-positive cocci: catalase +, coagulase −, urease +"},
+  {id: "spyo", p: 1, n: "<i>Streptococcus pyogenes</i>", dz: "Strep throat"},
+  {id: "spneu", p: 1, n: "<i>Streptococcus pneumoniae</i>", dz: "Streptococcal pneumonia"},
+  {id: "lacto", p: 0, n: "<i>Lactobacillus</i>", clue: "A major food fermenter: makes lactic acid (yogurt, sauerkraut, pickles)"},
+  {id: "cperf", p: 2, n: "<i>Clostridium perfringens</i>", dz: "Gas gangrene", clue: "Non-motile, spore-forming obligate anaerobe; a big gas producer"},
+  {id: "ctet", p: 2, n: "<i>Clostridium tetani</i>", dz: "Tetanus (lockjaw)", clue: "Its toxin blocks INHIBITORY neurotransmitters → spastic paralysis"},
+  {id: "cbot", p: 3, n: "<i>Clostridium botulinum</i>", dz: "Botulism", clue: "Its toxin blocks EXCITATORY acetylcholine → flaccid paralysis"},
+  {id: "cdiff", p: 2, n: "<i>Clostridioides difficile</i>", dz: "Colitis after antibiotics"},
+  {id: "banth", p: 0, n: "<i>Bacillus anthracis</i>", dz: "Anthrax"},
+  {id: "bcer", p: 1, n: "<i>Bacillus cereus</i>", dz: "Food poisoning from stale rice"},
+  {id: "spore", p: 1, n: "<i>Bacillus</i> + <i>Clostridium</i>", tag: "2 genera", clue: "The endospore formers", avoid: ["cperf", "ctet", "cbot", "cdiff", "banth", "bcer"]},
+  {id: "lmono", p: 1, n: "<i>Listeria monocytogenes</i>", dz: "Listeriosis"},
+  {id: "aisr", p: 1, n: "<i>Actinomyces israelii</i>", dz: "Actinomycosis (lumpy jaw)", clue: "Anaerobic branching filaments; sulfur granules in pus"},
+  {id: "strmy", p: 0, n: "<i>Streptomyces</i>", clue: "A major producer of antibiotics (like streptomycin)"},
+  {id: "mlut", p: 1, n: "<i>Micrococcus luteus</i>", clue: "Yellow colonies; cocci in tetrads"},
+  {id: "cdiph", p: 2, n: "<i>Corynebacterium diphtheriae</i>", dz: "Diphtheria", clue: "Club-shaped rods in \"Chinese letters\"; metachromatic granules"},
+  {id: "mtb", p: 2, n: "<i>Mycobacterium tuberculosis</i>", dz: "Tuberculosis", clue: ["Treated with RIPE: rifampin, isoniazid, pyrazinamide, ethambutol", "Vocab: tubercle (granuloma), Ghon complex, caseous necrosis, miliary"]},
+  {id: "mlep", p: 1, n: "<i>Mycobacterium leprae</i>", dz: "Leprosy", clue: "Can be caught from armadillos"}
 ];
 var VIRUSES = [
   {id: "variola", n: "Variola virus", dz: "Smallpox", clue: "Eradicated in 1980; the vaccine came from vaccinia (cowpox)"},
@@ -395,8 +395,9 @@ var DECKS = {bac: {game: "match-bac", title: "Bacteria"}, vir: {game: "match-vir
 var ROUNDS = 3, SIZES = {reg: 6, hard: 12};
 function P(){ return SIZES[g.size]; }
 /* each deck + board size has its own leaderboard (hard scores run higher) */
-function lbGame(){ return DECKS[g.deck].game + (g.size === "hard" ? "-hard" : ""); }
-function lbTitle(){ return DECKS[g.deck].title + " deck" + (g.size === "hard" ? " · Hard 🔥" : ""); }
+/* one class leaderboard for every deck; Hard (12 pairs) keeps its own board because its scores run about twice as high */
+function lbGame(){ return g.size === "hard" ? "match-hard" : "match"; }
+function lbTitle(){ return g.size === "hard" ? "all decks · Hard" : "all decks"; }
 
 function $(s){ return document.querySelector(s); }
 function shuffle(a){ a = a.slice(); for (var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
@@ -440,19 +441,19 @@ function fill(all, pool, n, round, used){
 }
 /* a top-priority term left over (it clashed with a look-alike every time) swaps in for a non-top term in a round where it fits */
 function placeLeftoverTops(rounds, pool){
-  pool.filter(function(o){ return o.voc && o.p === 2; }).forEach(function(o){
+  pool.filter(function(o){ return o.p >= 2; }).forEach(function(o){
     for (var r = 0; r < rounds.length; r++){
       var R = rounds[r];
       for (var j = 0; j < R.length; j++){
-        if (!R[j].voc || R[j].p === 2) continue;
+        if (R[j].p >= 2 || R[j].v !== o.v || !!R[j].voc !== !!o.voc) continue;
         if (R.some(function(x, k){ return k !== j && clash(x, o); })) continue;
         R[j] = o; return;
       }
     }
   });
 }
-/* weighted pick without repeats: top priority x8, mid x3, low x1, and Ch. 14 counts double */
-function vw(o){ return [1, 3, 8][o.p] * (o.ch === 14 ? 2 : 1); }
+/* weighted pick without repeats. Priority (instructor's levels): 3 x12, 2 x8, 1 x3, 0 x1; vocab from Ch. 14 counts double */
+function vw(o){ return [1, 3, 8, 12][o.p === undefined ? 1 : o.p] * (o.ch === 14 ? 2 : 1); }
 function weighted(pool, n){
   pool = pool.slice(); var out = [];
   while (out.length < n && pool.length){
@@ -463,17 +464,19 @@ function weighted(pool, n){
   return out;
 }
 /* vocab for one game. In the Vocab deck top-priority terms are guaranteed (all of them in Hard); the rest are weighted. */
-function pickVocab(n, guaranteeTop){
-  /* keep at least 4 spots for mid/low terms; Hard (36 spots) fits every top term, Regular (18) rotates them */
-  var top = guaranteeTop ? shuffle(VOCAB.filter(function(o){ return o.p === 2; })).slice(0, Math.max(0, n - 4)) : [];
-  var rest = VOCAB.filter(function(o){ return top.indexOf(o) < 0; });
+function pickTop(list, n, guaranteeTop){
+  /* top levels (2 and 3; 3s first) are guaranteed in their own deck, keeping at least 4 spots for the rest; everything else is weighted */
+  var top = guaranteeTop ? shuffle(list.filter(function(o){ return o.p === 3; })).concat(shuffle(list.filter(function(o){ return o.p === 2; }))).slice(0, Math.max(0, n - 4)) : [];
+  var rest = list.filter(function(o){ return top.indexOf(o) < 0; });
   return shuffle(top.concat(weighted(rest, n - top.length)));
 }
+function pickVocab(n, guaranteeTop){ return pickTop(VOCAB, n, guaranteeTop); }
 /* how many of each kind go on one Mixed board */
 function mixSplit(){ return g.size === "hard" ? {b: 4, v: 4, w: 4} : {b: 2, v: 2, w: 2}; }
 /* pick the microbes for each round (no repeats while the deck lasts); mixed = half bacteria, half viruses in every round */
 function buildQueue(){
-  var b = shuffle(BACTERIA), v = shuffle(VIRUSES), q = [], n = P(), ms = mixSplit();
+  var n = P(), ms = mixSplit(), q = [];
+  var b = g.deck === "bac" ? pickTop(BACTERIA, ROUNDS * n, true) : g.deck === "mix" ? pickTop(BACTERIA, ROUNDS * ms.b, false) : shuffle(BACTERIA), v = shuffle(VIRUSES);
   var w = g.deck === "voc" ? pickVocab(ROUNDS * n, true) : g.deck === "mix" ? pickVocab(ROUNDS * ms.w, false) : [];
   var rounds = [], used = [];
   for (var r = 0; r < ROUNDS; r++){
@@ -485,6 +488,7 @@ function buildQueue(){
     used = used.concat(round); rounds.push(round);
   }
   if (g.deck === "voc") placeLeftoverTops(rounds, w);
+  if (g.deck === "bac") placeLeftoverTops(rounds, b);
   rounds.forEach(function(R){ q = q.concat(shuffle(R)); });
   return q;
 }
@@ -586,7 +590,7 @@ function endGame(){
   $("#e-sum").innerHTML = '<div><b>' + g.totalMatched + '</b><span>pairs matched</span></div><div><b>' + g.misses + '</b><span>misses</span></div><div><b>' + DECKS[g.deck].title + (g.size === "hard" ? " 🔥" : "") + '</b><span>' + (g.size === "hard" ? "deck · hard" : "deck") + '</span></div>';
   show("s-end");
   if (window.BIO112_LB) BIO112_LB.widget($("#lb"), {board: false, game: lbGame(), title: "Save your score: " + lbTitle(), score: function(){
-    return {score: g.score, details: g.totalMatched + " pairs, " + g.misses + " misses"};
+    return {score: g.score, details: DECKS[g.deck].title + " deck" + (g.size === "hard" ? " (Hard)" : "") + ": " + g.totalMatched + " pairs, " + g.misses + " misses"};
   }});
 }
 
