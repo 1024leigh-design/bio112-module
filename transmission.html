@@ -13,7 +13,7 @@
 :root{
   --bg:#f2f5f8; --surface:#ffffff; --surface-2:#e8eef4; --ink:#14223a; --muted:#53657b; --line:#d3dde7;
   --arrow:#1683cc; --arrow-soft:#dcecf9; --good:#1f8a55; --good-soft:#dcf2e5; --bad:#c43a2b; --bad-soft:#fbe0db; --warn:#b45309; --warn-soft:#fdf0dc;
-  --vir:#0e7490; --gn-edge:#c2185b; --gp-edge:#6d28d9; --on:#ffffff;
+  --vir:#0e7490; --gn-edge:#c2185b; --gp-edge:#6d28d9; --on:#ffffff; --gn-fill:#f7b6cf; --gp-fill:#d8c8f5; --v-fill:#d5f0f5;
   --g-air:#0369a1; --g-air-soft:#e0f2fe; --g-food:#b45309; --g-food-soft:#fef3c7; --g-fluids:#c0262d; --g-fluids-soft:#fee2e2;
   --g-touch:#6d28d9; --g-touch-soft:#ede9fe; --g-animals:#15803d; --g-animals-soft:#dcfce7; --g-skin:#be185d; --g-skin-soft:#fce7f3;
   --f-display:'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
@@ -24,7 +24,7 @@
   :root:not([data-theme="light"]){
     --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
     --arrow:#4aa9ee; --arrow-soft:#173450; --good:#4ccb8b; --good-soft:#153a29; --bad:#ff7d6d; --bad-soft:#46211d; --warn:#f5b85a; --warn-soft:#3a2a12;
-    --vir:#4fc3d9; --gn-edge:#f48fb6; --gp-edge:#c4b0f5; --on:#0d151f;
+    --vir:#4fc3d9; --gn-edge:#f48fb6; --gp-edge:#c4b0f5; --on:#0d151f; --gn-fill:#9c3d68; --gp-fill:#4c3a7a; --v-fill:#14313a;
     --g-air:#38bdf8; --g-air-soft:#0c2a3d; --g-food:#fbbf24; --g-food-soft:#3a2a0c; --g-fluids:#f87171; --g-fluids-soft:#3d1515;
     --g-touch:#a78bfa; --g-touch-soft:#2a1f45; --g-animals:#4ade80; --g-animals-soft:#12301d; --g-skin:#f472b6; --g-skin-soft:#3a1428; color-scheme:dark;
   }
@@ -32,7 +32,7 @@
 :root[data-theme="dark"]{
   --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
   --arrow:#4aa9ee; --arrow-soft:#173450; --good:#4ccb8b; --good-soft:#153a29; --bad:#ff7d6d; --bad-soft:#46211d; --warn:#f5b85a; --warn-soft:#3a2a12;
-  --vir:#4fc3d9; --gn-edge:#f48fb6; --gp-edge:#c4b0f5; --on:#0d151f;
+  --vir:#4fc3d9; --gn-edge:#f48fb6; --gp-edge:#c4b0f5; --on:#0d151f; --gn-fill:#9c3d68; --gp-fill:#4c3a7a; --v-fill:#14313a;
   --g-air:#38bdf8; --g-air-soft:#0c2a3d; --g-food:#fbbf24; --g-food-soft:#3a2a0c; --g-fluids:#f87171; --g-fluids-soft:#3d1515;
   --g-touch:#a78bfa; --g-touch-soft:#2a1f45; --g-animals:#4ade80; --g-animals-soft:#12301d; --g-skin:#f472b6; --g-skin-soft:#3a1428; color-scheme:dark;
 }
@@ -109,8 +109,7 @@ button{font:inherit; color:inherit}
 .fcard.flipped .in{transform:rotateY(180deg)}
 .face{grid-area:1 / 1; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:14px; border:1.5px solid var(--line); border-left:6px solid var(--ge); padding:10px 12px; display:flex; flex-direction:column; gap:5px; color:var(--ink)}
 .front{background:var(--surface); cursor:pointer; font:inherit; width:100%; justify-content:center; align-items:center; text-align:center; gap:6px}
-.front .big{display:inline-flex; color:var(--ge)}
-.front .big .ico{width:34px; height:34px}
+.front .cell{width:92px; height:63px; display:block}
 .front .tags{justify-content:center}
 .front:hover{border-color:var(--ge)}
 .front .nm{font-weight:700; font-size:18px; line-height:1.25}
@@ -219,6 +218,99 @@ var ICON = {
   bacterium: '<rect x="3" y="7.5" width="18" height="9" rx="4.5"/><path d="M21 12h2M1 12h2M7.5 7.5 6.5 5M16.5 16.5l1 2.5"/><path d="M9 12h.01M12 11h.01M15 12.5h.01"/>',
   virus: '<circle cx="12" cy="12" r="5"/><path d="M12 7V4M12 20v-3M7 12H4M20 12h-3M8.5 8.5 6.4 6.4M17.6 17.6l-2.1-2.1M8.5 15.5l-2.1 2.1M17.6 6.4l-2.1 2.1"/><circle cx="12" cy="3" r="1"/><circle cx="12" cy="21" r="1"/><circle cx="3" cy="12" r="1"/><circle cx="21" cy="12" r="1"/>'
 };
+/* the microbe itself on the front of each card.
+   Bacteria: the same shape drawings as the Ch. 11 tours, in Gram stain colors (gram + purple, gram − pink).
+   Viruses: the shape of the virion for its family (Ch. 13 slides: helical, polyhedral, enveloped, complex). */
+function wavePath(x0, x1, cy, amp, periods, dy, steps){
+  var d = "", n = steps || 120;
+  for (var i = 0; i <= n; i++){ var x = x0 + (x1 - x0) * i / n, y = cy + (dy || 0) + amp * Math.sin(i / n * periods * 2 * Math.PI); d += (i ? "L" : "M") + x.toFixed(1) + " " + y.toFixed(1); }
+  return d;
+}
+function bacteriaInner(shape){
+  var f = 'fill="var(--cf)" stroke="var(--ce)" stroke-width="2"', s = "";
+  function tube(d, w){ return '<path d="' + d + '" fill="none" stroke="var(--ce)" stroke-width="' + (w + 4) + '" stroke-linecap="round"/><path d="' + d + '" fill="none" stroke="var(--cf)" stroke-width="' + w + '" stroke-linecap="round"/>'; }
+  switch (shape){
+    case "rod": s += '<rect x="8" y="14" width="48" height="16" rx="8" ' + f + '/>'; break;
+    case "rodspore": s += '<rect x="8" y="14" width="48" height="16" rx="8" ' + f + '/><ellipse cx="44" cy="22" rx="6.5" ry="4.6" fill="var(--surface)" stroke="var(--ce)" stroke-width="2"/>'; break;
+    case "clusters": s += [[20, 12], [32, 10], [44, 13], [14, 23], [26, 22], [38, 23], [50, 23], [22, 33], [34, 33], [46, 32]].map(function(p){ return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="6" ' + f + '/>'; }).join(""); break;
+    case "chains": s += [[7, 26], [18, 21], [29, 19], [40, 21], [51, 25], [61, 30]].map(function(p){ return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="5.6" ' + f + '/>'; }).join(""); break;
+    case "lancet": s += '<path d="M4 22 Q15 9 30 22 Q15 35 4 22Z" ' + f + '/><path d="M60 22 Q49 9 34 22 Q49 35 60 22Z" ' + f + '/>'; break;
+    case "club": s += '<path transform="translate(9 22)" d="M0 -3 L30 -5.6 Q40 -7.2 45 -5.8 Q50 -4 50 0 Q50 4 45 5.8 Q40 7.2 30 5.6 L0 3 Q-3 3 -3 0 Q-3 -3 0 -3Z" ' + f + '/>'; break;
+    case "coccobacillus": s += '<rect x="18" y="11" width="28" height="22" rx="11" ' + f + '/>'; break;
+    case "diplococcus": s += '<path d="M28.5 9 A13 13 0 1 0 28.5 35 Q21 22 28.5 9Z" ' + f + '/><path d="M35.5 9 A13 13 0 1 1 35.5 35 Q43 22 35.5 9Z" ' + f + '/>'; break;
+    case "curved": s += tube("M14 32 Q32 2 50 32", 10); break;
+    case "gullwing": s += tube("M8 30 Q19 8 32 24 Q45 8 56 30", 8); break;
+    case "spirochete": s += tube(wavePath(6, 58, 22, 6, 6, 0, 90), 3); break;
+    case "intracellular": s += '<ellipse cx="32" cy="22" rx="28" ry="18" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="4 3"/>' + [[22, 17], [30, 26], [39, 18], [44, 27], [26, 29]].map(function(p){ return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3.6" ' + f + '/>'; }).join(""); break;
+    default: s += '<rect x="14" y="13" width="36" height="18" rx="9" ' + f + '/>';
+  }
+  return s;
+}
+/* virus shapes by family, drawn in a 64 x 44 box */
+function spikes(cx, cy, r, n, len, knob){
+  var s = "";
+  for (var i = 0; i < n; i++){
+    var a = i / n * 2 * Math.PI, x1 = cx + r * Math.cos(a), y1 = cy + r * Math.sin(a), x2 = cx + (r + len) * Math.cos(a), y2 = cy + (r + len) * Math.sin(a);
+    s += '<line x1="' + x1.toFixed(1) + '" y1="' + y1.toFixed(1) + '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) + '"/>' + (knob ? '<circle cx="' + x2.toFixed(1) + '" cy="' + y2.toFixed(1) + '" r="' + knob + '" fill="var(--ce)"/>' : "");
+  }
+  return '<g stroke="var(--ce)" stroke-width="1.8" stroke-linecap="round">' + s + "</g>";
+}
+function hexagon(cx, cy, r, facets){
+  var pts = [];
+  for (var i = 0; i < 6; i++){ var a = Math.PI / 6 + i * Math.PI / 3; pts.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]); }
+  var s = '<polygon points="' + pts.map(function(p){ return p[0].toFixed(1) + "," + p[1].toFixed(1); }).join(" ") + '" fill="var(--cf)" stroke="var(--ce)" stroke-width="2" stroke-linejoin="round"/>';
+  if (facets){
+    /* inner triangle so it reads as an icosahedron */
+    var t = [pts[1], pts[3], pts[5]];
+    s += '<polygon points="' + t.map(function(p){ return p[0].toFixed(1) + "," + p[1].toFixed(1); }).join(" ") + '" fill="none" stroke="var(--ce)" stroke-width="1.2" stroke-linejoin="round" opacity=".8"/>';
+  }
+  return s;
+}
+var VSHAPE = {
+  Poxviridae: "brick", Herpesviridae: "envIco", Hepadnaviridae: "envIco", Flaviviridae: "envSmooth", Matonaviridae: "envSmooth",
+  Adenoviridae: "adeno", Polyomaviridae: "ico", Papillomaviridae: "ico", Parvoviridae: "icoSmall", Picornaviridae: "icoSmall",
+  Coronaviridae: "corona", Retroviridae: "retro", Paramyxoviridae: "pleo", Pneumoviridae: "pleo", Rhabdoviridae: "bullet", Orthomyxoviridae: "flu"
+};
+function virusInner(fam){
+  var f = 'fill="var(--cf)" stroke="var(--ce)" stroke-width="2"';
+  switch (VSHAPE[fam]){
+    case "brick": /* complex: brick-shaped with a dumbbell core */
+      return '<rect x="14" y="7" width="36" height="30" rx="7" ' + f + '/><path d="M24 15 Q32 20 40 15 Q36 22 40 29 Q32 24 24 29 Q28 22 24 15Z" fill="none" stroke="var(--ce)" stroke-width="1.6"/>';
+    case "envIco": /* enveloped, icosahedral capsid inside */
+      return spikes(32, 22, 15, 16, 4) + '<circle cx="32" cy="22" r="15" ' + f + '/>' + hexagon(32, 22, 8, true).replace('fill="var(--cf)"', 'fill="var(--surface)"');
+    case "envSmooth": /* small enveloped sphere with a capsid */
+      return spikes(32, 22, 14, 20, 2.5) + '<circle cx="32" cy="22" r="14" ' + f + '/><circle cx="32" cy="22" r="7" fill="var(--surface)" stroke="var(--ce)" stroke-width="1.6"/>';
+    case "adeno": /* naked icosahedron with fibers at the corners */
+      return spikes(32, 22, 15, 6, 5, 2) + hexagon(32, 22, 15, true);
+    case "ico": return hexagon(32, 22, 16, true);
+    case "icoSmall": return hexagon(32, 22, 11, true);
+    case "corona": /* crown of club-shaped spikes */
+      return spikes(32, 22, 13, 14, 5, 2.4) + '<circle cx="32" cy="22" r="13" ' + f + '/>';
+    case "retro": /* enveloped, cone-shaped capsid */
+      return spikes(32, 22, 15, 14, 4, 1.6) + '<circle cx="32" cy="22" r="15" ' + f + '/><path d="M24 17 L41 20 L41 25 L24 28Z" fill="var(--surface)" stroke="var(--ce)" stroke-width="1.6" stroke-linejoin="round"/>';
+    case "pleo": /* pleomorphic envelope, helical nucleocapsid inside */
+      return '<g stroke="var(--ce)" stroke-width="1.8" stroke-linecap="round">' + [[12, 12, 9, 9], [20, 5, 19, 1], [32, 4, 32, 0], [44, 5, 46, 1], [53, 13, 57, 10], [55, 26, 59, 28], [46, 38, 48, 42], [32, 40, 32, 44], [18, 38, 16, 42], [9, 28, 5, 30]].map(function(l){ return '<line x1="' + l[0] + '" y1="' + l[1] + '" x2="' + l[2] + '" y2="' + l[3] + '"/>'; }).join("") + "</g>" +
+        '<path d="M10 20 Q8 8 22 6 Q34 2 46 6 Q58 10 55 24 Q54 38 40 39 Q26 42 16 36 Q9 31 10 20Z" ' + f + '/><path d="' + wavePath(17, 47, 22, 4, 4, 0, 60) + '" fill="none" stroke="var(--ce)" stroke-width="1.6"/>';
+    case "bullet": /* rabies: bullet-shaped, enveloped */
+      return '<g stroke="var(--ce)" stroke-width="1.8" stroke-linecap="round">' + [14, 21, 28, 35, 42].map(function(x){ return '<line x1="' + x + '" y1="12" x2="' + x + '" y2="8"/><line x1="' + x + '" y1="32" x2="' + x + '" y2="36"/>'; }).join("") + "</g>" +
+        '<path d="M10 12 H44 Q56 12 56 22 Q56 32 44 32 H10Z" ' + f + '/>' + [17, 24, 31, 38].map(function(x){ return '<line x1="' + x + '" y1="14" x2="' + x + '" y2="30" stroke="var(--ce)" stroke-width="1.2" opacity=".7"/>'; }).join("");
+    case "flu": /* enveloped sphere with two kinds of spikes (HA and NA) and RNA segments */
+      var s = "";
+      for (var i = 0; i < 14; i++){
+        var a = i / 14 * 2 * Math.PI, x1 = 32 + 14 * Math.cos(a), y1 = 22 + 14 * Math.sin(a), x2 = 32 + 19 * Math.cos(a), y2 = 22 + 19 * Math.sin(a);
+        s += '<line x1="' + x1.toFixed(1) + '" y1="' + y1.toFixed(1) + '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) + '"/>' +
+          (i % 2 ? '<circle cx="' + x2.toFixed(1) + '" cy="' + y2.toFixed(1) + '" r="1.8" fill="var(--ce)"/>' : '<line x1="' + (x2 - 2.2 * Math.sin(a)).toFixed(1) + '" y1="' + (y2 + 2.2 * Math.cos(a)).toFixed(1) + '" x2="' + (x2 + 2.2 * Math.sin(a)).toFixed(1) + '" y2="' + (y2 - 2.2 * Math.cos(a)).toFixed(1) + '"/>');
+      }
+      return '<g stroke="var(--ce)" stroke-width="1.8" stroke-linecap="round">' + s + '</g><circle cx="32" cy="22" r="14" ' + f + '/>' +
+        [[26, 17], [33, 15], [39, 19], [25, 25], [32, 23], [38, 27], [29, 30], [35, 31]].map(function(p){ return '<path d="M' + (p[0] - 2.5) + " " + p[1] + " q2.5 -2.5 5 0" + '" fill="none" stroke="var(--ce)" stroke-width="1.3"/>'; }).join("");
+    default: return '<circle cx="32" cy="22" r="14" ' + f + '/>';
+  }
+}
+function cellSvg(m){
+  var vars = m.v ? "--cf:var(--v-fill);--ce:var(--vir)" : m.gram === "+" ? "--cf:var(--gp-fill);--ce:var(--gp-edge)" : "--cf:var(--gn-fill);--ce:var(--gn-edge)";
+  var label = m.v ? "Drawing of a " + m.fam + " virus particle" : "Drawing of the cell shape, colored gram " + (m.gram === "+" ? "positive (purple)" : "negative (pink)");
+  return '<svg class="cell" viewBox="-2 -2 68 48" role="img" aria-label="' + label + '" style="' + vars + '">' + (m.v ? virusInner(m.fam) : bacteriaInner(m.shape)) + "</svg>";
+}
 function ico(id){ return '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICON[id] + "</svg>"; }
 
 var D = window.TXDATA, GROUPS = D.GROUPS, ROUTES = D.ROUTES, TX = D.TX, VIR = window.BODYMAP.VIRUSES;
@@ -228,7 +320,7 @@ var GBY = {}; GROUPS.forEach(function(g){ GBY[g.id] = g; });
 /* bacteria names, gram, and tour links */
 var ORG = {};
 [[window.TOUR_NEG, "ch11-gram-neg-tour.html", "−"], [window.TOUR_POS, "ch11-gram-pos-tour.html", "+"]].forEach(function(t){
-  t[0].stops.forEach(function(s){ (s.orgs || []).forEach(function(o){ if (!ORG[o.id]) ORG[o.id] = {name: o.name, href: t[1] + "#org-" + o.id, gram: t[2], dz: o.disease && o.disease.short}; }); });
+  t[0].stops.forEach(function(s){ (s.orgs || []).forEach(function(o){ if (!ORG[o.id]) ORG[o.id] = {name: o.name, href: t[1] + "#org-" + o.id, gram: t[2], shape: o.shape, dz: o.disease && o.disease.short}; }); });
 });
 function info(id){
   var x = TX[id];
@@ -236,7 +328,7 @@ function info(id){
   var o = ORG[id] || {name: id, gram: "?"};
   /* Body Map link: rings every body area where this bacterium causes disease */
   var map = window.BODYMAP.sitesFor(id, "dz").length ? "body-map.html#dz/" + id : null;
-  return {name: D.NAMES[id] || o.name, href: o.href, map: map, gram: o.gram, dz: o.dz, v: false};
+  return {name: D.NAMES[id] || o.name, href: o.href, map: map, gram: o.gram, shape: o.shape, dz: o.dz, v: false};
 }
 function ids(){ return Object.keys(TX).filter(function(id){ return st.kind === "all" || TX[id].k === st.kind; }); }
 /* explore mode lists every route a microbe uses, without saying which is primary */
@@ -268,7 +360,7 @@ function card(id, rid){
   var links = (m.href ? '<a href="' + m.href + '">Tour →</a>' : "") + (m.map ? '<a href="' + m.map + '">Body Map →</a>' : "");
   var flipped = st.flipped[id] ? " flipped" : "";
   return '<div class="fcard' + flipped + '" data-card="' + id + '"' + style + '><div class="in">' +
-    '<button type="button" class="face front" data-flip="' + id + '" aria-expanded="' + !!st.flipped[id] + '"' + (flipped ? ' tabindex="-1" aria-hidden="true"' : "") + '><span class="big">' + ico(m.v ? "virus" : "bacterium") + '</span><span class="nm' + it + '">' + esc(m.name) + '</span><span class="tags">' + tag + '</span><span class="hint">Tap to flip ↻</span></button>' +
+    '<button type="button" class="face front" data-flip="' + id + '" aria-expanded="' + !!st.flipped[id] + '"' + (flipped ? ' tabindex="-1" aria-hidden="true"' : "") + '>' + cellSvg(m) + '<span class="nm' + it + '">' + esc(m.name) + '</span><span class="tags">' + tag + '</span><span class="hint">Tap to flip ↻</span></button>' +
     '<div class="face back"' + (flipped ? "" : ' aria-hidden="true"') + '><span class="nm' + it + '">' + esc(m.name) + "</span>" +
       '<span class="row"><b>Causes</b>' + esc(m.dz || "") + "</span>" +
       '<span class="row"><b>Spreads by</b><span class="rts">' + routes + "</span></span>" +
