@@ -254,13 +254,13 @@ var QSETS = {
      Q("<i>Salmonella</i> on MacConkey agar?", ["colorless (lactose −)", "pink (lactose +)", "golden", "green and pearly"])]
   ],
   ngon: [
-    [Q("<i>N. gonorrhoeae</i> uses which sugars?", ["glucose only", "glucose + maltose", "lactose", "none at all"]),
+    [Q("<i>N. gonorrhoeae</i> uses which sugars?", ["glucose, but not maltose", "glucose + maltose", "lactose", "none at all"]),
      Q("Treatment for gonorrhea?", ["ceftriaxone", "penicillin G", "oral vancomycin", "botulinum antitoxin"])],
     [Q("Why is there no gonorrhea vaccine?", ["high antigenic variation: it keeps changing its surface proteins", "it only grows inside host cells", "it has no cell wall", "it forms endospores"]),
      Q("How can a newborn get <i>N. gonorrhoeae</i>?", ["from the mother during birth (eye infection)", "from honey", "from a tick bite", "from the hospital water system"])]
   ],
   nmen: [
-    [Q("<i>N. meningitidis</i> uses which sugars?", ["glucose + maltose", "glucose only", "lactose", "none at all"]),
+    [Q("<i>N. meningitidis</i> uses which sugars?", ["glucose + maltose", "glucose, but not maltose", "lactose", "none at all"]),
      Q("Who is most at risk?", ["young children, teens, people in dorms or the military", "infants under 6 months only", "people on long courses of antibiotics", "people who eat raw poultry"])],
     [Q("Which is the microbe and which is the disease?", ["meningitidis = the bacterium; meningitis = the disease", "meningitis = the bacterium; meningitidis = the disease", "they mean the same thing", "both are diseases"]),
      Q("How does <i>N. meningitidis</i> spread?", ["respiratory droplets and close contact", "tick bites", "contaminated water", "deep puncture wounds"])]
@@ -859,7 +859,7 @@ function toast(m){ var t = $("#toast"); t.textContent = m; t.classList.add("show
 function showCard(o){
   var cd = P.cards[o.id], h = '<div class="dlghead"><h3>' + nameHtml(o) + '</h3><button class="btn ghost" type="button" data-x="close">✕</button></div><div class="reveal">' + cardHtml(o) +
     "<p>Lv " + cd.lv + " · caught " + cd.catches + " time" + (cd.catches > 1 ? "s" : "") + "</p></div><div class=\"back\">";
-  if (o.cheat) h += '<div class="cheat">🎯 <b>ID cheat:</b> ' + o.cheat + "</div>";
+  if (o.cheat) h += '<div class="cheat"><b>ID cheat:</b> ' + o.cheat + "</div>";
   if (o.disease) h += '<div class="row"><b>Disease</b><span>' + o.disease.html + "</span></div>";
   (o.facts || []).forEach(function(f){ h += '<div class="row"><b>' + esc(f.h) + "</b><span>" + f.t + "</span></div>"; });
   if (o.treat) h += '<div class="row"><b>Treatment</b><span>' + o.treat.html + "</span></div>";

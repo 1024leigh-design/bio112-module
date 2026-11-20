@@ -231,7 +231,7 @@ window.TOUR_DATA = {
       ]},
     {id: "rickettsia", node: "rickettsia", title: "<i>Rickettsia rickettsii</i>",
       orgs: [
-        {id: "rrickettsii", node: "rickettsia", fun: {"t": "It is named for the Rocky Mountains, but in the US, Rocky Mountain spotted fever is most common in the <b>southeastern</b> states.", "photo": {"src": "images/rmsf-us-map.png", "alt": "US map shaded by Rocky Mountain spotted fever cases per million in 2010, darkest in south-central and southeastern states", "cap": "RMSF cases per million people in the US (2010)", "credit": "Credit: modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 25.12)"}}, photos: [{"src": "images/r-rickettsii-tick-cells.jpg", "alt": "Stained micrograph: tick cells with small dark red Rickettsia inside them", "cap": "<i>R. rickettsii</i> growing <b>inside</b> a tick's cells. It needs special stains to see.", "credit": "Credit: modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.4)"}], cheat: "A tiny rod that <b>only grows inside host cells</b> and spreads by <b>tick bites</b>.", name: "Rickettsia rickettsii", shape: "rod", emoji: "🕷️",
+        {id: "rrickettsii", node: "rickettsia", fun: {"t": "It is named for the Rocky Mountains, but in the US, Rocky Mountain spotted fever is most common in the <b>southeastern</b> states.", "photo": {"src": "images/rmsf-us-map.png", "alt": "US map shaded by Rocky Mountain spotted fever cases per million in 2010, darkest in south-central and southeastern states", "cap": "RMSF cases per million people in the US (2010)", "credit": "Credit: modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 25.12)"}}, photos: [{"src": "images/r-rickettsii-tick-cells.jpg", "alt": "Stained micrograph: tick cells with small dark red Rickettsia inside them", "cap": "<i>R. rickettsii</i> growing <b>inside</b> a tick's cells. It needs special stains to see.", "credit": "Credit: modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.4)"}], name: "Rickettsia rickettsii", shape: "rod", emoji: "🕷️",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "tiny rod"},
@@ -252,7 +252,7 @@ window.TOUR_DATA = {
     {id: "bordetella", node: "bordetella", title: "<i>Bordetella pertussis</i>",
       lesson: ["<i>Bordetella</i> is a small gram-negative <b>coccobacillus</b> (a very short rod, almost round)."],
       orgs: [
-        {id: "bpertussis", node: "bordetella", cheat: "The only <b>coccobacillus</b> on our list.", name: "Bordetella pertussis", shape: "coccobacillus", emoji: "🫁",
+        {id: "bpertussis", node: "bordetella", cheat: "Only gram − <b>coccobacillus</b>.", name: "Bordetella pertussis", shape: "coccobacillus", emoji: "🫁",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "coccobacillus"},
@@ -278,22 +278,22 @@ window.TOUR_DATA = {
           extra: [{h: "📈 Why cases are rising", boxes: [{ic: "⏳", t: "waning vaccine immunity"}, {ic: "🔍", t: "better detection"}, {ic: "🚫", t: "vaccine hesitancy"}]}]}
       ]},
     {id: "neisseria", links: [{href: "mystery-microbe.html", ic: "🕵️", t: "Mystery Microbe", sub: "ID it from lab tests"}, {href: "microbe-collector.html#swab-mouth", ic: "👄", t: "Microbe Collector: swab the mouth and throat", sub: "catch these microbes"}], node: "neisseria", photo: {"src": "images/n-meningitidis-gram-stain.jpg", "alt": "Gram stain: small pink-red round cells, mostly in pairs", "cap": "Gram stain of <i>N. meningitidis</i>: pink <b>diplococci</b> (cells in pairs)", "credit": "Credit: modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 8.27, panel a, cropped)"}, case: {"story": "A college freshman living in a dorm has a high fever, headache, stiff neck, and a purple rash.", "tests": [{"name": "Gram stain", "ic": "🔬", "r": "gram − <b>diplococci</b>"}, {"name": "Oxidase", "ic": "🟣", "r": "<b>+</b> (turns purple)"}, {"name": "Sugar (CTA) test", "ic": "🧪", "r": "uses <b>glucose AND maltose</b>"}], "q": "What's your diagnosis?", "o": ["<i>N. meningitidis</i>", "<i>N. gonorrhoeae</i>", "<i>Bordetella pertussis</i>", "<i>Legionella</i>"], "w": "Gram − diplococci + oxidase + = <i>Neisseria</i>. Using maltose = <i>N. meningitidis</i>. Treat with ceftriaxone."}, title: "<i>Neisseria</i>", diagram: "diplococci",
-      cheat: "The only gram-negative <b>diplococci</b> on our list, grown on <b>chocolate agar + CO₂</b>.",
+      cheat: "Only gram − <b>diplococci</b>; <b>chocolate agar + CO₂</b>.",
       lesson: [
         "<i>Neisseria</i> are <b>diplococci</b>: round cells in pairs (they look like two kidney beans).",
-        "Both species share the same traits from this branch. A <b>sugar test</b> tells them apart:<ul><li><i>N. gonorrhoeae</i> uses <b>glucose only</b></li><li><i>N. meningitidis</i> uses <b>glucose AND maltose</b></li></ul>",
+        "Both species share the same traits from this branch. A <b>sugar test</b> tells them apart:<ul><li><i>N. gonorrhoeae</i> uses <b>glucose, but not maltose</b></li><li><i>N. meningitidis</i> uses <b>glucose AND maltose</b></li></ul>",
         "Heads up: <i>Neisseria</i> don't truly <b>ferment</b>. As obligate aerobes, they break sugars down <b>oxidatively</b>. The sugar (CTA) tube still turns yellow from the acid made, which shows which sugars they use."
       ]},
     {id: "n-gonorrhoeae", node: "ngon", photo: {"src": "images/n-gonorrhoeae-immunofluorescence.jpg", "alt": "Bright green glowing round cells on a black background", "cap": "<i>N. gonorrhoeae</i> lit up with a fluorescent antibody stain", "credit": "Credit: modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 2.19, panel a, cropped)"}, title: "<i>Neisseria gonorrhoeae</i>",
       orgs: [
-        {id: "ngon", node: "ngon", cheat: "A <i>Neisseria</i> (gram − diplococcus on chocolate agar) that uses <b>glucose only</b>.", name: "Neisseria gonorrhoeae", shape: "diplococcus", emoji: "⚠️",
+        {id: "ngon", node: "ngon", cheat: "<i>Neisseria</i> that ferments <b>glucose, but not maltose</b>.", name: "Neisseria gonorrhoeae", shape: "diplococcus", emoji: "⚠️",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "diplococci", from: "neisseria"},
             {k: "oxygen", v: "obligate aerobe", from: "beta"},
             {k: "oxidase", v: "+", from: "neisseria"},
             {k: "media", v: "chocolate agar + CO₂", from: "neisseria"},
-            {k: "sugars", v: "glucose only"}
+            {k: "sugars", v: "glucose, but not maltose"}
           ],
           disease: {short: "gonorrhea", html: "gonorrhea",
             flips: [
@@ -307,7 +307,7 @@ window.TOUR_DATA = {
       ]},
     {id: "n-meningitidis", node: "nmen", title: "<i>Neisseria meningitidis</i>",
       orgs: [
-        {id: "nmen", node: "nmen", photos: [{"src": "images/n-meningitidis-chocolate-agar.jpg", "alt": "Round, creamy white colonies on brown-orange chocolate agar", "cap": "Colonies on <b>chocolate agar</b>", "credit": "Credit: CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.5)"}], cheat: "A <i>Neisseria</i> (gram − diplococcus on chocolate agar) that also uses <b>maltose</b>.", name: "Neisseria meningitidis", shape: "diplococcus", emoji: "🧠",
+        {id: "nmen", node: "nmen", photos: [{"src": "images/n-meningitidis-chocolate-agar.jpg", "alt": "Round, creamy white colonies on brown-orange chocolate agar", "cap": "Colonies on <b>chocolate agar</b>", "credit": "Credit: CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.5)"}], cheat: "<i>Neisseria</i> that ferments <b>glucose and maltose</b>.", name: "Neisseria meningitidis", shape: "diplococcus", emoji: "🧠",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "diplococci", from: "neisseria"},
@@ -347,7 +347,7 @@ window.TOUR_DATA = {
         "It is an <b>opportunistic pathogen</b>: it mostly infects people whose defenses are already down, like patients with burns or wounds."
       ],
       orgs: [
-        {id: "paeruginosa", node: "pseudomonas", photos: [{"src": "images/p-aeruginosa-capsule-stain.jpg", "alt": "Capsule stain: purple cells, each surrounded by a clear halo", "cap": "Capsule stain: each cell has a clear <b>capsule</b> around it", "credit": "Credit: modification of work by American Society for Microbiology, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 3.29, panel b, cropped)"}, {"src": "images/pseudomonas-pigment-uv.jpg", "alt": "A petri dish glowing blue-green under ultraviolet light", "cap": "Some <i>Pseudomonas</i> make <b>fluorescein</b>, a pigment that glows green under UV light", "credit": "<a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 21.17, panel c, cropped)"}], cheat: "<b>Greenish, pearly colonies</b> (oxidase +, lactose −).", name: "Pseudomonas aeruginosa", shape: "rod", emoji: "🔥",
+        {id: "paeruginosa", node: "pseudomonas", photos: [{"src": "images/p-aeruginosa-capsule-stain.jpg", "alt": "Capsule stain: purple cells, each surrounded by a clear halo", "cap": "Capsule stain: each cell has a clear <b>capsule</b> around it", "credit": "Credit: modification of work by American Society for Microbiology, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 3.29, panel b, cropped)"}, {"src": "images/pseudomonas-pigment-uv.jpg", "alt": "A petri dish glowing blue-green under ultraviolet light", "cap": "Some <i>Pseudomonas</i> make <b>fluorescein</b>, a pigment that glows green under UV light", "credit": "<a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 21.17, panel c, cropped)"}], cheat: "<b>Obligate aerobe</b>; <b>green, pearly</b> colonies; oxidase +, lactose −.", name: "Pseudomonas aeruginosa", shape: "rod", emoji: "🔥",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "rod"},
@@ -370,7 +370,7 @@ window.TOUR_DATA = {
         "In nature, it lives in water and <b>reproduces inside amoebae</b>."
       ],
       orgs: [
-        {id: "lpneumophila", node: "legionella", photos: [{"src": "images/legionella-micrograph.jpg", "alt": "Black and white micrograph of long rod-shaped cells", "cap": "Rods under the microscope", "credit": "Credit: modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.8)"}, {"src": "images/rooftop-ac-unit.jpg", "alt": "A large air conditioning unit on a building roof", "cap": "Outbreaks often start in the air conditioning units of large buildings when their water is contaminated", "credit": "<a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.8)"}], cheat: "<b>Reproduces inside amoebae</b>; outbreaks come from water systems, not person to person.", name: "Legionella pneumophila", shape: "rod", emoji: "🛁",
+        {id: "lpneumophila", node: "legionella", photos: [{"src": "images/legionella-micrograph.jpg", "alt": "Black and white micrograph of long rod-shaped cells", "cap": "Rods under the microscope", "credit": "Credit: modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.8)"}, {"src": "images/rooftop-ac-unit.jpg", "alt": "A large air conditioning unit on a building roof", "cap": "Outbreaks often start in the air conditioning units of large buildings when their water is contaminated", "credit": "<a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.8)"}], cheat: "<b>Grows inside amoebae</b>; spread from water systems, not person to person.", name: "Legionella pneumophila", shape: "rod", emoji: "🛁",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "rod"},
@@ -408,7 +408,7 @@ window.TOUR_DATA = {
       ]},
     {id: "e-coli", links: [{href: "body-map.html#flora-gut", ic: "🧍", t: "Body Map", sub: "normal flora in the gut, a problem in the bladder"}], node: "ecoli", title: "<i>Escherichia coli</i>", also: ["escherichia"], entericTable: true,
       orgs: [
-        {id: "ecoli", node: "ecoli", photos: [{"src": "images/e-coli-o157-curli.jpg", "alt": "Two electron micrographs: smooth rod-shaped cells (left) and cells covered in a mesh of fibers (right)", "cap": "<i>E. coli</i> O157:H7 without (left) and with (right) sticky <b>curli fibers</b>, which help it stick to surfaces and form biofilms", "credit": "Credit: modification of work by USDA, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 24.1)"}], fun: {"t": "<i>E. coli</i> and an elephant look nothing alike, but both store their genetic instructions the same way: in <b>DNA</b>.", "photo": {"src": "images/e-coli-and-elephant.jpg", "alt": "Left: blue rod-shaped E. coli cells. Right: an adult elephant and a baby elephant.", "cap": "<i>E. coli</i> (left) and an elephant (right)", "credit": "Credit: left, modification of work by NIAID; right, modification of work by Tom Lubbock, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 11.1)"}}, cheat: "The only coliform with <b>IMViC ++−−</b>.", name: "Escherichia coli", shape: "rod", emoji: "🚽",
+        {id: "ecoli", node: "ecoli", photos: [{"src": "images/e-coli-o157-curli.jpg", "alt": "Two electron micrographs: smooth rod-shaped cells (left) and cells covered in a mesh of fibers (right)", "cap": "<i>E. coli</i> O157:H7 without (left) and with (right) sticky <b>curli fibers</b>, which help it stick to surfaces and form biofilms", "credit": "Credit: modification of work by USDA, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 24.1)"}], fun: {"t": "<i>E. coli</i> and an elephant look nothing alike, but both store their genetic instructions the same way: in <b>DNA</b>.", "photo": {"src": "images/e-coli-and-elephant.jpg", "alt": "Left: blue rod-shaped E. coli cells. Right: an adult elephant and a baby elephant.", "cap": "<i>E. coli</i> (left) and an elephant (right)", "credit": "Credit: left, modification of work by NIAID; right, modification of work by Tom Lubbock, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 11.1)"}}, cheat: "Only coliform with <b>IMViC ++−−</b>.", name: "Escherichia coli", shape: "rod", emoji: "🚽",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "rod", from: "enterics"},
@@ -425,7 +425,7 @@ window.TOUR_DATA = {
       ]},
     {id: "klebsiella", node: "klebsiella", title: "<i>Klebsiella pneumoniae</i>", entericTable: true,
       orgs: [
-        {id: "kpneumoniae", node: "klebsiella", cheat: "The only <b>non-motile</b> coliform (IMViC −−++).", name: "Klebsiella pneumoniae", shape: "rod", emoji: "🫁",
+        {id: "kpneumoniae", node: "klebsiella", cheat: "Only <b>non-motile</b> coliform (IMViC −−++).", name: "Klebsiella pneumoniae", shape: "rod", emoji: "🫁",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "rod", from: "enterics"},
@@ -441,7 +441,7 @@ window.TOUR_DATA = {
       ]},
     {id: "enterobacter", node: "enterobacter", title: "<i>Enterobacter</i>", entericTable: true,
       orgs: [
-        {id: "enterobacter", node: "enterobacter", cheat: "IMViC <b>−−++</b> like <i>Klebsiella</i>, but <b>motile</b>.", name: "Enterobacter", shape: "rod", emoji: "🏥",
+        {id: "enterobacter", node: "enterobacter", cheat: "IMViC −−++ like <i>Klebsiella</i>, but <b>motile</b>.", name: "Enterobacter", shape: "rod", emoji: "🏥",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "rod", from: "enterics"},
@@ -469,7 +469,7 @@ window.TOUR_DATA = {
       ]},
     {id: "salmonella", node: "s_enteritidis", title: "<i>Salmonella</i>", also: ["salmonella"], entericTable: true,
       orgs: [
-        {id: "salmonella", node: "s_enteritidis", photos: [{"src": "images/salmonella-entering-cell.jpg", "alt": "Colorized electron micrograph: red rod-shaped bacteria on a ruffled yellow host cell surface", "cap": "<i>Salmonella</i> (red) <b>entering a gut cell</b> by rearranging the cell's skeleton", "credit": "Credit: modification of work by National Institutes of Health, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 24.18)"}], cheat: "The only non-coliform that's <b>H₂S + but urease −</b>.", spell: "Salmonella", name: "Salmonella", sub: "(S. enterica serovar Enteritidis)", shape: "rod", emoji: "🍗",
+        {id: "salmonella", node: "s_enteritidis", photos: [{"src": "images/salmonella-entering-cell.jpg", "alt": "Colorized electron micrograph: red rod-shaped bacteria on a ruffled yellow host cell surface", "cap": "<i>Salmonella</i> (red) <b>entering a gut cell</b> by rearranging the cell's skeleton", "credit": "Credit: modification of work by National Institutes of Health, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 24.18)"}], cheat: "Only non-coliform that's <b>H₂S +, urease −</b>.", spell: "Salmonella", name: "Salmonella", sub: "(S. enterica serovar Enteritidis)", shape: "rod", emoji: "🍗",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "rod", from: "enterics"},
@@ -486,7 +486,7 @@ window.TOUR_DATA = {
       ]},
     {id: "s-typhi", node: "s_typhi", title: "<i>Salmonella</i> Typhi", entericTable: true,
       orgs: [
-        {id: "styphi", node: "s_typhi", photos: [{"src": "images/salmonella-typhi-sem.jpg", "alt": "Colorized scanning electron micrograph of many rod-shaped cells", "cap": "Rods in a scanning electron micrograph (color added)", "credit": "Credit: CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.9)"}], spell: "Salmonella Typhi", cheat: "The <i>Salmonella</i> that breaks the rules: <b>citrate −</b>, <b>weak H₂S</b>.", name: "Salmonella", sub: "Typhi", shape: "rod", emoji: "🌡️",
+        {id: "styphi", node: "s_typhi", photos: [{"src": "images/salmonella-typhi-sem.jpg", "alt": "Colorized scanning electron micrograph of many rod-shaped cells", "cap": "Rods in a scanning electron micrograph (color added)", "credit": "Credit: CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.9)"}], spell: "Salmonella Typhi", cheat: "IMViC −+−−, <b>weak H₂S</b>; <b>citrate −</b>, unlike other <i>Salmonella</i>.", name: "Salmonella", sub: "Typhi", shape: "rod", emoji: "🌡️",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "rod", from: "enterics"},
@@ -516,7 +516,7 @@ window.TOUR_DATA = {
       ]},
     {id: "proteus", node: "proteus", title: "<i>Proteus</i>", entericTable: true,
       orgs: [
-        {id: "proteus", node: "proteus", anim: "swarm", cheat: "The only one that <b>swarms across the agar</b> (with a strong odor).", name: "Proteus", shape: "rod", emoji: "🌊",
+        {id: "proteus", node: "proteus", anim: "swarm", cheat: "<b>Swarms across the agar</b>; strong odor.", name: "Proteus", shape: "rod", emoji: "🌊",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "rod", from: "enterics"},
@@ -553,7 +553,7 @@ window.TOUR_DATA = {
       ]},
     {id: "serratia", node: "serratia", title: "<i>Serratia marcescens</i>", entericTable: true,
       orgs: [
-        {id: "smarcescens", node: "serratia", photos: [{"src": "images/serratia-pigment-temperature.jpg", "alt": "Two agar plates of Serratia: the left one red, the right one cream colored", "cap": "Same <i>Serratia</i>, two temperatures: <b>red</b> pigment at 28 °C (left), none at 37 °C (right)", "credit": "Credit: modification of work by Ann Auman, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 10.24)"}], cheat: "The only gram-negative with a <b>red pigment</b>.", name: "Serratia marcescens", shape: "rod", emoji: "🏥",
+        {id: "smarcescens", node: "serratia", photos: [{"src": "images/serratia-pigment-temperature.jpg", "alt": "Two agar plates of Serratia: the left one red, the right one cream colored", "cap": "Same <i>Serratia</i>, two temperatures: <b>red</b> pigment at 28 °C (left), none at 37 °C (right)", "credit": "Credit: modification of work by Ann Auman, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 10.24)"}], cheat: "Only gram − with a <b>red pigment</b>.", name: "Serratia marcescens", shape: "rod", emoji: "🏥",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "rod", from: "enterics"},
@@ -577,7 +577,7 @@ window.TOUR_DATA = {
         "Shape: a <b>curved rod</b> (the macaroni! 🍝)"
       ],
       orgs: [
-        {id: "vcholerae", node: "vibrio", fun: {"t": "In 1854, Dr. John Snow mapped cholera cases in London and traced them to <b>one contaminated water pump</b> on Broad Street. He is called the father of epidemiology.", "photo": {"src": "images/john-snow-cholera-map.jpg", "alt": "Left: portrait of John Snow. Right: a street map of London with a red square marking the Broad Street pump.", "cap": "John Snow (left) and his cholera map (right). The red square is the Broad Street pump.", "credit": "Credit: portrait, modification of work by “Rsabbatini”/Wikimedia Commons, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 16.5)"}}, cheat: "The <b>comma-shaped</b> rod: oxidase +, unlike the oxidase − enterics.", name: "Vibrio cholerae", shape: "curved", emoji: "💧",
+        {id: "vcholerae", node: "vibrio", fun: {"t": "In 1854, Dr. John Snow mapped cholera cases in London and traced them to <b>one contaminated water pump</b> on Broad Street. He is called the father of epidemiology.", "photo": {"src": "images/john-snow-cholera-map.jpg", "alt": "Left: portrait of John Snow. Right: a street map of London with a red square marking the Broad Street pump.", "cap": "John Snow (left) and his cholera map (right). The red square is the Broad Street pump.", "credit": "Credit: portrait, modification of work by “Rsabbatini”/Wikimedia Commons, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 16.5)"}}, cheat: "<b>Comma-shaped</b> rod; <b>oxidase +</b> (enterics are oxidase −).", name: "Vibrio cholerae", shape: "curved", emoji: "💧",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "curved rod", note: "comma-shaped"},
@@ -598,7 +598,7 @@ window.TOUR_DATA = {
       ]},
     {id: "campylobacter", node: "campylobacter", title: "<i>Campylobacter jejuni</i>",
       orgs: [
-        {id: "cjejuni", node: "campylobacter", cheat: "The only <b>gull-wing</b> shape.", name: "Campylobacter jejuni", shape: "gullwing", emoji: "🍗",
+        {id: "cjejuni", node: "campylobacter", cheat: "Only <b>gull-wing</b> shape.", name: "Campylobacter jejuni", shape: "gullwing", emoji: "🍗",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "gull-wing spiral", note: "the cavatappi! 🍝"},
@@ -610,7 +610,7 @@ window.TOUR_DATA = {
       ]},
     {id: "helicobacter", node: "helicobacter", title: "<i>Helicobacter pylori</i>",
       orgs: [
-        {id: "hpylori", node: "helicobacter", photos: [{"src": "images/h-pylori-tem.jpg", "alt": "Electron micrograph of one curved rod with several long flagella at one end", "cap": "A spiral rod with its flagella", "credit": "<a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.11)"}, {"src": "images/h-pylori-urease-mucus.png", "alt": "Drawing of H. pylori at the gel-like mucus layer over stomach cells, then surrounded by a blue cloud as it swims into liquefied mucus", "cap": "How <i>H. pylori</i> gets through stomach mucus: its <b>urease</b> neutralizes acid, the mucus turns liquid, and it swims right through", "credit": "Credit: modification of work by Zina Deretsky, National Science Foundation, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 15.8)"}], cheat: "The <b>urease + spiral</b> that lives in the stomach.", name: "Helicobacter pylori", shape: "spiral", emoji: "🫃",
+        {id: "hpylori", node: "helicobacter", photos: [{"src": "images/h-pylori-tem.jpg", "alt": "Electron micrograph of one curved rod with several long flagella at one end", "cap": "A spiral rod with its flagella", "credit": "<a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.11)"}, {"src": "images/h-pylori-urease-mucus.png", "alt": "Drawing of H. pylori at the gel-like mucus layer over stomach cells, then surrounded by a blue cloud as it swims into liquefied mucus", "cap": "How <i>H. pylori</i> gets through stomach mucus: its <b>urease</b> neutralizes acid, the mucus turns liquid, and it swims right through", "credit": "Credit: modification of work by Zina Deretsky, National Science Foundation, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 15.8)"}], cheat: "<b>Urease + spiral</b>; lives in the stomach.", name: "Helicobacter pylori", shape: "spiral", emoji: "🫃",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "shape", v: "spiral rod"},
@@ -636,7 +636,7 @@ window.TOUR_DATA = {
       ]},
     {id: "treponema", node: "treponema", title: "<i>Treponema pallidum</i>",
       orgs: [
-        {id: "tpallidum", node: "treponema", photos: [{"src": "images/t-pallidum-three-views.jpg", "alt": "Three images of thin spiral cells: bright on black (darkfield), dark on yellow (silver stain), and a gray 3D spiral (SEM)", "cap": "<i>T. pallidum</i> three ways: darkfield (left), silver stain (middle), electron microscope (right)", "credit": "Credit: modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 2.43)"}], cheat: "<b>Too thin to see</b> with a regular light microscope.", name: "Treponema pallidum", shape: "spirochete", emoji: "⚠️",
+        {id: "tpallidum", node: "treponema", photos: [{"src": "images/t-pallidum-three-views.jpg", "alt": "Three images of thin spiral cells: bright on black (darkfield), dark on yellow (silver stain), and a gray 3D spiral (SEM)", "cap": "<i>T. pallidum</i> three ways: darkfield (left), silver stain (middle), electron microscope (right)", "credit": "Credit: modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 2.43)"}], name: "Treponema pallidum", shape: "spirochete", emoji: "⚠️",
           tests: [
             {k: "gram", v: "− (stains poorly)", from: "spirochetes"},
             {k: "shape", v: "spirochete", note: "too thin to see well with a regular light microscope"},
@@ -655,7 +655,7 @@ window.TOUR_DATA = {
       ]},
     {id: "lyme", node: "b_burgdorferi", title: "<i>Borrelia burgdorferi</i>: Lyme disease", also: ["borrelia"],
       orgs: [
-        {id: "bburgdorferi", node: "b_burgdorferi", photos: [{"src": "images/b-burgdorferi-darkfield.jpg", "alt": "Darkfield image: many thin, wavy, bright spirals on a dark background", "cap": "<i>B. burgdorferi</i> in a darkfield microscope", "credit": "Credit: modification of work by American Society for Microbiology, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 25.15, panel b, cropped)"}], cheat: "<b>Bull's-eye rash</b> after a tick bite.", name: "Borrelia burgdorferi", shape: "spirochete", emoji: "🎯",
+        {id: "bburgdorferi", node: "b_burgdorferi", photos: [{"src": "images/b-burgdorferi-darkfield.jpg", "alt": "Darkfield image: many thin, wavy, bright spirals on a dark background", "cap": "<i>B. burgdorferi</i> in a darkfield microscope", "credit": "Credit: modification of work by American Society for Microbiology, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 25.15, panel b, cropped)"}], cheat: "<b>Erythema migrans</b> (bull's-eye rash) after a tick bite.", name: "Borrelia burgdorferi", shape: "spirochete", emoji: "🎯",
           tests: [
             {k: "gram", v: "− (stains poorly)", from: "spirochetes"},
             {k: "shape", v: "spirochete", from: "spirochetes"},
@@ -672,7 +672,7 @@ window.TOUR_DATA = {
       ]},
     {id: "relapsing-fever", node: "b_relapsing", title: "<i>Borrelia</i>: relapsing fever",
       orgs: [
-        {id: "brf", node: "b_relapsing", photos: [{"src": "images/borrelia-relapsing-fever-smear.jpg", "alt": "Blood smear with round pink red blood cells and thin wavy spirochetes between them", "cap": "Blood smear: thin <i>Borrelia</i> spirochetes among red blood cells", "credit": "Credit: modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 25.16)"}], spell: "Borrelia", cheat: "A fever that <b>goes away and comes back</b>.", name: "Borrelia", sub: "(relapsing fever species)", shape: "spirochete", emoji: "🔁",
+        {id: "brf", node: "b_relapsing", photos: [{"src": "images/borrelia-relapsing-fever-smear.jpg", "alt": "Blood smear with round pink red blood cells and thin wavy spirochetes between them", "cap": "Blood smear: thin <i>Borrelia</i> spirochetes among red blood cells", "credit": "Credit: modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 25.16)"}], spell: "Borrelia", cheat: "Fever that <b>goes away and comes back</b>.", name: "Borrelia", sub: "(relapsing fever species)", shape: "spirochete", emoji: "🔁",
           tests: [
             {k: "gram", v: "− (stains poorly)", from: "spirochetes"},
             {k: "shape", v: "spirochete", from: "spirochetes"},
@@ -703,7 +703,7 @@ window.TOUR_DATA = {
         "Memory hook: EB = the \"delivery vehicle,\" RB = the \"factory.\""
       ],
       orgs: [
-        {id: "ctrachomatis", node: "chlamydia", cheat: "The only one with a <b>two-form life cycle</b> (EB and RB).", name: "Chlamydia trachomatis", shape: "intracellular", emoji: "⚠️",
+        {id: "ctrachomatis", node: "chlamydia", cheat: "Only <b>two-form life cycle</b>: elementary bodies (EB) and reticulate bodies (RB).", name: "Chlamydia trachomatis", shape: "intracellular", emoji: "⚠️",
           tests: [
             {k: "gram", v: "−", from: "gramneg"},
             {k: "media", v: "only inside host cells", from: "chlamydiae"},
@@ -724,7 +724,7 @@ window.TOUR_DATA = {
     /* ---------- The other phyla ---------- */
     {id: "planctomycetes", node: "planctomycetes", title: "Planctomycetes",
       orgs: [
-        {type: "phylum", id: "planct", node: "planctomycetes", photos: [{"src": "images/gemmata-budding.jpg", "alt": "Electron micrograph of a large cell and a smaller cell budding from it, with labels N and NE", "cap": "<i>Gemmata</i>, a planctomycete, <b>budding</b>: the small daughter cell grows off the mother cell. N = nucleoid, NE = forming nuclear envelope.", "credit": "Credit: modification of work by Kuo-Chang Lee, Rick I Webb, and John A Fuerst, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 9.16, panel b, cropped)"}], cheat: "Reproduces by <b>budding</b>.", name: "Planctomycetes", shape: "budding",
+        {type: "phylum", id: "planct", node: "planctomycetes", photos: [{"src": "images/gemmata-budding.jpg", "alt": "Electron micrograph of a large cell and a smaller cell budding from it, with labels N and NE", "cap": "<i>Gemmata</i>, a planctomycete, <b>budding</b>: the small daughter cell grows off the mother cell. N = nucleoid, NE = forming nuclear envelope.", "credit": "Credit: modification of work by Kuo-Chang Lee, Rick I Webb, and John A Fuerst, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 9.16, panel b, cropped)"}], cheat: "<b>Prokaryotic AND eukaryotic</b> characteristics.", name: "Planctomycetes", shape: "budding",
           boxes: [
             {ic: "🫧", t: "Gram-negative bacteria that reproduce by <b>budding</b>"},
             {ic: "🔬", t: "Examples: <i>Planctomyces</i>, <i>Gemmata</i>, <i>Brocadia</i>"}
@@ -733,7 +733,7 @@ window.TOUR_DATA = {
       ]},
     {id: "fusobacteria", node: "fusobacteria", title: "Fusobacteria",
       orgs: [
-        {type: "phylum", id: "fuso", node: "fusobacteria", cheat: "<b>Spindle-shaped</b> rods.", name: "Fusobacteria", shape: "spindle",
+        {type: "phylum", id: "fuso", node: "fusobacteria", cheat: "<b>Anaerobic</b>, <b>spindle-shaped</b> rods in the mouth.", name: "Fusobacteria", shape: "spindle",
           boxes: [
             {ic: "🚫", t: "Anaerobic, <b>spindle-shaped</b> rods"},
             {ic: "🦷", t: "Some cause periodontal (gum) disease and abscesses"},
@@ -743,7 +743,7 @@ window.TOUR_DATA = {
       ]},
     {id: "cyanobacteria", node: "cyanobacteria", life: [{"ic": "🌿", "t": "The chloroplasts in plant cells are thought to come from ancient cyanobacteria."}], title: "Cyanobacteria",
       orgs: [
-        {type: "phylum", id: "cyano", node: "cyanobacteria", photos: [{"src": "images/cyanobacteria-filaments.jpg", "alt": "Light micrograph of many long green-blue filaments made of chains of cells", "cap": "Cyanobacteria filaments. They reproduce by <b>fragmentation</b>: a filament breaks into pieces.", "credit": "Credit: modification of work by CSIRO, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 9.16, panel a, cropped)"}], cheat: "The only <b>photosynthetic</b> group: it makes O₂.", name: "Cyanobacteria", shape: "filament",
+        {type: "phylum", id: "cyano", node: "cyanobacteria", photos: [{"src": "images/cyanobacteria-filaments.jpg", "alt": "Light micrograph of many long green-blue filaments made of chains of cells", "cap": "Cyanobacteria filaments. They reproduce by <b>fragmentation</b>: a filament breaks into pieces.", "credit": "Credit: modification of work by CSIRO, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 9.16, panel a, cropped)"}], cheat: "Only <b>photosynthetic</b> group; makes O₂.", name: "Cyanobacteria", shape: "filament",
           boxes: [
             {ic: "☀️", t: "Photosynthetic: use chlorophyll <i>a</i> and release O₂"},
             {ic: "🌍", t: "They made the oxygen in early Earth's atmosphere"},
