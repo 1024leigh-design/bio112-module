@@ -47,10 +47,10 @@ button{font:inherit; color:inherit}
 .top a{margin-left:auto; text-decoration:none; color:var(--ink); font-weight:700; font-size:15px; padding:8px 13px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface)}
 .brand{font-family:var(--f-display); font-weight:700}
 .hero h1{font-size:clamp(32px,5.5vw,48px); line-height:1.05; margin-bottom:10px}
-.hero p{color:var(--muted); max-width:66ch; margin-top:8px}
+.hero p{color:var(--muted); margin-top:8px}
 .hero a{color:var(--arrow); font-weight:700}
 /* two matching segmented controls: what to do, and which microbes to show */
-.bar{display:flex; flex-wrap:wrap; gap:12px 28px; align-items:center; margin:22px 0 16px}
+.bar{display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px 28px; align-items:center; margin:22px 0 16px}
 .group{display:flex; flex-wrap:wrap; align-items:center; gap:4px; background:var(--surface-2); border:1.5px solid var(--line); border-radius:999px; padding:4px}
 .glabel{font:600 12.5px var(--f-mono); text-transform:uppercase; letter-spacing:.05em; color:var(--muted); padding:0 8px 0 10px}
 .mode, .kind{border:0; background:transparent; border-radius:999px; padding:8px 16px; font-weight:700; font-size:16.5px; line-height:1.2; cursor:pointer}
@@ -68,7 +68,8 @@ button{font:inherit; color:inherit}
 .tgrp{border-top:5px solid var(--g); background:var(--surface); border-radius:12px; padding:6px; display:flex; flex-direction:column; gap:4px}
 .tgrp .gl{font:600 12px var(--f-mono); text-transform:uppercase; letter-spacing:.04em; color:var(--g); padding:2px 4px 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 .tab{display:flex; align-items:center; gap:6px; width:100%; text-align:left; border:0; border-radius:9px; background:transparent; padding:6px 8px; cursor:pointer; font-weight:700; font-size:15.5px; line-height:1.2}
-.tab .ti{font-size:18px; flex:none}
+.tab .ti{flex:none; display:inline-flex}
+.ico{width:1.15em; height:1.15em; flex:none; vertical-align:-.2em}
 .tab .tn{flex:1; min-width:0}
 .tab .tc{font:600 12px var(--f-mono); color:var(--muted); flex:none}
 .tab:hover{background:var(--gs)}
@@ -88,17 +89,19 @@ button{font:inherit; color:inherit}
 
 /* the selected route */
 .banner{display:grid; grid-template-columns:auto minmax(0,1fr); gap:6px 18px; align-items:center; background:var(--gs); border:2px solid var(--g); border-radius:20px; padding:16px 18px; margin-bottom:16px}
-.banner .big{grid-row:span 3; width:84px; height:84px; border-radius:50%; background:var(--surface); display:grid; place-items:center; font-size:46px; box-shadow:0 0 0 4px var(--g)}
+.banner .big{grid-row:span 3; width:84px; height:84px; border-radius:50%; background:var(--surface); display:grid; place-items:center; color:var(--g); box-shadow:0 0 0 4px var(--g)}
+.banner .big .ico{width:46px; height:46px}
 .banner .eyebrow{font:600 13px var(--f-mono); text-transform:uppercase; letter-spacing:.06em; color:var(--g)}
 .banner h2{font-size:clamp(28px,4.5vw,40px); line-height:1.05}
 .banner .def{font-size:19px}
 .banner .count{grid-column:1 / -1; display:flex; flex-wrap:wrap; gap:8px; margin-top:6px}
 .pill{font:600 13.5px var(--f-mono); background:var(--surface); border-radius:999px; padding:3px 12px}
-@media (max-width:520px){ .banner{grid-template-columns:minmax(0,1fr)} .banner .big{grid-row:auto; width:64px; height:64px; font-size:34px} }
+@media (max-width:520px){ .banner{grid-template-columns:minmax(0,1fr)} .banner .big{grid-row:auto; width:64px; height:64px} .banner .big .ico{width:34px; height:34px} }
 .cols{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:18px; align-items:start}
 @media (max-width:820px){ .cols{grid-template-columns:minmax(0,1fr)} }
 .colbox{background:var(--surface); border:1.5px solid var(--line); border-radius:18px; padding:14px; display:flex; flex-direction:column; gap:10px}
-.colbox h3{font-size:22px}
+.colbox h3{font-size:22px; display:flex; align-items:center; gap:8px}
+.colbox h3 .ico{width:26px; height:26px; color:var(--muted)}
 .mlist{display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px; align-items:stretch}
 /* flip cards: both faces share one grid cell, so the card is as tall as its taller face */
 .fcard{position:relative; perspective:1000px; min-height:150px}
@@ -106,7 +109,8 @@ button{font:inherit; color:inherit}
 .fcard.flipped .in{transform:rotateY(180deg)}
 .face{grid-area:1 / 1; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:14px; border:1.5px solid var(--line); border-left:6px solid var(--ge); padding:10px 12px; display:flex; flex-direction:column; gap:5px; color:var(--ink)}
 .front{background:var(--surface); cursor:pointer; font:inherit; width:100%; justify-content:center; align-items:center; text-align:center; gap:6px}
-.front .big{font-size:30px; line-height:1}
+.front .big{display:inline-flex; color:var(--ge)}
+.front .big .ico{width:34px; height:34px}
 .front .tags{justify-content:center}
 .front:hover{border-color:var(--ge)}
 .front .nm{font-weight:700; font-size:18px; line-height:1.25}
@@ -118,7 +122,7 @@ button{font:inherit; color:inherit}
 .back .row{font-size:15px; line-height:1.35}
 .back .row b{font:600 11.5px var(--f-mono); text-transform:uppercase; letter-spacing:.04em; color:var(--muted); display:block}
 .back .rts{display:flex; flex-wrap:wrap; gap:4px; margin-top:2px}
-.back .rts span{font-size:13.5px; background:var(--surface); border-radius:999px; padding:1px 8px}
+.back .rts span{display:inline-flex; align-items:center; gap:4px; font-size:13.5px; background:var(--surface); border-radius:999px; padding:1px 8px}
 .back .rts span.cur{box-shadow:0 0 0 2px var(--g) inset; font-weight:700}
 .back .links{margin-top:auto; padding-top:4px; display:flex; flex-wrap:wrap; gap:4px 12px; align-items:center}
 .back .links a{font-weight:700; font-size:14px; color:var(--arrow); text-decoration:none}
@@ -147,7 +151,7 @@ button{font:inherit; color:inherit}
 @media (max-width:440px){ .answers{grid-template-columns:minmax(0,1fr)} }
 .agrp{border-top:5px solid var(--g); background:var(--gs); border-radius:14px; padding:8px; display:flex; flex-direction:column; gap:6px}
 .agrp .gl{font:600 12px var(--f-mono); text-transform:uppercase; letter-spacing:.04em; color:var(--g)}
-.ans{display:flex; align-items:center; gap:8px; width:100%; text-align:left; border:2px solid transparent; border-radius:10px; background:var(--surface); padding:9px 10px; cursor:pointer; font-weight:700}
+.ans{display:flex; align-items:center; gap:8px; color:var(--ink); width:100%; text-align:left; border:2px solid transparent; border-radius:10px; background:var(--surface); padding:9px 10px; cursor:pointer; font-weight:700}
 .ans:hover{border-color:var(--g)}
 .ans.right{border-color:var(--good); background:var(--good-soft)}
 .ans.near{border-color:var(--warn); background:var(--warn-soft)}
@@ -161,26 +165,26 @@ button{font:inherit; color:inherit}
 </head>
 <body>
 <div class="wrap">
-  <header class="top"><span class="brand">🧫 BIO 112 · Ch. 11, 13 + 14</span><a href="unit-bacteria.html">← Pathology unit</a></header>
+  <header class="top"><span class="brand">BIO 112 · Ch. 11, 13 + 14</span><a href="unit-bacteria.html">← Pathology unit</a></header>
   <section class="hero">
     <h1>How Diseases Spread</h1>
-    <p>👉 Pick a route from the tabs below (or start with the first one and hit <b>Next</b>) to see which bacteria and viruses spread that way. Then use <b>Quiz me</b> to practice each microbe's <b>primary</b> route.</p>
+    <p>Pick a route from the tabs below (or start with the first one and hit <b>Next</b>) to see which bacteria and viruses spread that way. Then use <b>Quiz me</b> to practice each microbe's <b>primary</b> route.</p>
     <p>Where do they cause disease once they're in? <a href="body-map.html#dz">Open the Body Map →</a></p>
   </section>
   <div class="bar">
     <div class="group" role="toolbar" aria-label="Mode">
-      <button type="button" class="mode" data-mode="explore" aria-pressed="true">🗺️ Explore routes</button>
-      <button type="button" class="mode" data-mode="quiz" aria-pressed="false">🎯 Quiz me</button>
+      <button type="button" class="mode" data-mode="explore" aria-pressed="true">Explore routes</button>
+      <button type="button" class="mode" data-mode="quiz" aria-pressed="false">Quiz me</button>
     </div>
     <div class="group" role="toolbar" aria-label="Which microbes">
       <span class="glabel" aria-hidden="true">Show</span>
       <button type="button" class="kind" data-kind="all" aria-pressed="true">Both</button>
-      <button type="button" class="kind" data-kind="b" aria-pressed="false">🧫 Bacteria</button>
-      <button type="button" class="kind" data-kind="v" aria-pressed="false">🧬 Viruses</button>
+      <button type="button" class="kind" data-kind="b" aria-pressed="false">Bacteria</button>
+      <button type="button" class="kind" data-kind="v" aria-pressed="false">Viruses</button>
     </div>
   </div>
   <nav class="tabs" id="tabs" role="tablist" aria-label="Routes of transmission"></nav>
-  <p class="swipe" id="swipe">👉 Swipe the tabs for more routes</p>
+  <p class="swipe" id="swipe">Swipe the tabs for more routes →</p>
   <main id="main" aria-live="polite"></main>
 </div>
 
@@ -196,6 +200,26 @@ button{font:inherit; color:inherit}
 "use strict";
 function $(s){ return document.querySelector(s); }
 function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;"}[c]; }); }
+
+/* simple line icons (stroke = currentColor), one per route, plus a bacterium and a virus */
+var ICON = {
+  drop: '<path d="M8 4c2 3 3.5 4.8 3.5 6.5a3.5 3.5 0 0 1-7 0C4.5 8.8 6 7 8 4z"/><path d="M17 9c1.5 2.2 2.5 3.5 2.5 4.8a2.5 2.5 0 0 1-5 0c0-1.3 1-2.6 2.5-4.8z"/><path d="M10 16c1.2 1.8 2 2.8 2 3.8a2 2 0 0 1-4 0c0-1 .8-2 2-3.8z"/>',
+  air: '<path d="M3 8h11a3 3 0 1 0-3-3"/><path d="M3 12h16a3 3 0 1 1-3 3"/><path d="M3 16h7"/>',
+  fecal: '<path d="M6 4h12l-1.6 16H7.6z"/><path d="M6.8 10c1.8 1.4 3.4 1.4 5.2 0s3.4-1.4 5.2 0"/>',
+  food: '<path d="M5 3v5a2 2 0 0 0 4 0V3M7 3v18"/><path d="M17 21V3c-2.2 1.8-3 5-2.6 9H17"/>',
+  blood: '<path d="M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/>',
+  sex: '<circle cx="9" cy="12" r="5"/><circle cx="15" cy="12" r="5"/>',
+  vert: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="13.5" r="3"/><path d="M12 10.5c0-1.5 1-2.5 2.5-2.5"/>',
+  contact: '<path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V11M11 10V4.5a1.5 1.5 0 0 1 3 0V11M14 10.5V6a1.5 1.5 0 0 1 3 0v8a7 7 0 0 1-7 7h-.5a6 6 0 0 1-4.6-2.2L3 15.5a1.5 1.5 0 0 1 2.3-1.9L8 16"/>',
+  fomite: '<rect x="5" y="3" width="14" height="18" rx="1.5"/><circle cx="15" cy="12" r="1.4"/>',
+  auto: '<path d="M20 12a8 8 0 0 1-14 5.3"/><path d="M4 12A8 8 0 0 1 18 6.7"/><path d="M18 3v4h-4"/><path d="M6 21v-4h4"/>',
+  vector: '<ellipse cx="12" cy="13" rx="3.8" ry="6"/><path d="M12 7V4.5M10 4l2 .5 2-.5M8.3 10 4 8M8.2 14H3M8.6 17.5 4.5 20.5M15.7 10 20 8M15.8 14H21M15.4 17.5l4.1 3"/>',
+  bite: '<path d="M4 6h16l-2.7 5-2.6-5-2.7 5-2.7-5-2.6 5z"/><path d="M4 18h16l-2.7-5-2.6 5-2.7-5-2.7 5-2.6-5z"/>',
+  wound: '<rect x="2.5" y="8.5" width="19" height="7" rx="3.5" transform="rotate(-45 12 12)"/><path d="M10.6 10.6h.01M13.4 13.4h.01M13.4 10.6h.01M10.6 13.4h.01"/>',
+  bacterium: '<rect x="3" y="7.5" width="18" height="9" rx="4.5"/><path d="M21 12h2M1 12h2M7.5 7.5 6.5 5M16.5 16.5l1 2.5"/><path d="M9 12h.01M12 11h.01M15 12.5h.01"/>',
+  virus: '<circle cx="12" cy="12" r="5"/><path d="M12 7V4M12 20v-3M7 12H4M20 12h-3M8.5 8.5 6.4 6.4M17.6 17.6l-2.1-2.1M8.5 15.5l-2.1 2.1M17.6 6.4l-2.1 2.1"/><circle cx="12" cy="3" r="1"/><circle cx="12" cy="21" r="1"/><circle cx="3" cy="12" r="1"/><circle cx="21" cy="12" r="1"/>'
+};
+function ico(id){ return '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICON[id] + "</svg>"; }
 
 var D = window.TXDATA, GROUPS = D.GROUPS, ROUTES = D.ROUTES, TX = D.TX, VIR = window.BODYMAP.VIRUSES;
 var RBY = {}; ROUTES.forEach(function(r){ RBY[r.id] = r; });
@@ -226,10 +250,10 @@ function drawTabs(){
   $("#tabs").hidden = !show; $("#swipe").hidden = !show;
   if (!show) return;
   $("#tabs").innerHTML = GROUPS.map(function(g){
-    return '<div class="tgrp g-' + g.id + '" role="presentation"><span class="gl">' + g.ic + " " + esc(g.name) + "</span>" +
+    return '<div class="tgrp g-' + g.id + '" role="presentation"><span class="gl">' + esc(g.name) + "</span>" +
       ROUTES.filter(function(r){ return r.grp === g.id; }).map(function(r){
         var n = users(r.id).length, sel = r.id === st.route;
-        return '<button type="button" class="tab' + (n ? "" : " none") + '" role="tab" aria-selected="' + sel + '" data-route="' + r.id + '"><span class="ti" aria-hidden="true">' + r.ic + '</span><span class="tn">' + esc(r.short) + '</span><span class="tc">' + n + "</span></button>";
+        return '<button type="button" class="tab' + (n ? "" : " none") + '" role="tab" aria-selected="' + sel + '" data-route="' + r.id + '"><span class="ti">' + ico(r.id) + '</span><span class="tn">' + esc(r.short) + '</span><span class="tc">' + n + "</span></button>";
       }).join("") + "</div>";
   }).join("");
 }
@@ -240,11 +264,11 @@ function card(id, rid){
   var style = ' style="--ge:' + (m.v ? "var(--vir)" : m.gram === "+" ? "var(--gp-edge)" : "var(--gn-edge)") + '"';
   var it = m.v ? "" : " it";
   var routes = ROUTES.filter(function(r){ return x.p.indexOf(r.id) >= 0 || (x.s || []).indexOf(r.id) >= 0; })
-    .map(function(r){ return '<span class="' + (r.id === rid ? "cur" : "") + '">' + r.ic + " " + esc(r.short) + "</span>"; }).join("");
+    .map(function(r){ return '<span class="' + (r.id === rid ? "cur" : "") + '">' + ico(r.id) + esc(r.short) + "</span>"; }).join("");
   var links = (m.href ? '<a href="' + m.href + '">Tour →</a>' : "") + (m.map ? '<a href="' + m.map + '">Body Map →</a>' : "");
   var flipped = st.flipped[id] ? " flipped" : "";
   return '<div class="fcard' + flipped + '" data-card="' + id + '"' + style + '><div class="in">' +
-    '<button type="button" class="face front" data-flip="' + id + '" aria-expanded="' + !!st.flipped[id] + '"' + (flipped ? ' tabindex="-1" aria-hidden="true"' : "") + '><span class="big" aria-hidden="true">' + (m.v ? "🧬" : "🦠") + '</span><span class="nm' + it + '">' + esc(m.name) + '</span><span class="tags">' + tag + '</span><span class="hint">Tap to flip ↻</span></button>' +
+    '<button type="button" class="face front" data-flip="' + id + '" aria-expanded="' + !!st.flipped[id] + '"' + (flipped ? ' tabindex="-1" aria-hidden="true"' : "") + '><span class="big">' + ico(m.v ? "virus" : "bacterium") + '</span><span class="nm' + it + '">' + esc(m.name) + '</span><span class="tags">' + tag + '</span><span class="hint">Tap to flip ↻</span></button>' +
     '<div class="face back"' + (flipped ? "" : ' aria-hidden="true"') + '><span class="nm' + it + '">' + esc(m.name) + "</span>" +
       '<span class="row"><b>Causes</b>' + esc(m.dz || "") + "</span>" +
       '<span class="row"><b>Spreads by</b><span class="rts">' + routes + "</span></span>" +
@@ -257,8 +281,8 @@ function render(){
   if (st.mode === "quiz") return renderQuiz();
   var r = RBY[st.route], g = GBY[r.grp], list = users(r.id), i = ROUTES.indexOf(r);
   var bac = list.filter(function(id){ return TX[id].k === "b"; }), vir = list.filter(function(id){ return TX[id].k === "v"; });
-  var h = '<section class="banner g-' + r.grp + '"><span class="big" aria-hidden="true">' + r.ic + '</span><span class="eyebrow">' + g.ic + " " + esc(g.name) + "</span><h2>" + esc(r.name) + '</h2><p class="def">' + esc(r.def) + "</p>" +
-    '<div class="count"><span class="pill">' + list.length + " microbe" + (list.length === 1 ? "" : "s") + " spread this way</span>" + (st.kind !== "v" ? '<span class="pill">🧫 ' + bac.length + " bacteria</span>" : "") + (st.kind !== "b" ? '<span class="pill">🧬 ' + vir.length + " virus" + (vir.length === 1 ? "" : "es") + "</span>" : "") + "</div></section>";
+  var h = '<section class="banner g-' + r.grp + '"><span class="big">' + ico(r.id) + '</span><span class="eyebrow">' + esc(g.name) + "</span><h2>" + esc(r.name) + '</h2><p class="def">' + esc(r.def) + "</p>" +
+    '<div class="count"><span class="pill">' + list.length + " microbe" + (list.length === 1 ? "" : "s") + " spread this way</span>" + (st.kind !== "v" ? '<span class="pill">' + bac.length + " bacteria</span>" : "") + (st.kind !== "b" ? '<span class="pill">' + vir.length + " virus" + (vir.length === 1 ? "" : "es") + "</span>" : "") + "</div></section>";
   if (!list.length) h += '<p class="empty">None of our ' + (st.kind === "v" ? "viruses" : st.kind === "b" ? "bacteria" : "microbes") + " spread this way. Try another route!</p>";
   else {
     var colsHtml = [];
@@ -267,13 +291,13 @@ function render(){
       return '<div class="colbox"><div class="colhead"><h3>' + title + "</h3>" + (arr.length ? '<button type="button" class="flipall" data-flipall="' + kind + '">' + (all ? "↻ Flip all back" : "↻ Flip all") + "</button>" : "") + "</div>" +
         (arr.length ? '<div class="mlist">' + arr.map(function(id){ return card(id, r.id); }).join("") + "</div>" : '<p class="empty">' + none + "</p>") + "</div>";
     }
-    if (st.kind !== "v") colsHtml.push(col("🧫 Bacteria", "b", bac, "No bacteria on our list spread this way."));
-    if (st.kind !== "b") colsHtml.push(col("🧬 Viruses", "v", vir, "No viruses on our list spread this way."));
+    if (st.kind !== "v") colsHtml.push(col(ico("bacterium") + "Bacteria", "b", bac, "No bacteria on our list spread this way."));
+    if (st.kind !== "b") colsHtml.push(col(ico("virus") + "Viruses", "v", vir, "No viruses on our list spread this way."));
     h += '<div class="cols"' + (colsHtml.length === 1 ? ' style="grid-template-columns:minmax(0,1fr)"' : "") + ">" + colsHtml.join("") + "</div>";
   }
   var prev = ROUTES[i - 1], next = ROUTES[i + 1];
-  h += '<div class="stepper">' + (prev ? '<button type="button" class="step g-' + prev.grp + '" data-step="' + prev.id + '">← ' + prev.ic + " " + esc(prev.short) + "</button>" : "") +
-    (next ? '<button type="button" class="step next g-' + next.grp + '" data-step="' + next.id + '">Next: ' + next.ic + " " + esc(next.short) + " →</button>" : '<button type="button" class="step next g-air" data-mode="quiz">Done! Try the quiz 🎯</button>') + "</div>";
+  h += '<div class="stepper">' + (prev ? '<button type="button" class="step g-' + prev.grp + '" data-step="' + prev.id + '">← ' + esc(prev.short) + "</button>" : "") +
+    (next ? '<button type="button" class="step next g-' + next.grp + '" data-step="' + next.id + '">Next: ' + esc(next.short) + " →</button>" : '<button type="button" class="step next g-air" data-mode="quiz">Done! Try the quiz →</button>') + "</div>";
   h += '<p class="src">Tap a card to flip it. Microbes are listed for every route they can use. Some spread more than one way! Sources: Ch. 13 slides (viruses) and the Ch. 11 tours (bacteria).</p>';
   $("#main").innerHTML = h;
 }
@@ -294,10 +318,10 @@ function renderQuiz(){
   if (q.msg) h += '<div class="qmsg ' + q.cls + '">' + q.msg + "</div>";
   if (q.done) h += '<div><button class="btn" type="button" data-next>Next microbe →</button></div>';
   h += '<div class="answers">' + GROUPS.map(function(g){
-    return '<div class="agrp g-' + g.id + '"><span class="gl">' + g.ic + " " + esc(g.name) + "</span>" + ROUTES.filter(function(r){ return r.grp === g.id; }).map(function(r){
+    return '<div class="agrp g-' + g.id + '"><span class="gl">' + esc(g.name) + "</span>" + ROUTES.filter(function(r){ return r.grp === g.id; }).map(function(r){
       var cls = "ans";
       if (q.done && q.p.indexOf(r.id) >= 0) cls += " right"; else if (q.tried.indexOf(r.id) >= 0) cls += (q.s.indexOf(r.id) >= 0 ? " near" : " wrong");
-      return '<button type="button" class="' + cls + '" data-answer="' + r.id + '"><span aria-hidden="true">' + r.ic + "</span>" + esc(r.short) + "</button>";
+      return '<button type="button" class="' + cls + '" data-answer="' + r.id + '">' + ico(r.id) + esc(r.short) + "</button>";
     }).join("") + "</div>";
   }).join("") + "</div></section>";
   $("#main").innerHTML = h;
@@ -309,8 +333,8 @@ function answer(rid){
     q.done = true; q.cls = "good";
     if (!q.tried.length){ st.score += 10; st.streak++; if (st.streak > st.best){ st.best = st.streak; try { localStorage.setItem("bio112-tx-best", st.best); } catch (e) {} } }
     else { st.score += 5; st.streak = 0; }
-    var all = q.p.map(function(p){ return RBY[p].ic + " " + RBY[p].name; }).join(", ");
-    q.msg = "✅ Yes! " + (q.p.length > 1 ? "Its primary routes: " + esc(all) + "." : esc(r.name) + " is its primary route.") + (TX[q.id].note ? " (" + esc(TX[q.id].note) + ")" : "") +
+    var all = q.p.map(function(p){ return RBY[p].name; }).join(", ");
+    q.msg = "<b>Correct!</b> " + (q.p.length > 1 ? "Its primary routes: " + esc(all) + "." : esc(r.name) + " is its primary route.") + (TX[q.id].note ? " (" + esc(TX[q.id].note) + ")" : "") +
       (m.href ? ' <a href="' + m.href + '">Read about <i>' + esc(m.name) + "</i> in the tour →</a>" : "") + (m.map ? ' <a href="' + m.map + '">See it on the Body Map →</a>' : "");
   } else {
     q.tried.push(rid); st.streak = 0;
