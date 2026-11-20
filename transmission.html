@@ -7,14 +7,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;600&display=swap">
 <style>
-/* How Diseases Spread: tap a route of transmission to see the bacteria and viruses that spread that way.
+/* How Diseases Spread: route tabs across the top (grouped by theme), then the bacteria and viruses that spread that way.
    Explore mode never labels primary vs. other routes (Ch. 13 slide 42 is a student worksheet); the quiz checks primary routes only.
-   Data: transmission-data.js. Same tokens as the Body Map. */
+   Data: transmission-data.js. Same base tokens as the Body Map; each route group has its own color. */
 :root{
   --bg:#f2f5f8; --surface:#ffffff; --surface-2:#e8eef4; --ink:#14223a; --muted:#53657b; --line:#d3dde7;
   --arrow:#1683cc; --arrow-soft:#dcecf9; --good:#1f8a55; --good-soft:#dcf2e5; --bad:#c43a2b; --bad-soft:#fbe0db; --warn:#b45309; --warn-soft:#fdf0dc;
-  --route:#0e7490; --route-soft:#dff3f7; --vir:#0e7490;
-  --gn-edge:#c2185b; --gp-edge:#6d28d9;
+  --vir:#0e7490; --gn-edge:#c2185b; --gp-edge:#6d28d9; --on:#ffffff;
+  --g-air:#0369a1; --g-air-soft:#e0f2fe; --g-food:#b45309; --g-food-soft:#fef3c7; --g-fluids:#c0262d; --g-fluids-soft:#fee2e2;
+  --g-touch:#6d28d9; --g-touch-soft:#ede9fe; --g-animals:#15803d; --g-animals-soft:#dcfce7; --g-skin:#be185d; --g-skin-soft:#fce7f3;
   --f-display:'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
   --f-body:'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
   --f-mono:'IBM Plex Mono', ui-monospace, Menlo, monospace;
@@ -23,13 +24,17 @@
   :root:not([data-theme="light"]){
     --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
     --arrow:#4aa9ee; --arrow-soft:#173450; --good:#4ccb8b; --good-soft:#153a29; --bad:#ff7d6d; --bad-soft:#46211d; --warn:#f5b85a; --warn-soft:#3a2a12;
-    --route:#4fc3d9; --route-soft:#14313a; --vir:#4fc3d9; --gn-edge:#f48fb6; --gp-edge:#c4b0f5; color-scheme:dark;
+    --vir:#4fc3d9; --gn-edge:#f48fb6; --gp-edge:#c4b0f5; --on:#0d151f;
+    --g-air:#38bdf8; --g-air-soft:#0c2a3d; --g-food:#fbbf24; --g-food-soft:#3a2a0c; --g-fluids:#f87171; --g-fluids-soft:#3d1515;
+    --g-touch:#a78bfa; --g-touch-soft:#2a1f45; --g-animals:#4ade80; --g-animals-soft:#12301d; --g-skin:#f472b6; --g-skin-soft:#3a1428; color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
   --arrow:#4aa9ee; --arrow-soft:#173450; --good:#4ccb8b; --good-soft:#153a29; --bad:#ff7d6d; --bad-soft:#46211d; --warn:#f5b85a; --warn-soft:#3a2a12;
-  --route:#4fc3d9; --route-soft:#14313a; --vir:#4fc3d9; --gn-edge:#f48fb6; --gp-edge:#c4b0f5; color-scheme:dark;
+  --vir:#4fc3d9; --gn-edge:#f48fb6; --gp-edge:#c4b0f5; --on:#0d151f;
+  --g-air:#38bdf8; --g-air-soft:#0c2a3d; --g-food:#fbbf24; --g-food-soft:#3a2a0c; --g-fluids:#f87171; --g-fluids-soft:#3d1515;
+  --g-touch:#a78bfa; --g-touch-soft:#2a1f45; --g-animals:#4ade80; --g-animals-soft:#12301d; --g-skin:#f472b6; --g-skin-soft:#3a1428; color-scheme:dark;
 }
 *{box-sizing:border-box}
 body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:18px; line-height:1.5; overflow-x:hidden}
@@ -44,37 +49,56 @@ button{font:inherit; color:inherit}
 .hero h1{font-size:clamp(32px,5.5vw,48px); line-height:1.05}
 .hero p{color:var(--muted); max-width:66ch; margin-top:6px}
 .hero a{color:var(--arrow); font-weight:700}
-.bar{display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center; margin:16px 0}
+.bar{display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center; margin:16px 0 12px}
 .group{display:flex; flex-wrap:wrap; gap:8px}
 .mode, .kind{border:2px solid var(--line); background:var(--surface); border-radius:999px; padding:9px 18px; font-weight:700; cursor:pointer}
-.mode[aria-pressed="true"]{background:var(--route); border-color:transparent; color:#fff}
-.mode.quiz[aria-pressed="true"]{background:var(--arrow)}
+.mode[aria-pressed="true"]{background:var(--ink); border-color:transparent; color:var(--bg)}
 .kind{padding:7px 14px; font-size:16px; background:var(--surface-2)}
-.kind[aria-pressed="true"]{background:var(--ink); color:var(--bg); border-color:transparent}
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .mode[aria-pressed="true"]{color:#0d151f} }
-:root[data-theme="dark"] .mode[aria-pressed="true"]{color:#0d151f}
-.layout{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.15fr); gap:20px; align-items:start}
-@media (max-width:820px){ .layout{grid-template-columns:minmax(0,1fr)} .layout.quizzing .panel{order:-1} }
-.routes{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px}
-@media (max-width:420px){ .routes{grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px} }
-.rt{position:relative; display:flex; flex-direction:column; align-items:flex-start; gap:2px; text-align:left; border:2px solid var(--line); background:var(--surface); border-radius:16px; padding:10px 12px; cursor:pointer; min-height:92px}
-.rt .ic{font-size:28px; line-height:1.1}
-.rt .nm{font-family:var(--f-display); font-weight:700; font-size:17px; line-height:1.15}
-.rt .ct{font:600 12.5px var(--f-mono); color:var(--muted)}
-.rt:hover{border-color:var(--route)}
-.rt.sel{border-color:var(--route); background:var(--route-soft); box-shadow:0 0 0 2px var(--route) inset}
-.rt.none{opacity:.5}
-.rt.right{border-color:var(--good); background:var(--good-soft)}
-.rt.near{border-color:var(--warn); background:var(--warn-soft)}
-.rt.wrong{border-color:var(--bad); background:var(--bad-soft)}
-.panel{background:var(--surface); border:1.5px solid var(--line); border-radius:20px; padding:16px; display:flex; flex-direction:column; gap:12px; min-width:0}
-@media (min-width:821px){ .panel{position:sticky; top:10px} }
-.panel h2{font-size:28px}
-.def{background:var(--route-soft); border-left:6px solid var(--route); border-radius:14px; padding:10px 14px}
-.sub{color:var(--muted); font-size:16px}
-.sech{font:600 13px var(--f-mono); text-transform:uppercase; letter-spacing:.06em; color:var(--muted)}
-.mlist{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px}
-.mcard{display:flex; flex-direction:column; gap:4px; text-decoration:none; color:var(--ink); background:var(--surface); border:1.5px solid var(--line); border-left:6px solid var(--ge); border-radius:14px; padding:10px 12px}
+.kind[aria-pressed="true"]{background:var(--arrow); color:#fff; border-color:transparent}
+
+/* each group sets --g and --gs for everything inside it */
+.g-air{--g:var(--g-air); --gs:var(--g-air-soft)} .g-food{--g:var(--g-food); --gs:var(--g-food-soft)} .g-fluids{--g:var(--g-fluids); --gs:var(--g-fluids-soft)}
+.g-touch{--g:var(--g-touch); --gs:var(--g-touch-soft)} .g-animals{--g:var(--g-animals); --gs:var(--g-animals-soft)} .g-skin{--g:var(--g-skin); --gs:var(--g-skin-soft)}
+
+/* tab bar: one column per group, the route tabs stacked under its label */
+.tabs{position:sticky; top:0; z-index:5; background:var(--bg); padding:8px 0 10px; border-bottom:1px solid var(--line); margin-bottom:16px;
+  display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:8px}
+.tgrp{border-top:5px solid var(--g); background:var(--surface); border-radius:12px; padding:6px; display:flex; flex-direction:column; gap:4px}
+.tgrp .gl{font:600 12px var(--f-mono); text-transform:uppercase; letter-spacing:.04em; color:var(--g); padding:2px 4px 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.tab{display:flex; align-items:center; gap:6px; width:100%; text-align:left; border:0; border-radius:9px; background:transparent; padding:6px 8px; cursor:pointer; font-weight:700; font-size:15.5px; line-height:1.2}
+.tab .ti{font-size:18px; flex:none}
+.tab .tn{flex:1; min-width:0}
+.tab .tc{font:600 12px var(--f-mono); color:var(--muted); flex:none}
+.tab:hover{background:var(--gs)}
+.tab[aria-selected="true"]{background:var(--g); color:var(--on)}
+.tab[aria-selected="true"] .tc{color:var(--on); opacity:.85}
+.tab.none{opacity:.45}
+/* phones and small tablets: groups scroll sideways in one row */
+@media (max-width:900px){
+  .tabs{display:flex; overflow-x:auto; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch; padding-bottom:12px}
+  .tgrp{flex:none; scroll-snap-align:start; flex-direction:row; flex-wrap:nowrap; align-items:center; padding:6px 8px; border-top:0; border-left:5px solid var(--g)}
+  .tgrp .gl{display:none}
+  .tab{width:auto; white-space:nowrap}
+}
+.swipe{display:none; font-size:14px; color:var(--muted); margin:-8px 0 12px}
+[hidden]{display:none!important}
+@media (max-width:900px){ .swipe{display:block} }
+
+/* the selected route */
+.banner{display:grid; grid-template-columns:auto minmax(0,1fr); gap:6px 18px; align-items:center; background:var(--gs); border:2px solid var(--g); border-radius:20px; padding:16px 18px; margin-bottom:16px}
+.banner .big{grid-row:span 3; width:84px; height:84px; border-radius:50%; background:var(--surface); display:grid; place-items:center; font-size:46px; box-shadow:0 0 0 4px var(--g)}
+.banner .eyebrow{font:600 13px var(--f-mono); text-transform:uppercase; letter-spacing:.06em; color:var(--g)}
+.banner h2{font-size:clamp(28px,4.5vw,40px); line-height:1.05}
+.banner .def{font-size:19px}
+.banner .count{grid-column:1 / -1; display:flex; flex-wrap:wrap; gap:8px; margin-top:6px}
+.pill{font:600 13.5px var(--f-mono); background:var(--surface); border-radius:999px; padding:3px 12px}
+@media (max-width:520px){ .banner{grid-template-columns:minmax(0,1fr)} .banner .big{grid-row:auto; width:64px; height:64px; font-size:34px} }
+.cols{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:18px; align-items:start}
+@media (max-width:820px){ .cols{grid-template-columns:minmax(0,1fr)} }
+.colbox{background:var(--surface); border:1.5px solid var(--line); border-radius:18px; padding:14px; display:flex; flex-direction:column; gap:10px}
+.colbox h3{font-size:22px}
+.mlist{display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px}
+.mcard{display:flex; flex-direction:column; gap:4px; color:var(--ink); background:var(--surface); border:1.5px solid var(--line); border-left:6px solid var(--ge); border-radius:14px; padding:10px 12px}
 .mcard b{font-size:17px}
 .mcard b.it{font-style:italic}
 .mcard small{color:var(--muted); font-size:15px}
@@ -85,15 +109,33 @@ button{font:inherit; color:inherit}
 .tag{font:600 11.5px var(--f-mono); padding:1px 8px; border-radius:999px; border:1.5px solid var(--line); color:var(--muted)}
 .tag.gneg{border-color:var(--gn-edge); color:var(--gn-edge)} .tag.gpos{border-color:var(--gp-edge); color:var(--gp-edge)} .tag.vir{border-color:var(--vir); color:var(--vir)}
 .empty{color:var(--muted); background:var(--surface-2); border-radius:14px; padding:12px 14px}
-.quizq{font-family:var(--f-display); font-size:24px; line-height:1.25}
+.stepper{display:flex; justify-content:space-between; gap:10px; margin-top:18px; flex-wrap:wrap}
+.step{display:flex; align-items:center; gap:8px; border:2px solid var(--line); background:var(--surface); border-radius:999px; padding:10px 18px; font-weight:700; cursor:pointer}
+.step:hover{border-color:var(--g)}
+.step.next{margin-left:auto; background:var(--g); border-color:transparent; color:var(--on)}
+.src{color:var(--muted); font-size:14px; margin-top:12px}
+
+/* quiz */
+.quiz{background:var(--surface); border:1.5px solid var(--line); border-radius:20px; padding:18px; display:flex; flex-direction:column; gap:14px}
+.quizq{font-family:var(--f-display); font-size:clamp(24px,4vw,32px); line-height:1.2}
 .quizq i{font-family:var(--f-body)}
 .score{font:600 15px var(--f-mono); color:var(--muted)}
+.sub{color:var(--muted); font-size:16px}
+.answers{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px}
+@media (max-width:820px){ .answers{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:440px){ .answers{grid-template-columns:minmax(0,1fr)} }
+.agrp{border-top:5px solid var(--g); background:var(--gs); border-radius:14px; padding:8px; display:flex; flex-direction:column; gap:6px}
+.agrp .gl{font:600 12px var(--f-mono); text-transform:uppercase; letter-spacing:.04em; color:var(--g)}
+.ans{display:flex; align-items:center; gap:8px; width:100%; text-align:left; border:2px solid transparent; border-radius:10px; background:var(--surface); padding:9px 10px; cursor:pointer; font-weight:700}
+.ans:hover{border-color:var(--g)}
+.ans.right{border-color:var(--good); background:var(--good-soft)}
+.ans.near{border-color:var(--warn); background:var(--warn-soft)}
+.ans.wrong{border-color:var(--bad); background:var(--bad-soft)}
 .qmsg{border-radius:12px; padding:10px 12px}
 .qmsg.good{background:var(--good-soft)} .qmsg.bad{background:var(--bad-soft)} .qmsg.near{background:var(--warn-soft)}
 .qmsg a{color:var(--arrow); font-weight:700}
-.btn{display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:9px 18px; font-weight:700; font-size:16px; cursor:pointer; border:1.5px solid var(--arrow); background:var(--arrow); color:#fff}
-.src{color:var(--muted); font-size:14px}
-@media (prefers-reduced-motion: reduce){ *{transition:none!important; animation:none!important} }
+.btn{display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:10px 20px; font-weight:700; font-size:17px; cursor:pointer; border:0; background:var(--arrow); color:#fff}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important; animation:none!important; scroll-behavior:auto!important} }
 </style>
 </head>
 <body>
@@ -101,13 +143,13 @@ button{font:inherit; color:inherit}
   <header class="top"><span class="brand">🧫 BIO 112 · Ch. 11, 13 + 14</span><a href="unit-bacteria.html">← Pathology unit</a></header>
   <section class="hero">
     <h1>How Diseases Spread</h1>
-    <p>Tap a route of transmission to see which bacteria and viruses spread that way. Then use <b>Quiz me</b> to practice each microbe's <b>primary</b> route.</p>
-    <p>Want to see where they cause disease once they're in? <a href="body-map.html#dz">Open the Body Map →</a></p>
+    <p>👉 Pick a route from the tabs below (or start with the first one and hit <b>Next</b>) to see which bacteria and viruses spread that way. Then use <b>Quiz me</b> to practice each microbe's <b>primary</b> route.</p>
+    <p>Where do they cause disease once they're in? <a href="body-map.html#dz">Open the Body Map →</a></p>
   </section>
   <div class="bar">
     <div class="group" role="toolbar" aria-label="Mode">
       <button type="button" class="mode" data-mode="explore" aria-pressed="true">🗺️ Explore routes</button>
-      <button type="button" class="mode quiz" data-mode="quiz" aria-pressed="false">🎯 Quiz me</button>
+      <button type="button" class="mode" data-mode="quiz" aria-pressed="false">🎯 Quiz me</button>
     </div>
     <div class="group" role="toolbar" aria-label="Which microbes">
       <button type="button" class="kind" data-kind="all" aria-pressed="true">Both</button>
@@ -115,10 +157,9 @@ button{font:inherit; color:inherit}
       <button type="button" class="kind" data-kind="v" aria-pressed="false">🧬 Viruses</button>
     </div>
   </div>
-  <div class="layout">
-    <div class="routes" id="routes" role="group" aria-label="Routes of transmission"></div>
-    <section class="panel" id="panel" aria-live="polite"></section>
-  </div>
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Routes of transmission"></nav>
+  <p class="swipe" id="swipe">👉 Swipe the tabs for more routes</p>
+  <main id="main" aria-live="polite"></main>
 </div>
 
 <!-- organism names and tour links come from the tour data files; virus names from the Body Map data -->
@@ -134,8 +175,9 @@ button{font:inherit; color:inherit}
 function $(s){ return document.querySelector(s); }
 function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;"}[c]; }); }
 
-var D = window.TXDATA, ROUTES = D.ROUTES, TX = D.TX, VIR = window.BODYMAP.VIRUSES;
+var D = window.TXDATA, GROUPS = D.GROUPS, ROUTES = D.ROUTES, TX = D.TX, VIR = window.BODYMAP.VIRUSES;
 var RBY = {}; ROUTES.forEach(function(r){ RBY[r.id] = r; });
+var GBY = {}; GROUPS.forEach(function(g){ GBY[g.id] = g; });
 
 /* bacteria names, gram, and tour links */
 var ORG = {};
@@ -144,7 +186,7 @@ var ORG = {};
 });
 function info(id){
   var x = TX[id];
-  if (x.k === "v"){ var v = VIR[id]; return {name: v.name, fam: v.fam, genus: v.genus, v: true}; }
+  if (x.k === "v"){ var v = VIR[id]; return {name: v.name, fam: v.fam, v: true}; }
   var o = ORG[id] || {name: id, gram: "?"};
   /* Body Map link: rings every body area where this bacterium causes disease */
   var map = window.BODYMAP.sitesFor(id, "dz").length ? "body-map.html#dz/" + id : null;
@@ -157,14 +199,16 @@ function users(rid){ return ids().filter(function(id){ var x = TX[id]; return x.
 var st = {mode: "explore", kind: "all", route: "drop", quiz: null, score: 0, streak: 0, best: 0};
 try { st.best = Number(localStorage.getItem("bio112-tx-best")) || 0; } catch (e) {}
 
-function drawRoutes(){
-  var q = st.quiz;
-  $("#routes").innerHTML = ROUTES.map(function(r){
-    var n = users(r.id).length, cls = "rt";
-    if (st.mode === "explore"){ if (r.id === st.route) cls += " sel"; if (!n) cls += " none"; }
-    else if (q){ if (q.done && q.p.indexOf(r.id) >= 0) cls += " right"; else if (q.tried.indexOf(r.id) >= 0) cls += (q.s.indexOf(r.id) >= 0 ? " near" : " wrong"); }
-    return '<button type="button" class="' + cls + '" data-route="' + r.id + '"' + (st.mode === "explore" && r.id === st.route ? ' aria-current="true"' : "") + '><span class="ic" aria-hidden="true">' + r.ic + '</span><span class="nm">' + esc(r.name) + "</span>" +
-      (st.mode === "explore" ? '<span class="ct">' + n + " microbe" + (n === 1 ? "" : "s") + "</span>" : "") + "</button>";
+function drawTabs(){
+  var show = st.mode === "explore";
+  $("#tabs").hidden = !show; $("#swipe").hidden = !show;
+  if (!show) return;
+  $("#tabs").innerHTML = GROUPS.map(function(g){
+    return '<div class="tgrp g-' + g.id + '" role="presentation"><span class="gl">' + g.ic + " " + esc(g.name) + "</span>" +
+      ROUTES.filter(function(r){ return r.grp === g.id; }).map(function(r){
+        var n = users(r.id).length, sel = r.id === st.route;
+        return '<button type="button" class="tab' + (n ? "" : " none") + '" role="tab" aria-selected="' + sel + '" data-route="' + r.id + '"><span class="ti" aria-hidden="true">' + r.ic + '</span><span class="tn">' + esc(r.short) + '</span><span class="tc">' + n + "</span></button>";
+      }).join("") + "</div>";
   }).join("");
 }
 function card(id){
@@ -175,17 +219,24 @@ function card(id){
   return '<div class="mcard"' + style + '><b class="' + (m.v ? "" : "it") + '">' + esc(m.name) + "</b>" + (x.note ? "<small>" + esc(x.note) + "</small>" : "") + '<span class="tags">' + tags + "</span>" + (links ? '<span class="links">' + links + "</span>" : "") + "</div>";
 }
 function render(){
-  drawRoutes();
-  document.querySelector(".layout").classList.toggle("quizzing", st.mode === "quiz");
+  drawTabs();
   if (st.mode === "quiz") return renderQuiz();
-  var r = RBY[st.route], list = users(r.id);
+  var r = RBY[st.route], g = GBY[r.grp], list = users(r.id), i = ROUTES.indexOf(r);
   var bac = list.filter(function(id){ return TX[id].k === "b"; }), vir = list.filter(function(id){ return TX[id].k === "v"; });
-  var h = "<h2>" + r.ic + " " + esc(r.name) + '</h2><p class="def">' + esc(r.def) + "</p>";
-  if (!list.length) h += '<p class="empty">None of our ' + (st.kind === "v" ? "viruses" : st.kind === "b" ? "bacteria" : "microbes") + " spread this way.</p>";
-  if (bac.length) h += '<p class="sech">🧫 Bacteria (' + bac.length + ')</p><div class="mlist">' + bac.map(card).join("") + "</div>";
-  if (vir.length) h += '<p class="sech">🧬 Viruses (' + vir.length + ')</p><div class="mlist">' + vir.map(card).join("") + "</div>";
+  var h = '<section class="banner g-' + r.grp + '"><span class="big" aria-hidden="true">' + r.ic + '</span><span class="eyebrow">' + g.ic + " " + esc(g.name) + " · route " + (i + 1) + " of " + ROUTES.length + "</span><h2>" + esc(r.name) + '</h2><p class="def">' + esc(r.def) + "</p>" +
+    '<div class="count"><span class="pill">' + list.length + " microbe" + (list.length === 1 ? "" : "s") + " spread this way</span>" + (st.kind !== "v" ? '<span class="pill">🧫 ' + bac.length + " bacteria</span>" : "") + (st.kind !== "b" ? '<span class="pill">🧬 ' + vir.length + " virus" + (vir.length === 1 ? "" : "es") + "</span>" : "") + "</div></section>";
+  if (!list.length) h += '<p class="empty">None of our ' + (st.kind === "v" ? "viruses" : st.kind === "b" ? "bacteria" : "microbes") + " spread this way. Try another route!</p>";
+  else {
+    var colsHtml = [];
+    if (st.kind !== "v") colsHtml.push('<div class="colbox"><h3>🧫 Bacteria</h3>' + (bac.length ? '<div class="mlist">' + bac.map(card).join("") + "</div>" : '<p class="empty">No bacteria on our list spread this way.</p>') + "</div>");
+    if (st.kind !== "b") colsHtml.push('<div class="colbox"><h3>🧬 Viruses</h3>' + (vir.length ? '<div class="mlist">' + vir.map(card).join("") + "</div>" : '<p class="empty">No viruses on our list spread this way.</p>') + "</div>");
+    h += '<div class="cols"' + (colsHtml.length === 1 ? ' style="grid-template-columns:minmax(0,1fr)"' : "") + ">" + colsHtml.join("") + "</div>";
+  }
+  var prev = ROUTES[i - 1], next = ROUTES[i + 1];
+  h += '<div class="stepper">' + (prev ? '<button type="button" class="step g-' + prev.grp + '" data-step="' + prev.id + '">← ' + prev.ic + " " + esc(prev.short) + "</button>" : "") +
+    (next ? '<button type="button" class="step next g-' + next.grp + '" data-step="' + next.id + '">Next: ' + next.ic + " " + esc(next.short) + " →</button>" : '<button type="button" class="step next g-air" data-mode="quiz">Done! Try the quiz 🎯</button>') + "</div>";
   h += '<p class="src">Microbes are listed for every route they can use. Some spread more than one way! Sources: Ch. 13 slides (viruses) and the Ch. 11 tours (bacteria).</p>';
-  $("#panel").innerHTML = h;
+  $("#main").innerHTML = h;
 }
 
 /* ---------- quiz: primary routes only ---------- */
@@ -198,12 +249,19 @@ function renderQuiz(){
   if (!st.quiz) newQuestion();
   var q = st.quiz, m = info(q.id);
   var nm = m.v ? "<b>" + esc(m.name) + "</b>" : "<i>" + esc(m.name) + "</i>";
-  var h = '<h2>🎯 Quiz me</h2><p class="score">Score ' + st.score + " · streak " + st.streak + " · best streak " + st.best + "</p>";
+  var h = '<section class="quiz"><p class="score">Score ' + st.score + " · streak " + st.streak + " · best streak " + st.best + "</p>";
   h += '<p class="quizq">What is the <b>primary</b> way ' + nm + " spreads?</p>";
   h += '<p class="sub">Tap a route. ' + (q.p.length > 1 ? "It has more than one primary route: any one counts." : "") + "</p>";
   if (q.msg) h += '<div class="qmsg ' + q.cls + '">' + q.msg + "</div>";
   if (q.done) h += '<div><button class="btn" type="button" data-next>Next microbe →</button></div>';
-  $("#panel").innerHTML = h;
+  h += '<div class="answers">' + GROUPS.map(function(g){
+    return '<div class="agrp g-' + g.id + '"><span class="gl">' + g.ic + " " + esc(g.name) + "</span>" + ROUTES.filter(function(r){ return r.grp === g.id; }).map(function(r){
+      var cls = "ans";
+      if (q.done && q.p.indexOf(r.id) >= 0) cls += " right"; else if (q.tried.indexOf(r.id) >= 0) cls += (q.s.indexOf(r.id) >= 0 ? " near" : " wrong");
+      return '<button type="button" class="' + cls + '" data-answer="' + r.id + '"><span aria-hidden="true">' + r.ic + "</span>" + esc(r.short) + "</button>";
+    }).join("") + "</div>";
+  }).join("") + "</div></section>";
+  $("#main").innerHTML = h;
 }
 function answer(rid){
   var q = st.quiz; if (!q || q.done || q.tried.indexOf(rid) >= 0) return;
@@ -224,14 +282,21 @@ function answer(rid){
 }
 
 /* ---------- events ---------- */
+function setMode(m){
+  st.mode = m;
+  document.querySelectorAll(".mode").forEach(function(b){ b.setAttribute("aria-pressed", b.getAttribute("data-mode") === m ? "true" : "false"); });
+  if (m === "quiz" && (!st.quiz || st.quiz.done)) newQuestion();
+  render();
+}
+function goRoute(rid, scroll){
+  st.route = rid; render();
+  var tab = document.querySelector('.tab[data-route="' + rid + '"]');
+  if (tab && tab.scrollIntoView) tab.scrollIntoView({block: "nearest", inline: "center", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"});
+  if (scroll){ var t = $(".banner"); if (t && t.getBoundingClientRect().top < 0) t.scrollIntoView({block: "start"}); }
+}
 document.addEventListener("click", function(e){
   var el;
-  if ((el = e.target.closest("[data-mode]"))){
-    st.mode = el.getAttribute("data-mode");
-    document.querySelectorAll("[data-mode]").forEach(function(b){ b.setAttribute("aria-pressed", b === el ? "true" : "false"); });
-    if (st.mode === "quiz" && (!st.quiz || st.quiz.done)) newQuestion();
-    render(); return;
-  }
+  if ((el = e.target.closest("[data-mode]"))){ setMode(el.getAttribute("data-mode")); window.scrollTo(0, 0); return; }
   if ((el = e.target.closest("[data-kind]"))){
     st.kind = el.getAttribute("data-kind");
     document.querySelectorAll("[data-kind]").forEach(function(b){ b.setAttribute("aria-pressed", b === el ? "true" : "false"); });
@@ -239,23 +304,23 @@ document.addEventListener("click", function(e){
     render(); return;
   }
   if ((el = e.target.closest("[data-next]"))){ newQuestion(); render(); return; }
-  if ((el = e.target.closest("[data-route]"))){
-    var rid = el.getAttribute("data-route");
-    if (st.mode === "quiz") answer(rid);
-    else {
-      st.route = rid; render();
-      /* on phones the list sits below the routes: bring it into view */
-      var pr = $("#panel").getBoundingClientRect();
-      if (innerWidth <= 820 && pr.top > innerHeight - 80) $("#panel").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start"});
-    }
-  }
+  if ((el = e.target.closest("[data-answer]"))){ answer(el.getAttribute("data-answer")); return; }
+  if ((el = e.target.closest("[data-step]"))){ goRoute(el.getAttribute("data-step"), true); return; }
+  if ((el = e.target.closest("[data-route]"))){ goRoute(el.getAttribute("data-route"), false); }
+});
+/* arrow keys move between tabs */
+document.addEventListener("keydown", function(e){
+  if (!e.target.closest || !e.target.closest(".tab")) return;
+  var i = ROUTES.indexOf(RBY[st.route]), j = e.key === "ArrowRight" || e.key === "ArrowDown" ? i + 1 : e.key === "ArrowLeft" || e.key === "ArrowUp" ? i - 1 : -1;
+  if (j < 0 || j >= ROUTES.length || !(e.key.indexOf("Arrow") === 0)) return;
+  e.preventDefault(); goRoute(ROUTES[j].id, false);
+  var t = document.querySelector('.tab[data-route="' + ROUTES[j].id + '"]'); if (t) t.focus();
 });
 
 /* deep links: #quiz, or a route id (#vector, #fecal) */
 var h0 = location.hash.slice(1);
-if (h0 === "quiz"){ st.mode = "quiz"; document.querySelectorAll("[data-mode]").forEach(function(b){ b.setAttribute("aria-pressed", b.getAttribute("data-mode") === "quiz" ? "true" : "false"); }); }
-else if (RBY[h0]) st.route = h0;
-render();
+if (RBY[h0]) st.route = h0;
+if (h0 === "quiz") setMode("quiz"); else render();
 window.__tx = {st: st, TX: TX, ROUTES: ROUTES, info: info, answer: answer};
 })();
 </script>
