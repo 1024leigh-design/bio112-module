@@ -249,33 +249,33 @@ var BACTERIA = [
   {id: "mlep", p: 1, n: "<i>Mycobacterium leprae</i>", dz: "Leprosy", clue: "Can be caught from armadillos"}
 ];
 var VIRUSES = [
-  {id: "variola", n: "Variola virus", dz: "Smallpox", clue: "Eradicated in 1980; the vaccine came from vaccinia (cowpox)"},
-  {id: "pox", n: "Poxviridae", tag: "family", dz: "Smallpox", clue: "Enveloped dsDNA family of variola and vaccinia"},
-  {id: "hsv1", n: "HSV-1", dz: "Cold sores (fever blisters)", clue: "Hides in the trigeminal nerve ganglia (face)"},
-  {id: "hsv2", n: "HSV-2", dz: "Genital herpes", clue: "Hides in the sacral ganglia (pelvis)"},
-  {id: "vzv", n: "VZV (HHV-3)", dz: ["Chickenpox (varicella)", "Shingles (zoster)"], clue: "Hides in nerve ganglia; airborne; 2 vaccines (varicella, Shingrix)", avoid: ["hsv1", "hsv2"]},
-  {id: "ebv", n: "EBV (HHV-4)", dz: "Mononucleosis (\"mono\")", clue: "Hides in B cells; oncogenic; spread by saliva", avoid: ["hhv8"]},
-  {id: "hhv6", n: "HHV-6", dz: "Roseola", clue: "High fever in toddlers, then a rash once the fever breaks"},
-  {id: "hhv8", n: "HHV-8", dz: "Kaposi sarcoma", clue: "Cancer of the blood vessel lining: purple skin lesions"},
-  {id: "hbv", n: "HBV", dz: "Hepatitis B", clue: "The only human DNA virus that uses reverse transcriptase"},
-  {id: "adeno", n: "Adenovirus", dz: "Common colds and pink eye", clue: "Used as a backbone for gene therapy vectors"},
-  {id: "jc", n: "JC virus", dz: "PML (brain infection in severely immunocompromised people)"},
-  {id: "bk", n: "BK virus", dz: "Kidney transplant failure"},
-  {id: "jcbk", n: "JC + BK viruses", tag: "polyomaviruses", clue: "Latent in the kidneys", avoid: ["jc", "bk"]},
-  {id: "hpv", n: "HPV", dz: "Genital warts and cervical cancer", clue: "Types 16 and 18 cause cancer; Gardasil 9 prevents it"},
-  {id: "b19", n: "Parvovirus B19", dz: "Fifth disease (\"slapped-cheek\" rash)", clue: "No human vaccine: only dogs get a parvovirus vaccine"},
-  {id: "sars2", n: "SARS-CoV-2", dz: "COVID-19", clue: "Its spike protein binds ACE2"},
-  {id: "flavi", n: "Flaviviridae", tag: "family", dz: "Yellow fever, dengue, Zika, West Nile", clue: "\"Bug diseases\": spread by mosquitoes and ticks"},
-  {id: "hcv", n: "HCV", dz: "Hepatitis C", clue: "Bloodborne; no vaccine, but curable"},
-  {id: "ev", n: "Enterovirus", tag: "genus", dz: "Hand-foot-and-mouth disease", clue: "Family: Picornaviridae"},
-  {id: "polio", n: "Poliovirus", dz: "Polio", clue: ["Salk (injected) and Sabin (oral) vaccines", "Family: Picornaviridae"]},
-  {id: "rubi", n: "Rubivirus", tag: "genus", dz: "Rubella (German measles)", clue: "The only positive-sense (+) RNA virus in the MMR vaccine"},
-  {id: "hiv", n: "HIV", dz: "AIDS", clue: "Reverse transcriptase + integrase; latent in T cells and macrophages"},
-  {id: "morbilli", n: "Morbillivirus", tag: "genus", dz: "Measles", clue: "Negative-sense (−) RNA virus in the MMR vaccine; rash from the face to the trunk"},
-  {id: "rubula", n: "Orthorubulavirus", tag: "genus", dz: "Mumps", clue: "Negative-sense (−) RNA virus in the MMR vaccine; swollen salivary glands"},
-  {id: "rsv", n: "RSV (respiratory syncytial virus)", dz: "Pneumonia-like illness in infants", clue: "The #1 cause of viral respiratory illness in infants"},
-  {id: "rhabdo", n: "Rhabdoviridae", tag: "family", dz: "Rabies", clue: "Hides behind the blood-brain barrier; Pasteur made the first vaccine"},
-  {id: "orthomyxo", n: "Orthomyxoviridae", tag: "family", dz: "Influenza (the flu)", clue: ["Hemagglutinin (HA) and neuraminidase (NA) spikes", "Serotypes A, B, and C; A and B cause seasonal epidemics", "Antigenic drift (yearly epidemics) and antigenic shift (pandemics)"]}
+  {id: "variola", p: 1, n: "Variola virus", dz: "Smallpox", clue: "Eradicated in 1980; the vaccine came from vaccinia (cowpox)"},
+  {id: "pox", p: 1, n: "Poxviridae", tag: "family", dz: "Smallpox", clue: "Enveloped dsDNA family of variola and vaccinia"},
+  {id: "hsv1", p: 2, n: "HSV-1", dz: "Cold sores (fever blisters)", clue: "Hides in the trigeminal nerve ganglia (face)"},
+  {id: "hsv2", p: 2, n: "HSV-2", dz: "Genital herpes", clue: "Hides in the sacral ganglia (pelvis)"},
+  {id: "vzv", p: 2, n: "VZV (HHV-3)", dz: ["Chickenpox (varicella)", "Shingles (zoster)"], clue: "Hides in nerve ganglia; airborne; 2 vaccines (varicella, Shingrix)", avoid: ["hsv1", "hsv2"]},
+  {id: "ebv", p: 2, n: "EBV (HHV-4)", dz: "Mononucleosis (\"mono\")", clue: "Hides in B cells; oncogenic; spread by saliva", avoid: ["hhv8"]},
+  {id: "hhv6", p: 1, n: "HHV-6", dz: "Roseola", clue: "High fever in toddlers, then a rash once the fever breaks"},
+  {id: "hhv8", p: 1, n: "HHV-8", dz: "Kaposi sarcoma", clue: "Cancer of the blood vessel lining: purple skin lesions"},
+  {id: "hbv", p: 2, n: "HBV", dz: "Hepatitis B", clue: "The only human DNA virus that uses reverse transcriptase"},
+  {id: "adeno", p: 1, n: "Adenovirus", dz: "Common colds and pink eye", clue: "Used as a backbone for gene therapy vectors"},
+  {id: "jc", p: 0, n: "JC virus", dz: "PML (brain infection in severely immunocompromised people)"},
+  {id: "bk", p: 0, n: "BK virus", dz: "Kidney transplant failure"},
+  {id: "jcbk", p: 0, n: "JC + BK viruses", tag: "polyomaviruses", clue: "Latent in the kidneys", avoid: ["jc", "bk"]},
+  {id: "hpv", p: 2, n: "HPV", dz: "Genital warts and cervical cancer", clue: "Types 16 and 18 cause cancer; Gardasil 9 prevents it"},
+  {id: "b19", p: 1, n: "Parvovirus B19", dz: "Fifth disease (\"slapped-cheek\" rash)", clue: "No human vaccine: only dogs get a parvovirus vaccine"},
+  {id: "sars2", p: 3, n: "SARS-CoV-2", dz: "COVID-19", clue: "Its spike protein binds ACE2"},
+  {id: "flavi", p: 2, n: "Flaviviridae", tag: "family", dz: "Yellow fever, dengue, Zika, West Nile", clue: "\"Bug diseases\": spread by mosquitoes and ticks"},
+  {id: "hcv", p: 1, n: "HCV", dz: "Hepatitis C", clue: "Bloodborne; no vaccine, but curable"},
+  {id: "ev", p: 0, n: "Enterovirus", tag: "genus", dz: "Hand-foot-and-mouth disease", clue: "Family: Picornaviridae"},
+  {id: "polio", p: 1, n: "Poliovirus", dz: "Polio", clue: ["Salk (injected) and Sabin (oral) vaccines", "Family: Picornaviridae"]},
+  {id: "rubi", p: 2, n: "Rubivirus", tag: "genus", dz: "Rubella (German measles)", clue: "The only positive-sense (+) RNA virus in the MMR vaccine"},
+  {id: "hiv", p: 3, n: "HIV", dz: "AIDS", clue: "Reverse transcriptase + integrase; latent in T cells and macrophages"},
+  {id: "morbilli", p: 2, n: "Morbillivirus", tag: "genus", dz: "Measles", clue: "Negative-sense (−) RNA virus in the MMR vaccine; rash from the face to the trunk"},
+  {id: "rubula", p: 2, n: "Orthorubulavirus", tag: "genus", dz: "Mumps", clue: "Negative-sense (−) RNA virus in the MMR vaccine; swollen salivary glands"},
+  {id: "rsv", p: 1, n: "RSV (respiratory syncytial virus)", dz: "Pneumonia-like illness in infants", clue: "The #1 cause of viral respiratory illness in infants"},
+  {id: "rhabdo", p: 2, n: "Rhabdoviridae", tag: "family", dz: "Rabies", clue: "Hides behind the blood-brain barrier; Pasteur made the first vaccine"},
+  {id: "orthomyxo", p: 3, n: "Orthomyxoviridae", tag: "family", dz: "Influenza (the flu)", clue: ["Hemagglutinin (HA) and neuraminidase (NA) spikes", "Serotypes A, B, and C; A and B cause seasonal epidemics", "Antigenic drift (yearly epidemics) and antigenic shift (pandemics)"]}
 ];
 /* VOCAB (Ch. 14, 13, 11). n = term card, def = definition card. ch = chapter.
    p = instructor priority: 2 = top (shows up once in every Vocab game), 1 = mid, 0 = low (now and then for variety).
@@ -476,7 +476,8 @@ function mixSplit(){ return g.size === "hard" ? {b: 4, v: 4, w: 4} : {b: 2, v: 2
 /* pick the microbes for each round (no repeats while the deck lasts); mixed = half bacteria, half viruses in every round */
 function buildQueue(){
   var n = P(), ms = mixSplit(), q = [];
-  var b = g.deck === "bac" ? pickTop(BACTERIA, ROUNDS * n, true) : g.deck === "mix" ? pickTop(BACTERIA, ROUNDS * ms.b, false) : shuffle(BACTERIA), v = shuffle(VIRUSES);
+  var b = g.deck === "bac" ? pickTop(BACTERIA, ROUNDS * n, true) : g.deck === "mix" ? pickTop(BACTERIA, ROUNDS * ms.b, false) : shuffle(BACTERIA);
+  var v = g.deck === "vir" ? pickTop(VIRUSES, ROUNDS * n, true) : g.deck === "mix" ? pickTop(VIRUSES, ROUNDS * ms.v, false) : shuffle(VIRUSES);
   var w = g.deck === "voc" ? pickVocab(ROUNDS * n, true) : g.deck === "mix" ? pickVocab(ROUNDS * ms.w, false) : [];
   var rounds = [], used = [];
   for (var r = 0; r < ROUNDS; r++){
@@ -489,6 +490,7 @@ function buildQueue(){
   }
   if (g.deck === "voc") placeLeftoverTops(rounds, w);
   if (g.deck === "bac") placeLeftoverTops(rounds, b);
+  if (g.deck === "vir") placeLeftoverTops(rounds, v);
   rounds.forEach(function(R){ q = q.concat(shuffle(R)); });
   return q;
 }
