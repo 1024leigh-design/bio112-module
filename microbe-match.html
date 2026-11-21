@@ -134,7 +134,7 @@ body.hard .wrap{max-width:1180px}
       <div class="how">
         <div><b>🟪 Purple cards</b><br>a bacterium, a virus, or a vocab term</div>
         <div><b>🟦 Teal cards</b><br>the disease it causes, its one-clue ID cheat, or the term's definition</div>
-        <div><b>🏆 Score</b><br>+100 per pair, −10 per miss, plus a speed bonus each round</div>
+        <div><b>🏆 Score</b><br>+100 per pair, −10 per miss, plus a speed bonus each round. Hard counts half.</div>
       </div>
       <p class="lbl">Pick a deck</p>
       <div class="decks" role="group" aria-label="Pick a deck">
@@ -146,7 +146,7 @@ body.hard .wrap{max-width:1180px}
       <p class="lbl">Pick a board size</p>
       <div class="sizes" role="group" aria-label="Pick a board size">
         <button type="button" class="deck sz" data-size="reg" aria-pressed="true">🃏 Regular<small>6 pairs per round</small></button>
-        <button type="button" class="deck sz" data-size="hard" aria-pressed="false">🔥 Hard<small>12 pairs per round</small></button>
+        <button type="button" class="deck sz" data-size="hard" aria-pressed="false">🔥 Hard<small>12 pairs · points count half</small></button>
       </div>
       <p class="src" id="sizeNote">3 rounds of 6 pairs. A new mix of microbes every game.</p>
       <div class="btnrow"><button type="button" class="btn" id="go">Start matching →</button></div>
@@ -396,8 +396,11 @@ var ROUNDS = 3, SIZES = {reg: 6, hard: 12};
 function P(){ return SIZES[g.size]; }
 /* each deck + board size has its own leaderboard (hard scores run higher) */
 /* one class leaderboard for every deck; Hard (12 pairs) keeps its own board because its scores run about twice as high */
-function lbGame(){ return g.size === "hard" ? "match-hard" : "match"; }
-function lbTitle(){ return g.size === "hard" ? "all decks · Hard" : "all decks"; }
+/* one class leaderboard for every deck and both sizes. Hard is about memory, not more learning,
+   so every Hard point counts half; that keeps Regular and Hard scores on the same scale. */
+function lbGame(){ return "match"; }
+function lbTitle(){ return "all decks"; }
+function pts(n){ return g.size === "hard" ? Math.round(n / 2) : n; }
 
 function $(s){ return document.querySelector(s); }
 function shuffle(a){ a = a.slice(); for (var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
@@ -560,23 +563,23 @@ function flip(i){
   if (a.pair === b.pair){
     a.done = b.done = true;
     g.open.forEach(function(j){ cardEl(j).classList.add("done"); cardEl(j).setAttribute("aria-disabled", "true"); });
-    g.open = []; g.matched++; g.totalMatched++; g.score += 100;
+    g.open = []; g.matched++; g.totalMatched++; g.score += pts(100);
     var o = m.o, extra = list(o.dz).concat(list(o.clue)).filter(function(t){ return t !== k.text; }).join("; ");
     g.roundLog.push(o);
     setMsg("✅ <b>" + o.n + "</b>: " + k.text + "." + (extra ? " <span>Also: " + extra + ".</span>" : ""), "good");
     updateBar();
     if (g.matched === P()) setTimeout(endRound, 900);
   } else {
-    g.misses++; g.roundMisses++; g.score = Math.max(0, g.score - 10); g.lock = true;
+    g.misses++; g.roundMisses++; g.score = Math.max(0, g.score - pts(10)); g.lock = true;
     g.open.forEach(function(j){ cardEl(j).classList.add("miss"); });
-    setMsg("Not a match (−10). <b>" + m.o.n + "</b> doesn't go with that clue. Remember where they are! Tap any card to keep going.", "bad");
+    setMsg("Not a match (−" + pts(10) + "). <b>" + m.o.n + "</b> doesn't go with that clue. Remember where they are! Tap any card to keep going.", "bad");
     updateBar();
     g.missTimer = setTimeout(closeMisses, 1800);
   }
 }
 function endRound(){
   clearInterval(g.timer);
-  var sec = Math.floor((Date.now() - g.t0) / 1000), bonus = Math.max(0, P() * 20 - sec) * 2;
+  var sec = Math.floor((Date.now() - g.t0) / 1000), bonus = pts(Math.max(0, P() * 20 - sec) * 2);
   g.score += bonus;
   g.log = g.log.concat(g.roundLog);
   var last = g.round === ROUNDS - 1;
