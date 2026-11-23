@@ -114,7 +114,7 @@
           LB.submit(gameId(), name, s2.score, s2.details).then(function(d){
             btn.disabled = false;
             if (d && d.ok){ saved = {code: d.code, score: s2.score, name: name}; render(); load(); LB.reloadBoards(); }
-            else if (d && d.error === "invalid"){ msg.textContent = "That score couldn't be saved. Check your nickname and try again."; }
+            else if (d && d.error === "invalid"){ msg.textContent = "The leaderboard turned this score down. Please tell your instructor so they can fix it."; }
             else { msg.textContent = "The leaderboard is really busy right now. Wait a minute and tap Save again."; }
           }).catch(function(){ btn.disabled = false; msg.textContent = "Couldn't reach the leaderboard. Check your Wi-Fi, wait a minute, and tap Save again."; });
         });

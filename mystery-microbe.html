@@ -941,7 +941,8 @@ function checkGuess() {
   const guessGenus = guess.split(' ')[0];
   const acceptGenus = state.current.acceptGenus;
 
-  if (guess === correct || (acceptGenus && guess === correctGenus)) {
+  /* acceptGenus: the answer is the whole genus (e.g. Shigella), so the genus alone or any species in it counts */
+  if (guess === correct || (acceptGenus && guessGenus === correctGenus)) {
     handleCorrect();
     return;
   }
