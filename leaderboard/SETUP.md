@@ -39,6 +39,8 @@ This takes about 10 minutes, once. Students never need an account.
 
 ## Updating the script later
 
+The November 23 update helps saves go through when the whole class saves at once: the script waits its turn, and the games retry automatically. Please update your copy once with the steps below.
+
 If the script in this repo changes (for example, a new score limit), update your copy:
 
 1. Open the Sheet, then **Extensions > Apps Script**.
