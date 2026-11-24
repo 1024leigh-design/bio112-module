@@ -475,10 +475,14 @@ function clueOf(t){
   }
 }
 var PRI = ["sugars", "acidfast", "coagulase", "pigment", "imvic", "h2s", "citrate", "urease", "lactose", "oxidase", "feature", "spores", "shape", "oxygen", "media", "catalase"];
+/* clues that must always show for a card, in order: Micrococcus = cocci in tetrads, oxidase + (Staph is oxidase -) */
+var KEY_CLUE = {mluteus: ["shape", "oxidase"], mroseus: ["shape", "oxidase"]};
 function clueTests(o){
   if (o.type === "phylum") return [];
   var ts = (o.tests || []).filter(function(t){ return t.k !== "gram" && clueOf(t); });
-  ts.sort(function(a, b){ return ((a.from ? 100 : 0) + PRI.indexOf(a.k)) - ((b.from ? 100 : 0) + PRI.indexOf(b.k)); });
+  var key = KEY_CLUE[o.id] || [];
+  function rank(t){ var i = key.indexOf(t.k); return i >= 0 ? i - 1000 : (t.from ? 100 : 0) + PRI.indexOf(t.k); }
+  ts.sort(function(a, b){ return rank(a) - rank(b); });
   return ts.slice(0, 3);
 }
 function clues(o){

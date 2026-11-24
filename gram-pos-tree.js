@@ -774,6 +774,7 @@ window.TOUR_DATA = {
             {h: "Colorful!", t: "<i>M. luteus</i> (yellow) and <i>M. roseus</i> (pink)"}
           ]},
         {id: "mroseus", node: "micrococcus", name: "Micrococcus roseus", shape: "tetrads", emoji: "🌸",
+          cheat: "<b>Pink</b> colonies; cocci in <b>tetrads</b>.",
           tests: [
             {k: "gram", v: "+", from: "grampos"},
             {k: "shape", v: "cocci in tetrads", from: "micrococcus"},
