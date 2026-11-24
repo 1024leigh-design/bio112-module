@@ -83,7 +83,7 @@ window.TOUR_DATA = {
     {id: "b_cereus", rank: "species", label: "B. cereus", parent: "bacillus", italic: true},
     {id: "listeria", rank: "genus", label: "Listeria", parent: "bl_rods", italic: true,
       traits: [{t: "NOT spore-forming"}, {t: "grows at fridge temps", blank: {pre: "grows at ", post: " temps", a: "fridge", o: ["fridge", "only body"], why: "<i>Listeria</i> is cold-tolerant: it grows at refrigerator temperatures."}}, {t: "tumbling motility"}]},
-    {id: "l_mono", rank: "species", label: "L. monocytogenes", parent: "listeria", overviewOnly: true, italic: true, card: "lmono"},
+    {id: "l_mono", rank: "species", label: "L. monocytogenes", parent: "listeria", italic: true, card: "lmono"},
     {id: "bl_cocci", rank: "shape", label: "Cocci", parent: "bacillales"},
     {id: "staph", rank: "genus", label: "Staphylococcus", parent: "bl_cocci", italic: true,
       traits: [
@@ -112,7 +112,7 @@ window.TOUR_DATA = {
     {id: "s_pneumoniae", rank: "species", label: "S. pneumoniae", parent: "strep", italic: true, traits: [{t: "diplococci (pairs)"}, {t: "capsule"}]},
     {id: "enterococcus", rank: "genus", label: "Enterococcus", parent: "lb_cocci", italic: true,
       traits: [{t: "pairs or short chains"}, {t: "salt- and bile-tolerant", blank: {pre: "", post: "-tolerant", a: "salt- and bile", o: ["salt- and bile", "cold"], why: "<i>Enterococcus</i> is extremely hardy: salt-tolerant, bile-tolerant, heat-resistant."}}, {t: "gut flora"}]},
-    {id: "e_species", rank: "species", label: "E. faecalis, E. faecium", parent: "enterococcus", overviewOnly: true, italic: true, card: "enterococcus"},
+    {id: "e_species", rank: "species", label: "E. faecalis, E. faecium", parent: "enterococcus", italic: true, card: "enterococcus"},
 
     {id: "clostridia", rank: "class", label: "Clostridia", parent: "firmicutes", blankLabel: true,
       traits: [
@@ -126,7 +126,7 @@ window.TOUR_DATA = {
     {id: "c_botulinum", rank: "species", label: "C. botulinum", parent: "clostridium", italic: true},
     {id: "c_tetani", rank: "species", label: "C. tetani", parent: "clostridium", italic: true},
     {id: "clostridioides", rank: "genus", label: "Clostridioides", parent: "cl_rods", italic: true, traits: [{t: "renamed from Clostridium"}]},
-    {id: "c_diff", rank: "species", label: "C. difficile", parent: "clostridioides", overviewOnly: true, italic: true, card: "cdiff"},
+    {id: "c_diff", rank: "species", label: "C. difficile", parent: "clostridioides", italic: true, card: "cdiff"},
 
     {id: "actino", rank: "phylum", label: "Actinobacteria", parent: "grampos",
       traits: [
@@ -138,18 +138,18 @@ window.TOUR_DATA = {
     {id: "actinomycetales", rank: "order", label: "Actinomycetales", parent: "actino"},
     {id: "actinomyces", rank: "genus", label: "Actinomyces", parent: "actinomycetales", italic: true,
       traits: [{t: "filamentous rods"}, {t: "anaerobic or microaerophilic", blank: {pre: "", post: "", a: "anaerobic or microaerophilic", o: ["anaerobic or microaerophilic", "strict aerobe"], why: "<i>Actinomyces</i> is anaerobic or microaerophilic, unlike most Actinobacteria."}}, {t: "not acid-fast"}, {t: "no spores"}]},
-    {id: "a_israelii", rank: "species", label: "A. israelii", parent: "actinomyces", overviewOnly: true, italic: true, card: "aisraelii"},
+    {id: "a_israelii", rank: "species", label: "A. israelii", parent: "actinomyces", italic: true, card: "aisraelii"},
     {id: "streptomycetales", rank: "order", label: "Streptomycetales", parent: "actino"},
     {id: "streptomyces", rank: "genus", label: "Streptomyces", parent: "streptomycetales", italic: true,
       traits: [{t: "filamentous"}, {t: "spores (conidia), NOT endospores"}, {t: "aerobic soil bacteria"}, {t: "major antibiotic producers", blank: {pre: "major ", post: " producers", a: "antibiotic", o: ["antibiotic", "toxin"], why: "<i>Streptomyces</i> makes streptomycin, tetracyclines, and erythromycin."}}]},
     {id: "micrococcales", rank: "order", label: "Micrococcales", parent: "actino"},
     {id: "micrococcus", rank: "genus", label: "Micrococcus", parent: "micrococcales", italic: true,
       traits: [{t: "cocci in tetrads", blank: {pre: "cocci in ", post: "", a: "tetrads", o: ["tetrads", "chains", "clusters"], why: "<i>Micrococcus</i> is the only one on our list arranged in tetrads (groups of 4)."}}, {t: "obligate aerobes"}, {t: "catalase +, oxidase +"}, {t: "colorful colonies"}]},
-    {id: "m_luteus", rank: "species", label: "M. luteus", parent: "micrococcus", overviewOnly: true, italic: true, card: "mluteus"},
-    {id: "m_roseus", rank: "species", label: "M. roseus", parent: "micrococcus", overviewOnly: true, italic: true, card: "mroseus"},
+    {id: "m_luteus", rank: "species", label: "M. luteus", parent: "micrococcus", italic: true, card: "mluteus"},
+    {id: "m_roseus", rank: "species", label: "M. roseus", parent: "micrococcus", italic: true, card: "mroseus"},
     {id: "propionibacteriales", rank: "order", label: "Propionibacteriales", parent: "actino"},
     {id: "cutibacterium", rank: "genus", label: "Cutibacterium", parent: "propionibacteriales", italic: true, traits: [{t: "skin commensal"}]},
-    {id: "c_acnes", rank: "species", label: "C. acnes", parent: "cutibacterium", overviewOnly: true, italic: true, card: "cacnes"},
+    {id: "c_acnes", rank: "species", label: "C. acnes", parent: "cutibacterium", italic: true, card: "cacnes"},
     {id: "corynebacteriales", rank: "order", label: "Corynebacteriales", parent: "actino", blankLabel: true,
       traits: [{t: "mycolic acids in the cell wall", blank: {pre: "", post: " in the cell wall", a: "mycolic acids", o: ["mycolic acids", "teichoic acids only"], why: "Corynebacteriales have complex, mycolic acid rich cell walls."}}]},
     {id: "corynebacterium", rank: "genus", label: "Corynebacterium", parent: "corynebacteriales", italic: true,
@@ -163,7 +163,7 @@ window.TOUR_DATA = {
     {id: "m_phlei", rank: "species", label: "M. phlei", parent: "mycobacterium", italic: true},
     {id: "nocardia", rank: "genus", label: "Nocardia", parent: "corynebacteriales", italic: true,
       traits: [{t: "branching filaments"}, {t: "weakly acid-fast", blank: {pre: "", post: " acid-fast", a: "weakly", o: ["weakly", "strongly", "not"], why: "Medium mycolic acids (C40 to 60) make <i>Nocardia</i> weakly (partially) acid-fast."}}, {t: "strict aerobes, catalase +"}, {t: "chalky white/orange colonies"}]},
-    {id: "n_asteroides", rank: "species", label: "N. asteroides", parent: "nocardia", overviewOnly: true, italic: true, card: "nasteroides"},
+    {id: "n_asteroides", rank: "species", label: "N. asteroides", parent: "nocardia", italic: true, card: "nasteroides"},
 
     {id: "nowall", rank: "gram", label: "No cell wall", parent: "bacteria", traits: [{t: "no cell wall"}, {t: "not gram-positive"}]},
     {id: "mycoplasma", rank: "genus", label: "Mycoplasma", parent: "nowall", italic: true, traits: [{t: "related to Firmicutes"}]}
