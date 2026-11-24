@@ -7,13 +7,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;600&display=swap">
 <style>
-/* Body Map: tap a body area, then switch between its normal flora (commensals) and the bacteria that cause disease there.
-   Normal flora come from the Ch. 14 slides (Table 14.1). Disease sites come from the two Ch. 11 tours. */
+/* Body Map: tap a body area, then switch between its normal flora (commensals) and the microbes that cause disease there.
+   Normal flora come from the Ch. 14 slides (Table 14.1). Bacterial disease sites come from the two Ch. 11 tours; viruses from the Ch. 13 slides. */
 :root{
   --bg:#f2f5f8; --surface:#ffffff; --surface-2:#e8eef4; --ink:#14223a; --muted:#53657b; --line:#d3dde7;
   --arrow:#1683cc; --arrow-soft:#dcecf9; --good:#1f8a55; --good-soft:#dcf2e5; --bad:#c43a2b; --bad-soft:#fbe0db;
   --flora:#1f8a55; --flora-soft:#d6f0e1; --dz:#c43a2b; --dz-soft:#fbe0db; --body:#f6e3d3; --body-edge:#b98b6b; --organ:#f3d5c6;
-  --gn-fill:#f7b6cf; --gn-edge:#c2185b; --gp-fill:#d8c8f5; --gp-edge:#6d28d9;
+  --gn-fill:#f7b6cf; --gn-edge:#c2185b; --gp-fill:#d8c8f5; --gp-edge:#6d28d9; --vir:#0e7490;
   --f-display:'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
   --f-body:'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
   --f-mono:'IBM Plex Mono', ui-monospace, Menlo, monospace;
@@ -23,14 +23,14 @@
     --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
     --arrow:#4aa9ee; --arrow-soft:#173450; --good:#4ccb8b; --good-soft:#153a29; --bad:#ff7d6d; --bad-soft:#46211d;
     --flora:#4ccb8b; --flora-soft:#173a2a; --dz:#ff7d6d; --dz-soft:#4a221e; --body:#3a2e28; --body-edge:#c79a7a; --organ:#4a3a33;
-    --gn-fill:#9c3d68; --gn-edge:#f48fb6; --gp-fill:#4c3a7a; --gp-edge:#c4b0f5; color-scheme:dark;
+    --gn-fill:#9c3d68; --gn-edge:#f48fb6; --gp-fill:#4c3a7a; --gp-edge:#c4b0f5; --vir:#4fc3d9; color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
   --arrow:#4aa9ee; --arrow-soft:#173450; --good:#4ccb8b; --good-soft:#153a29; --bad:#ff7d6d; --bad-soft:#46211d;
   --flora:#4ccb8b; --flora-soft:#173a2a; --dz:#ff7d6d; --dz-soft:#4a221e; --body:#3a2e28; --body-edge:#c79a7a; --organ:#4a3a33;
-  --gn-fill:#9c3d68; --gn-edge:#f48fb6; --gp-fill:#4c3a7a; --gp-edge:#c4b0f5; color-scheme:dark;
+  --gn-fill:#9c3d68; --gn-edge:#f48fb6; --gp-fill:#4c3a7a; --gp-edge:#c4b0f5; --vir:#4fc3d9; color-scheme:dark;
 }
 *{box-sizing:border-box}
 body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:18px; line-height:1.5; overflow-x:hidden}
@@ -105,6 +105,12 @@ a.mcard:hover .go{text-decoration:underline}
 .qmsg.good{background:var(--good-soft)} .qmsg.bad{background:var(--bad-soft)}
 .qmsg a{color:var(--arrow); font-weight:700; white-space:nowrap}
 .score{font:600 15px var(--f-mono); color:var(--muted)}
+.kinds{display:flex; gap:6px; flex-wrap:wrap}
+.kind{border:2px solid var(--line); background:var(--surface-2); border-radius:999px; padding:6px 16px; font-weight:700; font-size:16px; cursor:pointer}
+.kind[aria-pressed="true"]{background:var(--dz); border-color:transparent; color:#fff}
+.mcard.vir b{font-style:normal}
+.mcard.vir .tag{text-transform:none; letter-spacing:0}
+.tag.vir{border-color:var(--vir); color:var(--vir)}
 .btn{display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:9px 18px; font-weight:700; font-size:16px; cursor:pointer; border:1.5px solid var(--arrow); background:var(--arrow); color:#fff}
 .btn.ghost{background:transparent; color:var(--arrow)}
 .src{color:var(--muted); font-size:14px}
@@ -113,10 +119,11 @@ a.mcard:hover .go{text-decoration:underline}
 </head>
 <body>
 <div class="wrap">
-  <header class="top"><span class="brand">🧫 BIO 112 · Ch. 11 + 14</span><a href="unit-bacteria.html">← Bacteria unit</a></header>
+  <header class="top"><span class="brand">🧫 BIO 112 · Ch. 11, 13 + 14</span><a href="unit-bacteria.html">← Pathology unit</a></header>
   <section class="hero">
     <h1>Body Map</h1>
-    <p>Tap a part of the body. Switch between the <b>normal flora</b> that live there and the bacteria that <b>cause disease</b> there. Some microbes are on both lists: normal in one place, a problem in another!</p>
+    <p>Tap a part of the body. Switch between the <b>normal flora</b> that live there and the bacteria and viruses that <b>cause disease</b> there. Some microbes are on both lists: normal in one place, a problem in another!</p>
+    <p>How do they get in? <a href="transmission.html" style="color:var(--arrow);font-weight:700">See How Diseases Spread →</a></p>
     <p><b>Heads up:</b> these are <b>examples</b> from our slides, not a complete list. Many more microbes live in (and infect) each part of the body.</p>
   </section>
   <div class="modes" role="toolbar" aria-label="What to show">
@@ -179,6 +186,7 @@ var SHAPES = {
   mouth: '<path class="org" d="M137 108 Q150 118 163 108 Q150 113 137 108Z"/>',
   lungs: '<path class="org" d="M112 180 Q104 240 116 268 Q132 274 140 262 L140 186 Q128 172 112 180Z"/><path class="org" d="M188 180 Q196 240 184 268 Q168 274 160 262 L160 186 Q172 172 188 180Z"/>',
   heart: '<path class="org" d="M150 236 Q138 222 132 232 Q128 244 150 262 Q172 244 168 232 Q162 222 150 236Z"/>',
+  liver: '<path class="org" d="M108 286 Q130 274 150 282 L148 296 Q138 312 116 312 Q104 306 108 286Z"/>',
   stomach: '<path class="org" d="M156 284 Q186 278 188 300 Q190 326 160 324 Q148 322 152 306 Q154 294 146 290Z"/>',
   gut: '<rect class="org" x="116" y="334" width="68" height="66" rx="22"/><path d="M128 352 Q150 344 172 352 M128 368 Q150 360 172 368 M128 384 Q150 376 172 384" fill="none" stroke="var(--body-edge)" stroke-width="2" opacity=".6"/>',
   urinary: '<ellipse class="org" cx="150" cy="420" rx="16" ry="12"/>',
@@ -187,7 +195,7 @@ var SHAPES = {
   bones: '<path class="org" d="M118 480 L128 480 L127 590 L119 590Z"/><circle class="org" cx="123" cy="478" r="7"/><circle class="org" cx="123" cy="592" r="7"/>'
 };
 /* [label x, label y, text, anchor, leader line from x, y] placed outside the body so nothing overlaps */
-var LABELS = [[202, 38, "brain", "start", 178, 46], [224, 362, "stomach", "start", 176, 318], [212, 418, "bladder", "start", 166, 420], [254, 238, "nerve", "start", 236, 232], [44, 346, "muscle", "middle", 66, 304], [98, 538, "bone", "end", 120, 536]];
+var LABELS = [[10, 268, "liver", "start", 110, 292], [202, 38, "brain", "start", 178, 46], [224, 362, "stomach", "start", 176, 318], [212, 418, "bladder", "start", 166, 420], [254, 238, "nerve", "start", 236, 232], [44, 346, "muscle", "middle", 66, 304], [98, 538, "bone", "end", 120, 536]];
 function drawBody(){
   var s = '<g class="site skin" data-site="skin" tabindex="0" role="button" aria-label="Skin and wounds">' +
     '<path class="skinline" d="M150 18 C188 18 196 54 192 80 C190 100 180 116 168 120 L170 150 C200 154 226 160 238 186 L262 300 C266 316 254 322 248 308 L226 222 L214 330 C212 346 200 352 196 350 L194 440 L188 600 C188 620 170 622 166 604 L156 460 L144 460 L134 604 C130 622 112 620 112 600 L106 440 L104 350 C100 352 88 346 86 330 L74 222 L52 308 C46 322 34 316 38 300 L62 186 C74 160 100 154 130 150 L132 120 C120 116 110 100 108 80 C104 54 112 18 150 18Z"/></g>';
@@ -203,9 +211,12 @@ function drawBody(){
 }
 
 /* ---------- state + rendering ---------- */
-var st = {mode: "flora", site: "gut", focus: null, quiz: null, score: 0, streak: 0, best: 0};
+var st = {mode: "flora", kind: "bac", site: "gut", focus: null, quiz: null, score: 0, streak: 0, best: 0};
 try { st.best = Number(localStorage.getItem("bio112-bodymap-best")) || 0; } catch (e) {}
 /* a microbe in focus (from a tour link): ring every area where it lives (flora) or causes disease (dz) */
+var VIR = window.BODYMAP.VIRUSES;
+/* in "causes disease" mode, the list for the chosen kind: bacteria (dz) or viruses (vdz) */
+function dzList(site){ return st.kind === "vir" ? site.vdz : site.dz; }
 function focusSites(){ return st.focus && st.mode !== "quiz" ? window.BODYMAP.sitesFor(st.focus, st.mode) : []; }
 function paintMap(){
   var fs = focusSites();
@@ -214,13 +225,13 @@ function paintMap(){
     g.classList.toggle("focus", fs.indexOf(id) >= 0);
     g.classList.toggle("sel", st.mode !== "quiz" && id === st.site);
     g.classList.toggle("has-flora", st.mode === "flora" && site.flora.length > 0);
-    g.classList.toggle("has-dz", st.mode === "dz" && site.dz.length > 0);
-    g.classList.toggle("none", st.mode === "flora" && !site.flora.length || st.mode === "dz" && !site.dz.length);
+    g.classList.toggle("has-dz", st.mode === "dz" && dzList(site).length > 0);
+    g.classList.toggle("none", st.mode === "flora" && !site.flora.length || st.mode === "dz" && !dzList(site).length);
   });
   document.querySelectorAll("#sitechips button").forEach(function(b){ b.classList.toggle("sel", st.mode !== "quiz" && b.getAttribute("data-site") === st.site); b.classList.toggle("focus", fs.indexOf(b.getAttribute("data-site")) >= 0); });
   $("#legend").innerHTML = st.mode === "quiz" ? "Tap the body to answer." :
     st.mode === "flora" ? '<span><i style="background:var(--flora-soft);border:2px solid var(--flora)"></i>has normal flora</span><span><i style="background:var(--organ);opacity:.55"></i>normally sterile</span>' :
-    '<span><i style="background:var(--dz-soft);border:2px solid var(--dz)"></i>bacteria cause disease here</span>';
+    '<span><i style="background:var(--dz-soft);border:2px solid var(--dz)"></i>' + (st.kind === "vir" ? "viruses" : "bacteria") + " cause disease here</span>";
 }
 function card(x, note, mode){
   var r = ref(x), id = /^[@!]/.test(x) ? x.split("|")[0] : x;
@@ -231,6 +242,11 @@ function card(x, note, mode){
   var hl = st.focus && (id === st.focus || window.BODYMAP.ALIAS[st.focus] === id) ? " hl" : "";
   var style = ' style="--ge:' + (r.gram === "+" ? "var(--gp-edge)" : "var(--gn-edge)") + '"';
   return r.href ? '<a class="mcard' + hl + '" href="' + r.href + '"' + style + ">" + inner + "</a>" : '<div class="mcard' + hl + '"' + style + ">" + inner + "</div>";
+}
+function vcard(id, note){
+  var v = VIR[id];
+  var tags = '<span class="tag vir">' + esc(v.fam) + "</span>" + (v.genus ? '<span class="tag vir">genus ' + esc(v.genus) + "</span>" : "") + '<span class="tag">' + esc(v.type) + "</span>";
+  return '<div class="mcard vir" style="--ge:var(--vir)"><b>' + esc(v.name) + "</b>" + (note ? "<small>" + esc(note) + "</small>" : "") + '<span class="tags">' + tags + "</span></div>";
 }
 function render(){
   paintMap();
@@ -243,9 +259,15 @@ function render(){
                            : '<p class="empty">' + esc(site.floraNote || "No normal flora here.") + "</p>";
     h += '<p class="src">Examples, not a complete list. Sources: Ch. 14 slides (Table 14.1, Representative Normal Microbiota by Body Region) and the Ch. 11 slides.</p>';
   } else {
-    h += '<div class="banner dz">🦠 Causes disease here: <i>examples</i></div>';
-    h += site.dz.length ? '<div class="mlist">' + site.dz.map(function(d){ return card(d[0], d[1], "dz"); }).join("") + "</div>" : '<p class="empty">None of the bacteria in our tours are listed here, but other microbes can cause disease here.</p>';
-    h += '<p class="src">Examples, not a complete list. Tap a card to open that microbe in the tour.</p>';
+    h += '<div class="kinds" role="group" aria-label="Bacteria or viruses"><button type="button" class="kind" data-kind="bac" aria-pressed="' + (st.kind === "bac") + '">🧫 Bacteria</button><button type="button" class="kind" data-kind="vir" aria-pressed="' + (st.kind === "vir") + '">🧬 Viruses</button></div>';
+    h += '<div class="banner dz">' + (st.kind === "vir" ? "🧬 Viruses" : "🦠 Bacteria") + " that cause disease here: <i>examples</i></div>";
+    if (st.kind === "vir"){
+      h += site.vdz.length ? '<div class="mlist">' + site.vdz.map(function(d){ return vcard(d[0], d[1]); }).join("") + "</div>" : '<p class="empty">None of the viruses on our slides are listed here.</p>';
+      h += '<p class="src">Examples, not a complete list. Source: Ch. 13 slides. "Hides" = latency: the virus stays in these cells and can reactivate later.</p>';
+    } else {
+      h += site.dz.length ? '<div class="mlist">' + site.dz.map(function(d){ return card(d[0], d[1], "dz"); }).join("") + "</div>" : '<p class="empty">None of the bacteria in our tours are listed here, but other microbes can cause disease here.</p>';
+      h += '<p class="src">Examples, not a complete list. Tap a card to open that microbe in the tour.</p>';
+    }
   }
   $("#panel").innerHTML = h;
 }
@@ -256,17 +278,19 @@ function newQuestion(){
   SITES.forEach(function(s){
     s.flora.forEach(function(x){ if (x.charAt(0) !== "@") pool.push({kind: "flora", id: x}); });
     s.dz.forEach(function(d){ pool.push({kind: "dz", id: d[0]}); });
+    s.vdz.forEach(function(d){ pool.push({kind: "vdz", id: d[0]}); });
   });
   var q = pool[Math.floor(Math.random() * pool.length)];
-  q.answers = SITES.filter(function(s){ return q.kind === "flora" ? s.flora.indexOf(q.id) >= 0 : s.dz.some(function(d){ return d[0] === q.id; }); }).map(function(s){ return s.id; });
+  q.answers = SITES.filter(function(s){ return q.kind === "flora" ? s.flora.indexOf(q.id) >= 0 : s[q.kind].some(function(d){ return d[0] === q.id; }); }).map(function(s){ return s.id; });
   q.tried = []; q.done = false;
   st.quiz = q;
 }
 function renderQuiz(){
   if (!st.quiz) newQuestion();
-  var q = st.quiz, r = ref(q.id);
+  var q = st.quiz, r = q.kind === "vdz" ? {name: VIR[q.id].name} : ref(q.id);
   var h = "<h2>🎯 Quiz me</h2><p class=\"score\">Score " + st.score + " · streak " + st.streak + " · best streak " + st.best + "</p>";
-  h += '<p class="quizq">' + (q.kind === "flora" ? "Where does <i>" + esc(r.name) + "</i> live as <span style=\"color:var(--flora)\">normal flora</span>?" : "Where does <i>" + esc(r.name) + "</i> <span style=\"color:var(--dz)\">cause disease</span>?") + "</p>";
+  h += '<p class="quizq">' + (q.kind === "flora" ? "Where does <i>" + esc(r.name) + "</i> live as <span style=\"color:var(--flora)\">normal flora</span>?" :
+    q.kind === "vdz" ? "🧬 Where does the virus <b>" + esc(r.name) + "</b> <span style=\"color:var(--dz)\">cause disease or hide</span>?" : "Where does <i>" + esc(r.name) + "</i> <span style=\"color:var(--dz)\">cause disease</span>?") + "</p>";
   h += '<p class="sub">Tap a body area (or a button under the map). Answers are based on the examples on this map. ' + (q.answers.length > 1 ? "There is more than one right answer: any one counts." : "") + "</p>";
   if (q.msg) h += '<div class="qmsg ' + (q.done ? "good" : "bad") + '">' + q.msg + "</div>";
   if (q.done) h += '<div><button class="btn" type="button" data-next>Next microbe →</button></div>';
@@ -279,8 +303,8 @@ function answer(siteId){
     q.done = true;
     if (!q.tried.length){ st.score += 10; st.streak++; if (st.streak > st.best){ st.best = st.streak; try { localStorage.setItem("bio112-bodymap-best", st.best); } catch (e) {} } }
     else { st.score += 5; st.streak = 0; }
-    var note = q.kind === "dz" ? (site.dz.filter(function(d){ return d[0] === q.id; })[0] || [])[1] : "";
-    var rr = ref(q.id);
+    var note = q.kind !== "flora" ? (site[q.kind].filter(function(d){ return d[0] === q.id; })[0] || [])[1] : "";
+    var rr = q.kind === "vdz" ? {name: VIR[q.id].name, href: null} : ref(q.id);
     q.msg = "✅ Yes: <b>" + esc(site.name) + "</b>" + (note ? ": " + esc(note) : "") + "." + (q.answers.length > 1 ? " All the right answers: " + esc(names) + "." : "") +
       (rr.href ? ' <a href="' + rr.href + '">Read about <i>' + esc(rr.name) + "</i> in the tour →</a>" : "");
   } else {
@@ -305,6 +329,7 @@ document.addEventListener("click", function(e){
     if (st.mode === "quiz" && (!st.quiz || st.quiz.done)) newQuestion();
     render(); return;
   }
+  if ((el = e.target.closest("[data-kind]"))){ st.kind = el.getAttribute("data-kind"); render(); return; }
   if ((el = e.target.closest("[data-unfocus]"))){ st.focus = null; render(); return; }
   if ((el = e.target.closest("[data-next]"))){ newQuestion(); render(); return; }
   if ((el = e.target.closest("[data-site]"))){ pick(el.getAttribute("data-site")); }
@@ -317,7 +342,10 @@ document.addEventListener("keydown", function(e){
 drawBody();
 /* deep links: #flora, #dz, #quiz, a mode plus an area (#flora-gut, #dz-lungs),
    or a mode plus a microbe from the tours (#flora/sepi, #dz/ngon) to ring every area it shows up in */
-var hmm = location.hash.match(/^#(flora|dz|quiz)(?:-([a-z]+))?(?:\/([a-z0-9]+))?$/) || [], hm = hmm[1];
+/* #vdz or #vdz-liver = disease mode with the Viruses switch on */
+var hash0 = location.hash;
+if (/^#vdz/.test(hash0)){ st.kind = "vir"; hash0 = hash0.replace("#vdz", "#dz"); }
+var hmm = hash0.match(/^#(flora|dz|quiz)(?:-([a-z]+))?(?:\/([a-z0-9]+))?$/) || [], hm = hmm[1];
 if (hmm[2] && BY[hmm[2]]) st.site = hmm[2];
 if (hmm[3] && hm !== "quiz"){ st.focus = hmm[3]; var fs0 = window.BODYMAP.sitesFor(hmm[3], hm); if (fs0.length && !hmm[2]) st.site = fs0[0]; }
 if (hm){ st.mode = hm; document.querySelectorAll("[data-mode]").forEach(function(b){ b.setAttribute("aria-pressed", b.getAttribute("data-mode") === hm ? "true" : "false"); }); }

@@ -526,7 +526,7 @@ a.dzhead{color:inherit; text-decoration:none} a.dzhead:hover{text-decoration:und
       <div class="btnrow" style="margin-top:16px">
         <button class="btn" type="button" data-act="begin">Start the tour &rarr;</button>
         <button class="btn ghost" type="button" data-act="explore">Explore the tree</button>
-        <button class="btn ghost" type="button" data-act="cheats">🎯 ID cheat sheet</button>
+        <button class="btn ghost" type="button" data-act="cheats">ID cheat sheet</button>
       </div>
     </div>
   </div>
@@ -572,7 +572,7 @@ a.dzhead{color:inherit; text-decoration:none} a.dzhead:hover{text-decoration:und
 </div>
 
 <dialog id="cheatDlg" aria-labelledby="cheatTitle">
-  <div class="dlghead"><h2 id="cheatTitle">🎯 ID cheat sheet</h2><button class="btn small ghost" type="button" data-act="closeCheats">Close &times;</button></div>
+  <div class="dlghead"><h2 id="cheatTitle">ID cheat sheet</h2><button class="btn small ghost" type="button" data-act="closeCheats">Close &times;</button></div>
   <div class="dlgbody" id="cheatBody"></div>
 </dialog>
 <dialog id="entDlg" aria-labelledby="entTitle">
@@ -1152,9 +1152,9 @@ var TESTS = {
   urease: {name: "Urease", opts: ["+", "−"], ans: pm,
     back: function(v){ var p = pm(v) === "+", slow = /slow/.test(v); return {txt: p ? (slow ? "Positive (slow)" : "Positive (+)") : "Negative (−)", sub: p ? "turns hot pink" : "stays yellow", col: p ? "#db2777" : NEG, svg: svgBox(tubeG(26, p ? (slow ? "#f9a8d4" : "#db2777") : "#fcd34d"))}; },
     chip: function(v){ return "urease " + pm(v); }, opp: function(v){ return "urease " + (pm(v) === "+" ? "−" : "+"); }},
-  sugars: {name: "Sugars used", opts: ["glucose only", "glucose + maltose"], ans: function(v){ return v; },
+  sugars: {name: "Sugars used", opts: ["glucose, but not maltose", "glucose + maltose"], ans: function(v){ return v; },
     back: function(v){ var m = /maltose/.test(v); return {txt: v, sub: "yellow = acid made (sugar used)", col: "#ca8a04", svg: svgBox(tubeG(17, "#facc15") + tubeG(35, m ? "#facc15" : "#ef4444") + '<text x="23" y="43" font-size="7" text-anchor="middle" fill="#64748b">glu</text><text x="41" y="43" font-size="7" text-anchor="middle" fill="#64748b">mal</text>')}; },
-    chip: function(v){ return "uses " + v; }, opp: function(v){ return "uses " + (/maltose/.test(v) ? "glucose only" : "glucose + maltose"); }},
+    chip: function(v){ return "uses " + v; }, opp: function(v){ return "uses " + (v === "glucose + maltose" ? "glucose, but not maltose" : "glucose + maltose"); }},
   media: {name: "Grows on", opts: null,
     back: function(v){ var host = /host/.test(v); return {txt: v, sub: "", col: "#a16207", svg: svgBox(host ? '<ellipse cx="32" cy="22" rx="27" ry="17" fill="#fef3c7" stroke="#a16207" stroke-width="1.6"/><circle cx="34" cy="21" r="7" fill="#fde68a" stroke="#a16207"/>' + [[18, 16], [22, 28], [46, 15], [47, 27], [28, 33]].map(function(p){ return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="2.6" fill="var(--gn-fill)" stroke="var(--gn-edge)"/>'; }).join("") : '<ellipse cx="32" cy="23" rx="26" ry="17" fill="' + (/chocolate/.test(v) ? "#8b5a2b" : "#f3dfa9") + '" stroke="#a16207" stroke-width="1.6"/><circle cx="24" cy="20" r="2.6" fill="#fff"/><circle cx="36" cy="26" r="2.6" fill="#fff"/>')}; }},
   pigment: {name: "Colonies", opts: null,
@@ -1240,7 +1240,7 @@ function sortHtml(o){
   return h + "</section>";
 }
 function photoHtml(p){ return '<figure class="photo"><img src="' + p.src + '" alt="' + esc(p.alt) + '" loading="lazy"><figcaption><span>' + p.cap + "</span><small>" + p.credit + "</small></figcaption></figure>"; }
-function cheatHtml(c, o){ return c ? '<div class="cheat"><span class="ci">🎯</span><div><b>ID cheat' + (o ? " (<i>" + esc(o.name) + "</i>)" : "") + ':</b> ' + c + ' <button type="button" class="linkbtn" data-act="cheats">See all ID cheats →</button></div></div>' : ""; }
+function cheatHtml(c, o){ return c ? '<div class="cheat"><div><b>ID cheat' + (o ? " (<i>" + esc(o.name) + "</i>)" : "") + ':</b> ' + c + ' <button type="button" class="linkbtn" data-act="cheats">See all ID cheats →</button></div></div>' : ""; }
 function spellWords(o){ return (o.spell || o.name).split(" "); }
 function spellHtml(o){
   var words = spellWords(o), S = st.spell[o.id] || (st.spell[o.id] = {v: [], chk: false, open: false});
@@ -1421,7 +1421,7 @@ function renderLesson(){
 }
 function finaleHtml(s){
   var h = '<ol class="takeaways">' + s.takeaways.map(function(t){ return "<li>" + t + "</li>"; }).join("") + "</ol>";
-  h += '<div class="btnrow"><button class="btn" type="button" data-act="testmode">✏️ Switch to Test mode</button><button class="btn ghost" type="button" data-act="explore">🌳 Explore the tree</button><button class="btn ghost" type="button" data-act="cheats">🎯 ID cheat sheet</button></div>';
+  h += '<div class="btnrow"><button class="btn" type="button" data-act="testmode">✏️ Switch to Test mode</button><button class="btn ghost" type="button" data-act="explore">🌳 Explore the tree</button><button class="btn ghost" type="button" data-act="cheats">ID cheat sheet</button></div>';
   h += '<div><h3 class="sech">Keep practicing</h3><div class="tiles">';
   D.games.forEach(function(g){
     h += g.href ? '<a class="tile" href="' + esc(g.href) + '"><span class="tag">Game</span><b>' + esc(g.title) + "</b></a>"

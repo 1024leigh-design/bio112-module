@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How Diseases Spread</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* How Diseases Spread: route tabs across the top (grouped by theme), then the bacteria and viruses that spread that way.
+   Explore mode never labels primary vs. other routes (Ch. 13 slide 42 is a student worksheet); the quiz checks primary routes only.
+   Data: transmission-data.js. Same base tokens as the Body Map; each route group has its own color. */
+:root{
+  --bg:#f2f5f8; --surface:#ffffff; --surface-2:#e8eef4; --ink:#14223a; --muted:#53657b; --line:#d3dde7;
+  --arrow:#1683cc; --arrow-soft:#dcecf9; --good:#1f8a55; --good-soft:#dcf2e5; --bad:#c43a2b; --bad-soft:#fbe0db; --warn:#b45309; --warn-soft:#fdf0dc;
+  --vir:#0e7490; --gn-edge:#c2185b; --gp-edge:#6d28d9; --on:#ffffff; --gn-fill:#f7b6cf; --gp-fill:#d8c8f5; --v-fill:#d5f0f5;
+  --g-air:#0369a1; --g-air-soft:#e0f2fe; --g-food:#b45309; --g-food-soft:#fef3c7; --g-fluids:#c0262d; --g-fluids-soft:#fee2e2;
+  --g-touch:#6d28d9; --g-touch-soft:#ede9fe; --g-animals:#15803d; --g-animals-soft:#dcfce7; --g-skin:#be185d; --g-skin-soft:#fce7f3;
+  --f-display:'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --f-body:'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
+  --f-mono:'IBM Plex Mono', ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
+    --arrow:#4aa9ee; --arrow-soft:#173450; --good:#4ccb8b; --good-soft:#153a29; --bad:#ff7d6d; --bad-soft:#46211d; --warn:#f5b85a; --warn-soft:#3a2a12;
+    --vir:#4fc3d9; --gn-edge:#f48fb6; --gp-edge:#c4b0f5; --on:#0d151f; --gn-fill:#9c3d68; --gp-fill:#4c3a7a; --v-fill:#14313a;
+    --g-air:#38bdf8; --g-air-soft:#0c2a3d; --g-food:#fbbf24; --g-food-soft:#3a2a0c; --g-fluids:#f87171; --g-fluids-soft:#3d1515;
+    --g-touch:#a78bfa; --g-touch-soft:#2a1f45; --g-animals:#4ade80; --g-animals-soft:#12301d; --g-skin:#f472b6; --g-skin-soft:#3a1428; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d151f; --surface:#152232; --surface-2:#1c2c3e; --ink:#e7eef7; --muted:#a0b3c7; --line:#2b3e53;
+  --arrow:#4aa9ee; --arrow-soft:#173450; --good:#4ccb8b; --good-soft:#153a29; --bad:#ff7d6d; --bad-soft:#46211d; --warn:#f5b85a; --warn-soft:#3a2a12;
+  --vir:#4fc3d9; --gn-edge:#f48fb6; --gp-edge:#c4b0f5; --on:#0d151f; --gn-fill:#9c3d68; --gp-fill:#4c3a7a; --v-fill:#14313a;
+  --g-air:#38bdf8; --g-air-soft:#0c2a3d; --g-food:#fbbf24; --g-food-soft:#3a2a0c; --g-fluids:#f87171; --g-fluids-soft:#3d1515;
+  --g-touch:#a78bfa; --g-touch-soft:#2a1f45; --g-animals:#4ade80; --g-animals-soft:#12301d; --g-skin:#f472b6; --g-skin-soft:#3a1428; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:18px; line-height:1.5; overflow-x:hidden}
+.wrap{max-width:1180px; margin:0 auto; padding:16px 16px 60px}
+h1,h2,h3{font-family:var(--f-display); margin:0; letter-spacing:-.01em}
+p{margin:0}
+button{font:inherit; color:inherit}
+:focus-visible{outline:3px solid var(--arrow); outline-offset:2px; border-radius:6px}
+.top{display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; padding-bottom:12px; border-bottom:1px solid var(--line); margin-bottom:18px}
+.top a{margin-left:auto; text-decoration:none; color:var(--ink); font-weight:700; font-size:15px; padding:8px 13px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface)}
+.brand{font-family:var(--f-display); font-weight:700}
+.hero h1{font-size:clamp(32px,5.5vw,48px); line-height:1.05; margin-bottom:10px}
+.hero p{color:var(--muted); margin-top:8px}
+.hero a{color:var(--arrow); font-weight:700}
+/* two matching segmented controls: what to do, and which microbes to show */
+.bar{display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px 28px; align-items:center; margin:22px 0 16px}
+.group{display:flex; flex-wrap:wrap; align-items:center; gap:4px; background:var(--surface-2); border:1.5px solid var(--line); border-radius:999px; padding:4px}
+.glabel{font:600 12.5px var(--f-mono); text-transform:uppercase; letter-spacing:.05em; color:var(--muted); padding:0 8px 0 10px}
+.mode, .kind{border:0; background:transparent; border-radius:999px; padding:8px 16px; font-weight:700; font-size:16.5px; line-height:1.2; cursor:pointer}
+.mode:hover, .kind:hover{background:var(--surface)}
+.mode[aria-pressed="true"]{background:var(--ink); border-color:transparent; color:var(--bg)}
+.kind[aria-pressed="true"]{background:var(--arrow); color:#fff; border-color:transparent}
+
+/* each group sets --g and --gs for everything inside it */
+.g-air{--g:var(--g-air); --gs:var(--g-air-soft)} .g-food{--g:var(--g-food); --gs:var(--g-food-soft)} .g-fluids{--g:var(--g-fluids); --gs:var(--g-fluids-soft)}
+.g-touch{--g:var(--g-touch); --gs:var(--g-touch-soft)} .g-animals{--g:var(--g-animals); --gs:var(--g-animals-soft)} .g-skin{--g:var(--g-skin); --gs:var(--g-skin-soft)}
+
+/* tab bar: one column per group, the route tabs stacked under its label */
+.tabs{background:var(--bg); padding:8px 0 10px; border-bottom:1px solid var(--line); margin-bottom:16px;
+  display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:8px}
+.tgrp{border-top:5px solid var(--g); background:var(--surface); border-radius:12px; padding:6px; display:flex; flex-direction:column; gap:4px}
+.tgrp .gl{font:600 12px var(--f-mono); text-transform:uppercase; letter-spacing:.04em; color:var(--g); padding:2px 4px 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.tab{display:flex; align-items:center; gap:6px; width:100%; text-align:left; border:0; border-radius:9px; background:transparent; padding:6px 8px; cursor:pointer; font-weight:700; font-size:15.5px; line-height:1.2}
+.tab .ti{flex:none; display:inline-flex}
+.ico{width:1.15em; height:1.15em; flex:none; vertical-align:-.2em}
+.tab .tn{flex:1; min-width:0}
+.tab .tc{font:600 12px var(--f-mono); color:var(--muted); flex:none}
+.tab:hover{background:var(--gs)}
+.tab[aria-selected="true"]{background:var(--g); color:var(--on)}
+.tab[aria-selected="true"] .tc{color:var(--on); opacity:.85}
+.tab.none{opacity:.45}
+/* phones and small tablets: groups scroll sideways in one row */
+@media (max-width:900px){
+  .tabs{position:sticky; top:0; z-index:5; display:flex; overflow-x:auto; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch; padding-bottom:12px}
+  .tgrp{flex:none; scroll-snap-align:start; flex-direction:row; flex-wrap:nowrap; align-items:center; padding:6px 8px; border-top:0; border-left:5px solid var(--g)}
+  .tgrp .gl{display:none}
+  .tab{width:auto; white-space:nowrap}
+}
+.swipe{display:none; font-size:14px; color:var(--muted); margin:-8px 0 12px}
+[hidden]{display:none!important}
+@media (max-width:900px){ .swipe{display:block} }
+
+/* the selected route */
+.banner{display:grid; grid-template-columns:auto minmax(0,1fr); gap:6px 18px; align-items:center; background:var(--gs); border:2px solid var(--g); border-radius:20px; padding:16px 18px; margin-bottom:16px}
+.banner .big{grid-row:span 3; width:84px; height:84px; border-radius:50%; background:var(--surface); display:grid; place-items:center; color:var(--g); box-shadow:0 0 0 4px var(--g)}
+.banner .big .ico{width:46px; height:46px}
+.banner .eyebrow{font:600 13px var(--f-mono); text-transform:uppercase; letter-spacing:.06em; color:var(--g)}
+.banner h2{font-size:clamp(28px,4.5vw,40px); line-height:1.05}
+.banner .def{font-size:19px}
+.banner .count{grid-column:1 / -1; display:flex; flex-wrap:wrap; gap:8px; margin-top:6px}
+.pill{font:600 13.5px var(--f-mono); background:var(--surface); border-radius:999px; padding:3px 12px}
+@media (max-width:520px){ .banner{grid-template-columns:minmax(0,1fr)} .banner .big{grid-row:auto; width:64px; height:64px} .banner .big .ico{width:34px; height:34px} }
+.cols{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:18px; align-items:start}
+@media (max-width:820px){ .cols{grid-template-columns:minmax(0,1fr)} }
+.colbox{background:var(--surface); border:1.5px solid var(--line); border-radius:18px; padding:14px; display:flex; flex-direction:column; gap:10px}
+.colbox h3{font-size:22px; display:flex; align-items:center; gap:8px}
+.colbox h3 .ico{width:26px; height:26px; color:var(--muted)}
+.mlist{display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px; align-items:stretch}
+/* flip cards: both faces share one grid cell, so the card is as tall as its taller face */
+.fcard{position:relative; perspective:1000px; min-height:150px}
+.fcard .in{display:grid; height:100%; transition:transform .5s; transform-style:preserve-3d}
+.fcard.flipped .in{transform:rotateY(180deg)}
+.face{grid-area:1 / 1; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:14px; border:1.5px solid var(--line); border-left:6px solid var(--ge); padding:10px 12px; display:flex; flex-direction:column; gap:5px; color:var(--ink)}
+.front{background:var(--surface); cursor:pointer; font:inherit; width:100%; justify-content:center; align-items:center; text-align:center; gap:6px}
+.front .cell{width:92px; height:63px; display:block}
+.front .tags{justify-content:center}
+.front:hover{border-color:var(--ge)}
+.front .nm{font-weight:700; font-size:18px; line-height:1.25}
+.front .nm.it{font-style:italic}
+.front .hint{font:600 12.5px var(--f-mono); color:var(--muted)}
+.back{transform:rotateY(180deg); background:var(--surface-2)}
+.back .nm{font-weight:700; font-size:15.5px; line-height:1.2}
+.back .nm.it{font-style:italic}
+.back .row{font-size:15px; line-height:1.35}
+.back .row b{font:600 11.5px var(--f-mono); text-transform:uppercase; letter-spacing:.04em; color:var(--muted); display:block}
+.back .rts{display:flex; flex-wrap:wrap; gap:4px; margin-top:2px}
+.back .rts span{display:inline-flex; align-items:center; gap:4px; font-size:13.5px; background:var(--surface); border-radius:999px; padding:1px 8px}
+.back .rts span.cur{box-shadow:0 0 0 2px var(--g) inset; font-weight:700}
+.back .links{margin-top:auto; padding-top:4px; display:flex; flex-wrap:wrap; gap:4px 12px; align-items:center}
+.back .links a{font-weight:700; font-size:14px; color:var(--arrow); text-decoration:none}
+.back .links a:hover{text-decoration:underline}
+.back .unflip{margin-left:auto; border:1.5px solid var(--line); background:var(--surface); border-radius:999px; padding:2px 10px; font-size:13px; font-weight:700; cursor:pointer}
+.colhead{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.flipall{margin-left:auto; border:1.5px solid var(--line); background:var(--surface-2); border-radius:999px; padding:5px 12px; font-size:14.5px; font-weight:700; cursor:pointer}
+.tags{display:flex; flex-wrap:wrap; gap:4px; margin-top:2px}
+.tag{font:600 11.5px var(--f-mono); padding:1px 8px; border-radius:999px; border:1.5px solid var(--line); color:var(--muted)}
+.tag.gneg{border-color:var(--gn-edge); color:var(--gn-edge)} .tag.gpos{border-color:var(--gp-edge); color:var(--gp-edge)} .tag.vir{border-color:var(--vir); color:var(--vir)}
+.empty{color:var(--muted); background:var(--surface-2); border-radius:14px; padding:12px 14px}
+.stepper{display:flex; justify-content:space-between; gap:10px; margin-top:18px; flex-wrap:wrap}
+.step{display:flex; align-items:center; gap:8px; border:2px solid var(--line); background:var(--surface); border-radius:999px; padding:10px 18px; font-weight:700; cursor:pointer}
+.step:hover{border-color:var(--g)}
+.step.next{margin-left:auto; background:var(--g); border-color:transparent; color:var(--on)}
+.src{color:var(--muted); font-size:14px; margin-top:12px}
+
+/* quiz */
+.quiz{background:var(--surface); border:1.5px solid var(--line); border-radius:20px; padding:18px; display:flex; flex-direction:column; gap:14px}
+.quizq{font-family:var(--f-display); font-size:clamp(24px,4vw,32px); line-height:1.2}
+.quizq i{font-family:var(--f-body)}
+.score{font:600 15px var(--f-mono); color:var(--muted)}
+.sub{color:var(--muted); font-size:16px}
+.answers{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px}
+@media (max-width:820px){ .answers{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:440px){ .answers{grid-template-columns:minmax(0,1fr)} }
+.agrp{border-top:5px solid var(--g); background:var(--gs); border-radius:14px; padding:8px; display:flex; flex-direction:column; gap:6px}
+.agrp .gl{font:600 12px var(--f-mono); text-transform:uppercase; letter-spacing:.04em; color:var(--g)}
+.ans{display:flex; align-items:center; gap:8px; color:var(--ink); width:100%; text-align:left; border:2px solid transparent; border-radius:10px; background:var(--surface); padding:9px 10px; cursor:pointer; font-weight:700}
+.ans:hover{border-color:var(--g)}
+.ans.right{border-color:var(--good); background:var(--good-soft)}
+.ans.near{border-color:var(--warn); background:var(--warn-soft)}
+.ans.wrong{border-color:var(--bad); background:var(--bad-soft)}
+.qmsg{border-radius:12px; padding:10px 12px}
+.qmsg.good{background:var(--good-soft)} .qmsg.bad{background:var(--bad-soft)} .qmsg.near{background:var(--warn-soft)}
+.qmsg a{color:var(--arrow); font-weight:700}
+.btn{display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:10px 20px; font-weight:700; font-size:17px; cursor:pointer; border:0; background:var(--arrow); color:#fff}
+@media (prefers-reduced-motion: reduce){ .fcard .in{transition:none} *{transition:none!important; animation:none!important; scroll-behavior:auto!important} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><span class="brand">BIO 112 · Ch. 11, 13 + 14</span><a href="unit-bacteria.html">← Pathology unit</a></header>
+  <section class="hero">
+    <h1>How Diseases Spread</h1>
+    <p>Pick a route from the tabs below (or start with the first one and hit <b>Next</b>) to see which bacteria and viruses spread that way. Then use <b>Quiz me</b> to practice each microbe's <b>primary</b> route.</p>
+    <p>Where do they cause disease once they're in? <a href="body-map.html#dz">Open the Body Map →</a></p>
+  </section>
+  <div class="bar">
+    <div class="group" role="toolbar" aria-label="Mode">
+      <button type="button" class="mode" data-mode="explore" aria-pressed="true">Explore routes</button>
+      <button type="button" class="mode" data-mode="quiz" aria-pressed="false">Quiz me</button>
+    </div>
+    <div class="group" role="toolbar" aria-label="Which microbes">
+      <span class="glabel" aria-hidden="true">Show</span>
+      <button type="button" class="kind" data-kind="all" aria-pressed="true">Both</button>
+      <button type="button" class="kind" data-kind="b" aria-pressed="false">Bacteria</button>
+      <button type="button" class="kind" data-kind="v" aria-pressed="false">Viruses</button>
+    </div>
+  </div>
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Routes of transmission"></nav>
+  <p class="swipe" id="swipe">Swipe the tabs for more routes →</p>
+  <main id="main" aria-live="polite"></main>
+</div>
+
+<!-- organism names and tour links come from the tour data files; virus names from the Body Map data -->
+<script src="gram-neg-tree.js"></script>
+<script>window.TOUR_NEG = window.TOUR_DATA;</script>
+<script src="gram-pos-tree.js"></script>
+<script>window.TOUR_POS = window.TOUR_DATA;</script>
+<script src="body-map-data.js"></script>
+<script src="transmission-data.js"></script>
+<script>
+(function(){
+"use strict";
+function $(s){ return document.querySelector(s); }
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;"}[c]; }); }
+
+/* simple line icons (stroke = currentColor), one per route, plus a bacterium and a virus */
+var ICON = {
+  drop: '<path d="M8 4c2 3 3.5 4.8 3.5 6.5a3.5 3.5 0 0 1-7 0C4.5 8.8 6 7 8 4z"/><path d="M17 9c1.5 2.2 2.5 3.5 2.5 4.8a2.5 2.5 0 0 1-5 0c0-1.3 1-2.6 2.5-4.8z"/><path d="M10 16c1.2 1.8 2 2.8 2 3.8a2 2 0 0 1-4 0c0-1 .8-2 2-3.8z"/>',
+  air: '<path d="M3 8h11a3 3 0 1 0-3-3"/><path d="M3 12h16a3 3 0 1 1-3 3"/><path d="M3 16h7"/>',
+  fecal: '<path d="M6 4h12l-1.6 16H7.6z"/><path d="M6.8 10c1.8 1.4 3.4 1.4 5.2 0s3.4-1.4 5.2 0"/>',
+  food: '<path d="M5 3v5a2 2 0 0 0 4 0V3M7 3v18"/><path d="M17 21V3c-2.2 1.8-3 5-2.6 9H17"/>',
+  blood: '<path d="M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/>',
+  sex: '<circle cx="9" cy="12" r="5"/><circle cx="15" cy="12" r="5"/>',
+  vert: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="13.5" r="3"/><path d="M12 10.5c0-1.5 1-2.5 2.5-2.5"/>',
+  contact: '<path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V11M11 10V4.5a1.5 1.5 0 0 1 3 0V11M14 10.5V6a1.5 1.5 0 0 1 3 0v8a7 7 0 0 1-7 7h-.5a6 6 0 0 1-4.6-2.2L3 15.5a1.5 1.5 0 0 1 2.3-1.9L8 16"/>',
+  fomite: '<rect x="5" y="3" width="14" height="18" rx="1.5"/><circle cx="15" cy="12" r="1.4"/>',
+  auto: '<path d="M20 12a8 8 0 0 1-14 5.3"/><path d="M4 12A8 8 0 0 1 18 6.7"/><path d="M18 3v4h-4"/><path d="M6 21v-4h4"/>',
+  vector: '<ellipse cx="12" cy="13" rx="3.8" ry="6"/><path d="M12 7V4.5M10 4l2 .5 2-.5M8.3 10 4 8M8.2 14H3M8.6 17.5 4.5 20.5M15.7 10 20 8M15.8 14H21M15.4 17.5l4.1 3"/>',
+  bite: '<path d="M4 6h16l-2.7 5-2.6-5-2.7 5-2.7-5-2.6 5z"/><path d="M4 18h16l-2.7-5-2.6 5-2.7-5-2.7 5-2.6-5z"/>',
+  wound: '<rect x="2.5" y="8.5" width="19" height="7" rx="3.5" transform="rotate(-45 12 12)"/><path d="M10.6 10.6h.01M13.4 13.4h.01M13.4 10.6h.01M10.6 13.4h.01"/>',
+  bacterium: '<rect x="3" y="7.5" width="18" height="9" rx="4.5"/><path d="M21 12h2M1 12h2M7.5 7.5 6.5 5M16.5 16.5l1 2.5"/><path d="M9 12h.01M12 11h.01M15 12.5h.01"/>',
+  virus: '<circle cx="12" cy="12" r="5"/><path d="M12 7V4M12 20v-3M7 12H4M20 12h-3M8.5 8.5 6.4 6.4M17.6 17.6l-2.1-2.1M8.5 15.5l-2.1 2.1M17.6 6.4l-2.1 2.1"/><circle cx="12" cy="3" r="1"/><circle cx="12" cy="21" r="1"/><circle cx="3" cy="12" r="1"/><circle cx="21" cy="12" r="1"/>'
+};
+/* the microbe itself on the front of each card.
+   Bacteria: the same shape drawings as the Ch. 11 tours, in Gram stain colors (gram + purple, gram − pink).
+   Viruses: the shape of the virion for its family (Ch. 13 slides: helical, polyhedral, enveloped, complex). */
+function wavePath(x0, x1, cy, amp, periods, dy, steps){
+  var d = "", n = steps || 120;
+  for (var i = 0; i <= n; i++){ var x = x0 + (x1 - x0) * i / n, y = cy + (dy || 0) + amp * Math.sin(i / n * periods * 2 * Math.PI); d += (i ? "L" : "M") + x.toFixed(1) + " " + y.toFixed(1); }
+  return d;
+}
+function bacteriaInner(shape){
+  var f = 'fill="var(--cf)" stroke="var(--ce)" stroke-width="2"', s = "";
+  function tube(d, w){ return '<path d="' + d + '" fill="none" stroke="var(--ce)" stroke-width="' + (w + 4) + '" stroke-linecap="round"/><path d="' + d + '" fill="none" stroke="var(--cf)" stroke-width="' + w + '" stroke-linecap="round"/>'; }
+  switch (shape){
+    case "rod": s += '<rect x="8" y="14" width="48" height="16" rx="8" ' + f + '/>'; break;
+    case "rodspore": s += '<rect x="8" y="14" width="48" height="16" rx="8" ' + f + '/><ellipse cx="44" cy="22" rx="6.5" ry="4.6" fill="var(--surface)" stroke="var(--ce)" stroke-width="2"/>'; break;
+    case "clusters": s += [[20, 12], [32, 10], [44, 13], [14, 23], [26, 22], [38, 23], [50, 23], [22, 33], [34, 33], [46, 32]].map(function(p){ return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="6" ' + f + '/>'; }).join(""); break;
+    case "chains": s += [[7, 26], [18, 21], [29, 19], [40, 21], [51, 25], [61, 30]].map(function(p){ return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="5.6" ' + f + '/>'; }).join(""); break;
+    case "lancet": s += '<path d="M4 22 Q15 9 30 22 Q15 35 4 22Z" ' + f + '/><path d="M60 22 Q49 9 34 22 Q49 35 60 22Z" ' + f + '/>'; break;
+    case "club": s += '<path transform="translate(9 22)" d="M0 -3 L30 -5.6 Q40 -7.2 45 -5.8 Q50 -4 50 0 Q50 4 45 5.8 Q40 7.2 30 5.6 L0 3 Q-3 3 -3 0 Q-3 -3 0 -3Z" ' + f + '/>'; break;
+    case "coccobacillus": s += '<rect x="18" y="11" width="28" height="22" rx="11" ' + f + '/>'; break;
+    case "diplococcus": s += '<path d="M28.5 9 A13 13 0 1 0 28.5 35 Q21 22 28.5 9Z" ' + f + '/><path d="M35.5 9 A13 13 0 1 1 35.5 35 Q43 22 35.5 9Z" ' + f + '/>'; break;
+    case "curved": s += tube("M14 32 Q32 2 50 32", 10); break;
+    case "gullwing": s += tube("M8 30 Q19 8 32 24 Q45 8 56 30", 8); break;
+    case "spirochete": s += tube(wavePath(6, 58, 22, 6, 6, 0, 90), 3); break;
+    case "intracellular": s += '<ellipse cx="32" cy="22" rx="28" ry="18" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="4 3"/>' + [[22, 17], [30, 26], [39, 18], [44, 27], [26, 29]].map(function(p){ return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3.6" ' + f + '/>'; }).join(""); break;
+    default: s += '<rect x="14" y="13" width="36" height="18" rx="9" ' + f + '/>';
+  }
+  return s;
+}
+/* virus shapes by family, drawn in a 64 x 44 box */
+function spikes(cx, cy, r, n, len, knob){
+  var s = "";
+  for (var i = 0; i < n; i++){
+    var a = i / n * 2 * Math.PI, x1 = cx + r * Math.cos(a), y1 = cy + r * Math.sin(a), x2 = cx + (r + len) * Math.cos(a), y2 = cy + (r + len) * Math.sin(a);
+    s += '<line x1="' + x1.toFixed(1) + '" y1="' + y1.toFixed(1) + '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) + '"/>' + (knob ? '<circle cx="' + x2.toFixed(1) + '" cy="' + y2.toFixed(1) + '" r="' + knob + '" fill="var(--ce)"/>' : "");
+  }
+  return '<g stroke="var(--ce)" stroke-width="1.8" stroke-linecap="round">' + s + "</g>";
+}
+function hexagon(cx, cy, r, facets){
+  var pts = [];
+  for (var i = 0; i < 6; i++){ var a = Math.PI / 6 + i * Math.PI / 3; pts.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]); }
+  var s = '<polygon points="' + pts.map(function(p){ return p[0].toFixed(1) + "," + p[1].toFixed(1); }).join(" ") + '" fill="var(--cf)" stroke="var(--ce)" stroke-width="2" stroke-linejoin="round"/>';
+  if (facets){
+    /* inner triangle so it reads as an icosahedron */
+    var t = [pts[1], pts[3], pts[5]];
+    s += '<polygon points="' + t.map(function(p){ return p[0].toFixed(1) + "," + p[1].toFixed(1); }).join(" ") + '" fill="none" stroke="var(--ce)" stroke-width="1.2" stroke-linejoin="round" opacity=".8"/>';
+  }
+  return s;
+}
+var VSHAPE = {
+  Poxviridae: "brick", Herpesviridae: "envIco", Hepadnaviridae: "envIco", Flaviviridae: "envSmooth", Matonaviridae: "envSmooth",
+  Adenoviridae: "adeno", Polyomaviridae: "ico", Papillomaviridae: "ico", Parvoviridae: "icoSmall", Picornaviridae: "icoSmall",
+  Coronaviridae: "corona", Retroviridae: "retro", Paramyxoviridae: "pleo", Pneumoviridae: "pleo", Rhabdoviridae: "bullet", Orthomyxoviridae: "flu"
+};
+function virusInner(fam){
+  var f = 'fill="var(--cf)" stroke="var(--ce)" stroke-width="2"';
+  switch (VSHAPE[fam]){
+    case "brick": /* complex: brick-shaped with a dumbbell core */
+      return '<rect x="14" y="7" width="36" height="30" rx="7" ' + f + '/><path d="M24 15 Q32 20 40 15 Q36 22 40 29 Q32 24 24 29 Q28 22 24 15Z" fill="none" stroke="var(--ce)" stroke-width="1.6"/>';
+    case "envIco": /* enveloped, icosahedral capsid inside */
+      return spikes(32, 22, 15, 16, 4) + '<circle cx="32" cy="22" r="15" ' + f + '/>' + hexagon(32, 22, 8, true).replace('fill="var(--cf)"', 'fill="var(--surface)"');
+    case "envSmooth": /* small enveloped sphere with a capsid */
+      return spikes(32, 22, 14, 20, 2.5) + '<circle cx="32" cy="22" r="14" ' + f + '/><circle cx="32" cy="22" r="7" fill="var(--surface)" stroke="var(--ce)" stroke-width="1.6"/>';
+    case "adeno": /* naked icosahedron with fibers at the corners */
+      return spikes(32, 22, 15, 6, 5, 2) + hexagon(32, 22, 15, true);
+    case "ico": return hexagon(32, 22, 16, true);
+    case "icoSmall": return hexagon(32, 22, 11, true);
+    case "corona": /* crown of club-shaped spikes */
+      return spikes(32, 22, 13, 14, 5, 2.4) + '<circle cx="32" cy="22" r="13" ' + f + '/>';
+    case "retro": /* enveloped, cone-shaped capsid */
+      return spikes(32, 22, 15, 14, 4, 1.6) + '<circle cx="32" cy="22" r="15" ' + f + '/><path d="M24 17 L41 20 L41 25 L24 28Z" fill="var(--surface)" stroke="var(--ce)" stroke-width="1.6" stroke-linejoin="round"/>';
+    case "pleo": /* pleomorphic envelope, helical nucleocapsid inside */
+      return '<g stroke="var(--ce)" stroke-width="1.8" stroke-linecap="round">' + [[12, 12, 9, 9], [20, 5, 19, 1], [32, 4, 32, 0], [44, 5, 46, 1], [53, 13, 57, 10], [55, 26, 59, 28], [46, 38, 48, 42], [32, 40, 32, 44], [18, 38, 16, 42], [9, 28, 5, 30]].map(function(l){ return '<line x1="' + l[0] + '" y1="' + l[1] + '" x2="' + l[2] + '" y2="' + l[3] + '"/>'; }).join("") + "</g>" +
+        '<path d="M10 20 Q8 8 22 6 Q34 2 46 6 Q58 10 55 24 Q54 38 40 39 Q26 42 16 36 Q9 31 10 20Z" ' + f + '/><path d="' + wavePath(17, 47, 22, 4, 4, 0, 60) + '" fill="none" stroke="var(--ce)" stroke-width="1.6"/>';
+    case "bullet": /* rabies: bullet-shaped, enveloped */
+      return '<g stroke="var(--ce)" stroke-width="1.8" stroke-linecap="round">' + [14, 21, 28, 35, 42].map(function(x){ return '<line x1="' + x + '" y1="12" x2="' + x + '" y2="8"/><line x1="' + x + '" y1="32" x2="' + x + '" y2="36"/>'; }).join("") + "</g>" +
+        '<path d="M10 12 H44 Q56 12 56 22 Q56 32 44 32 H10Z" ' + f + '/>' + [17, 24, 31, 38].map(function(x){ return '<line x1="' + x + '" y1="14" x2="' + x + '" y2="30" stroke="var(--ce)" stroke-width="1.2" opacity=".7"/>'; }).join("");
+    case "flu": /* enveloped sphere with two kinds of spikes (HA and NA) and RNA segments */
+      var s = "";
+      for (var i = 0; i < 14; i++){
+        var a = i / 14 * 2 * Math.PI, x1 = 32 + 14 * Math.cos(a), y1 = 22 + 14 * Math.sin(a), x2 = 32 + 19 * Math.cos(a), y2 = 22 + 19 * Math.sin(a);
+        s += '<line x1="' + x1.toFixed(1) + '" y1="' + y1.toFixed(1) + '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) + '"/>' +
+          (i % 2 ? '<circle cx="' + x2.toFixed(1) + '" cy="' + y2.toFixed(1) + '" r="1.8" fill="var(--ce)"/>' : '<line x1="' + (x2 - 2.2 * Math.sin(a)).toFixed(1) + '" y1="' + (y2 + 2.2 * Math.cos(a)).toFixed(1) + '" x2="' + (x2 + 2.2 * Math.sin(a)).toFixed(1) + '" y2="' + (y2 - 2.2 * Math.cos(a)).toFixed(1) + '"/>');
+      }
+      return '<g stroke="var(--ce)" stroke-width="1.8" stroke-linecap="round">' + s + '</g><circle cx="32" cy="22" r="14" ' + f + '/>' +
+        [[26, 17], [33, 15], [39, 19], [25, 25], [32, 23], [38, 27], [29, 30], [35, 31]].map(function(p){ return '<path d="M' + (p[0] - 2.5) + " " + p[1] + " q2.5 -2.5 5 0" + '" fill="none" stroke="var(--ce)" stroke-width="1.3"/>'; }).join("");
+    default: return '<circle cx="32" cy="22" r="14" ' + f + '/>';
+  }
+}
+function cellSvg(m){
+  var vars = m.v ? "--cf:var(--v-fill);--ce:var(--vir)" : m.gram === "+" ? "--cf:var(--gp-fill);--ce:var(--gp-edge)" : "--cf:var(--gn-fill);--ce:var(--gn-edge)";
+  var label = m.v ? "Drawing of a " + m.fam + " virus particle" : "Drawing of the cell shape, colored gram " + (m.gram === "+" ? "positive (purple)" : "negative (pink)");
+  return '<svg class="cell" viewBox="-2 -2 68 48" role="img" aria-label="' + label + '" style="' + vars + '">' + (m.v ? virusInner(m.fam) : bacteriaInner(m.shape)) + "</svg>";
+}
+function ico(id){ return '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICON[id] + "</svg>"; }
+
+var D = window.TXDATA, GROUPS = D.GROUPS, ROUTES = D.ROUTES, TX = D.TX, VIR = window.BODYMAP.VIRUSES;
+var RBY = {}; ROUTES.forEach(function(r){ RBY[r.id] = r; });
+var GBY = {}; GROUPS.forEach(function(g){ GBY[g.id] = g; });
+
+/* bacteria names, gram, and tour links */
+var ORG = {};
+[[window.TOUR_NEG, "ch11-gram-neg-tour.html", "−"], [window.TOUR_POS, "ch11-gram-pos-tour.html", "+"]].forEach(function(t){
+  t[0].stops.forEach(function(s){ (s.orgs || []).forEach(function(o){ if (!ORG[o.id]) ORG[o.id] = {name: o.name, href: t[1] + "#org-" + o.id, gram: t[2], shape: o.shape, dz: o.disease && o.disease.short}; }); });
+});
+function info(id){
+  var x = TX[id];
+  if (x.k === "v"){ var v = VIR[id]; return {name: v.name, fam: v.fam, dz: x.dz, v: true}; }
+  var o = ORG[id] || {name: id, gram: "?"};
+  /* Body Map link: rings every body area where this bacterium causes disease */
+  var map = window.BODYMAP.sitesFor(id, "dz").length ? "body-map.html#dz/" + id : null;
+  return {name: D.NAMES[id] || o.name, href: o.href, map: map, gram: o.gram, shape: o.shape, dz: o.dz, v: false};
+}
+function ids(){ return Object.keys(TX).filter(function(id){ return st.kind === "all" || TX[id].k === st.kind; }); }
+/* explore mode lists every route a microbe uses, without saying which is primary */
+function users(rid){ return ids().filter(function(id){ var x = TX[id]; return x.p.indexOf(rid) >= 0 || (x.s || []).indexOf(rid) >= 0; }); }
+
+var st = {mode: "explore", kind: "all", route: "drop", flipped: {}, quiz: null, score: 0, streak: 0, best: 0};
+try { st.best = Number(localStorage.getItem("bio112-tx-best")) || 0; } catch (e) {}
+
+function drawTabs(){
+  var show = st.mode === "explore";
+  $("#tabs").hidden = !show; $("#swipe").hidden = !show;
+  if (!show) return;
+  $("#tabs").innerHTML = GROUPS.map(function(g){
+    return '<div class="tgrp g-' + g.id + '" role="presentation"><span class="gl">' + esc(g.name) + "</span>" +
+      ROUTES.filter(function(r){ return r.grp === g.id; }).map(function(r){
+        var n = users(r.id).length, sel = r.id === st.route;
+        return '<button type="button" class="tab' + (n ? "" : " none") + '" role="tab" aria-selected="' + sel + '" data-route="' + r.id + '"><span class="ti">' + ico(r.id) + '</span><span class="tn">' + esc(r.short) + '</span><span class="tc">' + n + "</span></button>";
+      }).join("") + "</div>";
+  }).join("");
+}
+/* a flip card: front = name + tag, back = disease, every route it uses (unlabeled), note, links */
+function card(id, rid){
+  var m = info(id), x = TX[id];
+  var tag = m.v ? '<span class="tag vir">' + esc(m.fam) + "</span>" : '<span class="tag ' + (m.gram === "+" ? "gpos" : "gneg") + '">gram ' + m.gram + "</span>";
+  var style = ' style="--ge:' + (m.v ? "var(--vir)" : m.gram === "+" ? "var(--gp-edge)" : "var(--gn-edge)") + '"';
+  var it = m.v ? "" : " it";
+  var routes = ROUTES.filter(function(r){ return x.p.indexOf(r.id) >= 0 || (x.s || []).indexOf(r.id) >= 0; })
+    .map(function(r){ return '<span class="' + (r.id === rid ? "cur" : "") + '">' + ico(r.id) + esc(r.short) + "</span>"; }).join("");
+  var links = (m.href ? '<a href="' + m.href + '">Tour →</a>' : "") + (m.map ? '<a href="' + m.map + '">Body Map →</a>' : "");
+  var flipped = st.flipped[id] ? " flipped" : "";
+  return '<div class="fcard' + flipped + '" data-card="' + id + '"' + style + '><div class="in">' +
+    '<button type="button" class="face front" data-flip="' + id + '" aria-expanded="' + !!st.flipped[id] + '"' + (flipped ? ' tabindex="-1" aria-hidden="true"' : "") + '>' + cellSvg(m) + '<span class="nm' + it + '">' + esc(m.name) + '</span><span class="tags">' + tag + '</span><span class="hint">Tap to flip ↻</span></button>' +
+    '<div class="face back"' + (flipped ? "" : ' aria-hidden="true"') + '><span class="nm' + it + '">' + esc(m.name) + "</span>" +
+      '<span class="row"><b>Causes</b>' + esc(m.dz || "") + "</span>" +
+      '<span class="row"><b>Spreads by</b><span class="rts">' + routes + "</span></span>" +
+      (x.note ? '<span class="row"><b>Note</b>' + esc(x.note) + "</span>" : "") +
+      '<span class="links">' + links + '<button type="button" class="unflip" data-flip="' + id + '"' + (flipped ? "" : ' tabindex="-1"') + ">↻ Flip back</button></span></div>" +
+  "</div></div>";
+}
+function render(){
+  drawTabs();
+  if (st.mode === "quiz") return renderQuiz();
+  var r = RBY[st.route], g = GBY[r.grp], list = users(r.id), i = ROUTES.indexOf(r);
+  var bac = list.filter(function(id){ return TX[id].k === "b"; }), vir = list.filter(function(id){ return TX[id].k === "v"; });
+  var h = '<section class="banner g-' + r.grp + '"><span class="big">' + ico(r.id) + '</span><span class="eyebrow">' + esc(g.name) + "</span><h2>" + esc(r.name) + '</h2><p class="def">' + esc(r.def) + "</p>" +
+    '<div class="count"><span class="pill">' + list.length + " microbe" + (list.length === 1 ? "" : "s") + " spread this way</span>" + (st.kind !== "v" ? '<span class="pill">' + bac.length + " bacteria</span>" : "") + (st.kind !== "b" ? '<span class="pill">' + vir.length + " virus" + (vir.length === 1 ? "" : "es") + "</span>" : "") + "</div></section>";
+  if (!list.length) h += '<p class="empty">None of our ' + (st.kind === "v" ? "viruses" : st.kind === "b" ? "bacteria" : "microbes") + " spread this way. Try another route!</p>";
+  else {
+    var colsHtml = [];
+    function col(title, kind, arr, none){
+      var all = arr.length && arr.every(function(id){ return st.flipped[id]; });
+      return '<div class="colbox"><div class="colhead"><h3>' + title + "</h3>" + (arr.length ? '<button type="button" class="flipall" data-flipall="' + kind + '">' + (all ? "↻ Flip all back" : "↻ Flip all") + "</button>" : "") + "</div>" +
+        (arr.length ? '<div class="mlist">' + arr.map(function(id){ return card(id, r.id); }).join("") + "</div>" : '<p class="empty">' + none + "</p>") + "</div>";
+    }
+    if (st.kind !== "v") colsHtml.push(col(ico("bacterium") + "Bacteria", "b", bac, "No bacteria on our list spread this way."));
+    if (st.kind !== "b") colsHtml.push(col(ico("virus") + "Viruses", "v", vir, "No viruses on our list spread this way."));
+    h += '<div class="cols"' + (colsHtml.length === 1 ? ' style="grid-template-columns:minmax(0,1fr)"' : "") + ">" + colsHtml.join("") + "</div>";
+  }
+  var prev = ROUTES[i - 1], next = ROUTES[i + 1];
+  h += '<div class="stepper">' + (prev ? '<button type="button" class="step g-' + prev.grp + '" data-step="' + prev.id + '">← ' + esc(prev.short) + "</button>" : "") +
+    (next ? '<button type="button" class="step next g-' + next.grp + '" data-step="' + next.id + '">Next: ' + esc(next.short) + " →</button>" : '<button type="button" class="step next g-air" data-mode="quiz">Done! Try the quiz →</button>') + "</div>";
+  h += '<p class="src">Tap a card to flip it. Microbes are listed for every route they can use. Some spread more than one way! Sources: Ch. 13 slides (viruses) and the Ch. 11 tours (bacteria).</p>';
+  $("#main").innerHTML = h;
+}
+
+/* ---------- quiz: primary routes only ---------- */
+function newQuestion(){
+  var pool = ids(), last = st.quiz && st.quiz.id, id;
+  do { id = pool[Math.floor(Math.random() * pool.length)]; } while (pool.length > 1 && id === last);
+  st.quiz = {id: id, p: TX[id].p, s: TX[id].s || [], tried: [], done: false, msg: ""};
+}
+function renderQuiz(){
+  if (!st.quiz) newQuestion();
+  var q = st.quiz, m = info(q.id);
+  var nm = m.v ? "<b>" + esc(m.name) + "</b>" : "<i>" + esc(m.name) + "</i>";
+  var h = '<section class="quiz"><p class="score">Score ' + st.score + " · streak " + st.streak + " · best streak " + st.best + "</p>";
+  h += '<p class="quizq">What is the <b>primary</b> way ' + nm + " spreads?</p>";
+  h += '<p class="sub">Tap a route. ' + (q.p.length > 1 ? "It has more than one primary route: any one counts." : "") + "</p>";
+  if (q.msg) h += '<div class="qmsg ' + q.cls + '">' + q.msg + "</div>";
+  if (q.done) h += '<div><button class="btn" type="button" data-next>Next microbe →</button></div>';
+  h += '<div class="answers">' + GROUPS.map(function(g){
+    return '<div class="agrp g-' + g.id + '"><span class="gl">' + esc(g.name) + "</span>" + ROUTES.filter(function(r){ return r.grp === g.id; }).map(function(r){
+      var cls = "ans";
+      if (q.done && q.p.indexOf(r.id) >= 0) cls += " right"; else if (q.tried.indexOf(r.id) >= 0) cls += (q.s.indexOf(r.id) >= 0 ? " near" : " wrong");
+      return '<button type="button" class="' + cls + '" data-answer="' + r.id + '">' + ico(r.id) + esc(r.short) + "</button>";
+    }).join("") + "</div>";
+  }).join("") + "</div></section>";
+  $("#main").innerHTML = h;
+}
+function answer(rid){
+  var q = st.quiz; if (!q || q.done || q.tried.indexOf(rid) >= 0) return;
+  var m = info(q.id), r = RBY[rid];
+  if (q.p.indexOf(rid) >= 0){
+    q.done = true; q.cls = "good";
+    if (!q.tried.length){ st.score += 10; st.streak++; if (st.streak > st.best){ st.best = st.streak; try { localStorage.setItem("bio112-tx-best", st.best); } catch (e) {} } }
+    else { st.score += 5; st.streak = 0; }
+    var all = q.p.map(function(p){ return RBY[p].name; }).join(", ");
+    q.msg = "<b>Correct!</b> " + (q.p.length > 1 ? "Its primary routes: " + esc(all) + "." : esc(r.name) + " is its primary route.") + (TX[q.id].note ? " (" + esc(TX[q.id].note) + ")" : "") +
+      (m.href ? ' <a href="' + m.href + '">Read about <i>' + esc(m.name) + "</i> in the tour →</a>" : "") + (m.map ? ' <a href="' + m.map + '">See it on the Body Map →</a>' : "");
+  } else {
+    q.tried.push(rid); st.streak = 0;
+    if (q.s.indexOf(rid) >= 0){ q.cls = "near"; q.msg = "Close! It <b>can</b> spread by " + esc(r.name.toLowerCase()) + ", but that's not its main route. Try again!"; }
+    else { q.cls = "bad"; q.msg = "Not " + esc(r.name.toLowerCase()) + ". Try again!"; }
+  }
+  render();
+}
+
+/* ---------- events ---------- */
+function flipCard(id){
+  st.flipped[id] = !st.flipped[id];
+  var c = document.querySelector('.fcard[data-card="' + id + '"]'); if (!c) return;
+  var on = st.flipped[id], front = c.querySelector(".front"), back = c.querySelector(".back"), un = c.querySelector(".unflip");
+  c.classList.toggle("flipped", on);
+  front.setAttribute("aria-expanded", on); front.tabIndex = on ? -1 : 0; un.tabIndex = on ? 0 : -1;
+  if (on){ front.setAttribute("aria-hidden", "true"); back.removeAttribute("aria-hidden"); } else { back.setAttribute("aria-hidden", "true"); front.removeAttribute("aria-hidden"); }
+}
+function setMode(m){
+  st.mode = m;
+  document.querySelectorAll(".mode").forEach(function(b){ b.setAttribute("aria-pressed", b.getAttribute("data-mode") === m ? "true" : "false"); });
+  if (m === "quiz" && (!st.quiz || st.quiz.done)) newQuestion();
+  render();
+}
+function goRoute(rid, scroll){
+  st.route = rid; st.flipped = {}; render();
+  var tab = document.querySelector('.tab[data-route="' + rid + '"]');
+  if (tab && tab.scrollIntoView) tab.scrollIntoView({block: "nearest", inline: "center", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"});
+  if (scroll){ var t = $(".banner"); if (t && t.getBoundingClientRect().top < 0) t.scrollIntoView({block: "start"}); }
+}
+document.addEventListener("click", function(e){
+  var el;
+  if ((el = e.target.closest("[data-mode]"))){ setMode(el.getAttribute("data-mode")); window.scrollTo(0, 0); return; }
+  if ((el = e.target.closest("[data-kind]"))){
+    st.kind = el.getAttribute("data-kind");
+    document.querySelectorAll("[data-kind]").forEach(function(b){ b.setAttribute("aria-pressed", b === el ? "true" : "false"); });
+    if (st.mode === "quiz") newQuestion();
+    render(); return;
+  }
+  if ((el = e.target.closest("[data-flip]"))){ flipCard(el.getAttribute("data-flip")); return; }
+  if ((el = e.target.closest("[data-flipall]"))){
+    var kind = el.getAttribute("data-flipall"), cards = users(st.route).filter(function(id){ return TX[id].k === kind; });
+    var to = !cards.every(function(id){ return st.flipped[id]; });
+    cards.forEach(function(id){ if (!!st.flipped[id] !== to) flipCard(id); });
+    el.textContent = to ? "↻ Flip all back" : "↻ Flip all"; return;
+  }
+  if ((el = e.target.closest("[data-next]"))){ newQuestion(); render(); return; }
+  if ((el = e.target.closest("[data-answer]"))){ answer(el.getAttribute("data-answer")); return; }
+  if ((el = e.target.closest("[data-step]"))){ goRoute(el.getAttribute("data-step"), true); return; }
+  if ((el = e.target.closest("[data-route]"))){ goRoute(el.getAttribute("data-route"), false); }
+});
+/* arrow keys move between tabs */
+document.addEventListener("keydown", function(e){
+  if (!e.target.closest || !e.target.closest(".tab")) return;
+  var i = ROUTES.indexOf(RBY[st.route]), j = e.key === "ArrowRight" || e.key === "ArrowDown" ? i + 1 : e.key === "ArrowLeft" || e.key === "ArrowUp" ? i - 1 : -1;
+  if (j < 0 || j >= ROUTES.length || !(e.key.indexOf("Arrow") === 0)) return;
+  e.preventDefault(); goRoute(ROUTES[j].id, false);
+  var t = document.querySelector('.tab[data-route="' + ROUTES[j].id + '"]'); if (t) t.focus();
+});
+
+/* deep links: #quiz, or a route id (#vector, #fecal) */
+var h0 = location.hash.slice(1);
+if (RBY[h0]) st.route = h0;
+if (h0 === "quiz") setMode("quiz"); else render();
+window.__tx = {st: st, TX: TX, ROUTES: ROUTES, info: info, answer: answer};
+})();
+</script>
+</body>
+</html>

@@ -3,11 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bacteria Unit</title>
+<title>Pathology Unit</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;600&display=swap">
 <style>
-/* Ch. 11 Bacteria unit hub: tours, games, and study tools in one place. Same tokens as the tour. */
+/* Pathology unit hub (Ch. 11 bacteria + Ch. 13 viruses): tours, games, and study tools in one place. Same tokens as the tour.
+   The file keeps its old name (unit-bacteria.html) so existing links and bookmarks still work. */
 :root{
   --bg:#f2f5f8; --surface:#ffffff; --surface-2:#e8eef4; --ink:#14223a; --muted:#53657b; --line:#d3dde7;
   --arrow:#1683cc; --arrow-soft:#dcecf9; --good:#1f8a55; --bad:#c43a2b; --bad-soft:#fbe0db; --gold:#e3a008;
@@ -69,9 +70,9 @@ a.tile:focus-visible{outline:3px solid var(--arrow); outline-offset:2px}
 
   <section class="hero">
     <div>
-      <div class="eyebrow">Chapter 11 · Unit hub</div>
-      <h1>The <span>Bacteria</span> unit</h1>
-      <p>Tour the bacterial family tree, then practice IDs, diseases, and spelling with the games.</p>
+      <div class="eyebrow">Chapters 11 + 13 · Unit hub</div>
+      <h1>The <span>Pathology</span> unit</h1>
+      <p><b>Bacteria and viruses.</b> Tour the bacterial family tree, see where microbes cause disease, then practice with the games.</p>
     </div>
     <svg viewBox="0 0 340 200" role="img" aria-label="A pink gram-negative rod and a purple gram-positive coccus side by side">
       <circle cx="86" cy="96" r="78" fill="var(--scope)" stroke="#33415c" stroke-width="7"/>
@@ -88,7 +89,7 @@ a.tile:focus-visible{outline:3px solid var(--arrow); outline-offset:2px}
   </section>
 
   <section aria-labelledby="h-tours">
-    <div class="sec"><h2 id="h-tours">🌳 Family tree tours</h2><p>Start here</p></div>
+    <div class="sec"><h2 id="h-tours">Family tree tours</h2><p>Start here</p></div>
     <div class="grid">
       <a class="tile" href="ch11-gram-neg-tour.html" style="--c:var(--gn-edge)">
         <svg viewBox="0 0 64 44" aria-hidden="true"><rect x="8" y="14" width="48" height="16" rx="8" fill="var(--gn-fill)" stroke="var(--gn-edge)" stroke-width="2"/></svg>
@@ -98,7 +99,9 @@ a.tile:focus-visible{outline:3px solid var(--arrow); outline-offset:2px}
         <span class="tag">Learn</span><span class="t">Gram-Positive Tour</span><span class="d">35 stops: Firmicutes and Actinobacteria, with a G+C builder, flip cards, patient cases, and real photos.</span></a>
       <a class="tile" href="body-map.html" style="--c:#1f8a55"><span class="new">NEW</span>
         <svg viewBox="0 0 64 44" aria-hidden="true"><circle cx="32" cy="9" r="6" fill="#d6f0e1" stroke="#1f8a55" stroke-width="2"/><path d="M22 18 H42 L40 34 H24Z" fill="#d6f0e1" stroke="#1f8a55" stroke-width="2"/><circle cx="32" cy="26" r="3.5" fill="#fbe0db" stroke="#c43a2b" stroke-width="1.5"/></svg>
-        <span class="tag">Learn</span><span class="t">Body Map</span><span class="d">Tap a body area: see its normal flora, then the bacteria that cause disease there. Has a quiz mode.</span></a>
+        <span class="tag">Learn</span><span class="t">Body Map</span><span class="d">Tap a body area: see its normal flora, then the bacteria and viruses that cause disease there. Has a quiz mode.</span></a>
+      <a class="tile" href="transmission.html" style="--c:#0e7490"><span class="new">NEW</span><span class="ic">🦟</span>
+        <span class="tag">Learn</span><span class="t">How Diseases Spread</span><span class="d">Tap a route (droplets, airborne, fecal-oral, vectors...) to see which bacteria and viruses spread that way. Has a quiz on primary routes.</span></a>
     </div>
   </section>
 
@@ -109,20 +112,19 @@ a.tile:focus-visible{outline:3px solid var(--arrow); outline-offset:2px}
         <span class="tag">Game</span><span class="t">Microbe Collector</span><span class="d">Swab spots like the kitchen, dirt, or a hospital and see what grows. ID it to collect its card. Some microbes are very rare!</span></a>
       <a class="tile" href="mystery-microbe.html" style="--c:#0e7490"><span class="ic">🕵️</span>
         <span class="tag">Game</span><span class="t">Mystery Microbe</span><span class="d">Flip lab-test cards and guess the mystery organism.</span></a>
-      <a class="tile" href="disease-type.html" style="--c:#7c3aed"><span class="ic">⌨️</span>
-        <span class="tag">Game</span><span class="t">Disease Typing Game</span><span class="d">See a disease, type the organism that causes it before time runs out.</span></a>
-      <!-- TODO: Microbe Match isn't in this repo yet. Swap this tile for a link once it exists. -->
-      <div class="tile soon" style="--c:#64748b" aria-disabled="true"><span class="ic">🧩</span>
-        <span class="tag">Game · coming soon</span><span class="t">Microbe Match</span><span class="d">Match each microbe to its traits.</span></div>
+      <a class="tile" href="disease-type.html" style="--c:#7c3aed"><span class="new">NEW</span><span class="ic">⌨️</span>
+        <span class="tag">Game</span><span class="t">Disease Typing Game</span><span class="d">See a disease, type the organism that causes it before time runs out. Now with a Viruses deck (Ch. 13)!</span></a>
+      <a class="tile" href="microbe-match.html" style="--c:#6d28d9"><span class="new">NEW</span><span class="ic">🧩</span>
+        <span class="tag">Game</span><span class="t">Microbe Match</span><span class="d">Memory flip cards: match bacteria and viruses to their diseases and ID clues, or vocab terms to their definitions. Try Hard mode for 12 pairs!</span></a>
     </div>
   </section>
 
   <section aria-labelledby="h-tools">
     <div class="sec"><h2 id="h-tools">🧰 Study tools</h2><p>Quick references</p></div>
     <div class="grid">
-      <a class="tile" href="ch11-gram-neg-tour.html#cheats" style="--c:var(--bad)"><span class="ic">🎯</span>
-        <span class="tag">Reference</span><span class="t">ID cheat sheet</span><span class="d">One clue that sets each organism apart, like "the only gram-negative with a red pigment."</span></a>
-      <a class="tile" href="ch11-gram-neg-tour.html#table" style="--c:#ea580c"><span class="ic">📋</span>
+      <a class="tile" href="ch11-gram-neg-tour.html#cheats" style="--c:var(--bad)"><svg viewBox="0 0 64 44" aria-hidden="true"><rect x="16" y="4" width="32" height="36" rx="4" fill="var(--bad-soft)" stroke="var(--bad)" stroke-width="2.5"/><path d="M23 15h18M23 22h18M23 29h11" stroke="var(--bad)" stroke-width="2.5" stroke-linecap="round"/></svg>
+        <span class="tag">Reference</span><span class="t">ID cheat sheet</span><span class="d">One clue that sets each organism apart, like "only gram − with a red pigment."</span></a>
+      <a class="tile" href="ch11-gram-neg-tour.html#table" style="--c:#ea580c"><svg viewBox="0 0 64 44" aria-hidden="true"><rect x="16" y="4" width="32" height="36" rx="4" fill="#fde7d4" stroke="#ea580c" stroke-width="2.5"/><path d="M23 15h18M23 22h18M23 29h11" stroke="#ea580c" stroke-width="2.5" stroke-linecap="round"/></svg>
         <span class="tag">Reference</span><span class="t">Enteric ID table</span><span class="d">Lactose, IMViC, H₂S, and urease for every enteric.</span></a>
     </div>
   </section>

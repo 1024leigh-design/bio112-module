@@ -109,7 +109,6 @@ window.TOUR_DATA = {
     {id: "strep", rank: "genus", label: "Streptococcus", parent: "lb_cocci", italic: true,
       traits: [{t: "chains", blank: {pre: "", post: "", a: "chains", o: ["chains", "grape-like clusters"], why: "Strepto = twisted chain: strep grow in chains."}}, {t: "sorted by hemolysis"}]},
     {id: "s_pyogenes", rank: "species", label: "S. pyogenes", parent: "strep", italic: true, traits: [{t: "group A strep"}]},
-    {id: "s_agalactiae", rank: "species", label: "S. agalactiae", parent: "strep", italic: true, traits: [{t: "group B strep"}]},
     {id: "s_pneumoniae", rank: "species", label: "S. pneumoniae", parent: "strep", italic: true, traits: [{t: "diplococci (pairs)"}, {t: "capsule"}]},
     {id: "enterococcus", rank: "genus", label: "Enterococcus", parent: "lb_cocci", italic: true,
       traits: [{t: "pairs or short chains"}, {t: "salt- and bile-tolerant", blank: {pre: "", post: "-tolerant", a: "salt- and bile", o: ["salt- and bile", "cold"], why: "<i>Enterococcus</i> is extremely hardy: salt-tolerant, bile-tolerant, heat-resistant."}}, {t: "gut flora"}]},
@@ -205,7 +204,7 @@ window.TOUR_DATA = {
         w: "Both are gram-positive. Firmicutes: low G+C. Actinobacteria: high G+C."
       }},
     {id: "mycoplasma", photo: {"src": "images/mycoplasma-attaching.jpg", "alt": "Electron micrograph of small Mycoplasma cells attached to the surface of an airway cell", "cap": "<i>Mycoplasma pneumoniae</i> (arrow) attaching to airway cells", "credit": "Credit: modification of work by American Society for Microbiology, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 22.12)"}, node: "mycoplasma", title: "<i>Mycoplasma</i>: the odd cousin",
-      cheat: "The only one with <b>no cell wall</b>; <b>sterols</b> in its membrane help hold it together.",
+      cheat: "Only one with <b>no cell wall</b>; <b>sterols</b> in its membrane.",
       lesson: [
         "<i>Mycoplasma</i> has <b>no cell wall</b>, so it is <b>not gram-positive</b>.",
         "Instead, it has <b>sterols</b> in its cell membrane, which help keep the wall-less membrane stable.",
@@ -219,7 +218,7 @@ window.TOUR_DATA = {
       }},
 
     /* ---------- Class Bacilli ---------- */
-    {id: "bacilli", photo: {"src": "images/catalase-test.jpg", "alt": "Two drops on a glass slide: the left one is flat, the right one is full of bubbles", "cap": "A real catalase test: no bubbles (−, left) vs. bubbles (+, right)", "credit": "Credit: Centers for Disease Control and Prevention, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 9.23)"}, cheat: "In class Bacilli, the <b>catalase test</b> splits the orders: catalase + = <b>Bacillales</b>, catalase − = <b>Lactobacillales</b>.", node: "bacilli", title: "Class Bacilli",
+    {id: "bacilli", photo: {"src": "images/catalase-test.jpg", "alt": "Two drops on a glass slide: the left one is flat, the right one is full of bubbles", "cap": "A real catalase test: no bubbles (−, left) vs. bubbles (+, right)", "credit": "Credit: Centers for Disease Control and Prevention, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 9.23)"}, cheat: "<b>Catalase</b> splits the orders: + = <b>Bacillales</b>, − = <b>Lactobacillales</b>.", node: "bacilli", title: "Class Bacilli",
       lesson: [
         "Class Bacilli are <b>aerobes or facultative anaerobes</b>. They include rods and cocci.",
         "Bacilli vs. Clostridia: check the <b>oxygen</b>. Clostridia are obligate anaerobes.",
@@ -250,7 +249,7 @@ window.TOUR_DATA = {
         w: "Key test: catalase + = Bacillales, catalase − = Lactobacillales."
       }},
     {id: "bacillus", photo: {"src": "images/sporulation.jpg", "alt": "Diagram of the steps of endospore formation, an electron micrograph of an endospore, and Bacillus cells with green-stained endospores", "cap": "How an endospore forms: DNA copies → membranes surround it → cortex and protein coat → the spore is released", "credit": "Credit: modification of work by Jonathan Eisen (panel b), via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 3.20)"}, links: [{href: "virtual-lab.html#lab9", ic: "🥚", t: "Virtual Lab 9: Endospore stain", sub: "see spores turn green"}, {href: "microbe-collector.html#swab-dirt", ic: "🌱", t: "Microbe Collector: swab the garden dirt", sub: "catch these microbes"}], node: "bacillus", title: "<i>Bacillus</i>",
-      cheat: "A <b>spore former</b> that's <b>aerobic or a facultative anaerobe</b>? On our list, that's <i>Bacillus</i>.",
+      cheat: "<b>Spore former</b> + <b>aerobic or facultative anaerobe</b> = <i>Bacillus</i>.",
       more: {title: "Bacillus is being split up!", html: "<p>A big 2020 study compared whole genomes of <i>Bacillus</i> species and found they actually form many separate groups. The authors proposed keeping the name <i>Bacillus</i> only for the <b>Subtilis</b> and <b>Cereus</b> groups (like <i>B. subtilis</i>, <i>B. anthracis</i>, and <i>B. cereus</i>), and moving other species into <b>17 new genera</b>.</p><p>For example, <i>Bacillus megaterium</i> is now <b><i>Priestia megaterium</i></b>. That's why you may see both names in labs and papers.</p>", link: {href: "https://doi.org/10.1099/ijsem.0.004475", t: "Gupta et al. 2020, Int J Syst Evol Microbiol 70:5753"}},
       lesson: [
         "<i>Bacillus</i> is <b>aerobic or facultatively anaerobic</b>, <b>catalase +</b>, <b>urease −</b>, and <b>spore-forming</b>!",
@@ -337,7 +336,7 @@ window.TOUR_DATA = {
     {id: "s-aureus", node: "s_aureus", title: "<i>Staphylococcus aureus</i>",
       orgs: [
         {id: "saureus", photos: [{"src": "images/s-aureus-vs-epidermidis-msa.jpg", "alt": "A mannitol salt agar plate: the left side turned yellow around the colonies, the right side stayed pink", "cap": "Mannitol salt agar: <i>S. aureus</i> (left) ferments mannitol and turns it <b>yellow</b>; <i>S. epidermidis</i> (right) does not", "credit": "Credit: modification of work by “ScienceProfOnline”/YouTube, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 21.9, panel a, cropped)"}], node: "s_aureus", name: "Staphylococcus aureus", shape: "clusters", emoji: "🟡",
-          cheat: "A staph that's <b>coagulase +</b> with <b>golden</b> colonies: <i>S. aureus</i>.",
+          cheat: "Staph: <b>coagulase +</b>, <b>golden</b> colonies.",
           tests: [
             {k: "gram", v: "+", from: "grampos"},
             {k: "shape", v: "cocci in clusters", from: "staph"},
@@ -407,7 +406,7 @@ window.TOUR_DATA = {
         w: "<i>mecA</i> changes the target. (Beta-lactamase was the older trick that beat penicillin.)"
       }},
     {id: "coag-neg", node: "s_epi", also: ["s_sapro"], title: "Coagulase-negative staphs",
-      cheat: "A staph that's <b>coagulase −</b> with <b>white</b> colonies: <i>S. epidermidis</i> or <i>S. saprophyticus</i>.",
+      cheat: "Staph: <b>coagulase −</b>, <b>white</b> colonies (<i>S. epidermidis</i>, <i>S. saprophyticus</i>).",
       orgs: [
         {id: "sepi", node: "s_epi", name: "Staphylococcus epidermidis", shape: "clusters", emoji: "🩺",
           tests: [
@@ -461,7 +460,7 @@ window.TOUR_DATA = {
     {id: "lactobacillus", node: "lactobacillus", title: "<i>Lactobacillus</i>: the friendly bacteria",
       orgs: [
         {id: "lactobacillus", node: "lactobacillus", name: "Lactobacillus", shape: "rod", emoji: "🥛",
-          cheat: "A <b>catalase −</b> rod that grows with O₂, makes <b>lactic acid</b>, and <b>never forms spores</b>: <i>Lactobacillus</i>.",
+          cheat: "<b>Catalase −</b> rod; makes <b>lactic acid</b>; <b>never forms spores</b>.",
           tests: [
             {k: "gram", v: "+", from: "grampos"},
             {k: "shape", v: "rods", from: "lb_rods"},
@@ -482,10 +481,9 @@ window.TOUR_DATA = {
         "<b>Catalase −</b> (vs. <i>Staphylococcus</i>), facultative anaerobes, no spores.",
         "Streptococci are classified by their <b>hemolysis</b> pattern on blood agar (picture below)."
       ],
-      cheat: "<b>Catalase −</b> cocci in <b>chains</b>: <i>Streptococcus</i>.",
+      cheat: "<b>Catalase −</b> cocci in <b>chains</b>.",
       cols: [
         {h: "<i>S. pyogenes</i> (group A)", t: "The <b>main cause of strep throat</b>; also scarlet fever and necrotizing fasciitis"},
-        {h: "<i>S. agalactiae</i> (group B)", t: "Meningitis and sepsis in <b>newborns</b>"},
         {h: "<i>S. pneumoniae</i>", t: "The leading cause of <b>pneumonia</b> (and meningitis). Next stop!", c: "#0e7490"}
       ],
       orgs: [
@@ -496,15 +494,7 @@ window.TOUR_DATA = {
             {k: "catalase", v: "−", from: "lactobacillales"},
             {k: "feature", v: "group A strep", ic: "🅰️", label: "Group"}
           ],
-          disease: {short: "strep throat, scarlet fever, necrotizing fasciitis", html: "the <b>main cause of strep throat</b>; also scarlet fever and necrotizing fasciitis"}},
-        {id: "sagalactiae", node: "s_agalactiae", name: "Streptococcus agalactiae", sub: "(group B strep)", shape: "chains", emoji: "👶",
-          tests: [
-            {k: "gram", v: "+", from: "grampos"},
-            {k: "shape", v: "cocci in chains", from: "strep"},
-            {k: "catalase", v: "−", from: "lactobacillales"},
-            {k: "feature", v: "group B strep", ic: "🅱️", label: "Group"}
-          ],
-          disease: {short: "meningitis and sepsis in newborns", html: "meningitis and sepsis in newborns", tags: ["meningitis"]}}
+          disease: {short: "strep throat, scarlet fever, necrotizing fasciitis", html: "the <b>main cause of strep throat</b>; also scarlet fever and necrotizing fasciitis"}}
       ],
       checkin: {
         q: "How are streptococci classified?",
@@ -535,7 +525,7 @@ window.TOUR_DATA = {
     {id: "enterococcus", node: "enterococcus", title: "<i>Enterococcus</i>",
       orgs: [
         {id: "enterococcus", node: "enterococcus", name: "Enterococcus", sub: "(E. faecalis, E. faecium)", spell: "Enterococcus", shape: "pairchain", emoji: "🏥",
-          cheat: "<b>Catalase −</b> cocci that are <b>salt- and bile-tolerant</b> (bile-esculin test +): <i>Enterococcus</i>.",
+          cheat: "<b>Catalase −</b> cocci; <b>salt- and bile-tolerant</b> (bile-esculin +).",
           tests: [
             {k: "gram", v: "+", from: "grampos"},
             {k: "shape", v: "cocci in pairs or short chains", from: "enterococcus"},
@@ -581,7 +571,7 @@ window.TOUR_DATA = {
 
     /* ---------- Class Clostridia ---------- */
     {id: "clostridia", links: [{href: "virtual-lab.html#lab9", ic: "🥚", t: "Virtual Lab 9: Endospore stain", sub: "see spores turn green"}, {href: "microbe-collector.html#swab-dirt", ic: "🌱", t: "Microbe Collector: swab the garden dirt", sub: "catch these microbes"}], node: "clostridia", title: "Class Clostridia",
-      cheat: "A <b>spore former</b> that's an <b>obligate anaerobe</b>? It's in the <b>Clostridia</b> (<i>Clostridium</i> or <i>Clostridioides</i>).",
+      cheat: "<b>Spore former</b> + <b>obligate anaerobe</b> = Clostridia.",
       lesson: [
         "Still low G+C! Clostridia are gram +, <b>rods</b>, <b>OBLIGATE ANAEROBES</b>, and <b>spore-formers</b>.",
         "They lack the enzymes <b>catalase</b> and <b>superoxide dismutase</b>, so O₂ is actually <b>toxic</b> to them.",
@@ -603,7 +593,7 @@ window.TOUR_DATA = {
     {id: "c-perfringens", node: "c_perfringens", title: "<i>Clostridium perfringens</i>",
       orgs: [
         {id: "cperfringens", node: "c_perfringens", name: "Clostridium perfringens", shape: "rodspore", emoji: "🦵",
-          cheat: "An <b>obligate anaerobe, spore-forming rod</b> that's <b>non-motile</b> and a <b>big gas producer</b> (Durham tube): <i>C. perfringens</i>.",
+          cheat: "<b>Non-motile</b>, spore-forming obligate anaerobe; <b>big gas producer</b>.",
           treatSteps: ["<b>Surgery:</b> remove the dead tissue", "<b>Antibiotics:</b> high-dose penicillin or clindamycin", "<b>Hyperbaric oxygen:</b> extra O₂ stops this anaerobe from growing and helps healing"],
           tests: [
             {k: "gram", v: "+", from: "grampos"},
@@ -720,7 +710,7 @@ window.TOUR_DATA = {
     {id: "actinomyces", node: "actinomyces", title: "<i>Actinomyces</i>",
       orgs: [
         {id: "aisraelii", photos: [{"src": "images/actinomyces-sem.jpg", "alt": "Colorized electron micrograph of orange branching filaments", "cap": "<i>Actinomyces israelii</i>: branching filaments (SEM)", "credit": "Credit: modification of work by “GrahamColm”/Wikimedia Commons, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.18, panel a, cropped)"}], node: "actinomyces", name: "Actinomyces israelii", shape: "branching", emoji: "🦷",
-          cheat: "<b>Anaerobic</b> (or microaerophilic), <b>non-acid-fast</b> branching filaments; look for <b>sulfur granules</b> in pus: <i>Actinomyces</i>.",
+          cheat: "<b>Anaerobic</b>, non-acid-fast <b>branching filaments</b>; <b>sulfur granules</b> in pus.",
           tests: [
             {k: "gram", v: "+", from: "grampos"},
             {k: "shape", v: "filamentous rods", from: "actinomyces"},
@@ -745,7 +735,7 @@ window.TOUR_DATA = {
     {id: "streptomyces", node: "streptomyces", title: "<i>Streptomyces</i>",
       orgs: [
         {id: "sgriseus", node: "streptomyces", name: "Streptomyces", shape: "branching", emoji: "💊",
-          cheat: "<b>Aerobic</b> branching filaments that make <b>conidia</b> (not endospores): <i>Streptomyces</i>.",
+          cheat: "<b>Aerobic</b> branching filaments; <b>conidia</b> (not endospores); major <b>antibiotic</b> producer.",
           fun: {t: "The antibiotic <b>streptomycin</b> is named after <i>Streptomyces</i>, the bacterium that makes it."},
           tests: [
             {k: "gram", v: "+", from: "grampos"},
@@ -768,7 +758,7 @@ window.TOUR_DATA = {
     {id: "micrococcus", node: "micrococcus", title: "<i>Micrococcus</i>",
       orgs: [
         {id: "mluteus", node: "micrococcus", name: "Micrococcus luteus", shape: "tetrads", emoji: "🟨",
-          cheat: "Cocci in <b>tetrads</b> (groups of 4), catalase + and oxidase +: <i>Micrococcus</i>.",
+          cheat: "<b>Yellow</b> colonies; cocci in <b>tetrads</b>.",
           tests: [
             {k: "gram", v: "+", from: "grampos"},
             {k: "shape", v: "cocci in tetrads", from: "micrococcus"},
@@ -838,7 +828,7 @@ window.TOUR_DATA = {
       ],
       orgs: [
         {id: "cdiphtheriae", photos: [{"src": "images/corynebacterium-palisades.jpg", "alt": "Purple club-shaped rods lined up side by side and at angles", "cap": "<i>C. diphtheriae</i>: note the palisades", "credit": "Credit: modification of work by CDC, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.18, panel b, cropped)"}], node: "c_diphtheriae", name: "Corynebacterium diphtheriae", shape: "club", emoji: "🗣️",
-          cheat: "<b>Club-shaped</b> rods in <b>\"Chinese letters\"</b>, <b>not acid-fast</b>, with <b>metachromatic granules</b>: <i>Corynebacterium</i>.",
+          cheat: "<b>Club-shaped</b> rods in <b>\"Chinese letters\"</b>; <b>metachromatic granules</b>.",
           tests: [
             {k: "gram", v: "+", from: "grampos"},
             {k: "shape", v: "club-shaped rods", from: "corynebacterium"},
@@ -915,7 +905,7 @@ window.TOUR_DATA = {
       ],
       orgs: [
         {id: "mtb", photos: [{"src": "images/m-tuberculosis-lj.jpg", "alt": "Rough, cream-colored colonies on a blue-green medium", "cap": "<i>M. tuberculosis</i> colonies on Löwenstein-Jensen medium", "credit": "Credit: Centers for Disease Control and Prevention, via <a href=\"https://openstax.org/details/books/microbiology\" target=\"_blank\" rel=\"noopener\">OpenStax Microbiology</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> (Fig. 4.23)"}], node: "m_tb", name: "Mycobacterium tuberculosis", shape: "rod", emoji: "🫁",
-          cheat: "<b>Strongly acid-fast</b>, <b>slow-growing</b> rods (obligate aerobe): <i>Mycobacterium</i>.",
+          cheat: "<b>Strongly acid-fast</b>, <b>slow-growing</b> rods.",
           tests: [
             {k: "gram", v: "+", from: "grampos"},
             {k: "acidfast", v: "strongly acid-fast", from: "mycobacterium"},
@@ -943,7 +933,7 @@ window.TOUR_DATA = {
     {id: "m-leprae", node: "m_leprae", title: "<i>Mycobacterium leprae</i>: leprosy",
       orgs: [
         {id: "mleprae", node: "m_leprae", name: "Mycobacterium leprae", shape: "rod", emoji: "🩹",
-          cheat: "An <b>acid-fast</b> rod that <b>can't grow in lab culture</b>: <i>M. leprae</i>.",
+          cheat: "<b>Acid-fast</b> rod; <b>can't grow in lab culture</b>.",
           fun: {t: "Besides humans, the <b>nine-banded armadillo</b> (southern U.S. and Latin America) can be naturally infected with <i>M. leprae</i>. Handling infected armadillos is linked to leprosy!"},
           tests: [
             {k: "gram", v: "+", from: "grampos"},
@@ -966,7 +956,7 @@ window.TOUR_DATA = {
     {id: "nocardia", node: "nocardia", title: "<i>Nocardia asteroides</i>",
       orgs: [
         {id: "nasteroides", node: "nocardia", name: "Nocardia asteroides", shape: "branching", emoji: "🌱",
-          cheat: "<b>Weakly acid-fast</b> branching filaments (strict aerobe) with <b>chalky</b> colonies: <i>Nocardia</i>.",
+          
           tests: [
             {k: "gram", v: "+", from: "grampos"},
             {k: "shape", v: "branching filaments", from: "nocardia"},
